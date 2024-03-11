@@ -1,4 +1,4 @@
-import {Logger, PlaybackStatus} from '../app';
+import {AssetInfo, Logger, PlaybackStatus} from '../app';
 import {decorate, threadable} from '../decorators';
 import {EventDispatcher, ValueDispatcher} from '../events';
 import {DependencyContext, SignalValue} from '../signals';
@@ -108,6 +108,10 @@ export abstract class GeneratorScene<T>
 
   public get previous() {
     return this.previousScene;
+  }
+
+  public getMediaAssets(): Array<AssetInfo> {
+    return [];
   }
 
   public readonly experimentalFeatures: boolean;

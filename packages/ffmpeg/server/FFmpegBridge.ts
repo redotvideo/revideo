@@ -58,7 +58,8 @@ export class FFmpegBridge {
     }
 
     if (method === 'end') {
-      this.process = null;
+      //this.process = null;
+      return;
     }
   };
 

@@ -1,3 +1,4 @@
+import ffmpeg from '@motion-canvas/ffmpeg';
 import markdown from '@motion-canvas/internal/vite/markdown-literals';
 import preact from '@preact/preset-vite';
 import {defineConfig} from 'vite';
@@ -23,6 +24,7 @@ export default defineConfig({
   },
   plugins: [
     markdown(),
+    ffmpeg(),
     preact({
       include: [
         /packages\/ui\/src\/(.*)\.tsx?$/,

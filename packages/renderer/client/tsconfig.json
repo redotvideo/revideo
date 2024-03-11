@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "baseUrl": "src",
+      "outDir": "../dist/client",
+      "strict": true,
+      "module": "es2020",
+      "target": "es2020",
+      "moduleResolution": "node",
+      "declaration": true,
+      "inlineSourceMap": true,
+      "allowSyntheticDefaultImports": true,
+      },
+    "include": ["*"]
+  }
+  

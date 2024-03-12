@@ -1,33 +1,34 @@
-import {Plugin} from 'vite';
 import * as fs from 'fs';
 import * as path from 'path';
+import {Plugin} from 'vite';
 
-const rendererPath = path.resolve(__dirname, '../renderer.html');
-console.log("rendererPath", rendererPath);
-const content = fs.readFileSync(rendererPath, 'utf-8');
-const htmlParts = content.toString().split('{{source}}');
-const createHtml = (src: string) => htmlParts[0] + src + htmlParts[1];
+const RendererPath = path.resolve(__dirname, '../renderer.html');
+const Content = fs.readFileSync(RendererPath, 'utf-8');
+const HtmlParts = Content.toString().split('{{source}}');
+
+function createHtml(src: string) {
+  return HtmlParts[0] + src + HtmlParts[1];
+}
 
 export function rendererPlugin(): Plugin {
   return {
-    name: 'vite-plugin-motion-canvas-example',
+    name: 'motion-canvas-renderer-plugin',
 
     async load(id) {
-        if(id.startsWith('\x00virtual:renderer')){
-            return `\
-            import {render} from '/@fs/Users/justusmattern/Projects/haven/motioncanvas/motion-canvas/packages/renderer/dist/client/render.js';
+      if (id.startsWith('\x00virtual:renderer')) {
+        return `\
+            import {render} from '@motion-canvas/renderer/client/render';
             import project from './src/project.ts?project';
             render(project);
             `;
-                    }
+      }
     },
-  
+
     configureServer(server) {
-      server.middlewares.use('/render', (req, res) => {
+      server.middlewares.use('/render', (_req, res) => {
         res.setHeader('Content-Type', 'text/html');
         res.end(createHtml(`/@id/__x00__virtual:renderer`));
       });
-    },    // extend Motion Canvas:
+    },
   };
 }
-

@@ -1,7 +1,9 @@
 {
   "extends": "@motion-canvas/2d/tsconfig.project.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "noEmit": false,
+    "outDir": "dist"
   },
-  "include": ["src"]
+  "include": ["src", "renderScript.mts"]
 }

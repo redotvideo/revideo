@@ -15,24 +15,29 @@
 </p>
 <br/>
 
-# Motion Canvas
+# ReVideo - Make videos with AI
 
-Motion Canvas is two things:
+Revideo is
 
-- A TypeScript library that uses generators to program animations.
-- An editor providing a real-time preview of said animations.
+- A typescript library to generate videos using AI
+- A collection of API wrappers for services used in generated videos (e.g.
+  text-to-speech and text-to-image, see full list below)
+- An editor to provide instant previews of generated videos
+- Forked from the amazing Motion Canvas
 
-It's a specialized tool designed to create informative vector animations and
-synchronize them with voice-overs.
+Think of LangChain, but for video
 
-Aside from providing the preview, the editor allows you to edit certain aspects
-of the animation which could otherwise be tedious.
+## Using ReVideo
 
-## Using Motion Canvas
+Check out our [getting started][docs] guide to learn how to use Revideo.
 
-Check out our [getting started][docs] guide to learn how to use Motion Canvas.
+## APIs currently supported
 
-## Developing Motion Canvas locally
+- [ ] Elevenlabs
+- [ ] Dall-E
+- [ ] Stable Diffusion
+
+## Developing Revideo locally
 
 The project is maintained as one monorepo containing the following packages:
 
@@ -71,11 +76,11 @@ Canvas project that can be used during development.
 To develop the player, first build the template: `npm run template:build`. Then,
 start `npm run player:dev`.
 
-## Installing a local version of Motion Canvas in a project
+## Installing a local version of Revideo in a project
 
-It can be useful to install a local version of Motion Canvas in a standalone
-project. For example, when you want to use your own fork with some custom-made
-features to create your animations.
+It can be useful to install a local version of Revideo in a standalone project.
+For example, when you want to use your own fork with some custom-made features
+to create your animations.
 
 Let's assume the following project structure:
 
@@ -127,7 +132,7 @@ You can use the same technique to test out any custom package you're working on.
 ## Contributing
 
 Read through our [Contribution Guide](./CONTRIBUTING.md) to learn how you can
-help make Motion Canvas better.
+help make Revideo better.
 
 [authenticate]:
   https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token

@@ -10,6 +10,8 @@ import type {PluginConfig} from '@motion-canvas/vite-plugin/lib/plugins';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
+import { v4 as uuidv4 } from 'uuid';
 import {ImageStream} from './ImageStream';
 
 
@@ -44,13 +46,14 @@ export class FFmpegExporterServer {
   private readonly command: ffmpeg.FfmpegCommand;
   private readonly promise: Promise<void>;
   private readonly settings: FFmpegExporterSettings;
+  private readonly jobFolder: string;
 
   public constructor(
     settings: FFmpegExporterSettings,
     private readonly config: PluginConfig,
   ) {
-    console.log("renderersettings", settings);
     this.settings = settings
+    this.jobFolder = path.join(os.tmpdir(), `revideo-${uuidv4()}`);
     this.stream = new ImageStream();
     this.command = ffmpeg();
 
@@ -74,7 +77,7 @@ export class FFmpegExporterServer {
       y: Math.round(settings.size.y * settings.resolutionScale),
     };
     this.command
-      .output(path.join(this.config.output, `${settings.name}.mp4`))
+      .output(path.join(this.jobFolder, `visuals.mp4`))
       .outputOptions(['-pix_fmt yuv420p', '-shortest'])
       .outputFps(settings.fps)
       .size(`${size.x}x${size.y}`);
@@ -90,6 +93,9 @@ export class FFmpegExporterServer {
   public async start() {
     if (!fs.existsSync(this.config.output)) {
       await fs.promises.mkdir(this.config.output, {recursive: true});
+    }
+    if (!fs.existsSync(this.jobFolder)) {
+      await fs.promises.mkdir(this.jobFolder, {recursive: true});
     }
     this.command.run();
   }
@@ -118,7 +124,7 @@ export class FFmpegExporterServer {
       await this.mergeAudioTracks(audioFilenames);
     }
 
-    await this.mergeAudioWithVideo('audio.wav', path.join(this.config.output, `${this.settings.name}.mp4`));
+    await this.mergeAudioWithVideo(path.join(this.jobFolder, `audio.wav`), path.join(this.jobFolder, `visuals.mp4`));
 
     const getFileDuration = (filePath: string): Promise<number> => {
       return new Promise((resolve, reject) => {
@@ -136,25 +142,6 @@ export class FFmpegExporterServer {
         });
       });
     };
-    
-    // Measure and print the length of 'audio.wav'
-    const audioDuration = await getFileDuration('audio.wav');
-    console.log(`Duration of 'audio.wav': ${audioDuration} seconds`);
-    
-    // Measure and print the length of all files in audioFilenames
-    for (const filename of audioFilenames) {
-      const fileDuration = await getFileDuration(filename);
-      console.log(`Duration of '${filename}': ${fileDuration} seconds`);
-    }
-    
-    // Measure and print the length of the final video file
-    const projectVideoPath = path.join(this.config.output, `${this.settings.name}.mp4`);
-    const projectVideoDuration = await getFileDuration(projectVideoPath);
-    console.log(`Duration of '${projectVideoPath}': ${projectVideoDuration} seconds`);   
-    
-    const finalVideoDuration = await getFileDuration("finalVideo.mp4");
-    console.log("duration of finalvideo.mp4", finalVideoDuration);
-    
   }
 
   public async end(result: RendererResult) {
@@ -171,19 +158,24 @@ export class FFmpegExporterServer {
     }
   }
 
+  public async kill(){
+    try {
+      await fs.promises.rm(this.jobFolder, { recursive: true, force: true }); // cleanup
+      this.command.kill('SIGKILL');
+      await this.promise;
+    } catch (_) {
+    }
+  }
+
   private async prepareAudio(asset: MediaAsset, endFrame: number): Promise<string> {
     // Construct the output path
     const sanitizedKey = asset.key.replace(/[\/\[\]]/g, '-');
-    const outputPath = `${sanitizedKey}.wav`;
+    const outputPath = path.join(this.jobFolder, `${sanitizedKey}.wav`);
 
     const trimRight = Math.min(asset.trimLeftInSeconds + asset.duration / this.settings.fps, asset.trimLeftInSeconds + endFrame / this.settings.fps);
     const padStart = asset.startInVideo/this.settings.fps * 1000;
     const padEnd = Math.max(0, SAMPLE_RATE*endFrame/this.settings.fps - SAMPLE_RATE*asset.duration/this.settings.fps - SAMPLE_RATE*padStart/1000);
 
-    console.log("padStart", padStart);
-    console.log("padEnd", SAMPLE_RATE*endFrame/this.settings.fps - SAMPLE_RATE*asset.duration/this.settings.fps - SAMPLE_RATE*padStart/1000);
-
-    console.log("trimRight", trimRight);
     // Return a promise that resolves when the FFmpeg command has finished
     await new Promise<void>((resolve, reject) => {
       ffmpeg(asset.src.replace("/@fs", ""))
@@ -196,7 +188,6 @@ export class FFmpegExporterServer {
           // Additional options can be added here if needed
         ])
         .on('end', () => {
-          console.log(`Audio processed for asset key: ${asset.key}`);
           resolve();
         })
         .on('error', (err) => {
@@ -213,9 +204,6 @@ export class FFmpegExporterServer {
     return new Promise((resolve, reject) => {
       const command = ffmpeg();
 
-      console.log("audio filenames", audioFilenames);
-
-      // Add all audio files as input
       audioFilenames.forEach((filename) => {
         command.input(filename);
       });
@@ -228,14 +216,13 @@ export class FFmpegExporterServer {
           '-c:a', 'pcm_s16le'
         ])
         .on('end', () => {
-          console.log(`Audio tracks merged into: audio.wav`);
           resolve();
         })
         .on('error', (err) => {
           console.error(`Error merging audio tracks: ${err.message}`);
           reject(err);
         })
-        .save("audio.wav");
+        .save(path.join(this.jobFolder, `audio.wav`));
     });
   }
 
@@ -245,19 +232,19 @@ export class FFmpegExporterServer {
         .input(videoPath)
         .input(audioPath)
         .outputOptions([
-          '-c:v', 'copy', // Copy the video stream as is
-          '-c:a', 'aac',  // Re-encode the audio to AAC
-          '-strict', 'experimental' // Use experimental AAC encoder if necessary
+          '-c:v', 'copy',
+          '-c:a', 'aac', 
+          '-strict', 'experimental'
         ])
         .on('end', () => {
-          console.log(`Video and audio merged into: ${videoPath}`);
           resolve();
         })
         .on('error', (err) => {
           console.error(`Error merging video and audio: ${err.message}`);
           reject(err);
         })
-        .save("finalVideo.mp4"); // Overwrite the existing video file with the merged output
+        .save(path.join(this.config.output, `${this.settings.name}.mp4`));
+        console.log(`Rendered successfully! Video saved to: ${path.join(this.config.output, `${this.settings.name}.mp4`)}`);
     });
   }
 }

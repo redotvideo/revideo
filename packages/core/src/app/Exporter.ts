@@ -105,4 +105,17 @@ export interface Exporter {
    * @param result - The result of the rendering.
    */
   stop?(result: RendererResult): Promise<void>;
+
+    /**
+   * Finish the rendering process.
+   *
+   * @remarks
+   * Guaranteed to be called after the rendering has finished - no matter the
+   * result. Can be used to finalize the exporting and perform any necessary
+   * clean-up.
+   *
+   * @param result - The result of the rendering.
+   */
+  kill?(): Promise<void>;
+
 }

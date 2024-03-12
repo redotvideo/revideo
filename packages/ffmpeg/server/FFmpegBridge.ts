@@ -57,8 +57,8 @@ export class FFmpegBridge {
       this.respondError(method, e?.message);
     }
 
-    if (method === 'end') {
-      //this.process = null;
+    if (method === 'kill') {
+      this.process = null;
       return;
     }
   };

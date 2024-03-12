@@ -266,15 +266,14 @@ export class Renderer {
       result = RendererResult.Error;
     }
 
-    if (result == RendererResult.Success && this.exporter.generateAudio) {
-      console.log("success");
-    }
-
     await this.exporter.stop?.(result);
 
     if (this.exporter && this.exporter.generateAudio) {
-      await this.exporter.generateAudio(mediaAssets, this.playback.duration);
+      const endFrame = Math.min(this.playback.duration, this.playback.frame);
+      await this.exporter.generateAudio(mediaAssets, endFrame);
     }
+
+    await this.exporter.kill?.();
     
     this.exporter = null;
 

@@ -37,7 +37,6 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
   }
 
   public override next(): Promise<void> {
-    console.log("next() in Scene2D");
     this.getView()
       ?.playbackState(this.playback.state)
       .globalTime(this.playback.time);

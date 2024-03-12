@@ -23,12 +23,12 @@ export interface RendererSettings extends StageSettings {
 }
 
 export interface AssetInfo {
-  key: string,
-  type: "video" | "audio",
-  src: string,
-  playbackRate: number,
-  currentTime: number,
-  duration: number
+  key: string;
+  type: 'video' | 'audio';
+  src: string;
+  playbackRate: number;
+  currentTime: number;
+  duration: number;
 }
 
 export enum RendererState {
@@ -234,7 +234,7 @@ export class Renderer {
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
-      mediaAssets.push(this.playback.currentScene.getMediaAssets())
+      mediaAssets.push(this.playback.currentScene.getMediaAssets());
       this.estimator.update(clampRemap(from, to, 0, 1, this.playback.frame));
 
       if (signal.aborted) {
@@ -244,7 +244,7 @@ export class Renderer {
         while (!finished) {
           await this.playback.progress();
           await this.exportFrame(signal);
-          mediaAssets.push(this.playback.currentScene.getMediaAssets())
+          mediaAssets.push(this.playback.currentScene.getMediaAssets());
           this.estimator.update(
             clampRemap(from, to, 0, 1, this.playback.frame),
           );
@@ -274,14 +274,14 @@ export class Renderer {
     }
 
     await this.exporter.kill?.();
-    
+
     this.exporter = null;
 
     return result;
   }
 
   private async reloadScenes(settings: RendererSettings) {
-    console.log("reloadScenes was called");
+    console.log('reloadScenes was called');
     for (let i = 0; i < this.project.scenes.length; i++) {
       const description = this.project.scenes[i];
       const scene = this.playback.onScenesRecalculated.current[i];

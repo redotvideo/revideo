@@ -1,8 +1,14 @@
-import type {AssetInfo, MetaField, Project, RendererResult, RendererSettings} from '@motion-canvas/core';
+import type {
+  AssetInfo,
+  MetaField,
+  Project,
+  RendererResult,
+  RendererSettings,
+} from '@motion-canvas/core';
 import {
   BoolMetaField,
-  Exporter,
   EventDispatcher,
+  Exporter,
   ObjectMetaField,
   ValueOf,
 } from '@motion-canvas/core';
@@ -99,7 +105,10 @@ export class FFmpegExporterClient implements Exporter {
     await this.invoke('kill', {});
   }
 
-  public async generateAudio(assets: AssetInfo[][], endFrame: number): Promise<void> {
+  public async generateAudio(
+    assets: AssetInfo[][],
+    endFrame: number,
+  ): Promise<void> {
     await this.invoke('generateAudio', {assets, endFrame});
   }
 

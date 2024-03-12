@@ -1,6 +1,6 @@
 import type {MetaField} from '../meta';
 import type {Project} from './Project';
-import type {RendererResult, RendererSettings, AssetInfo} from './Renderer';
+import type {AssetInfo, RendererResult, RendererSettings} from './Renderer';
 
 /**
  * The static interface for exporters.
@@ -88,11 +88,8 @@ export interface Exporter {
 
   /**
    * take in media assets per frame and generate audio track for the video
-  */
-  generateAudio?(
-    assetsInfo: AssetInfo[][],
-    endFrame: number
-  ): Promise<void>;
+   */
+  generateAudio?(assetsInfo: AssetInfo[][], endFrame: number): Promise<void>;
 
   /**
    * Finish the rendering process.
@@ -106,7 +103,7 @@ export interface Exporter {
    */
   stop?(result: RendererResult): Promise<void>;
 
-    /**
+  /**
    * Finish the rendering process.
    *
    * @remarks
@@ -117,5 +114,4 @@ export interface Exporter {
    * @param result - The result of the rendering.
    */
   kill?(): Promise<void>;
-
 }

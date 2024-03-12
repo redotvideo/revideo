@@ -1,6 +1,6 @@
-import { nodeName, computed } from '../decorators';
-import { Media, MediaProps } from './Media';
-import { DependencyContext, PlaybackState } from '@motion-canvas/core';
+import {DependencyContext, PlaybackState} from '@motion-canvas/core';
+import {computed, nodeName} from '../decorators';
+import {Media, MediaProps} from './Media';
 
 @nodeName('Audio')
 export class Audio extends Media {
@@ -22,109 +22,108 @@ export class Audio extends Media {
     return this.fastSeekedAudio();
   }
 
-    @computed()
-    protected audio(): HTMLAudioElement {
-      const src = this.src();
-      const key = `${this.key}/${src}`;
-      let audio = Audio.pool[key];
-      if (!audio) {
-        audio = document.createElement('audio');
-        audio.src = src;
-        Audio.pool[key] = audio;
-      }
-      if (audio.readyState < 2) {
-        DependencyContext.collectPromise(
-          new Promise<void>((resolve) => {
-            const listener = () => {
-              resolve();
-              audio.removeEventListener('canplay', listener);
-            };
-            audio.addEventListener('canplay', listener);
-          }),
-        );
-      }
-  
+  @computed()
+  protected audio(): HTMLAudioElement {
+    const src = this.src();
+    const key = `${this.key}/${src}`;
+    let audio = Audio.pool[key];
+    if (!audio) {
+      audio = document.createElement('audio');
+      audio.src = src;
+      Audio.pool[key] = audio;
+    }
+    if (audio.readyState < 2) {
+      DependencyContext.collectPromise(
+        new Promise<void>(resolve => {
+          const listener = () => {
+            resolve();
+            audio.removeEventListener('canplay', listener);
+          };
+          audio.addEventListener('canplay', listener);
+        }),
+      );
+    }
+
+    return audio;
+  }
+
+  @computed()
+  protected seekedAudio(): HTMLAudioElement {
+    const audio = this.audio();
+
+    audio.addEventListener('ended', () => {
+      this.pause();
+    });
+
+    if (!(this.time() < audio.duration)) {
+      this.pause();
       return audio;
     }
 
-    @computed()
-    protected seekedAudio(): HTMLAudioElement {     
-      const audio = this.audio();
+    const time = this.clampTime(this.time());
+    audio.playbackRate = this.playbackRate();
 
-      audio.addEventListener('ended', () => {
-        this.pause();
-      });    
+    if (!audio.paused) {
+      audio.pause();
+    }
 
-      if(!(this.time() < audio.duration)){
-        this.pause();
-        return audio;
+    if (this.lastTime === time) {
+      return audio;
+    }
+
+    this.setCurrentTime(time);
+
+    return audio;
+  }
+
+  @computed()
+  protected fastSeekedAudio(): HTMLAudioElement {
+    const audio = this.audio();
+
+    if (!(this.time() < audio.duration)) {
+      this.pause();
+      return audio;
+    }
+
+    const time = this.clampTime(this.time());
+
+    audio.playbackRate = this.playbackRate();
+
+    if (this.lastTime === time) {
+      return audio;
+    }
+
+    const playing =
+      this.playing() && time < audio.duration && audio.playbackRate > 0;
+    if (playing) {
+      if (audio.paused) {
+        DependencyContext.collectPromise(audio.play());
       }
-
-
-      const time = this.clampTime(this.time());  
-      audio.playbackRate = this.playbackRate();
-  
+    } else {
       if (!audio.paused) {
         audio.pause();
       }
-  
-      if (this.lastTime === time) {
-        return audio;
-      }
-  
+    }
+    if (Math.abs(audio.currentTime - time) > 0.3) {
       this.setCurrentTime(time);
-  
-      return audio;
+    } else if (!playing) {
+      audio.currentTime = time;
     }
 
-    @computed()
-    protected fastSeekedAudio(): HTMLAudioElement {
-      const audio = this.audio();
-    
-      if(!(this.time() < audio.duration)){
-        this.pause();
-        return audio;
-      }
+    return audio;
+  }
 
-      const time = this.clampTime(this.time());
-  
-      audio.playbackRate = this.playbackRate();
-  
-      if (this.lastTime === time) {
-        return audio;
-      }
-  
-      const playing =
-        this.playing() && time < audio.duration && audio.playbackRate > 0;
-      if (playing) {
-        if (audio.paused) {
-          DependencyContext.collectPromise(audio.play());
-        }
-      } else {
-        if (!audio.paused) {
-          audio.pause();
-        }
-      }
-      if (Math.abs(audio.currentTime - time) > 0.3) {
-        this.setCurrentTime(time);
-      } else if (!playing) {
-        audio.currentTime = time;
-      }
-  
-      return audio;
-    }
+  protected override draw(context: CanvasRenderingContext2D) {
+    const playbackState = this.view().playbackState();
 
-    protected override draw(context: CanvasRenderingContext2D) {
-      const playbackState = this.view().playbackState();
+    playbackState === PlaybackState.Playing ||
+    playbackState === PlaybackState.Presenting
+      ? this.fastSeekedAudio()
+      : this.seekedAudio();
 
-      playbackState === PlaybackState.Playing ||
-      playbackState === PlaybackState.Presenting
-        ? this.fastSeekedAudio()
-        : this.seekedAudio();
-  
-        context.save();
-        context.restore();
+    context.save();
+    context.restore();
 
-      this.drawChildren(context);
-  };    
+    this.drawChildren(context);
+  }
 }

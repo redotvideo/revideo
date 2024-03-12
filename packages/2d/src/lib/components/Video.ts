@@ -5,17 +5,11 @@ import {
   SerializedVector2,
   SignalValue,
   SimpleSignal,
-  clamp,
-  isReactive,
-  useLogger,
-  useThread,
 } from '@motion-canvas/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
-import {Rect, RectProps} from './Rect';
-import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
-import { Media, MediaProps } from './Media';
+import {Media, MediaProps} from './Media';
 
 export interface VideoProps extends MediaProps {
   /**

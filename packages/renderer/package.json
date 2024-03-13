@@ -1,7 +1,7 @@
 {
   "name": "@motion-canvas/renderer",
   "version": "3.14.1",
-  "description": "A headless renderer Motion Canvas",
+  "description": "A headless renderer for Motion Canvas",
   "main": "dist/index.js",
   "author": "motion-canvas",
   "homepage": "https://motioncanvas.io/",
@@ -20,6 +20,6 @@
   ],
   "devDependencies": {
     "@motion-canvas/core": "*",
-    "puppeteer": "^19.3.0"
+    "puppeteer": "^22.4.0"
   }
 }

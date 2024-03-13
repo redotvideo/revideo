@@ -7,8 +7,6 @@ export const renderVideo = async (configFile: string) => {
 
   const resolvedConfigPath = path.resolve(process.cwd(), configFile);
 
-  console.log('resolved path', resolvedConfigPath);
-
   const [browser, server] = await Promise.all([
     puppeteer.launch({headless: true}),
     createServer({

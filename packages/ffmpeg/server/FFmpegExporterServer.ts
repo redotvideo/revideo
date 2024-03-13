@@ -126,12 +126,21 @@ export class FFmpegExporterServer {
 
     if (audioFilenames.length > 0) {
       await this.mergeAudioTracks(audioFilenames);
+      await this.mergeAudioWithVideo(
+        path.join(this.jobFolder, `audio.wav`),
+        path.join(this.jobFolder, `visuals.mp4`),
+      );
+    } else {
+      const destination = path.join(
+        this.config.output,
+        `${this.settings.name}.mp4`,
+      );
+      await fs.promises.copyFile(
+        path.join(this.jobFolder, `visuals.mp4`),
+        destination,
+      );
+      console.log(`Rendered successfully! Video saved to: ${destination}`);
     }
-
-    await this.mergeAudioWithVideo(
-      path.join(this.jobFolder, `audio.wav`),
-      path.join(this.jobFolder, `visuals.mp4`),
-    );
   }
 
   public async end(result: RendererResult) {
@@ -245,18 +254,18 @@ export class FFmpegExporterServer {
         ])
         .on('end', () => {
           resolve();
+          console.log(
+            `Rendered successfully! Video saved to: ${path.join(
+              this.config.output,
+              `${this.settings.name}.mp4`,
+            )}`,
+          );
         })
         .on('error', err => {
           console.error(`Error merging video and audio: ${err.message}`);
           reject(err);
         })
         .save(path.join(this.config.output, `${this.settings.name}.mp4`));
-      console.log(
-        `Rendered successfully! Video saved to: ${path.join(
-          this.config.output,
-          `${this.settings.name}.mp4`,
-        )}`,
-      );
     });
   }
 }

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "types": ["node"],
     "noEmit": false,
-    "outDir": "dist"
+    "outDir": "dist",
+    "module": "CommonJS"
   },
-  "include": ["src", "renderScript.mts"]
+  "include": ["src"]
 }

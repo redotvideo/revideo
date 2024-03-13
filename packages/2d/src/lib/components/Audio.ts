@@ -1,4 +1,4 @@
-import {DependencyContext, PlaybackState} from '@motion-canvas/core';
+import {DependencyContext, PlaybackState, viaProxy} from '@motion-canvas/core';
 import {computed, nodeName} from '../decorators';
 import {Media, MediaProps} from './Media';
 
@@ -24,11 +24,12 @@ export class Audio extends Media {
 
   @computed()
   protected audio(): HTMLAudioElement {
-    const src = this.src();
+    const src = viaProxy(this.src());
     const key = `${this.key}/${src}`;
     let audio = Audio.pool[key];
     if (!audio) {
       audio = document.createElement('audio');
+      audio.crossOrigin = 'anonymous';
       audio.src = src;
       Audio.pool[key] = audio;
     }

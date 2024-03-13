@@ -5,6 +5,7 @@ import {
   SerializedVector2,
   SignalValue,
   SimpleSignal,
+  viaProxy,
 } from '@motion-canvas/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
@@ -81,11 +82,12 @@ export class Video extends Media {
 
   @computed()
   private video(): HTMLVideoElement {
-    const src = this.src();
+    const src = viaProxy(this.src());
     const key = `${this.key}/${src}`;
     let video = Video.pool[key];
     if (!video) {
       video = document.createElement('video');
+      video.crossOrigin = 'anonymous';
       video.src = src;
       Video.pool[key] = video;
     }

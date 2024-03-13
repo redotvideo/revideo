@@ -60,6 +60,12 @@ export abstract class Media extends Rect {
     return this.mediaElement().duration;
   }
 
+  public override dispose() {
+    this.pause();
+    this.remove();
+    super.dispose();
+  }
+
   @computed()
   public override completion(): number {
     return this.clampTime(this.time()) / this.getDuration();

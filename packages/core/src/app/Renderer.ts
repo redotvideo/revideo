@@ -281,7 +281,6 @@ export class Renderer {
   }
 
   private async reloadScenes(settings: RendererSettings) {
-    console.log('reloadScenes was called');
     for (let i = 0; i < this.project.scenes.length; i++) {
       const description = this.project.scenes[i];
       const scene = this.playback.onScenesRecalculated.current[i];

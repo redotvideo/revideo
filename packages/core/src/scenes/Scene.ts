@@ -338,10 +338,6 @@ export interface Scene<T = unknown> {
 
   /**
    * Get all media assets
-   *
-   * @remarks
-   *
-   *
    */
   getMediaAssets(): Array<AssetInfo>;
 

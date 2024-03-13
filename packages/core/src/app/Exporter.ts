@@ -95,9 +95,7 @@ export interface Exporter {
    * Finish the rendering process.
    *
    * @remarks
-   * Guaranteed to be called after the rendering has finished - no matter the
-   * result. Can be used to finalize the exporting and perform any necessary
-   * clean-up.
+   * Called after rendering the visual elements has finished and audio so that audio track can be merged.
    *
    * @param result - The result of the rendering.
    */
@@ -108,10 +106,8 @@ export interface Exporter {
    *
    * @remarks
    * Guaranteed to be called after the rendering has finished - no matter the
-   * result. Can be used to finalize the exporting and perform any necessary
-   * clean-up.
+   * result. Performs clean-up.
    *
-   * @param result - The result of the rendering.
    */
   kill?(): Promise<void>;
 }

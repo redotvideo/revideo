@@ -8,7 +8,7 @@ import {
   waitUntil,
 } from '@motion-canvas/core';
 
-export default makeScene2D(function* (view) {
+export const scene = makeScene2D(function* (view) {
   const rect = createRef<Rect>();
 
   view.add(
@@ -20,4 +20,4 @@ export default makeScene2D(function* (view) {
   rect().fill('#ffa56d');
   yield* all(rect().ripple(1));
   yield* waitFor(0.3);
-});
+}, './scene.meta');

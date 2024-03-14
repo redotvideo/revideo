@@ -1,6 +1,6 @@
 import type {MetaField} from '../meta';
 import type {Project} from './Project';
-import type {RendererResult, RendererSettings} from './Renderer';
+import type {AssetInfo, RendererResult, RendererSettings} from './Renderer';
 
 /**
  * The static interface for exporters.
@@ -87,14 +87,27 @@ export interface Exporter {
   ): Promise<void>;
 
   /**
+   * take in media assets per frame and generate audio track for the video
+   */
+  generateAudio?(assetsInfo: AssetInfo[][], endFrame: number): Promise<void>;
+
+  /**
    * Finish the rendering process.
    *
    * @remarks
-   * Guaranteed to be called after the rendering has finished - no matter the
-   * result. Can be used to finalize the exporting and perform any necessary
-   * clean-up.
+   * Called after rendering the visual elements has finished and audio so that audio track can be merged.
    *
    * @param result - The result of the rendering.
    */
   stop?(result: RendererResult): Promise<void>;
+
+  /**
+   * Finish the rendering process.
+   *
+   * @remarks
+   * Guaranteed to be called after the rendering has finished - no matter the
+   * result. Performs clean-up.
+   *
+   */
+  kill?(): Promise<void>;
 }

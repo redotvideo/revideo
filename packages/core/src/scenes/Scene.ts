@@ -1,4 +1,9 @@
-import type {Logger, PlaybackStatus, SharedWebGLContext} from '../app';
+import type {
+  AssetInfo,
+  Logger,
+  PlaybackStatus,
+  SharedWebGLContext,
+} from '../app';
 import type {
   SubscribableEvent,
   SubscribableValueEvent,
@@ -330,6 +335,11 @@ export interface Scene<T = unknown> {
    * Should always return `true`.
    */
   isCached(): boolean;
+
+  /**
+   * Get all media assets
+   */
+  getMediaAssets(): Array<AssetInfo>;
 
   /**
    * Should this scene be rendered below the previous scene during a transition?

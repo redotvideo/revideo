@@ -14,7 +14,8 @@
   "dependencies": {
     "@motion-canvas/core": "*",
     "@motion-canvas/2d": "*",
-    "@motion-canvas/renderer": "*"
+    "@motion-canvas/renderer": "*",
+    "@motion-canvas/ffmpeg": "*"
   },
   "devDependencies": {
     "@motion-canvas/ui": "*",

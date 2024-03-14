@@ -20,6 +20,6 @@
   ],
   "devDependencies": {
     "@motion-canvas/core": "*",
-    "puppeteer": "^22.4.0"
+    "puppeteer": "^22.3.0"
   }
 }

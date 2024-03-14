@@ -1,5 +1,6 @@
 import ffmpeg from '@motion-canvas/ffmpeg';
 import markdown from '@motion-canvas/internal/vite/markdown-literals';
+import {rendererPlugin} from '@motion-canvas/renderer';
 import preact from '@preact/preset-vite';
 import {defineConfig} from 'vite';
 import motionCanvas from '../vite-plugin/src/main';
@@ -24,6 +25,7 @@ export default defineConfig({
   },
   plugins: [
     markdown(),
+    rendererPlugin(),
     ffmpeg(),
     preact({
       include: [

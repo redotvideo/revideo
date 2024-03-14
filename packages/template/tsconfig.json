@@ -1,7 +1,10 @@
 {
   "extends": "@motion-canvas/2d/tsconfig.project.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "noEmit": false,
+    "outDir": "dist",
+    "module": "CommonJS"
   },
   "include": ["src"]
 }

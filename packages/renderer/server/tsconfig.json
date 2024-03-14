@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "../dist",
+    "strict": true,
+    "module": "CommonJS",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "declaration": true,
+    "inlineSourceMap": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["*", "../index.ts", "../main.ts", "../motion-canvas.d.ts"]
+}

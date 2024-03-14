@@ -1,0 +1,25 @@
+{
+  "name": "@motion-canvas/renderer",
+  "version": "3.14.1",
+  "description": "A headless renderer for Motion Canvas",
+  "main": "dist/index.js",
+  "author": "motion-canvas",
+  "homepage": "https://motioncanvas.io/",
+  "bugs": "https://github.com/motion-canvas/motion-canvas/issues",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run client:build && npm run server:build",
+    "client:build": "tsc --project client/tsconfig.json",
+    "client:dev": "tsc -w --project client/tsconfig.json",
+    "server:build": "tsc --project server/tsconfig.json",
+    "server:dev": "tsc -w --project server/tsconfig.json"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "devDependencies": {
+    "@motion-canvas/core": "*",
+    "puppeteer": "^22.3.0"
+  }
+}

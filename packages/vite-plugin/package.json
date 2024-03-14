@@ -19,12 +19,12 @@
     "lib"
   ],
   "peerDependencies": {
-    "vite": "4.x || 5.x"
+    "vite": "^4.5"
   },
   "devDependencies": {
     "@types/follow-redirects": "^1.14.1",
     "@types/mime-types": "^2.1.1",
-    "@types/node": "^18.14.0"
+    "@types/node": "~18.14.0"
   },
   "dependencies": {
     "fast-glob": "^3.3.1",

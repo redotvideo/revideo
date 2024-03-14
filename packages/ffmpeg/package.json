@@ -30,6 +30,6 @@
     "fluent-ffmpeg": "^2.1.2",
     "@motion-canvas/core": "^3.14.1",
     "@motion-canvas/vite-plugin": "^3.14.1",
-    "vite": "4.x"
+    "vite": "^4.5"
   }
 }

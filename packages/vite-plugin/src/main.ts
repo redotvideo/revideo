@@ -117,12 +117,11 @@ export default ({
             .map(plugin => plugin[PLUGIN_OPTIONS]),
         );
         await Promise.all(
-          plugins.map(
-            plugin =>
-              plugin.config?.({
-                output: outputPath,
-                projects: projects.list,
-              }),
+          plugins.map(plugin =>
+            plugin.config?.({
+              output: outputPath,
+              projects: projects.list,
+            }),
           ),
         );
       },

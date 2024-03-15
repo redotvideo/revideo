@@ -187,8 +187,15 @@ export class FFmpegExporterServer {
         (SAMPLE_RATE * padStart) / 1000,
     );
 
+    let resolvedPath: string;
+    if (asset.src.startsWith('/@fs')) {
+      resolvedPath = asset.src.replace('/@fs', '');
+    } else {
+      resolvedPath = path.join(this.config.output, '..', asset.src);
+    }
+
     await new Promise<void>((resolve, reject) => {
-      ffmpeg(asset.src.replace('/@fs', ''))
+      ffmpeg(resolvedPath)
         .audioChannels(2)
         .audioCodec('pcm_s16le')
         .audioFrequency(SAMPLE_RATE)

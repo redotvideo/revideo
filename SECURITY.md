@@ -10,7 +10,7 @@ versions. Only the newest release is being supported with security updates.
 **Please do not report security vulnerabilities through public GitHub issues.**
 
 Instead, please kindly email us at
-[aarthificial+motion-canvas@gmail.com](mailto:aarthificial+motion-canvas@gmail.com)
+[aarthificial+revideo@gmail.com](mailto:aarthificial+revideo@gmail.com)
 
 After receiving a report, we will try to confirm the problem. You should receive
 a response within 48 hours, informing you about our plans concerning the

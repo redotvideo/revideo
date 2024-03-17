@@ -1,4 +1,4 @@
-import type {Scene} from '@motion-canvas/core';
+import type {Scene} from '@revideo/core';
 import {useEffect, useState} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {useSubscribableValue} from '../../hooks';

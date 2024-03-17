@@ -32,9 +32,7 @@ export interface PluginConfig {
   output: string;
 }
 
-export const PLUGIN_OPTIONS = Symbol.for(
-  '@motion-canvas/vite-plugin/PLUGIN_OPTIONS',
-);
+export const PLUGIN_OPTIONS = Symbol.for('@revideo/vite-plugin/PLUGIN_OPTIONS');
 
 export interface PluginOptions {
   /**

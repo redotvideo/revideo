@@ -1,3 +1,4 @@
+import {useComputed} from '@preact/signals';
 import {
   AutoField,
   Button,
@@ -9,8 +10,7 @@ import {
   UnknownField,
   findAndOpenFirstUserFile,
   useApplication,
-} from '@motion-canvas/ui';
-import {useComputed} from '@preact/signals';
+} from '@revideo/ui';
 import {NodeInspectorKey, usePluginState} from './Provider';
 
 function Component() {

@@ -84,7 +84,7 @@ function getHotModuleReplacementCode(metaFilePaths: string[]) {
 
 export function scenesPlugin(): Plugin {
   return {
-    name: 'motion-canvas:scene',
+    name: 'revideo:scene',
 
     async load(id) {
       if (

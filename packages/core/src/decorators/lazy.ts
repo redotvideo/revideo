@@ -1,6 +1,4 @@
-const UNINITIALIZED = Symbol.for(
-  '@motion-canvas/core/decorators/UNINITIALIZED',
-);
+const UNINITIALIZED = Symbol.for('@revideo/core/decorators/UNINITIALIZED');
 
 /**
  * Create a lazy decorator.

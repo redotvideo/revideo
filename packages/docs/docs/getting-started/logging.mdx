@@ -6,14 +6,14 @@ slug: /logging
 # Logging
 
 One method of debugging your code or animation flow is using logging messages.
-For this, motion-canvas has its own built-in way to log messages.
+For this, revideo has its own built-in way to log messages.
 
-To get a reference to the Logger in motion-canvas you can use the `useLogger`
+To get a reference to the Logger in revideo you can use the `useLogger`
 function:
 
 ```tsx
-import {makeScene2D} from '@motion-canvas/2d';
-import {useLogger} from '@motion-canvas/core';
+import {makeScene2D} from '@revideo/2d';
+import {useLogger} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const logger = useLogger();

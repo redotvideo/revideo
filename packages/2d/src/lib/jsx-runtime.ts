@@ -21,7 +21,7 @@ function isClassComponent(
   return !!fn.prototype?.isClass;
 }
 
-export const Fragment = Symbol.for('@motion-canvas/2d/fragment');
+export const Fragment = Symbol.for('@revideo/2d/fragment');
 export function jsx(
   type: NodeConstructor | FunctionComponent | typeof Fragment,
   config: JSXProps,

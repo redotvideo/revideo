@@ -1,3 +1,4 @@
+import {Signal, useSignal} from '@preact/signals';
 import type {
   Player,
   Presenter,
@@ -5,8 +6,7 @@ import type {
   ProjectMetadata,
   Renderer,
   SettingsMetadata,
-} from '@motion-canvas/core';
-import {Signal, useSignal} from '@preact/signals';
+} from '@revideo/core';
 import {ComponentChildren, createContext} from 'preact';
 import {useContext, useRef} from 'preact/hooks';
 import {useSubscribable} from '../hooks';

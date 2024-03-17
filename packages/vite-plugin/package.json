@@ -1,11 +1,11 @@
 {
-  "name": "@motion-canvas/vite-plugin",
-  "version": "3.14.1",
-  "description": "A Vite plugin for Motion Canvas projects",
+  "name": "@revideo/vite-plugin",
+  "version": "0.1.0",
+  "description": "A Vite plugin for revideo projects",
   "main": "lib/index.js",
-  "author": "motion-canvas",
-  "homepage": "https://motioncanvas.io/",
-  "bugs": "https://github.com/motion-canvas/motion-canvas/issues",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
     "dev": "tsc -w",
@@ -13,18 +13,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/motion-canvas/motion-canvas.git"
+    "url": "git+https://github.com/havenhq/revideo.git"
   },
   "files": [
     "lib"
   ],
   "peerDependencies": {
-    "vite": "4.x || 5.x"
+    "vite": "^4.5"
   },
   "devDependencies": {
     "@types/follow-redirects": "^1.14.1",
     "@types/mime-types": "^2.1.1",
-    "@types/node": "^18.14.0"
+    "@types/node": "~18.14.0"
   },
   "dependencies": {
     "fast-glob": "^3.3.1",

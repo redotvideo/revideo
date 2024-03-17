@@ -1,4 +1,4 @@
-import type {StringMetaField} from '@motion-canvas/core';
+import type {StringMetaField} from '@revideo/core';
 import {useSubscribableValue} from '../../hooks';
 import {Input, InputSelect} from '../controls';
 import {MetaFieldGroup} from './MetaFieldGroup';

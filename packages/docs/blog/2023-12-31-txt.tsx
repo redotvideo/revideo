@@ -1,4 +1,4 @@
-import {Txt, makeScene2D} from '@motion-canvas/2d';
+import {Txt, makeScene2D} from '@revideo/2d';
 
 export default makeScene2D(function* (view) {
   view.fill('#141414');

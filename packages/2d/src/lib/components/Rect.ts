@@ -5,7 +5,7 @@ import {
   SignalValue,
   SimpleSignal,
   SpacingSignal,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {getRectProfile} from '../curves/getRectProfile';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {spacingSignal} from '../decorators/spacingSignal';

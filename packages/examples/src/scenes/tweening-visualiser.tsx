@@ -7,14 +7,14 @@ import {
   Rect,
   Txt,
   makeScene2D,
-} from '@motion-canvas/2d';
+} from '@revideo/2d';
 import {
   all,
   createSignal,
   easeInOutBounce,
   linear,
   waitFor,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   // Signals

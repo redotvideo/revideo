@@ -14,7 +14,7 @@ export class RangeMetaField extends MetaField<
   [number, number]
 > {
   public static readonly symbol = Symbol.for(
-    '@motion-canvas/core/meta/RangeMetaField',
+    '@revideo/core/meta/RangeMetaField',
   );
   public readonly type = RangeMetaField.symbol;
 

@@ -1,4 +1,4 @@
-import {Vector2} from '@motion-canvas/core';
+import {Vector2} from '@revideo/core';
 
 export interface CurveDrawingInfo {
   path: Path2D;

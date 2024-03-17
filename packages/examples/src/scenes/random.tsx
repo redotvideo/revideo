@@ -1,12 +1,5 @@
-import {Layout, Rect, makeScene2D} from '@motion-canvas/2d';
-import {
-  all,
-  loop,
-  makeRef,
-  range,
-  sequence,
-  useRandom,
-} from '@motion-canvas/core';
+import {Layout, Rect, makeScene2D} from '@revideo/2d';
+import {all, loop, makeRef, range, sequence, useRandom} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   // highlight-next-line

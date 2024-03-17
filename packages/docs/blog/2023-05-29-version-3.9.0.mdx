@@ -17,10 +17,10 @@ import CodeBlock from '@theme/CodeBlock';
     only exception is the <code>CodeBlock</code> node which still requires the
     full import path:
     <CodeBlock language={'ts'} className="margin-top--sm margin-bottom--sm">
-      {`import {all, createRef} from '@motion-canvas/core';
-import {makeScene2D, Circle} from '@motion-canvas/2d';
+      {`import {all, createRef} from '@revideo/core';
+import {makeScene2D, Circle} from '@revideo/2d';
 // the only exception:
-import {CodeBlock, insert} from '@motion-canvas/2d/lib/components/CodeBlock';`}
+import {CodeBlock, insert} from '@revideo/2d/lib/components/CodeBlock';`}
     </CodeBlock>
     Importing from subdirectories will continue to work until version 4.
     <PullRequest id={721} />

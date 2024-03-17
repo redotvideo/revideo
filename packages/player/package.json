@@ -1,12 +1,12 @@
 {
-  "name": "@motion-canvas/player",
-  "version": "3.14.1",
-  "description": "A custom element for displaying animations made with Motion Canvas",
+  "name": "@revideo/player",
+  "version": "0.1.0",
+  "description": "A custom element for displaying animations made with revideo",
   "main": "dist/main.js",
   "types": "types/main.d.ts",
-  "author": "motion-canvas",
-  "homepage": "https://motioncanvas.io/",
-  "bugs": "https://github.com/motion-canvas/motion-canvas/issues",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/motion-canvas/motion-canvas.git"
+    "url": "https://github.com/havenhq/revideo.git"
   },
   "files": [
     "dist",
     "types"
   ],
   "devDependencies": {
-    "@motion-canvas/core": "^3.14.1",
+    "@revideo/core": "^0.1.0",
     "sass": "^1.58.0",
     "terser": "^5.16.1"
   }

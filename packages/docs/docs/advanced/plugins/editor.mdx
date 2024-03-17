@@ -15,10 +15,10 @@ for extending the editor interface itself.
 
 Let's update our plugin's entry point to export an editor plugin. The main
 difference is that we're now using the `makeEditorPlugin` function imported from
-`@motion-canvas/ui` to define it:
+`@revideo/ui` to define it:
 
 ```ts title="src/plugin.ts"
-import {makeEditorPlugin} from '@motion-canvas/ui';
+import {makeEditorPlugin} from '@revideo/ui';
 import {CustomTabConfig} from './CustomTabConfig';
 
 export default makeEditorPlugin({
@@ -44,7 +44,7 @@ import {
   PluginTabProps,
   Separator,
   Tab,
-} from '@motion-canvas/ui';
+} from '@revideo/ui';
 
 function TabComponent({tab}: PluginTabProps) {
   return (
@@ -73,18 +73,18 @@ export const CustomTabConfig: PluginTabConfig = {
 First of all, the editor is built on top of [Preact](https://preactjs.com/).
 Just like Motion Canvas, Preact uses JSX to define components. This means that
 in `tsx` files extending the editor, we need to let TypeScript know that it
-should import the `jsx` factory function from `preact` and not
-`@motion-canvas/2d`. This can be done in multiple different ways. In this simple
-example, we'll just use a comment at the top of the file:
+should import the `jsx` factory function from `preact` and not `@revideo/2d`.
+This can be done in multiple different ways. In this simple example, we'll just
+use a comment at the top of the file:
 
 ```tsx
 /* @jsxImportSource preact */
 ```
 
 Next, we define a component for the tab itself. This component will be rendered
-in the navigation bar on the left. We use the `Tab` component from
-`@motion-canvas/ui` to stay consistent with the rest of the editor. We also
-borrow the `PhotoCamera` icon and put it inside:
+in the navigation bar on the left. We use the `Tab` component from `@revideo/ui`
+to stay consistent with the rest of the editor. We also borrow the `PhotoCamera`
+icon and put it inside:
 
 ```tsx
 function TabComponent({tab}: PluginTabProps) {
@@ -122,9 +122,9 @@ export const CustomTabConfig: PluginTabConfig = {
 
 Editor plugins are still experimental and the API is not yet properly documented
 but if you want to play around with some other available hooks you can take a
-look at [this editor plugin][example-plugin] provided by the `@motion-canvas/2d`
+look at [this editor plugin][example-plugin] provided by the `@revideo/2d`
 package. It's responsible for displaying the inspector tab and drawing an
 overlay on top of the preview when clicking on different nodes.
 
 [example-plugin]:
-  https://github.com/motion-canvas/motion-canvas/blob/main/packages/2d/src/editor/index.ts
+  https://github.com/revideo/revideo/blob/main/packages/2d/src/editor/index.ts

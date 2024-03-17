@@ -1,21 +1,24 @@
 {
-  "name": "@motion-canvas/template",
+  "name": "@revideo/template",
   "private": true,
   "version": "0.0.0",
-  "description": "Basic project template for Motion Canvas",
-  "author": "motion-canvas",
+  "description": "Basic project template for revideo",
+  "author": "revideo",
   "license": "MIT",
   "main": "src/project.ts",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "render": "tsc && node dist/renderScript.mjs"
   },
   "dependencies": {
-    "@motion-canvas/core": "*",
-    "@motion-canvas/2d": "*"
+    "@revideo/core": "*",
+    "@revideo/2d": "*",
+    "@revideo/renderer": "*",
+    "@revideo/ffmpeg": "*"
   },
   "devDependencies": {
-    "@motion-canvas/ui": "*",
-    "@motion-canvas/vite-plugin": "*"
+    "@revideo/ui": "*",
+    "@revideo/vite-plugin": "*"
   }
 }

@@ -1,0 +1,165 @@
+import {
+  DependencyContext,
+  SignalValue,
+  SimpleSignal,
+  clamp,
+  isReactive,
+  useLogger,
+  useThread,
+} from '@revideo/core';
+import {computed, initial, signal} from '../decorators';
+import {Rect, RectProps} from './Rect';
+import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
+
+export interface MediaProps extends RectProps {
+  src?: SignalValue<string>;
+  loop?: SignalValue<boolean>;
+  playbackRate?: number;
+  time?: SignalValue<number>;
+  play?: boolean;
+}
+
+export abstract class Media extends Rect {
+  @signal()
+  public declare readonly src: SimpleSignal<string, this>;
+
+  @initial(false)
+  @signal()
+  public declare readonly loop: SimpleSignal<boolean, this>;
+
+  @initial(1)
+  @signal()
+  public declare readonly playbackRate: SimpleSignal<number, this>;
+
+  @initial(0)
+  @signal()
+  protected declare readonly time: SimpleSignal<number, this>;
+
+  @initial(false)
+  @signal()
+  protected declare readonly playing: SimpleSignal<boolean, this>;
+
+  protected lastTime = -1;
+
+  public constructor(props: MediaProps) {
+    super(props);
+    if (props.play) {
+      this.play();
+    }
+  }
+
+  public isPlaying(): boolean {
+    return this.playing();
+  }
+
+  public getCurrentTime(): number {
+    return this.clampTime(this.time());
+  }
+
+  public getDuration(): number {
+    return this.mediaElement().duration;
+  }
+
+  public override dispose() {
+    this.pause();
+    this.remove();
+    super.dispose();
+  }
+
+  @computed()
+  public override completion(): number {
+    return this.clampTime(this.time()) / this.getDuration();
+  }
+
+  protected abstract mediaElement(): HTMLMediaElement;
+
+  protected abstract seekedMedia(): HTMLMediaElement;
+
+  protected abstract fastSeekedMedia(): HTMLMediaElement;
+
+  protected abstract override draw(context: CanvasRenderingContext2D): void;
+
+  protected setCurrentTime(value: number) {
+    const media = this.mediaElement();
+    if (media.readyState < 2) return;
+
+    media.currentTime = value;
+    this.lastTime = value;
+    if (media.seeking) {
+      DependencyContext.collectPromise(
+        new Promise<void>(resolve => {
+          const listener = () => {
+            resolve();
+            media.removeEventListener('seeked', listener);
+          };
+          media.addEventListener('seeked', listener);
+        }),
+      );
+    }
+  }
+
+  protected setPlaybackRate(playbackRate: number) {
+    let value: number;
+    if (isReactive(playbackRate)) {
+      value = playbackRate();
+      useLogger().warn({
+        message: 'Invalid value set as the playback rate',
+        remarks: reactivePlaybackRate,
+        inspect: this.key,
+        stack: new Error().stack,
+      });
+    } else {
+      value = playbackRate;
+    }
+    this.playbackRate.context.setter(value);
+
+    if (this.playing()) {
+      if (value === 0) {
+        this.pause();
+      } else {
+        const time = useThread().time;
+        const start = time();
+        const offset = this.time();
+        this.time(() => this.clampTime(offset + (time() - start) * value));
+      }
+    }
+  }
+
+  public play() {
+    const time = useThread().time;
+    const start = time();
+    const offset = this.time();
+    const playbackRate = this.playbackRate();
+    this.playing(true);
+    this.time(() => this.clampTime(offset + (time() - start) * playbackRate));
+  }
+
+  public pause() {
+    this.playing(false);
+    this.time.save();
+    this.mediaElement().pause();
+  }
+
+  public seek(time: number) {
+    const playing = this.playing();
+    this.time(this.clampTime(time));
+    if (playing) {
+      this.play();
+    } else {
+      this.pause();
+    }
+  }
+
+  public clampTime(time: number): number {
+    const duration = this.getDuration();
+    if (this.loop()) {
+      time %= duration;
+    }
+    return clamp(0, duration, time);
+  }
+
+  protected override collectAsyncResources() {
+    super.collectAsyncResources();
+    this.seekedMedia();
+  }
+}

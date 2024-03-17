@@ -1,4 +1,4 @@
-import {Rect, makeScene2D} from '@motion-canvas/2d';
+import {Rect, makeScene2D} from '@revideo/2d';
 import {
   all,
   createRef,
@@ -6,7 +6,7 @@ import {
   easeInOutExpo,
   waitFor,
   waitUntil,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 /* meta=./scene.meta */
 export const scene = makeScene2D(function* (view) {

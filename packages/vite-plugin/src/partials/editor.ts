@@ -20,7 +20,7 @@ export function editorPlugin({editor, projects}: EditorPluginConfig): Plugin {
   const resolvedEditorId = '\0virtual:editor';
 
   return {
-    name: 'motion-canvas:editor',
+    name: 'revideo:editor',
 
     async load(id) {
       const [, query] = id.split('?');

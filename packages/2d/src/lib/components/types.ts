@@ -1,4 +1,4 @@
-import type {ReferenceReceiver} from '@motion-canvas/core';
+import type {ReferenceReceiver} from '@revideo/core';
 import type {Node} from './Node';
 
 export type ComponentChild =
@@ -14,11 +14,12 @@ export type ComponentChild =
 export type ComponentChildren = ComponentChild | ComponentChild[];
 export type NodeChildren = Node | Node[];
 
-export type PropsOf<T> = T extends NodeConstructor<infer P>
-  ? P
-  : T extends FunctionComponent<infer P>
+export type PropsOf<T> =
+  T extends NodeConstructor<infer P>
     ? P
-    : never;
+    : T extends FunctionComponent<infer P>
+      ? P
+      : never;
 
 export interface JSXProps {
   children?: ComponentChildren;

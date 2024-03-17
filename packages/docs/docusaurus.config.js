@@ -10,8 +10,8 @@ const config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.svg',
-  organizationName: 'motion-canvas',
-  projectName: 'motion-canvas.github.io',
+  organizationName: 'revideo',
+  projectName: 'revideo.github.io',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -23,8 +23,8 @@ const config = {
     discordApi:
       'https://discord.com/api/guilds/1071029581009657896/widget.json',
     discordUrl: 'https://chat.motioncanvas.io',
-    githubApi: 'https://api.github.com/repos/motion-canvas/motion-canvas',
-    githubUrl: 'https://github.com/motion-canvas/motion-canvas',
+    githubApi: 'https://api.github.com/repos/revideo/revideo',
+    githubUrl: 'https://github.com/revideo/revideo',
   },
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -93,7 +93,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/motion-canvas/motion-canvas',
+                href: 'https://github.com/revideo/revideo',
               },
             ],
           },
@@ -103,7 +103,7 @@ const config = {
       algolia: {
         appId: 'Q6Z7BJ83RF',
         apiKey: '825d6a74e138e6e1378e9669b22720f0',
-        indexName: 'motion-canvasio',
+        indexName: 'revideoio',
       },
       prism: {
         theme: require('./config/codeTheme'),
@@ -144,7 +144,7 @@ const config = {
           ],
         },
         editUrl: ({versionDocsDirPath, docPath}) =>
-          `https://github.com/motion-canvas/motion-canvas/blob/main/packages/docs/${versionDocsDirPath}/${docPath}`,
+          `https://github.com/revideo/revideo/blob/main/packages/docs/${versionDocsDirPath}/${docPath}`,
       },
     ],
     [
@@ -152,7 +152,7 @@ const config = {
       {
         showReadingTime: true,
         editUrl: ({blogDirPath, blogPath}) =>
-          `https://github.com/motion-canvas/motion-canvas/blob/main/packages/docs/${blogDirPath}/${blogPath}`,
+          `https://github.com/revideo/revideo/blob/main/packages/docs/${blogDirPath}/${blogPath}`,
       },
     ],
     '@docusaurus/plugin-content-pages',

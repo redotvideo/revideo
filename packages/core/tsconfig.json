@@ -15,7 +15,7 @@
     "experimentalDecorators": true,
     "plugins": [
       {
-        "transform": "@motion-canvas/internal/transformers/markdown-literals.js"
+        "transform": "@revideo/internal/transformers/markdown-literals.js"
       }
     ]
   },

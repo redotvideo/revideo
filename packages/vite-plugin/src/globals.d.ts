@@ -1,1 +1,1 @@
-/// <reference types="@motion-canvas/internal" />
+/// <reference types="@revideo/internal" />

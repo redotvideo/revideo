@@ -1,6 +1,6 @@
 import styles from './Console.module.scss';
 
-import {LogLevel, capitalize} from '@motion-canvas/core';
+import {LogLevel, capitalize} from '@revideo/core';
 import clsx from 'clsx';
 import {useLayoutEffect, useRef} from 'preact/hooks';
 import {useApplication} from '../../contexts';

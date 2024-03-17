@@ -1,4 +1,4 @@
-import {createSignal, join, waitFor} from '@motion-canvas/core';
+import {createSignal, join, waitFor} from '@revideo/core';
 import {describe, expect, it} from 'vitest';
 import {Circle} from '../Circle';
 import {generatorTest} from './generatorTest';

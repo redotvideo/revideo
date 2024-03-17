@@ -1,4 +1,4 @@
-import {Color} from '@motion-canvas/core';
+import {Color} from '@revideo/core';
 import {signal, wrapper} from './signal';
 
 export function colorSignal(): PropertyDecorator {

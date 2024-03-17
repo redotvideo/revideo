@@ -1,19 +1,19 @@
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
-import type {MotionCanvasPlayerProps} from '@motion-canvas/player';
+import type {MotionCanvasPlayerProps} from '@revideo/player';
 import clsx from 'clsx';
 import React, {ComponentProps} from 'react';
 import AnimationLink from './AnimationLink';
 import styles from './styles.module.css';
 
 if (ExecutionEnvironment.canUseDOM) {
-  import('@motion-canvas/player');
+  import('@revideo/player');
 }
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'motion-canvas-player': MotionCanvasPlayerProps & ComponentProps<'div'>;
+      'revideo-player': MotionCanvasPlayerProps & ComponentProps<'div'>;
     }
   }
 }
@@ -39,7 +39,7 @@ export default function AnimationPlayer({
         small && styles.small,
       )}
     >
-      <motion-canvas-player
+      <revideo-player
         class={styles.player}
         src={`/examples/${name}.js`}
         auto={banner}

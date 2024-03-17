@@ -7,10 +7,10 @@ slug: /migrating-to-3.0.0
 
 ## Installation
 
-Update all `@motion-canvas` packages to version `3.x.x` by running:
+Update all `@revideo` packages to version `3.x.x` by running:
 
 ```bash
-npm install --save @motion-canvas/2d@3 @motion-canvas/core@3 @motion-canvas/ui@3 @motion-canvas/vite-plugin@3
+npm install --save @revideo/2d@3 @revideo/core@3 @revideo/ui@3 @revideo/vite-plugin@3
 ```
 
 ## Name changes
@@ -38,7 +38,7 @@ automatically updated to contain these new settings.
 You can transfer your configuration from the project file:
 
 ```ts title="src/project.ts"
-import {makeProject} from '@motion-canvas/core';
+import {makeProject} from '@revideo/core';
 
 import example from './scenes/example?scene';
 
@@ -83,14 +83,13 @@ Over to the meta file:
 
 ## `CodeBlock` revert
 
-Due to technical issues,
-[PR #401](https://github.com/motion-canvas/motion-canvas/pull/401) has been
-reverted.
+Due to technical issues, [PR #401](https://github.com/revideo/revideo/pull/401)
+has been reverted.
 
 - The [`CodeBlock`](/docs/code-block) should be imported using the full path
   again:
   ```ts
-  import {CodeBlock} from '@motion-canvas/2d/lib/components/CodeBlock';
+  import {CodeBlock} from '@revideo/2d/lib/components/CodeBlock';
   ```
 - The `stockTheme` property is not supported for the time being.
 

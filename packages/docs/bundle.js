@@ -23,9 +23,9 @@ module.exports = () => ({
           },
           innerHTML: JSON.stringify({
             imports: {
-              '@motion-canvas/core': `${core}`,
-              '@motion-canvas/2d': `${two}`,
-              '@motion-canvas/2d/jsx-runtime': `${two}`,
+              '@revideo/core': `${core}`,
+              '@revideo/2d': `${two}`,
+              '@revideo/2d/jsx-runtime': `${two}`,
               '@lezer/javascript': 'https://esm.sh/@lezer/javascript',
             },
           }),

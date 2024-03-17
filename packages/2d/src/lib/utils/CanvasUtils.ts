@@ -1,4 +1,4 @@
-import {BBox, Color, Spacing, Vector2} from '@motion-canvas/core';
+import {BBox, Color, Spacing, Vector2} from '@revideo/core';
 import {CanvasStyle, Gradient, Pattern, PossibleCanvasStyle} from '../partials';
 
 export function canvasStyleParser(style: PossibleCanvasStyle) {

@@ -1,4 +1,4 @@
-import {LogLevel} from '@motion-canvas/core';
+import {LogLevel} from '@revideo/core';
 import clsx from 'clsx';
 import {ComponentChildren, Ref} from 'preact';
 import styles from './Tabs.module.scss';

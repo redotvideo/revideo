@@ -1,5 +1,5 @@
 {
-  "name": "@motion-canvas/e2e",
+  "name": "@revideo/e2e",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,14 +8,14 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@motion-canvas/2d": "*",
-    "@motion-canvas/core": "*",
+    "@revideo/2d": "*",
+    "@revideo/core": "*",
     "jest-image-snapshot": "^6.2.0",
     "puppeteer": "^21.5.2",
     "vitest": "^0.34.6"
   },
   "devDependencies": {
-    "@motion-canvas/ui": "*",
-    "@motion-canvas/vite-plugin": "*"
+    "@revideo/ui": "*",
+    "@revideo/vite-plugin": "*"
   }
 }

@@ -22,6 +22,15 @@ export interface RendererSettings extends StageSettings {
   };
 }
 
+export interface AssetInfo {
+  key: string;
+  type: 'video' | 'audio';
+  src: string;
+  playbackRate: number;
+  currentTime: number;
+  duration: number;
+}
+
 export enum RendererState {
   Initial,
   Working,
@@ -75,6 +84,7 @@ export class Renderer {
     this.status = new PlaybackStatus(this.playback);
     this.sharedWebGLContext = new SharedWebGLContext(this.project.logger);
     const scenes: Scene[] = [];
+
     for (const description of project.scenes) {
       const scene = new description.klass({
         ...description,
@@ -162,7 +172,7 @@ export class Renderer {
       );
 
       if (import.meta.hot) {
-        import.meta.hot.send('motion-canvas:export', {
+        import.meta.hot.send('revideo:export', {
           frame,
           data: this.stage.finalBuffer.toDataURL('image/png'),
           mimeType: 'image/png',
@@ -219,9 +229,12 @@ export class Renderer {
     await this.exporter.start?.();
     let lastRefresh = performance.now();
     let result = RendererResult.Success;
+
+    const mediaAssets: AssetInfo[][] = [];
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
+      mediaAssets.push(this.playback.currentScene.getMediaAssets());
       this.estimator.update(clampRemap(from, to, 0, 1, this.playback.frame));
 
       if (signal.aborted) {
@@ -231,6 +244,7 @@ export class Renderer {
         while (!finished) {
           await this.playback.progress();
           await this.exportFrame(signal);
+          mediaAssets.push(this.playback.currentScene.getMediaAssets());
           this.estimator.update(
             clampRemap(from, to, 0, 1, this.playback.frame),
           );
@@ -253,7 +267,16 @@ export class Renderer {
     }
 
     await this.exporter.stop?.(result);
+
+    if (this.exporter && this.exporter.generateAudio) {
+      const endFrame = Math.min(this.playback.duration, this.playback.frame);
+      await this.exporter.generateAudio(mediaAssets, endFrame);
+    }
+
+    await this.exporter.kill?.();
+
     this.exporter = null;
+
     return result;
   }
 
@@ -280,6 +303,7 @@ export class Renderer {
 
     const sceneFrame =
       this.playback.frame - this.playback.currentScene.firstFrame;
+
     await this.exporter!.handleFrame(
       this.stage.finalBuffer,
       this.playback.frame,

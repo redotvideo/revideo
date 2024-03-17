@@ -1,5 +1,5 @@
-import {Img, Node, makeScene2D} from '@motion-canvas/2d';
-import {createRef, linear} from '@motion-canvas/core';
+import {Img, Node, makeScene2D} from '@revideo/2d';
+import {createRef, linear} from '@revideo/core';
 
 // Image by Marek Piwnicki (https://unsplash.com/photos/_4o-1pr2oqU)
 const ImageSource =

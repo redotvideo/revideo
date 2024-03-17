@@ -1,11 +1,11 @@
 {
-  "name": "@motion-canvas/core",
-  "version": "3.14.1",
-  "description": "Web-based tool for creating animations programmatically",
+  "name": "@revideo/core",
+  "version": "0.1.0",
+  "description": "A web-based framework for creating videos programmatically",
   "main": "lib/index.js",
-  "author": "motion-canvas",
-  "homepage": "https://motioncanvas.io/",
-  "bugs": "https://github.com/motion-canvas/motion-canvas/issues",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
     "dev": "tspc -p tsconfig.build.json -w",
@@ -16,7 +16,7 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/motion-canvas/motion-canvas.git"
+    "url": "https://github.com/havenhq/revideo.git"
   },
   "files": [
     "lib",
@@ -29,7 +29,7 @@
     "chroma-js": "^2.4.2"
   },
   "devDependencies": {
-    "@motion-canvas/internal": "0.0.0",
+    "@revideo/internal": "0.0.0",
     "jsdom": "^22.1.0",
     "vitest": "^0.34.6"
   }

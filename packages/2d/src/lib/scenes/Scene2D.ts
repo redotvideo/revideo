@@ -1,4 +1,5 @@
 import {
+  AssetInfo,
   FullSceneDescription,
   GeneratorScene,
   Inspectable,
@@ -9,8 +10,8 @@ import {
   ThreadGeneratorFactory,
   Vector2,
   useLogger,
-} from '@motion-canvas/core';
-import {Node, View2D} from '../components';
+} from '@revideo/core';
+import {Audio, Node, Video, View2D} from '../components';
 
 export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
   private view: View2D | null = null;
@@ -24,7 +25,7 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     super(description);
     this.recreateView();
     if (import.meta.hot) {
-      import.meta.hot.on('motion-canvas:assets', () => {
+      import.meta.hot.on('revideo:assets', () => {
         this.assetHash = Date.now().toString();
         this.getView().assetHash(this.assetHash);
       });
@@ -151,6 +152,48 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     for (const node of this.registeredNodes.values()) {
       if (!node.parent() && node !== this.view) yield node;
     }
+  }
+
+  public override getMediaAssets(): Array<AssetInfo> {
+    const playingVideos = Array.from(this.registeredNodes.values())
+      .filter((node): node is Video => node instanceof Video)
+      .filter(video => (video as Video).isPlaying());
+
+    const playingAudios = Array.from(this.registeredNodes.values())
+      .filter((node): node is Audio => node instanceof Audio)
+      .filter(audio => (audio as Audio).isPlaying());
+
+    const returnObjects: AssetInfo[] = [];
+
+    returnObjects.push(
+      ...playingVideos.map(vid => ({
+        key: vid.key,
+        type: 'video' as const,
+        src: typeof vid.src === 'function' ? vid.src() : vid.src,
+        playbackRate:
+          typeof vid.playbackRate === 'function'
+            ? vid.playbackRate()
+            : vid.playbackRate,
+        currentTime: vid.getCurrentTime(),
+        duration: vid.getDuration(),
+      })),
+    );
+
+    returnObjects.push(
+      ...playingAudios.map(audio => ({
+        key: audio.key,
+        type: 'audio' as const,
+        src: typeof audio.src === 'function' ? audio.src() : audio.src,
+        playbackRate:
+          typeof audio.playbackRate === 'function'
+            ? audio.playbackRate()
+            : audio.playbackRate,
+        currentTime: audio.getCurrentTime(),
+        duration: audio.getDuration(),
+      })),
+    );
+
+    return returnObjects;
   }
 
   protected recreateView() {

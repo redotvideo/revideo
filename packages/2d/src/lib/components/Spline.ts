@@ -7,7 +7,7 @@ import {
   Vector2,
   unwrap,
   useLogger,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {
   CubicBezierSegment,
   CurveProfile,

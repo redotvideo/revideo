@@ -1,4 +1,4 @@
-import {Vector2, createSignal, range} from '@motion-canvas/core';
+import {Vector2, createSignal, range} from '@revideo/core';
 import {describe, expect, it} from 'vitest';
 import {Circle} from '../Circle';
 import {Node} from '../Node';

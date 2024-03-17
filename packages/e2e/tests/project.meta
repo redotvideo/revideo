@@ -21,7 +21,7 @@
     "resolutionScale": 1,
     "colorSpace": "srgb",
     "exporter": {
-      "name": "@motion-canvas/core/image-sequence",
+      "name": "@revideo/core/image-sequence",
       "options": {
         "fileType": "image/png",
         "quality": 100,

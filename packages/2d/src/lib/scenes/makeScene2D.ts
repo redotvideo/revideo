@@ -6,13 +6,7 @@ import {
 import type {View2D} from '../components';
 import {Scene2D} from './Scene2D';
 
-export function makeScene2D(
-  runner: ThreadGeneratorFactory<View2D>,
-
-  // Picked up by the vite plugin and replaced with metadata from the meta file. Do not remove.
-  // eslint-disable-next-line
-  _metaFile: string,
-) {
+export function makeScene2D(runner: ThreadGeneratorFactory<View2D>) {
   return {
     klass: Scene2D,
     config: runner,

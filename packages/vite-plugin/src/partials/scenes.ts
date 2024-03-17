@@ -1,11 +1,6 @@
 import * as fs from 'fs/promises';
 import {Plugin} from 'vite';
 
-const COMMENT_REGEX = /\/\*[\s\S]*?\*\/|\/\/.*$/gm;
-
-// TODO: test
-const MAKESCENE_META_REGEX = /makeScene2D\(.*?,\s*['"](.*?)['"]\)/;
-
 function findMatchingParenthesis(content: string, start: number) {
   let count = 1;
   let index = start;
@@ -20,6 +15,28 @@ function findMatchingParenthesis(content: string, start: number) {
   }
 
   return index;
+}
+
+function extractCommentBeforeIndex(
+  content: string,
+  ind: number,
+): string | null {
+  const regex = /\/\/(.*?)\n|\/\*(.|\n)*?\*\//gm;
+  let match: RegExpExecArray | null;
+  let lastComment: string | null = null;
+
+  while ((match = regex.exec(content)) !== null) {
+    const start = match.index;
+    const end = start + match[0].length;
+
+    if (end <= ind) {
+      lastComment = match[0];
+    } else {
+      break;
+    }
+  }
+
+  return lastComment;
 }
 
 function getHotModuleReplacementCode(metaFilePaths: string[]) {
@@ -84,52 +101,68 @@ export function scenesPlugin(): Plugin {
       }
 
       // Check if the file contains a call to makeScene2D
-      const content = await fs.readFile(id, 'utf-8');
-      const contentWithoutComments = content.replace(COMMENT_REGEX, '');
-      const contentWithoutNewlines = contentWithoutComments.replace(/\n/g, '');
-      if (!contentWithoutNewlines.includes('makeScene2D')) {
+      let content = await fs.readFile(id, 'utf-8');
+
+      // Replace all mentions of "makeScene2D" that are inside of comments
+      content = content.replace(/(\/\/.*?)makeScene2D(.*?$)/gm, match =>
+        match.replace(/makeScene2D/g, ''),
+      );
+      content = content.replace(/(\/\*[\s\S]*?\*\/)/gm, commentBlock => {
+        return commentBlock.replace(/makeScene2D/gi, '');
+      });
+
+      if (!content.includes('makeScene2D')) {
         return;
       }
 
       // Get all calls and their indexes
       const indexes = [];
-      let index = contentWithoutNewlines.indexOf('makeScene2D(');
+      let index = content.indexOf('makeScene2D(');
       while (index !== -1) {
         indexes.push(index);
-        index = contentWithoutNewlines.indexOf('makeScene2D(', index + 1);
+        index = content.indexOf('makeScene2D(', index + 1);
       }
 
       const makeScene2D = 'makeScene2D(';
-
       const calls: {startIndex: number; endIndex: number; metaFile: string}[] =
         [];
 
-      console.log('indexes');
-      console.log(id, indexes);
-
       for (const index of indexes) {
         const end = findMatchingParenthesis(
-          contentWithoutNewlines,
+          content,
           index + makeScene2D.length,
         );
 
-        const match = contentWithoutNewlines
-          .slice(index, end + 1)
-          .match(MAKESCENE_META_REGEX);
+        // Check if the next character is an opening parenthesis or a colorn (indicating a function call)
+        const nextNonWhiteSpaceChar =
+          content
+            .slice(end + 1)
+            .split('')
+            .findIndex(char => char !== ' ' && char !== '\n') +
+          end +
+          1;
 
-        console.log(contentWithoutNewlines.slice(index, end + 1));
-
-        console.log(match);
-
-        if (!match) {
+        if ([':', '{'].includes(content[nextNonWhiteSpaceChar])) {
           continue;
         }
 
-        const metaFileRelativePath = match[1]!;
+        // Extract the comment before the index
+        const comment = extractCommentBeforeIndex(content, index);
+
+        // TODO: add support for this
+        if (!comment) {
+          throw new Error(`${id}: TODO: needs comment`);
+        }
+
+        const file = comment.split('meta=')[1].replace(/\s/g, '').slice(0, -2);
+        if (!file) {
+          throw new Error(`${id}: TODO: needs meta file`);
+        }
+
         calls.push({
           startIndex: index,
           endIndex: end,
-          metaFile: metaFileRelativePath,
+          metaFile: file.trim(),
         });
       }
 
@@ -138,38 +171,29 @@ export function scenesPlugin(): Plugin {
         calls.map(call => call.metaFile),
       );
 
-      console.log('calls');
-      console.log(id, calls);
-
       if (calls.length === 0) {
         return;
       }
 
       // Construct the new content
       let newContent =
-        hotModuleReplacementCode +
-        contentWithoutNewlines.slice(0, calls[0].startIndex);
+        hotModuleReplacementCode + content.slice(0, calls[0].startIndex);
 
       console.log('here');
       for (let i = 0; i < calls.length; i++) {
         newContent += `assignInfo(`;
-        newContent += contentWithoutNewlines.slice(
-          calls[i].startIndex,
-          calls[i].endIndex + 1,
-        );
+        newContent += content.slice(calls[i].startIndex, calls[i].endIndex + 1);
         newContent += `, '${i}')`;
 
         if (i < calls.length - 1) {
-          newContent += contentWithoutNewlines.slice(
+          newContent += content.slice(
             calls[i].endIndex + 1,
             calls[i + 1].startIndex,
           );
         } else {
-          newContent += contentWithoutNewlines.slice(calls[i].endIndex + 1);
+          newContent += content.slice(calls[i].endIndex + 1);
         }
       }
-
-      console.log(newContent);
 
       /* language=typescript */
       return newContent;

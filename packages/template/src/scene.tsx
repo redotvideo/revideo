@@ -8,6 +8,7 @@ import {
   waitUntil,
 } from '@motion-canvas/core';
 
+/* meta=./scene.meta */
 export const scene = makeScene2D(function* (view) {
   const rect = createRef<Rect>();
 
@@ -20,8 +21,9 @@ export const scene = makeScene2D(function* (view) {
   rect().fill('#ffa56d');
   yield* all(rect().ripple(1));
   yield* waitFor(0.3);
-}, './scene.meta');
+});
 
+/* meta=./scene.meta */
 export const scene2 = makeScene2D(function* (view) {
   const rect = createRef<Rect>();
 
@@ -34,4 +36,4 @@ export const scene2 = makeScene2D(function* (view) {
   rect().fill('#ffa56d');
   yield* all(rect().ripple(1));
   yield* waitFor(0.3);
-}, './scene2.meta');
+});

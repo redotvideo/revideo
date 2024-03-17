@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/havenhq/revideo/compare/v0.1.0...v0.1.1) (2024-03-17)
+
+
+### Bug Fixes
+
+* resolve import issues in quickstart project ([e839086](https://github.com/havenhq/revideo/commit/e8390869c087c92c9d448cd16e9cc648d6b2dbe0))
+
+
+
+
+
 
 
 **Note:** Version bump only for package @revideo/ffmpeg

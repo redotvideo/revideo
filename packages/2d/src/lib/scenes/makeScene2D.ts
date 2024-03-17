@@ -11,7 +11,7 @@ export function makeScene2D(
 
   // Picked up by the vite plugin and replaced with metadata from the meta file. Do not remove.
   // eslint-disable-next-line
-  _metaFile?: string,
+  _metaFile: string,
 ) {
   return {
     klass: Scene2D,

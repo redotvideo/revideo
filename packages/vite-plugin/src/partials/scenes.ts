@@ -4,7 +4,7 @@ import {Plugin} from 'vite';
 const COMMENT_REGEX = /\/\*[\s\S]*?\*\/|\/\/.*$/gm;
 
 // TODO: test
-const MAKESCENE_META_REGEX = /makeScene2D\(.*?,\s*['"](.*?)['"]\);/;
+const MAKESCENE_META_REGEX = /makeScene2D\(.*?,\s*['"](.*?)['"]\)/;
 
 function findMatchingParenthesis(content: string, start: number) {
   let count = 1;
@@ -20,6 +20,49 @@ function findMatchingParenthesis(content: string, start: number) {
   }
 
   return index;
+}
+
+function getHotModuleReplacementCode(metaFilePaths: string[]) {
+  let code = "import {ValueDispatcher} from '@motion-canvas/core';";
+  code += '\n';
+
+  // Import all meta files
+  code += metaFilePaths
+    .map((path, i) => `import metaFile${i} from '${path}';`)
+    .join('\n');
+  code += '\n';
+
+  // Put all meta files into a map
+  code += 'const metaFiles = {';
+  code += metaFilePaths
+    .map((_, i) => `metaFile${i}`)
+    .map((name, i) => `'${i}': ${name}`)
+    .join(', ');
+  code += '};';
+  code += '\n';
+
+  // Create a function that assigns the meta file to the description
+  code += `\
+  function assignInfo(description: any, metaFilePath: string) {
+    metaFiles[metaFilePath].attach(description.meta);
+    if (import.meta.hot) {
+      description.onReplaced = import.meta.hot.data.onReplaced;
+    }
+    description.onReplaced ??= new ValueDispatcher(description.config);
+    if (import.meta.hot) {
+      import.meta.hot.accept();
+      if (import.meta.hot.data.onReplaced) {
+        description.onReplaced.current = description;
+      } else {
+        import.meta.hot.data.onReplaced = description.onReplaced;
+      }
+    }
+
+    return description;
+  }
+  `;
+
+  return code;
 }
 
 export function scenesPlugin(): Plugin {
@@ -43,58 +86,90 @@ export function scenesPlugin(): Plugin {
       // Check if the file contains a call to makeScene2D
       const content = await fs.readFile(id, 'utf-8');
       const contentWithoutComments = content.replace(COMMENT_REGEX, '');
-      if (!contentWithoutComments.includes('makeScene2D')) {
-        return;
-      }
-
-      // Get the second parameter of makeScene2D which is the meta file path
       const contentWithoutNewlines = contentWithoutComments.replace(/\n/g, '');
-      const match = contentWithoutNewlines.match(MAKESCENE_META_REGEX);
-
-      if (!match) {
+      if (!contentWithoutNewlines.includes('makeScene2D')) {
         return;
       }
 
-      const metaFileRelativePath = match[1]!;
-
-      // Prepare onReplaced for hot module replacement
-      const hotModuleReplacementCode = `\
-      import {ValueDispatcher} from '@motion-canvas/core';
-      import metaFile from '${metaFileRelativePath}';
-
-      function assignInfo(description: any) {
-        metaFile.attach(description.meta);
-
-        if (import.meta.hot) {
-          description.onReplaced = import.meta.hot.data.onReplaced;
-        }
-        description.onReplaced ??= new ValueDispatcher(description.config);
-        if (import.meta.hot) {
-          import.meta.hot.accept();
-          if (import.meta.hot.data.onReplaced) {
-            description.onReplaced.current = description;
-          } else {
-            import.meta.hot.data.onReplaced = description.onReplaced;
-          }
-        }
-
-        return description;
+      // Get all calls and their indexes
+      const indexes = [];
+      let index = contentWithoutNewlines.indexOf('makeScene2D(');
+      while (index !== -1) {
+        indexes.push(index);
+        index = contentWithoutNewlines.indexOf('makeScene2D(', index + 1);
       }
-      `;
 
-      // Get the indexes of the start and end of the makeScene2D call
       const makeScene2D = 'makeScene2D(';
-      const start = contentWithoutComments.indexOf(makeScene2D);
-      const end = findMatchingParenthesis(
-        contentWithoutComments,
-        start + makeScene2D.length,
+
+      const calls: {startIndex: number; endIndex: number; metaFile: string}[] =
+        [];
+
+      console.log('indexes');
+      console.log(id, indexes);
+
+      for (const index of indexes) {
+        const end = findMatchingParenthesis(
+          contentWithoutNewlines,
+          index + makeScene2D.length,
+        );
+
+        const match = contentWithoutNewlines
+          .slice(index, end + 1)
+          .match(MAKESCENE_META_REGEX);
+
+        console.log(contentWithoutNewlines.slice(index, end + 1));
+
+        console.log(match);
+
+        if (!match) {
+          continue;
+        }
+
+        const metaFileRelativePath = match[1]!;
+        calls.push({
+          startIndex: index,
+          endIndex: end,
+          metaFile: metaFileRelativePath,
+        });
+      }
+
+      // Get the hot module replacement code
+      const hotModuleReplacementCode = getHotModuleReplacementCode(
+        calls.map(call => call.metaFile),
       );
 
-      const newContent =
+      console.log('calls');
+      console.log(id, calls);
+
+      if (calls.length === 0) {
+        return;
+      }
+
+      // Construct the new content
+      let newContent =
         hotModuleReplacementCode +
-        contentWithoutComments.slice(0, start) +
-        `assignInfo(${contentWithoutComments.slice(start, end + 1)})` +
-        contentWithoutComments.slice(end + 1);
+        contentWithoutNewlines.slice(0, calls[0].startIndex);
+
+      console.log('here');
+      for (let i = 0; i < calls.length; i++) {
+        newContent += `assignInfo(`;
+        newContent += contentWithoutNewlines.slice(
+          calls[i].startIndex,
+          calls[i].endIndex + 1,
+        );
+        newContent += `, '${i}')`;
+
+        if (i < calls.length - 1) {
+          newContent += contentWithoutNewlines.slice(
+            calls[i].endIndex + 1,
+            calls[i + 1].startIndex,
+          );
+        } else {
+          newContent += contentWithoutNewlines.slice(calls[i].endIndex + 1);
+        }
+      }
+
+      console.log(newContent);
 
       /* language=typescript */
       return newContent;

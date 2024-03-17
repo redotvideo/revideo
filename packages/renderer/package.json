@@ -1,6 +1,6 @@
 {
   "name": "@revideo/renderer",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "A headless renderer for revideo",
   "main": "dist/index.js",
   "author": "revideo",
@@ -19,7 +19,7 @@
     "types"
   ],
   "devDependencies": {
-    "@revideo/core": "^0.1.0",
+    "@revideo/core": "^0.1.4",
     "puppeteer": "^22.3.0"
   }
 }

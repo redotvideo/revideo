@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.4 (2024-03-17)
+
+
+### Bug Fixes
+
+* resolve asset file paths differently when they are inside project ([#5](https://github.com/havenhq/revideo/issues/5)) ([e0a3917](https://github.com/havenhq/revideo/commit/e0a39175a34f501ffce0fa4508c83e84244fd43c))
+* resolve remote file urls in exporter correctly ([#7](https://github.com/havenhq/revideo/issues/7)) ([1807191](https://github.com/havenhq/revideo/commit/18071918fa295f83a9d12f885d2079965a694d7f))
+
+
+### Features
+
+* publish package to npm ([#6](https://github.com/havenhq/revideo/issues/6)) ([1e508b9](https://github.com/havenhq/revideo/commit/1e508b983d75cc7a647f5d6de5ce62ff4ec90953))
+
+
+
+
+
 ## [0.1.1](https://github.com/havenhq/revideo/compare/v0.1.0...v0.1.1) (2024-03-17)
 
 

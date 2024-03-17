@@ -190,6 +190,8 @@ export class FFmpegExporterServer {
     let resolvedPath: string;
     if (asset.src.startsWith('/@fs')) {
       resolvedPath = asset.src.replace('/@fs', '');
+    } else if (asset.src.startsWith('http')) {
+      resolvedPath = asset.src;
     } else {
       resolvedPath = path.join(this.config.output, '..', asset.src);
     }

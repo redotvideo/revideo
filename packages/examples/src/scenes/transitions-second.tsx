@@ -1,11 +1,11 @@
-import {Rect, Txt, makeScene2D} from '@motion-canvas/2d';
+import {Rect, Txt, makeScene2D} from '@revideo/2d';
 import {
   Direction,
   all,
   createRef,
   slideTransition,
   waitFor,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const rect = createRef<Rect>();

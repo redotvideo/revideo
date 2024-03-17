@@ -1,6 +1,3 @@
-import {Scene2D} from '@motion-canvas/2d';
-import {SceneRenderEvent} from '@motion-canvas/core';
-import {useApplication, useCurrentScene} from '@motion-canvas/ui';
 import {
   ReadonlySignal,
   Signal,
@@ -8,6 +5,9 @@ import {
   signal,
   useSignalEffect,
 } from '@preact/signals';
+import {Scene2D} from '@revideo/2d';
+import {SceneRenderEvent} from '@revideo/core';
+import {useApplication, useCurrentScene} from '@revideo/ui';
 import {ComponentChildren, createContext} from 'preact';
 import {useContext, useMemo} from 'preact/hooks';
 
@@ -22,7 +22,7 @@ export interface PluginState {
 
 const PluginContext = createContext<PluginState | null>(null);
 
-export const NodeInspectorKey = '@motion-canvas/2d/node-inspector';
+export const NodeInspectorKey = '@revideo/2d/node-inspector';
 
 export function usePluginState() {
   return useContext(PluginContext)!;

@@ -1,4 +1,4 @@
-import {createRef, createRefArray} from '@motion-canvas/core';
+import {createRef, createRefArray} from '@revideo/core';
 import {describe, expect, it} from 'vitest';
 import {useScene2D} from '../../scenes';
 import {is} from '../../utils';

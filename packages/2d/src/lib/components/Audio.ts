@@ -1,4 +1,4 @@
-import {DependencyContext, PlaybackState, viaProxy} from '@motion-canvas/core';
+import {DependencyContext, PlaybackState, viaProxy} from '@revideo/core';
 import {computed, nodeName} from '../decorators';
 import {Media, MediaProps} from './Media';
 

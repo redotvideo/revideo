@@ -1,12 +1,4 @@
-import {
-  Grid,
-  Img,
-  Layout,
-  makeScene2D,
-  Node,
-  Rect,
-  Txt,
-} from '@motion-canvas/2d';
+import {Grid, Img, Layout, makeScene2D, Node, Rect, Txt} from '@revideo/2d';
 import {
   all,
   createRef,
@@ -14,7 +6,7 @@ import {
   Origin,
   Vector2,
   waitFor,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 const ImageSource =
   'https://images.unsplash.com/photo-1685901088371-f498db7f8c46';

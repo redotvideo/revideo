@@ -1,5 +1,5 @@
 {
-  "name": "motion-canvas",
+  "name": "revideo",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -22,6 +22,7 @@
     "template:build": "npm run build -w packages/template",
     "examples:dev": "npm run dev -w packages/examples",
     "examples:build": "npm run build -w packages/examples",
+    "renderer:build": "npm run build -w packages/renderer",
     "player:dev": "npm run dev -w packages/player",
     "player:build": "npm run build -w packages/player",
     "docs:dev": "npm run dev -w packages/docs",

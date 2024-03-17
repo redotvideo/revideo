@@ -1,4 +1,4 @@
-import markdownLiterals from '@motion-canvas/internal/vite/markdown-literals';
+import markdownLiterals from '@revideo/internal/vite/markdown-literals';
 import {defineConfig} from 'vitest/config';
 
 export default defineConfig({

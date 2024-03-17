@@ -109,7 +109,7 @@ export default function HomepageFeatures(): JSX.Element {
         <p>
           <a
             className="button button--outline button--lg"
-            href="https://github.com/motion-canvas/examples"
+            href="https://github.com/revideo/examples"
             target="_blank"
           >
             Video Source Code

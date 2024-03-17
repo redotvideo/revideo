@@ -5,7 +5,7 @@ slug: /random-values
 
 import AnimationPlayer from '@site/src/components/AnimationPlayer';
 import CodeBlock from '@theme/CodeBlock';
-import source from '!!raw-loader!@motion-canvas/examples/src/scenes/random';
+import source from '!!raw-loader!@revideo/examples/src/scenes/random';
 
 # Random values
 
@@ -17,7 +17,7 @@ unpredictability in your animation. In Motion Canvas, it's achieved using the
 generator (RNG) for the current scene:
 
 ```ts
-import {useRandom} from '@motion-canvas/core';
+import {useRandom} from '@revideo/core';
 
 const random = useRandom();
 const integer = random.nextInt(0, 10);

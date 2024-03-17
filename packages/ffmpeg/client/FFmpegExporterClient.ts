@@ -4,14 +4,14 @@ import type {
   Project,
   RendererResult,
   RendererSettings,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {
   BoolMetaField,
   EventDispatcher,
   Exporter,
   ObjectMetaField,
   ValueOf,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 type ServerResponse =
   | {
@@ -48,7 +48,7 @@ type FFmpegExporterOptions = ValueOf<
  * initialized by invoking `start`.
  */
 export class FFmpegExporterClient implements Exporter {
-  public static readonly id = '@motion-canvas/ffmpeg';
+  public static readonly id = '@revideo/ffmpeg';
   public static readonly displayName = 'Video (FFmpeg)';
 
   public static meta(project: Project): MetaField<any> {
@@ -68,9 +68,8 @@ export class FFmpegExporterClient implements Exporter {
 
   static {
     if (import.meta.hot) {
-      import.meta.hot.on(
-        `motion-canvas/ffmpeg-ack`,
-        (response: ServerResponse) => this.response.dispatch(response),
+      import.meta.hot.on(`revideo/ffmpeg-ack`, (response: ServerResponse) =>
+        this.response.dispatch(response),
       );
     }
   }
@@ -142,7 +141,7 @@ export class FFmpegExporterClient implements Exporter {
           }
         };
         FFmpegExporterClient.response.subscribe(handle);
-        import.meta.hot!.send('motion-canvas/ffmpeg', {method, data});
+        import.meta.hot!.send('revideo/ffmpeg', {method, data});
       });
     } else {
       throw new Error('FFmpegExporter can only be used locally.');

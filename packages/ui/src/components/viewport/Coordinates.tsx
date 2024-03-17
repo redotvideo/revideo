@@ -1,4 +1,4 @@
-import {isInspectable, Vector2} from '@motion-canvas/core';
+import {isInspectable, Vector2} from '@revideo/core';
 import {useCallback} from 'preact/hooks';
 import {useEffect, useState} from 'react';
 import {useViewportContext} from '../../contexts';

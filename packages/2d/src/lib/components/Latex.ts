@@ -3,7 +3,7 @@ import {
   SignalValue,
   SimpleSignal,
   useLogger,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {liteAdaptor} from 'mathjax-full/js/adaptors/liteAdaptor';
 import {RegisterHTMLHandler} from 'mathjax-full/js/handlers/html';
 import {TeX} from 'mathjax-full/js/input/tex';
@@ -34,7 +34,7 @@ export interface LatexProps extends ImgProps {
  *
  * @preview
  * ```tsx editor
- * import {Latex, makeScene2D} from '@motion-canvas/2d';
+ * import {Latex, makeScene2D} from '@revideo/2d';
  *
  * export default makeScene2D(function* (view) {
  *   view.add(

@@ -1,7 +1,7 @@
-import {Video, makeScene2D} from '@motion-canvas/2d';
-import {createRef} from '@motion-canvas/core';
+import {Video, makeScene2D} from '@revideo/2d';
+import {createRef} from '@revideo/core';
 
-import exampleMp4 from '@motion-canvas/examples/assets/example.mp4';
+import exampleMp4 from '@revideo/examples/assets/example.mp4';
 
 export default makeScene2D(function* (view) {
   const videoRef = createRef<Video>();

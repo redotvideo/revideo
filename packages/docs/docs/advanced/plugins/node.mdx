@@ -11,8 +11,8 @@ sidebar_position: 3
 
 Motion Canvas builds on top of the Vite plugin system. To create a plugin that
 runs on Node.js, you just create a [Vite plugin][vite-plugin] and import it in
-your `vite.config.ts` file. On top of that, `@motion-canvas/vite-plugin`
-provides a symbol that lets you define motion-canvas-specific options.
+your `vite.config.ts` file. On top of that, `@revideo/vite-plugin`
+provides a symbol that lets you define revideo-specific options.
 
 Let's start by creating a file for our plugin. This time we'll put it in the
 root directory of our project because Vite plugins are not part of the runtime
@@ -43,11 +43,11 @@ runtime plugin:
 </div>
 
 ```ts title="myVitePlugin.ts"
-import {Plugin, PLUGIN_OPTIONS} from '@motion-canvas/vite-plugin';
+import {Plugin, PLUGIN_OPTIONS} from '@revideo/vite-plugin';
 
 export default function myVitePlugin(): Plugin {
   return {
-    name: 'vite-plugin-motion-canvas-example',
+    name: 'vite-plugin-revideo-example',
 
     // extend the dev server using Vite plugin hooks:
     configureServer(server) {
@@ -68,7 +68,7 @@ Here's how we would import such plugin in our `vite.config.ts` file:
 
 ```ts title="vite.config.ts"
 import {defineConfig} from 'vite';
-import motionCanvas from '@motion-canvas/vite-plugin';
+import motionCanvas from '@revideo/vite-plugin';
 // highlight-next-line
 import myVitePlugin from './myVitePlugin';
 
@@ -85,7 +85,7 @@ Also, since we defined the entry point in the Node.js plugin, we no longer need
 to import the runtime plugin in our project file:
 
 ```diff title="src/project.ts"
-  import {makeProject} from '@motion-canvas/core';
+  import {makeProject} from '@revideo/core';
 - import myPlugin from './plugin';
   import example from './scenes/example?scene';
 
@@ -112,11 +112,11 @@ A Node.js plugin has the ability to pass options to the runtime plugin. We can
 do that using the `runtimeConfig` property:
 
 ```ts title="myVitePlugin.ts"
-import {Plugin, PLUGIN_OPTIONS} from '@motion-canvas/vite-plugin';
+import {Plugin, PLUGIN_OPTIONS} from '@revideo/vite-plugin';
 
 export default function myVitePlugin(): Plugin {
   return {
-    name: 'vite-plugin-motion-canvas-example',
+    name: 'vite-plugin-revideo-example',
     // ...
     [PLUGIN_OPTIONS]: {
       entryPoint: './plugin.ts',
@@ -133,7 +133,7 @@ export default function myVitePlugin(): Plugin {
 We can then update the runtime plugin to receive these options:
 
 ```ts title="src/plugin.ts"
-import {makePlugin} from '@motion-canvas/core';
+import {makePlugin} from '@revideo/core';
 
 // highlight-start
 interface MyPluginOptions {
@@ -146,7 +146,7 @@ export default makePlugin((options?: MyPluginOptions) => {
   console.log(options?.foo); // 'bar'
 
   return {
-    name: 'motion-canvas-plugin-example',
+    name: 'revideo-plugin-example',
     player(player) {
       player.onRecalculated.subscribe(() => {
         player.requestReset();

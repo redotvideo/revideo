@@ -1,4 +1,4 @@
-import {DEFAULT, SimpleSignal} from '@motion-canvas/core';
+import {DEFAULT, SimpleSignal} from '@revideo/core';
 import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {initial, initializeSignals, parser, signal} from './signal';
 

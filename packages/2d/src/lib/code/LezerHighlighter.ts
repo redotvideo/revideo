@@ -1,7 +1,7 @@
 import {HighlightStyle} from '@codemirror/language';
 import {Parser, SyntaxNode, Tree} from '@lezer/common';
 import {highlightTree} from '@lezer/highlight';
-import {useLogger} from '@motion-canvas/core';
+import {useLogger} from '@revideo/core';
 import {CodeHighlighter, HighlightResult} from './CodeHighlighter';
 import {defaultTokenize} from './CodeTokenizer';
 

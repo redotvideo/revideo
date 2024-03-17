@@ -4,7 +4,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "paths": {
-      "@motion-canvas/2d": ["../lib"]
+      "@revideo/2d": ["../lib"]
     }
   },
   "references": [{"path": "../lib/tsconfig.json"}],

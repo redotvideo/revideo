@@ -1,3 +1,3 @@
-import {renderVideo} from '@motion-canvas/renderer';
+import {renderVideo} from '@revideo/renderer';
 
 renderVideo('./vite.config.ts');

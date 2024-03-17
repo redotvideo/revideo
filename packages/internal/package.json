@@ -1,5 +1,5 @@
 {
-  "name": "@motion-canvas/internal",
+  "name": "@revideo/internal",
   "private": true,
   "version": "0.0.0",
   "devDependencies": {

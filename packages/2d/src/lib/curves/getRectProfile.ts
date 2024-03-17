@@ -1,4 +1,4 @@
-import {BBox, Spacing, Vector2} from '@motion-canvas/core';
+import {BBox, Spacing, Vector2} from '@revideo/core';
 import {adjustRectRadius} from '../utils';
 import {CircleSegment} from './CircleSegment';
 import {CubicBezierSegment} from './CubicBezierSegment';

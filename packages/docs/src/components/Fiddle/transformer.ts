@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as Babel from '@babel/standalone';
-import type {View2D} from '@motion-canvas/2d';
-import type {
-  FullSceneDescription,
-  ThreadGeneratorFactory,
-} from '@motion-canvas/core';
+import type {View2D} from '@revideo/2d';
+import type {FullSceneDescription, ThreadGeneratorFactory} from '@revideo/core';
 
 export class TransformError extends Error {
   public constructor(
@@ -30,7 +27,7 @@ export function transform(code: string, name: string): string {
           'react',
           {
             runtime: 'automatic',
-            importSource: '@motion-canvas/2d',
+            importSource: '@revideo/2d',
           },
         ],
       ],
@@ -38,11 +35,11 @@ export function transform(code: string, name: string): string {
         ({types}) => ({
           visitor: {
             ImportDeclaration(path) {
-              if (path.node.source.value.startsWith('@motion-canvas/core')) {
-                path.node.source.value = '@motion-canvas/core';
+              if (path.node.source.value.startsWith('@revideo/core')) {
+                path.node.source.value = '@revideo/core';
               }
-              if (path.node.source.value.startsWith('@motion-canvas/2d')) {
-                path.node.source.value = '@motion-canvas/2d';
+              if (path.node.source.value.startsWith('@revideo/2d')) {
+                path.node.source.value = '@revideo/2d';
               }
             },
             ReferencedIdentifier(path) {

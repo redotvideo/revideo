@@ -6,7 +6,7 @@ import {MetaOption} from './MetaOption';
  */
 export class EnumMetaField<T> extends MetaField<T> {
   public static readonly symbol = Symbol.for(
-    '@motion-canvas/core/meta/EnumMetaField',
+    '@revideo/core/meta/EnumMetaField',
   );
   public readonly type = EnumMetaField.symbol;
 

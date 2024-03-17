@@ -4,7 +4,7 @@ import {
   SignalValue,
   Vector2,
   Vector2Signal,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {KnotInfo} from '../curves';
 import {
   cloneable,

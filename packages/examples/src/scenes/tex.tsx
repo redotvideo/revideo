@@ -1,5 +1,5 @@
-import {Latex, makeScene2D} from '@motion-canvas/2d';
-import {createRef, waitFor} from '@motion-canvas/core';
+import {Latex, makeScene2D} from '@revideo/2d';
+import {createRef, waitFor} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const tex = createRef<Latex>();

@@ -11,7 +11,7 @@ import {
   unwrap,
   useLogger,
   Vector2,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {CurveProfile, getPolylineProfile} from '../curves';
 import {
   calculateLerpDistance,
@@ -45,7 +45,7 @@ export interface LineProps extends CurveProps {
  * @preview
  * ```tsx editor
  * // snippet Simple line
- * import {makeScene2D, Line} from '@motion-canvas/2d';
+ * import {makeScene2D, Line} from '@revideo/2d';
  *
  * export default makeScene2D(function* (view) {
  *   view.add(
@@ -64,7 +64,7 @@ export interface LineProps extends CurveProps {
  * });
  *
  * // snippet Polygon
- * import {makeScene2D, Line} from '@motion-canvas/2d';
+ * import {makeScene2D, Line} from '@revideo/2d';
  *
  * export default makeScene2D(function* (view) {
  *   view.add(
@@ -82,8 +82,8 @@ export interface LineProps extends CurveProps {
  * });
  *
  * // snippet Using signals
- * import {makeScene2D, Line} from '@motion-canvas/2d';
- * import {createSignal} from '@motion-canvas/core';
+ * import {makeScene2D, Line} from '@revideo/2d';
+ * import {createSignal} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   const tip = createSignal(-150);
@@ -105,8 +105,8 @@ export interface LineProps extends CurveProps {
  * });
  *
  * // snippet Tweening points
- * import {makeScene2D, Line} from '@motion-canvas/2d';
- * import {createRef} from '@motion-canvas/core';
+ * import {makeScene2D, Line} from '@revideo/2d';
+ * import {createRef} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   const line = createRef<Line>();

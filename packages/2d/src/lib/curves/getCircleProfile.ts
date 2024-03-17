@@ -1,4 +1,4 @@
-import {Vector2} from '@motion-canvas/core';
+import {Vector2} from '@revideo/core';
 import {ArcSegment} from './ArcSegment';
 import {CurveProfile} from './CurveProfile';
 import {LineSegment} from './LineSegment';

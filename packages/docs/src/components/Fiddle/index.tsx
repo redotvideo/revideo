@@ -5,7 +5,7 @@ import {EditorState, Text} from '@codemirror/state';
 import {EditorView, keymap} from '@codemirror/view';
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import {useLocation} from '@docusaurus/router';
-import type {Player} from '@motion-canvas/core';
+import type {Player} from '@revideo/core';
 import IconImage from '@site/src/Icon/Image';
 import {Pause} from '@site/src/Icon/Pause';
 import {PlayArrow} from '@site/src/Icon/PlayArrow';

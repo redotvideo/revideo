@@ -1,4 +1,4 @@
-import {Plugin} from '@motion-canvas/core';
+import {Plugin} from '@revideo/core';
 import {FunctionComponent} from 'preact';
 
 /**

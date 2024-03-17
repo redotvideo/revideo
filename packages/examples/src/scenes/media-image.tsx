@@ -1,7 +1,7 @@
-import {Img, makeScene2D} from '@motion-canvas/2d';
-import {all, createRef} from '@motion-canvas/core';
+import {Img, makeScene2D} from '@revideo/2d';
+import {all, createRef} from '@revideo/core';
 
-import logoSvg from '@motion-canvas/examples/assets/logo.svg';
+import logoSvg from '@revideo/examples/assets/logo.svg';
 
 export default makeScene2D(function* (view) {
   const imageRef = createRef<Img>();

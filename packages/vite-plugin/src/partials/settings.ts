@@ -6,14 +6,11 @@ import {Plugin} from 'vite';
 export function settingsPlugin(): Plugin {
   const settingsId = 'virtual:settings.meta';
   const resolvedSettingsId = '\0' + settingsId;
-  const settingsPath = path.resolve(
-    os.homedir(),
-    '.motion-canvas/settings.json',
-  );
+  const settingsPath = path.resolve(os.homedir(), '.revideo/settings.json');
   const outputDirectory = path.dirname(settingsPath);
 
   return {
-    name: 'motion-canvas:settings',
+    name: 'revideo:settings',
 
     resolveId(id) {
       if (id === settingsId) {
@@ -35,7 +32,7 @@ export function settingsPlugin(): Plugin {
     },
 
     configureServer(server) {
-      server.ws.on('motion-canvas:meta', async ({source, data}, client) => {
+      server.ws.on('revideo:meta', async ({source, data}, client) => {
         if (source !== resolvedSettingsId) {
           return;
         }
@@ -62,7 +59,7 @@ export function settingsPlugin(): Plugin {
           ]);
         }
 
-        client.send('motion-canvas:meta-ack', {source});
+        client.send('revideo:meta-ack', {source});
       });
     },
   };

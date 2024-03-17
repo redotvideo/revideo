@@ -1,4 +1,4 @@
-import type {Project} from '@motion-canvas/core';
+import type {Project} from '@revideo/core';
 
 export function editor(project: Project): void;
 

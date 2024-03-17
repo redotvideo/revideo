@@ -13,7 +13,7 @@ interface AssetsPluginConfig {
 export function assetsPlugin({bufferedAssets}: AssetsPluginConfig): Plugin {
   let config: ResolvedConfig;
   return {
-    name: 'motion-canvas:assets',
+    name: 'revideo:assets',
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;
@@ -49,7 +49,7 @@ export function assetsPlugin({bufferedAssets}: AssetsPluginConfig): Plugin {
       }
 
       if (urls.length > 0) {
-        ctx.server.ws.send('motion-canvas:assets', {urls});
+        ctx.server.ws.send('revideo:assets', {urls});
       }
 
       return modules;

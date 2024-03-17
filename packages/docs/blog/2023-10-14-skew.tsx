@@ -1,5 +1,5 @@
-import {Img, makeScene2D} from '@motion-canvas/2d';
-import {createRef, easeOutElastic} from '@motion-canvas/core';
+import {Img, makeScene2D} from '@revideo/2d';
+import {createRef, easeOutElastic} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const ref = createRef<Img>();

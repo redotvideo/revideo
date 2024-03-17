@@ -20,7 +20,7 @@ export function projectsPlugin({
   const versions = JSON.stringify(getVersions());
   let config: ResolvedConfig;
   return {
-    name: 'motion-canvas:project',
+    name: 'revideo:project',
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;
@@ -58,10 +58,8 @@ export function projectsPlugin({
       /* language=typescript */
       return `\
 ${imports.join('\n')}
-import {${
-        runsInEditor ? 'editorBootstrap' : 'bootstrap'
-      }} from '@motion-canvas/core';
-import {MetaFile} from '@motion-canvas/core';
+import {${runsInEditor ? 'editorBootstrap' : 'bootstrap'}} from '@revideo/core';
+import {MetaFile} from '@revideo/core';
         import metaFile from './${metaFile}';
         import config from './${name}';
         import settings from 'virtual:settings.meta';
@@ -95,7 +93,7 @@ import {MetaFile} from '@motion-canvas/core';
         },
         esbuild: {
           jsx: 'automatic',
-          jsxImportSource: '@motion-canvas/2d/lib',
+          jsxImportSource: '@revideo/2d/lib',
         },
         optimizeDeps: {
           entries: projects.list.map(project => project.url),

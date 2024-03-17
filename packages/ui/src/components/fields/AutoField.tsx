@@ -1,4 +1,4 @@
-import {Color, Spacing, Vector2, isType} from '@motion-canvas/core';
+import {Color, Spacing, Vector2, isType} from '@revideo/core';
 import {FunctionComponent} from 'preact';
 import {ArrayField} from './ArrayField';
 import {ColorField} from './ColorField';

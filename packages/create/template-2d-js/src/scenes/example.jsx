@@ -1,5 +1,5 @@
-import {Circle, makeScene2D} from '@motion-canvas/2d';
-import {createRef} from '@motion-canvas/core';
+import {Circle, makeScene2D} from '@revideo/2d';
+import {createRef} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   // Create your animations here

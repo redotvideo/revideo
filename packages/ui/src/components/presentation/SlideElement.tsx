@@ -1,4 +1,4 @@
-import type {Slide} from '@motion-canvas/core';
+import type {Slide} from '@revideo/core';
 import clsx from 'clsx';
 import {useApplication} from '../../contexts';
 import styles from './SlideGraph.module.scss';

@@ -1,4 +1,4 @@
-import {Color} from '@motion-canvas/core';
+import {Color} from '@revideo/core';
 import {valid} from 'chroma-js';
 import clsx from 'clsx';
 import {useReducedMotion} from '../../hooks';

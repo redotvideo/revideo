@@ -8,12 +8,12 @@
     "build": "tsc && vite build"
   },
   "dependencies": {
-    "@motion-canvas/core": "*",
-    "@motion-canvas/2d": "*"
+    "@revideo/core": "*",
+    "@revideo/2d": "*"
   },
   "devDependencies": {
-    "@motion-canvas/ui": "*",
-    "@motion-canvas/vite-plugin": "*",
+    "@revideo/ui": "*",
+    "@revideo/vite-plugin": "*",
     "typescript": "^5.2.2",
     "vite": "^5.0"
   }

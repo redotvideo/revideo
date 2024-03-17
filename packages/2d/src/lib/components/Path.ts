@@ -8,7 +8,7 @@ import {
   TimingFunction,
   tween,
   Vector2,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {CurveProfile} from '../curves';
 import {createCurveProfileLerp} from '../curves/createCurveProfileLerp';
 import {getPathProfile} from '../curves/getPathProfile';

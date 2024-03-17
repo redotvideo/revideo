@@ -30,7 +30,7 @@ import {
   transformScalar,
   unwrap,
   useLogger,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {
   NODE_NAME,
   cloneable,

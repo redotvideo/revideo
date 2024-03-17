@@ -1,7 +1,7 @@
-import ffmpeg from '@motion-canvas/ffmpeg';
-import markdown from '@motion-canvas/internal/vite/markdown-literals';
-import {rendererPlugin} from '@motion-canvas/renderer';
 import preact from '@preact/preset-vite';
+import ffmpeg from '@revideo/ffmpeg';
+import markdown from '@revideo/internal/vite/markdown-literals';
+import {rendererPlugin} from '@revideo/renderer';
 import {defineConfig} from 'vite';
 import motionCanvas from '../vite-plugin/src/main';
 
@@ -9,18 +9,18 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: '@motion-canvas/ui',
-        replacement: '@motion-canvas/ui/src/main.tsx',
+        find: '@revideo/ui',
+        replacement: '@revideo/ui/src/main.tsx',
       },
       {
-        find: '@motion-canvas/2d/editor',
-        replacement: '@motion-canvas/2d/src/editor',
+        find: '@revideo/2d/editor',
+        replacement: '@revideo/2d/src/editor',
       },
       {
-        find: /@motion-canvas\/2d(\/lib)?/,
-        replacement: '@motion-canvas/2d/src/lib',
+        find: /@revideo\/2d(\/lib)?/,
+        replacement: '@revideo/2d/src/lib',
       },
-      {find: '@motion-canvas/core', replacement: '@motion-canvas/core/src'},
+      {find: '@revideo/core', replacement: '@revideo/core/src'},
     ],
   },
   plugins: [

@@ -12,7 +12,7 @@ import {
   TimingFunction,
   unwrap,
   Vector2,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {
   CodeCursor,
   CodeFragmentDrawingInfo,
@@ -101,8 +101,8 @@ export interface CodeProps extends ShapeProps {
  * @preview
  * ```tsx editor
  * import {parser} from '@lezer/javascript';
- * import {Code, LezerHighlighter, makeScene2D} from '@motion-canvas/2d';
- * import {createRef} from '@motion-canvas/core';
+ * import {Code, LezerHighlighter, makeScene2D} from '@revideo/2d';
+ * import {createRef} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   LezerHighlighter.registerParser(parser);

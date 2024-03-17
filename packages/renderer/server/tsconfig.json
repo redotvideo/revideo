@@ -10,5 +10,5 @@
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["*", "../index.ts", "../main.ts", "../motion-canvas.d.ts"]
+  "include": ["*", "../index.ts", "../main.ts", "../revideo.d.ts"]
 }

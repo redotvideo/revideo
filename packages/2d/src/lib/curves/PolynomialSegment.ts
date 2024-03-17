@@ -1,4 +1,4 @@
-import {BBox, Vector2} from '@motion-canvas/core';
+import {BBox, Vector2} from '@revideo/core';
 import {moveTo} from '../utils';
 import {CurvePoint} from './CurvePoint';
 import {Polynomial2D} from './Polynomial2D';

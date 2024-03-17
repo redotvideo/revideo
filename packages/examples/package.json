@@ -1,5 +1,5 @@
 {
-  "name": "@motion-canvas/examples",
+  "name": "@revideo/examples",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -7,11 +7,11 @@
     "build": "tsc && vite build --base /examples/"
   },
   "dependencies": {
-    "@motion-canvas/2d": "*",
-    "@motion-canvas/core": "*"
+    "@revideo/2d": "*",
+    "@revideo/core": "*"
   },
   "devDependencies": {
-    "@motion-canvas/ui": "*",
-    "@motion-canvas/vite-plugin": "*"
+    "@revideo/ui": "*",
+    "@revideo/vite-plugin": "*"
   }
 }

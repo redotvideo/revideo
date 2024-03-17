@@ -1,4 +1,4 @@
-import typescript from '@motion-canvas/internal/rollup/typescript.mjs';
+import typescript from '@revideo/internal/rollup/typescript.mjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 
@@ -10,7 +10,7 @@ export default [
       sourcemap: true,
       dir: './editor',
     },
-    external: [/^@motion-canvas/, /^@?preact/, './index.css'],
+    external: [/^@revideo/, /^@?preact/, './index.css'],
     plugins: [
       resolve(),
       postcss({

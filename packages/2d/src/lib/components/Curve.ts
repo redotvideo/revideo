@@ -5,7 +5,7 @@ import {
   SimpleSignal,
   Vector2,
   clamp,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {CurveDrawingInfo} from '../curves/CurveDrawingInfo';
 import {CurvePoint} from '../curves/CurvePoint';
 import {CurveProfile} from '../curves/CurveProfile';

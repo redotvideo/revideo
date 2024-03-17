@@ -6,7 +6,7 @@ import {
   isReactive,
   useLogger,
   useThread,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {computed, initial, signal} from '../decorators';
 import {Rect, RectProps} from './Rect';
 import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';

@@ -4,8 +4,8 @@ import type {
   AssetInfo,
   RendererResult,
   RendererSettings,
-} from '@motion-canvas/core/lib/app';
-import type {PluginConfig} from '@motion-canvas/vite-plugin/lib/plugins';
+} from '@revideo/core/lib/app';
+import type {PluginConfig} from '@revideo/vite-plugin/lib/plugins';
 
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';

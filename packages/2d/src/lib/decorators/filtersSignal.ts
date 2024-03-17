@@ -9,7 +9,7 @@ import {
   deepLerp,
   easeInOutCubic,
   unwrap,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {FILTERS, Filter, FilterName} from '../partials';
 import {addInitializer} from './initializers';
 import {getPropertyMetaOrCreate} from './signal';

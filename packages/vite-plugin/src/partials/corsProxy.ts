@@ -49,7 +49,7 @@ export function corsProxyPlugin(
 ): Plugin {
   setupEnvVarsForProxy(config);
   return {
-    name: 'motion-canvas:cors-proxy',
+    name: 'revideo:cors-proxy',
     configureServer(server) {
       if (config !== false && config !== undefined) {
         motionCanvasCorsProxy(

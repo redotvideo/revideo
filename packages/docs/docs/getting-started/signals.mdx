@@ -5,7 +5,7 @@ slug: /signals
 
 import AnimationPlayer from '@site/src/components/AnimationPlayer';
 import CodeBlock from '@theme/CodeBlock';
-import signalSource from '!!raw-loader!@motion-canvas/examples/src/scenes/node-signal';
+import signalSource from '!!raw-loader!@revideo/examples/src/scenes/node-signal';
 
 # Signals
 
@@ -20,7 +20,7 @@ Signals for primitive types are created using the
 argument specifies their initial value:
 
 ```ts
-import {createSignal} from '@motion-canvas/core';
+import {createSignal} from '@revideo/core';
 
 const signal = createSignal(0);
 ```
@@ -29,7 +29,7 @@ Additionally, each complex type has a static `createSignal()` method that can be
 used to create a signal for said type:
 
 ```ts
-import {Vector2} from '@motion-canvas/core';
+import {Vector2} from '@revideo/core';
 
 const signal = Vector2.createSignal(Vector2.up);
 ```
@@ -124,7 +124,7 @@ we can reset a signal to its initial value by passing the
 [`DEFAULT`](/api/core/signals#DEFAULT) symbol to it:
 
 ```ts
-import {DEFAULT, createSignal} from '@motion-canvas/core';
+import {DEFAULT, createSignal} from '@revideo/core';
 
 const signal = createSignal(3); // <- initial value is 3
 signal(2);

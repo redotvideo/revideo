@@ -73,18 +73,18 @@ export const CustomTabConfig: PluginTabConfig = {
 First of all, the editor is built on top of [Preact](https://preactjs.com/).
 Just like Motion Canvas, Preact uses JSX to define components. This means that
 in `tsx` files extending the editor, we need to let TypeScript know that it
-should import the `jsx` factory function from `preact` and not
-`@revideo/2d`. This can be done in multiple different ways. In this simple
-example, we'll just use a comment at the top of the file:
+should import the `jsx` factory function from `preact` and not `@revideo/2d`.
+This can be done in multiple different ways. In this simple example, we'll just
+use a comment at the top of the file:
 
 ```tsx
 /* @jsxImportSource preact */
 ```
 
 Next, we define a component for the tab itself. This component will be rendered
-in the navigation bar on the left. We use the `Tab` component from
-`@revideo/ui` to stay consistent with the rest of the editor. We also
-borrow the `PhotoCamera` icon and put it inside:
+in the navigation bar on the left. We use the `Tab` component from `@revideo/ui`
+to stay consistent with the rest of the editor. We also borrow the `PhotoCamera`
+icon and put it inside:
 
 ```tsx
 function TabComponent({tab}: PluginTabProps) {

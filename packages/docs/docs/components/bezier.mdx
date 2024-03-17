@@ -253,12 +253,7 @@ export default makeScene2D(function* (view) {
 
 // snippet Moving nodes along a curve
 import {makeScene2D, CubicBezier, Rect} from '@revideo/2d';
-import {
-  createRef,
-  waitFor,
-  createSignal,
-  createComputed,
-} from '@revideo/core';
+import {createRef, waitFor, createSignal, createComputed} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const bezier = createRef<CubicBezier>();

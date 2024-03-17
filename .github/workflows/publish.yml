@@ -33,8 +33,8 @@ jobs:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
           cache: npm
-      - run: git config --global user.email "129169430+revideo-bot@users.noreply.github.com"
-      - run: git config --global user.name "revideo-bot"
+      - run: git config --global user.email "129169430+motion-canvas-bot@users.noreply.github.com"
+      - run: git config --global user.name "motion-canvas-bot"
       - run: npm ci
       - run: npx lerna run build
       - if: ${{ inputs.releaseType == 'release' }}

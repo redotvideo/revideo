@@ -1,12 +1,12 @@
-import {makeScene2D} from '@motion-canvas/2d';
+import {makeScene2D} from '@revideo/2d';
 import {
   CodeBlock,
   edit,
   insert,
   lines,
   remove,
-} from '@motion-canvas/2d/lib/components/CodeBlock';
-import {all, createRef, waitFor} from '@motion-canvas/core';
+} from '@revideo/2d/lib/components/CodeBlock';
+import {all, createRef, waitFor} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const codeRef = createRef<CodeBlock>();

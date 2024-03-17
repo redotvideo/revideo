@@ -1,4 +1,4 @@
-import type {NumberMetaField} from '@motion-canvas/core';
+import type {NumberMetaField} from '@revideo/core';
 import {useSubscribableValue} from '../../hooks';
 import {NumberInput, NumberInputSelect} from '../controls';
 import {MetaFieldGroup} from './MetaFieldGroup';

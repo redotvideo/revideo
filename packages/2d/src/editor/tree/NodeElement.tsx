@@ -1,5 +1,5 @@
-import {NODE_NAME, Node} from '@motion-canvas/2d';
 import {useComputed, useSignal, useSignalEffect} from '@preact/signals';
+import {NODE_NAME, Node} from '@revideo/2d';
 import {useRef} from 'preact/hooks';
 import {usePluginState} from '../Provider';
 import {IconMap} from '../icons/IconMap';

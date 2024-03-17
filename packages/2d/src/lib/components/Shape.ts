@@ -7,7 +7,7 @@ import {
   linear,
   map,
   threadable,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {
   CanvasStyleSignal,

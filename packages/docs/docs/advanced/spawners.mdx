@@ -44,8 +44,8 @@ dependencies and recompute its value whenever they change. We can animate our
 `count` signal to see if it works:
 
 ```tsx editor
-import {makeScene2D, Layout, Circle} from '@motion-canvas/2d';
-import {createSignal, linear, range} from '@motion-canvas/core';
+import {makeScene2D, Layout, Circle} from '@revideo/2d';
+import {createSignal, linear, range} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const count = createSignal(10);

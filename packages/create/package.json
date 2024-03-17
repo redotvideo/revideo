@@ -1,15 +1,15 @@
 {
-  "name": "@motion-canvas/create",
-  "version": "3.14.2",
-  "description": "Quickly scaffold Motion Canvas projects",
+  "name": "@revideo/create",
+  "version": "0.1.3",
+  "description": "Quickly scaffold revideo projects",
   "main": "index.js",
-  "author": "motion-canvas",
-  "homepage": "https://motioncanvas.io/",
-  "bugs": "https://github.com/motion-canvas/motion-canvas/issues",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "create-motion-canvas": "index.js"
+    "create-revideo": "index.js"
   },
   "files": [
     "index.js",
@@ -17,13 +17,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/motion-canvas/motion-canvas.git"
+    "url": "https://github.com/havenhq/revideo.git"
   },
   "devDependencies": {
-    "@motion-canvas/2d": "^3.14.2",
-    "@motion-canvas/core": "^3.14.1",
-    "@motion-canvas/ui": "^3.14.2",
-    "@motion-canvas/vite-plugin": "^3.14.1"
+    "@revideo/2d": "^0.1.0",
+    "@revideo/core": "^0.1.0",
+    "@revideo/ui": "^0.1.0",
+    "@revideo/vite-plugin": "^0.1.0"
   },
   "dependencies": {
     "minimist": "^1.2.8",

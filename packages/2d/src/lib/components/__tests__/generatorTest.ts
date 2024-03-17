@@ -1,4 +1,4 @@
-import {ThreadGeneratorFactory, threads} from '@motion-canvas/core';
+import {ThreadGeneratorFactory, threads} from '@revideo/core';
 import {useScene2D} from '../../scenes';
 import {View2D} from '../View2D';
 

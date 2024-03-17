@@ -1,7 +1,7 @@
 {
-  "extends": "@motion-canvas/core/tsconfig.project.json",
+  "extends": "@revideo/core/tsconfig.project.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@motion-canvas/2d/lib"
+    "jsxImportSource": "@revideo/2d/lib"
   }
 }

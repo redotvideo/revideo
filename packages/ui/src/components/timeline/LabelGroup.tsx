@@ -1,4 +1,4 @@
-import type {Scene} from '@motion-canvas/core';
+import type {Scene} from '@revideo/core';
 import {useTimelineContext} from '../../contexts';
 import {useSubscribableValue} from '../../hooks';
 import {Label} from './Label';

@@ -21,15 +21,15 @@ const MANIFEST = JSON.parse(
 
 const PLUGINS = {
   core: {
-    package: '@motion-canvas/vite-plugin',
+    package: '@revideo/vite-plugin',
     variable: 'motionCanvas',
     options: response =>
       response.language === 'js' ? `{project: './src/project.js'}` : '',
   },
   ffmpeg: {
-    package: '@motion-canvas/ffmpeg',
+    package: '@revideo/ffmpeg',
     variable: 'ffmpeg',
-    version: '^1.1.0',
+    version: '^0.1.1',
   },
 };
 
@@ -261,7 +261,7 @@ function getPackageManager() {
 function cloneVersions(versions) {
   for (const dependency in versions) {
     if (
-      dependency.startsWith('@motion-canvas') &&
+      dependency.startsWith('@revideo') &&
       MANIFEST.devDependencies[dependency]
     ) {
       versions[dependency] = MANIFEST.devDependencies[dependency];

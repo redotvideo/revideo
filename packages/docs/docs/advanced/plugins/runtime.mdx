@@ -44,10 +44,10 @@ available hooks.
 </div>
 
 ```ts title="src/plugin.ts"
-import {makePlugin} from '@motion-canvas/core';
+import {makePlugin} from '@revideo/core';
 
 export default makePlugin({
-  name: 'motion-canvas-plugin-example',
+  name: 'revideo-plugin-example',
   player(player) {
     player.onRecalculated.subscribe(() => {
       player.requestReset();
@@ -68,7 +68,7 @@ actual plugin object (This can come in handy when
 [developing a Node.js plugin](/docs/plugins/node#passing-options-to-runtime)):
 
 ```ts title="src/project.ts"
-import {makeProject} from '@motion-canvas/core';
+import {makeProject} from '@revideo/core';
 // highlight-next-line
 import myPlugin from './plugin';
 import example from './scenes/example?scene';

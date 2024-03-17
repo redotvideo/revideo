@@ -1,5 +1,5 @@
-import type {Project} from '@motion-canvas/core';
-import {Renderer} from '@motion-canvas/core';
+import type {Project} from '@revideo/core';
+import {Renderer} from '@revideo/core';
 
 declare global {
   interface Window {

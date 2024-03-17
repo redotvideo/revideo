@@ -4,7 +4,7 @@ import {
   SignalValue,
   SimpleSignal,
   Vector2,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {CurveProfile, getPolylineProfile} from '../curves';
 import {computed, initial, signal} from '../decorators';
 import {DesiredLength} from '../partials';
@@ -41,8 +41,8 @@ export interface PolygonProps extends CurveProps {
  * @preview
  * ```tsx editor
  * // snippet Polygon
- * import {makeScene2D, Polygon} from '@motion-canvas/2d';
- * import {createRef} from '@motion-canvas/core';
+ * import {makeScene2D, Polygon} from '@revideo/2d';
+ * import {createRef} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   const ref = createRef<Polygon>();
@@ -59,7 +59,7 @@ export interface PolygonProps extends CurveProps {
  * });
  *
  * // snippet Pentagon outline
- * import {makeScene2D, Polygon} from '@motion-canvas/2d';
+ * import {makeScene2D, Polygon} from '@revideo/2d';
  *
  * export default makeScene2D(function* (view) {
  *   view.add(

@@ -56,7 +56,7 @@ type ExtendedColor = Color;
 // iife prevents tree shaking from stripping our methods.
 const ExtendedColor: typeof Color = (() => {
   Color.symbol = Color.prototype.symbol = Symbol.for(
-    '@motion-canvas/core/types/Color',
+    '@revideo/core/types/Color',
   );
 
   Color.lerp = Color.prototype.lerp = (

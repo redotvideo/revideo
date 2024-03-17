@@ -19,7 +19,7 @@ const INCLUDE_REGEX = /^#include "([^"]+)"/;
 export function webglPlugin(): Plugin {
   let config: ResolvedConfig;
   return {
-    name: 'motion-canvas:webgl',
+    name: 'revideo:webgl',
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;

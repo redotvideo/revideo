@@ -31,9 +31,7 @@ export type PossibleMatrix2D =
  *   - r(AB) = (rA)B = A(rB) does not hold for a Matrix2D
  */
 export class Matrix2D implements Type, WebGLConvertible {
-  public static readonly symbol = Symbol.for(
-    '@motion-canvas/core/types/Matrix2D',
-  );
+  public static readonly symbol = Symbol.for('@revideo/core/types/Matrix2D');
 
   public readonly values: Float32Array = new Float32Array(6);
   public static readonly identity: Matrix2D = new Matrix2D(1, 0, 0, 1, 0, 0);

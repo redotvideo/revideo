@@ -1,3 +1,3 @@
-/// <reference types="@motion-canvas/internal" />
+/// <reference types="@revideo/internal" />
 
 declare type Callback = (...args: any[]) => void;

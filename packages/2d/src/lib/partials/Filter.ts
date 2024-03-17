@@ -4,7 +4,7 @@ import {
   SignalValue,
   SimpleSignal,
   transformScalar,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 /**
  * All possible CSS filter names.

@@ -1,11 +1,11 @@
-import type {View2D} from '@motion-canvas/2d';
+import type {View2D} from '@revideo/2d';
 import type {
   FullSceneDescription,
   Player as PlayerType,
   Project,
   Stage as StageType,
   ThreadGeneratorFactory,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 
 let ProjectInstance: Project = null;
 let Description: FullSceneDescription<ThreadGeneratorFactory<View2D>> = null;
@@ -57,10 +57,8 @@ export async function borrowPlayer(
       Stage,
       ValueDispatcher,
       DefaultPlugin,
-    } = await import(/* webpackIgnore: true */ '@motion-canvas/core');
-    const {makeScene2D} = await import(
-      /* webpackIgnore: true */ '@motion-canvas/2d'
-    );
+    } = await import(/* webpackIgnore: true */ '@revideo/core');
+    const {makeScene2D} = await import(/* webpackIgnore: true */ '@revideo/2d');
 
     Description = makeScene2D(function* () {
       yield;

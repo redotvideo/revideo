@@ -1,5 +1,5 @@
 {
-  "extends": "@motion-canvas/2d/tsconfig.project.json",
+  "extends": "@revideo/2d/tsconfig.project.json",
   "compilerOptions": {
     "types": ["node"],
     "noEmit": false,

@@ -8,12 +8,12 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@motion-canvas/core": "*",
-    "@motion-canvas/2d": "*"
+    "@revideo/core": "*",
+    "@revideo/2d": "*"
   },
   "devDependencies": {
-    "@motion-canvas/ui": "*",
-    "@motion-canvas/vite-plugin": "*",
-    "vite": "^4.0.0"
+    "@revideo/ui": "*",
+    "@revideo/vite-plugin": "*",
+    "vite": "^4.5"
   }
 }

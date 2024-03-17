@@ -4,7 +4,7 @@ import {
   useLogger,
   useScene,
   WebGLConvertible,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {Node} from '../components';
 
 /**
@@ -21,7 +21,7 @@ export interface ShaderConfig {
    * #version 300 es
    * precision highp float;
    *
-   * #include "@motion-canvas/core/shaders/common.glsl"
+   * #include "@revideo/core/shaders/common.glsl"
    *
    * void main() {
    *     out_color = texture(core_source_tx, source_uv);

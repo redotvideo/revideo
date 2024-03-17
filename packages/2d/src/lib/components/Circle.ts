@@ -4,7 +4,7 @@ import {
   SerializedVector2,
   SignalValue,
   SimpleSignal,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {CurveProfile, getCircleProfile} from '../curves';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
@@ -39,7 +39,7 @@ export interface CircleProps extends CurveProps {
  * @preview
  * ```tsx editor
  * // snippet Simple circle
- * import {makeScene2D, Circle} from '@motion-canvas/2d';
+ * import {makeScene2D, Circle} from '@revideo/2d';
  *
  * export default makeScene2D(function* (view) {
  *   view.add(
@@ -51,7 +51,7 @@ export interface CircleProps extends CurveProps {
  * });
  *
  * // snippet Ellipse
- * import {makeScene2D, Circle} from '@motion-canvas/2d';
+ * import {makeScene2D, Circle} from '@revideo/2d';
  *
  * export default makeScene2D(function* (view) {
  *   view.add(
@@ -64,8 +64,8 @@ export interface CircleProps extends CurveProps {
  * });
  *
  * // snippet Sector (pie chart):
- * import {makeScene2D, Circle} from '@motion-canvas/2d';
- * import {createRef} from '@motion-canvas/core';
+ * import {makeScene2D, Circle} from '@revideo/2d';
+ * import {createRef} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   const ref = createRef<Circle>();
@@ -84,8 +84,8 @@ export interface CircleProps extends CurveProps {
  * });
  *
  * // snippet Arc:
- * import {makeScene2D, Circle} from '@motion-canvas/2d';
- * import {createRef} from '@motion-canvas/core';
+ * import {makeScene2D, Circle} from '@revideo/2d';
+ * import {createRef} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   const ref = createRef<Circle>();
@@ -104,8 +104,8 @@ export interface CircleProps extends CurveProps {
  * });
  *
  * // snippet Curve properties:
- * import {makeScene2D, Circle} from '@motion-canvas/2d';
- * import {all, createRef, easeInCubic, easeOutCubic} from '@motion-canvas/core';
+ * import {makeScene2D, Circle} from '@revideo/2d';
+ * import {all, createRef, easeInCubic, easeOutCubic} from '@revideo/core';
  *
  * export default makeScene2D(function* (view) {
  *   const ref = createRef<Circle>();

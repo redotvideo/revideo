@@ -37,7 +37,7 @@ Below is an example of a simple shader that inverts the colors of the node:
 #version 300 es
 precision highp float;
 
-#include "@motion-canvas/core/shaders/common.glsl"
+#include "@revideo/core/shaders/common.glsl"
 
 void main() {
     outColor = texture(sourceTexture, sourceUV);
@@ -64,7 +64,7 @@ It can point to a relative file:
 Or to a file from another package:
 
 ```glsl
-#include "@motion-canvas/core/shaders/common.glsl"
+#include "@revideo/core/shaders/common.glsl"
 ```
 
 For convenience, a GLSL file can be imported only once per shader. Each
@@ -96,7 +96,7 @@ uniform mat4 destinationMatrix;
 They can be included using the following directive:
 
 ```glsl
-#include "@motion-canvas/core/shaders/common.glsl"
+#include "@revideo/core/shaders/common.glsl"
 ```
 
 ## Source and Destination

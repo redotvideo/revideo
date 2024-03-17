@@ -33,15 +33,15 @@ If you want to install the exporter in an existing project, run the following
 command:
 
 ```bash
-npm install --save @motion-canvas/ffmpeg
+npm install --save @revideo/ffmpeg
 ```
 
 And then configure it in your `vite.config.ts` file:
 
 ```diff
   import {defineConfig} from 'vite';
-  import motionCanvas from '@motion-canvas/vite-plugin';
-+ import ffmpeg from '@motion-canvas/ffmpeg';
+  import motionCanvas from '@revideo/vite-plugin';
++ import ffmpeg from '@revideo/ffmpeg';
 
   export default defineConfig({
     plugins: [
@@ -69,4 +69,4 @@ optimization for videos that will be served over the web. It rearranges the
 video data in the file, allowing the video to begin playing before it has
 finished downloading.
 
-[issues]: https://github.com/motion-canvas/exporters/issues/new/choose
+[issues]: https://github.com/revideo/exporters/issues/new/choose

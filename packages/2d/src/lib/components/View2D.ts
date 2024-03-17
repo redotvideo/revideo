@@ -1,4 +1,4 @@
-import {PlaybackState, SimpleSignal, lazy} from '@motion-canvas/core';
+import {PlaybackState, SimpleSignal, lazy} from '@revideo/core';
 import {initial, signal} from '../decorators';
 import {nodeName} from '../decorators/nodeName';
 import {useScene2D} from '../scenes/useScene2D';
@@ -12,7 +12,7 @@ export interface View2DProps extends RectProps {
 @nodeName('View2D')
 export class View2D extends Rect {
   @lazy(() => {
-    const frameID = 'motion-canvas-2d-frame';
+    const frameID = 'revideo-2d-frame';
     let frame = document.querySelector<HTMLDivElement>(`#${frameID}`);
     if (!frame) {
       frame = document.createElement('div');

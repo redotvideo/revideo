@@ -172,7 +172,7 @@ export class Renderer {
       );
 
       if (import.meta.hot) {
-        import.meta.hot.send('motion-canvas:export', {
+        import.meta.hot.send('revideo:export', {
           frame,
           data: this.stage.finalBuffer.toDataURL('image/png'),
           mimeType: 'image/png',

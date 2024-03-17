@@ -1,4 +1,4 @@
-import typescript from '@motion-canvas/internal/rollup/typescript.mjs';
+import typescript from '@revideo/internal/rollup/typescript.mjs';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';

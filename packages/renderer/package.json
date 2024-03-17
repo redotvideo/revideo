@@ -1,11 +1,11 @@
 {
-  "name": "@motion-canvas/renderer",
-  "version": "3.14.1",
-  "description": "A headless renderer for Motion Canvas",
+  "name": "@revideo/renderer",
+  "version": "0.1.0",
+  "description": "A headless renderer for revideo",
   "main": "dist/index.js",
-  "author": "motion-canvas",
-  "homepage": "https://motioncanvas.io/",
-  "bugs": "https://github.com/motion-canvas/motion-canvas/issues",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
     "build": "npm run client:build && npm run server:build",
@@ -19,7 +19,7 @@
     "types"
   ],
   "devDependencies": {
-    "@motion-canvas/core": "*",
+    "@revideo/core": "^0.1.0",
     "puppeteer": "^22.3.0"
   }
 }

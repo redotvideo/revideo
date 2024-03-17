@@ -1,4 +1,4 @@
-import {PresenterState} from '@motion-canvas/core';
+import {PresenterState} from '@revideo/core';
 import styles from './Editor.module.scss';
 import {Console} from './components/console';
 import {Footer} from './components/footer';

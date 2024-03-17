@@ -32,8 +32,8 @@ export enum PresenterState {
   Aborting,
 }
 
-const NextSlide = Symbol('@motion-canvas/core/app/NextSlide');
-const PreviousSlide = Symbol('@motion-canvas/core/app/PreviousSlide');
+const NextSlide = Symbol('@revideo/core/app/NextSlide');
+const PreviousSlide = Symbol('@revideo/core/app/PreviousSlide');
 
 export class Presenter {
   public get onStateChanged() {

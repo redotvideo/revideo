@@ -23,12 +23,8 @@ function loadModule(module: Record<string, unknown>) {
 }
 
 if (ExecutionEnvironment.canUseDOM) {
-  import(/* webpackIgnore: true */ '@motion-canvas/core')
-    .then(loadModule)
-    .catch();
-  import(/* webpackIgnore: true */ '@motion-canvas/2d')
-    .then(loadModule)
-    .catch();
+  import(/* webpackIgnore: true */ '@revideo/core').then(loadModule).catch();
+  import(/* webpackIgnore: true */ '@revideo/2d').then(loadModule).catch();
 }
 
 export function autocomplete() {

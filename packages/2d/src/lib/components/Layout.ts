@@ -19,7 +19,7 @@ import {
   tween,
   Vector2,
   Vector2Signal,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {
   addInitializer,
   cloneable,

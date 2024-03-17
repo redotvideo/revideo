@@ -1,5 +1,5 @@
 {
-  "name": "motion-canvas",
+  "name": "revideo",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -22,6 +22,7 @@
     "template:build": "npm run build -w packages/template",
     "examples:dev": "npm run dev -w packages/examples",
     "examples:build": "npm run build -w packages/examples",
+    "renderer:build": "npm run build -w packages/renderer",
     "player:dev": "npm run dev -w packages/player",
     "player:build": "npm run build -w packages/player",
     "docs:dev": "npm run dev -w packages/docs",
@@ -57,7 +58,10 @@
     "*.{js,jsx,ts,tsx,md,scss}": "prettier --write"
   },
   "dependencies": {
+    "@preact/preset-vite": "^2.7.0",
     "@wooorm/starry-night": "^3.3.0",
+    "lunr": "^2.3.9",
+    "marked": "^12.0.1",
     "shiki": "^1.1.7",
     "uuid": "^9.0.1"
   }

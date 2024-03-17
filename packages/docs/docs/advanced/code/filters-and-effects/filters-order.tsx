@@ -7,8 +7,8 @@ import {
   contrast,
   makeScene2D,
   saturate,
-} from '@motion-canvas/2d';
-import {createSignal, linear, map, waitFor} from '@motion-canvas/core';
+} from '@revideo/2d';
+import {createSignal, linear, map, waitFor} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   view.fontFamily('monospace').fontSize(20).fill('#141414');

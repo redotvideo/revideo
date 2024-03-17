@@ -1,12 +1,12 @@
-import type {PlayerSettings, Project, StageSettings} from '@motion-canvas/core';
-import {Player, Stage} from '@motion-canvas/core';
+import type {PlayerSettings, Project, StageSettings} from '@revideo/core';
+import {Player, Stage} from '@revideo/core';
 
-import {Vector2} from '@motion-canvas/core';
+import {Vector2} from '@revideo/core';
 import styles from './styles.scss?inline';
 import html from './template.html?raw';
 
 const TEMPLATE = `<style>${styles}</style>${html}`;
-const ID = 'motion-canvas-player';
+const ID = 'revideo-player';
 
 enum State {
   Initial = 'initial',

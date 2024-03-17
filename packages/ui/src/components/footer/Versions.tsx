@@ -16,7 +16,7 @@ export function Versions() {
 
   useEffect(() => {
     const abort = new AbortController();
-    fetch('https://registry.npmjs.org/@motion-canvas/core/latest', {
+    fetch('https://registry.npmjs.org/@revideo/core/latest', {
       signal: abort.signal,
     })
       .then(response => response.json())
@@ -28,7 +28,7 @@ export function Versions() {
     <div className={styles.root}>
       {isOld && (
         <a
-          href="https://github.com/motion-canvas/motion-canvas/releases"
+          href="https://github.com/revideo/revideo/releases"
           target="_blank"
           title="See what's new"
           className={clsx(styles.link, styles.main)}

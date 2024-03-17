@@ -25,9 +25,7 @@ export type SpacingSignal<T> = CompoundSignal<
 >;
 
 export class Spacing implements Type, WebGLConvertible {
-  public static readonly symbol = Symbol.for(
-    '@motion-canvas/core/types/Spacing',
-  );
+  public static readonly symbol = Symbol.for('@revideo/core/types/Spacing');
 
   public top = 0;
   public right = 0;

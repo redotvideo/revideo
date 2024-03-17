@@ -10,7 +10,7 @@ import {
   ThreadGeneratorFactory,
   Vector2,
   useLogger,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {Audio, Node, Video, View2D} from '../components';
 
 export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
@@ -25,7 +25,7 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     super(description);
     this.recreateView();
     if (import.meta.hot) {
-      import.meta.hot.on('motion-canvas:assets', () => {
+      import.meta.hot.on('revideo:assets', () => {
         this.assetHash = Date.now().toString();
         this.getView().assetHash(this.assetHash);
       });

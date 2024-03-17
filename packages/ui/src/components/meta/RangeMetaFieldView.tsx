@@ -1,4 +1,4 @@
-import type {RangeMetaField} from '@motion-canvas/core';
+import type {RangeMetaField} from '@revideo/core';
 import {useApplication} from '../../contexts';
 import {
   useDuration,

@@ -23,5 +23,4 @@ by reporting bugs, proposing new features, or contributing to the codebase. If
 you're interested, our [contribution guide][contributing] will help you get
 started.
 
-[contributing]:
-  https://github.com/motion-canvas/motion-canvas/blob/main/CONTRIBUTING.md
+[contributing]: https://github.com/revideo/revideo/blob/main/CONTRIBUTING.md

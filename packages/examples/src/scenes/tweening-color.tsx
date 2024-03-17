@@ -1,5 +1,5 @@
-import {Circle, makeScene2D} from '@motion-canvas/2d';
-import {Color, createRef, easeInOutCubic, tween} from '@motion-canvas/core';
+import {Circle, makeScene2D} from '@revideo/2d';
+import {Color, createRef, easeInOutCubic, tween} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const circle = createRef<Circle>();

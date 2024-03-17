@@ -69,7 +69,7 @@ export class MetaFile<T> {
         delete MetaFile.sourceLookup[source];
         resolve();
       };
-      import.meta.hot!.send('motion-canvas:meta', {
+      import.meta.hot!.send('revideo:meta', {
         source,
         data,
       });
@@ -95,7 +95,7 @@ export class MetaFile<T> {
 
   static {
     if (import.meta.hot) {
-      import.meta.hot.on('motion-canvas:meta-ack', ({source}) => {
+      import.meta.hot.on('revideo:meta-ack', ({source}) => {
         this.sourceLookup[source]?.();
       });
     }

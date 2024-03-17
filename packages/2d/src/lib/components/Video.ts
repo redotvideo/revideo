@@ -6,7 +6,7 @@ import {
   SignalValue,
   SimpleSignal,
   viaProxy,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';

@@ -1,4 +1,4 @@
-import {PluginConfig} from '@motion-canvas/vite-plugin/lib/plugins';
+import {PluginConfig} from '@revideo/vite-plugin/lib/plugins';
 import type {WebSocketServer} from 'vite';
 import {
   FFmpegExporterServer,
@@ -24,7 +24,7 @@ export class FFmpegBridge {
     private readonly ws: WebSocketServer,
     private readonly config: PluginConfig,
   ) {
-    ws.on('motion-canvas/ffmpeg', this.handleMessage);
+    ws.on('revideo/ffmpeg', this.handleMessage);
   }
 
   private handleMessage = async ({method, data}: BrowserRequest) => {
@@ -64,7 +64,7 @@ export class FFmpegBridge {
   };
 
   private respondSuccess(method: string, data: any = {}) {
-    this.ws.send('motion-canvas/ffmpeg-ack', {
+    this.ws.send('revideo/ffmpeg-ack', {
       status: 'success',
       method,
       data,
@@ -72,7 +72,7 @@ export class FFmpegBridge {
   }
 
   private respondError(method: string, message = 'Unknown error.') {
-    this.ws.send('motion-canvas/ffmpeg-ack', {
+    this.ws.send('revideo/ffmpeg-ack', {
       status: 'error',
       method,
       message,

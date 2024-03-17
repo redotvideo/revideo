@@ -2,15 +2,15 @@ import {
   Plugin,
   PLUGIN_OPTIONS,
   PluginConfig,
-} from '@motion-canvas/vite-plugin/lib/plugins';
+} from '@revideo/vite-plugin/lib/plugins';
 import {FFmpegBridge} from './FFmpegBridge';
 
 export default (): Plugin => {
   let config: PluginConfig;
   return {
-    name: 'motion-canvas/ffmpeg',
+    name: 'revideo/ffmpeg',
     [PLUGIN_OPTIONS]: {
-      entryPoint: '@motion-canvas/ffmpeg/lib/client',
+      entryPoint: '@revideo/ffmpeg/lib/client',
       async config(value) {
         config = value;
       },

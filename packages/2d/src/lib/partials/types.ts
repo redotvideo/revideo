@@ -1,4 +1,4 @@
-import {Color, PossibleColor} from '@motion-canvas/core';
+import {Color, PossibleColor} from '@revideo/core';
 import type {Gradient} from './Gradient';
 import type {Pattern} from './Pattern';
 

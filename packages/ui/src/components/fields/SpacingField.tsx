@@ -1,4 +1,4 @@
-import {Spacing} from '@motion-canvas/core';
+import {Spacing} from '@revideo/core';
 import {Field, FieldSet, FieldValue, NumericField} from './Layout';
 
 export interface SpacingFieldProps {

@@ -8,7 +8,7 @@ import {
   useApplication,
   usePanels,
   useReducedMotion,
-} from '@motion-canvas/ui';
+} from '@revideo/ui';
 
 import {useSignalEffect} from '@preact/signals';
 import {useEffect, useRef} from 'preact/hooks';

@@ -1,4 +1,4 @@
-import {MetaField} from '@motion-canvas/core';
+import {MetaField} from '@revideo/core';
 import {useSubscribableValue} from '../../hooks';
 import {Group, Label} from '../controls';
 import {AutoField} from '../fields';

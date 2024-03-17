@@ -12,12 +12,12 @@ function createHtml(src: string) {
 
 export function rendererPlugin(): Plugin {
   return {
-    name: 'motion-canvas-renderer-plugin',
+    name: 'revideo-renderer-plugin',
 
     async load(id) {
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
-            import {render} from '@motion-canvas/renderer/client/render';
+            import {render} from '@revideo/renderer/client/render';
             import project from './src/project.ts?project';
             render(project);
             `;

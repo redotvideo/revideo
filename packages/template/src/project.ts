@@ -1,4 +1,4 @@
-import {makeProject} from '@motion-canvas/core';
+import {makeProject} from '@revideo/core';
 
 import example from './scenes/example?scene';
 

@@ -1,11 +1,11 @@
 {
-  "name": "@motion-canvas/ffmpeg",
-  "version": "1.1.1",
-  "description": "An FFmpeg video exporter for Motion Canvas",
+  "name": "@revideo/ffmpeg",
+  "version": "0.1.1",
+  "description": "An FFmpeg video exporter for revideo",
   "main": "lib/server/index.js",
-  "author": "motion-canvas",
-  "homepage": "https://motioncanvas.io/",
-  "bugs": "https://github.com/motion-canvas/exporters/issues",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
     "build": "npm run client:build && npm run server:build",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/motion-canvas/exporters.git"
+    "url": "git+https://github.com/havenhq/revideo.git"
   },
   "files": [
     "lib"
@@ -27,9 +27,10 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffprobe-installer/ffprobe": "^2.0.0",
+    "@revideo/core": "^0.1.0",
+    "@revideo/vite-plugin": "^0.1.0",
     "fluent-ffmpeg": "^2.1.2",
-    "@motion-canvas/core": "^3.14.1",
-    "@motion-canvas/vite-plugin": "^3.14.1",
+    "uuid": "^9.0.1",
     "vite": "^4.5"
   }
 }

@@ -1,4 +1,4 @@
-import {Vector2} from '@motion-canvas/core';
+import {Vector2} from '@revideo/core';
 import {lineTo, moveTo} from '../utils';
 import {CurvePoint} from './CurvePoint';
 import {Segment} from './Segment';

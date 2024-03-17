@@ -16,7 +16,7 @@ import {
   tween,
   useLogger,
   waitFor,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {
   Code,
   CodeStyle,

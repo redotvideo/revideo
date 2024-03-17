@@ -1,1 +1,1 @@
-export const DEFAULT = Symbol.for('@motion-canvas/core/signals/default');
+export const DEFAULT = Symbol.for('@revideo/core/signals/default');

@@ -1,4 +1,4 @@
-import {PossibleVector2, Signal, Vector2} from '@motion-canvas/core';
+import {PossibleVector2, Signal, Vector2} from '@revideo/core';
 import type {Length} from '../partials';
 import {compound} from './compound';
 import {wrapper} from './signal';

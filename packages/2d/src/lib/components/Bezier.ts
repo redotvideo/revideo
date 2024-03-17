@@ -1,4 +1,4 @@
-import {BBox, SerializedVector2, Vector2} from '@motion-canvas/core';
+import {BBox, SerializedVector2, Vector2} from '@revideo/core';
 import {CurveProfile} from '../curves';
 import {PolynomialSegment} from '../curves/PolynomialSegment';
 import {computed} from '../decorators';

@@ -17,7 +17,7 @@ import {
   threadable,
   tween,
   useLogger,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {computed, signal} from '../decorators';
 import {DesiredLength, PossibleCanvasStyle} from '../partials';
 import {applyTransformDiff, getTransformDiff} from '../utils/diff';

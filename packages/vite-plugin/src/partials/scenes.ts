@@ -6,7 +6,7 @@ const SCENE_QUERY_REGEX = /[?&]scene\b/;
 
 export function scenesPlugin(): Plugin {
   return {
-    name: 'motion-canvas:scene',
+    name: 'revideo:scene',
 
     async load(id) {
       if (!SCENE_QUERY_REGEX.test(id)) {
@@ -21,7 +21,7 @@ export function scenesPlugin(): Plugin {
 
       /* language=typescript */
       return `\
-import {ValueDispatcher} from '@motion-canvas/core';
+import {ValueDispatcher} from '@revideo/core';
 import metaFile from './${metaFile}';
 import description from './${sceneFile}';
 description.name = '${name}';

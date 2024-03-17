@@ -7,9 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      '@motion-canvas/ui': '/src/main.tsx',
+      '@revideo/ui': '/src/main.tsx',
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      '@motion-canvas/2d/editor': '@motion-canvas/2d/src/editor',
+      '@revideo/2d/editor': '@revideo/2d/src/editor',
     },
   },
   build: {
@@ -19,7 +19,7 @@ export default defineConfig({
       fileName: 'main',
     },
     rollupOptions: {
-      external: [/^@motion-canvas\/core/, /^@?preact/],
+      external: [/^@revideo\/core/, /^@?preact/],
     },
   },
   plugins: [

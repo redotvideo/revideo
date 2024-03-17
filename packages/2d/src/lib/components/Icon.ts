@@ -4,7 +4,7 @@ import {
   SignalValue,
   SimpleSignal,
   useLogger,
-} from '@motion-canvas/core';
+} from '@revideo/core';
 import {colorSignal, computed, initial, signal} from '../decorators';
 import {Img, ImgProps} from './Img';
 

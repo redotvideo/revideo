@@ -18,7 +18,7 @@ export class AudioManager {
 
   public constructor(private readonly logger: Logger) {
     if (import.meta.hot) {
-      import.meta.hot.on('motion-canvas:assets', ({urls}) => {
+      import.meta.hot.on('revideo:assets', ({urls}) => {
         if (this.source && urls.includes(this.source)) {
           this.setSource(this.source);
         }

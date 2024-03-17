@@ -1,11 +1,11 @@
-import {Vector2} from '@motion-canvas/core';
+import {Vector2} from '@revideo/core';
 import {
   MouseButton,
   OverlayWrapper,
   PluginOverlayConfig,
   useViewportContext,
   useViewportMatrix,
-} from '@motion-canvas/ui';
+} from '@revideo/ui';
 import {ComponentChildren} from 'preact';
 import {usePluginState} from './Provider';
 

@@ -30,7 +30,7 @@
     "@revideo/core": "^0.1.0",
     "@revideo/vite-plugin": "^0.1.0",
     "fluent-ffmpeg": "^2.1.2",
-    "vite": "^4.5",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "vite": "^4.5"
   }
 }

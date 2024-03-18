@@ -216,8 +216,6 @@ export function scenesPlugin(): Plugin {
         }
       }
 
-      console.log(newContent);
-
       /* language=typescript */
       return newContent;
     },

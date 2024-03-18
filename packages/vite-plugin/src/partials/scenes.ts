@@ -95,7 +95,7 @@ async function getMetaFileNamePath(
    * there is a meta file with the same name as the typescript file.
    */
   if (comment) {
-    const file = comment.split('meta=')[1].replace(/\s/g, '').slice(0, -2);
+    const file = comment.split('meta=')[1]?.replace(/\s/g, '').slice(0, -2);
     if (file) {
       return file.trim();
     }

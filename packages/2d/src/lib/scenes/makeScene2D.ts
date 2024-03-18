@@ -22,34 +22,3 @@ export function makeScene2D(runner: ThreadGeneratorFactory<View2D>) {
      */
   } as unknown as FullSceneDescription;
 }
-
-/*type CyclicConfig<T> = (params: T) => CyclicConfig<T>;
-
-export function parametrize<T>(scene: FullSceneDescription, params: T) {
-  const typeScene = scene as FullSceneDescription<CyclicConfig<T>>;
-  const newScene = {
-    ...typeScene,
-    config: typeScene.config(params),
-    onReplaced: new ValueDispatcher(typeScene),
-  };
-
-  typeScene.onReplaced.subscribe(value => {
-    newScene.onReplaced.current = {
-      ...newScene,
-      config: value.config(params),
-    };
-  }, false);
-
-  return newScene;
-}
-
-export function makeParametrizedScene<T>(
-  factory: (view: View2D, params: T) => ThreadGenerator,
-) {
-  return makeScene2D(
-    ((params: T) =>
-      function* (view: View2D) {
-        yield* factory(view, params);
-      }) as unknown as ThreadGeneratorFactory<View2D>,
-  );
-}*/

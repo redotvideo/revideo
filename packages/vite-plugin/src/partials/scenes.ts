@@ -60,7 +60,7 @@ function getHotModuleReplacementCode(metaFilePaths: string[]) {
 
   // Create a function that assigns the meta file to the description
   code += `\
-  function assignInfo(description: any, metaFilePath: string) {
+  function assignInfo(description: any, metaFilePath: string, sceneName: string) {
     metaFiles[metaFilePath].attach(description.meta);
     if (import.meta.hot) {
       description.onReplaced = import.meta.hot.data.onReplaced;
@@ -74,6 +74,8 @@ function getHotModuleReplacementCode(metaFilePaths: string[]) {
         import.meta.hot.data.onReplaced = description.onReplaced;
       }
     }
+
+    description.name = sceneName;
 
     return description;
   }
@@ -97,7 +99,8 @@ async function getMetaFileNamePath(
   if (comment) {
     const file = comment.split('meta=')[1]?.replace(/\s/g, '').slice(0, -2);
     if (file) {
-      return file.trim();
+      const path = file.trim();
+      return path;
     }
   }
 
@@ -108,7 +111,6 @@ async function getMetaFileNamePath(
 
   // Check if the file exists
   try {
-    await fs.access(guessedPath);
     return guessedPath;
   } catch (e) {
     throw new Error(`No meta file found for ${filePath}.`);
@@ -157,8 +159,12 @@ export function scenesPlugin(): Plugin {
       }
 
       const makeScene2D = 'makeScene2D(';
-      const calls: {startIndex: number; endIndex: number; metaFile: string}[] =
-        [];
+      const calls: {
+        startIndex: number;
+        endIndex: number;
+        metaFile: string;
+        name: string;
+      }[] = [];
 
       for (const index of indexes) {
         const end = findMatchingParenthesis(
@@ -179,12 +185,13 @@ export function scenesPlugin(): Plugin {
           continue;
         }
 
-        const path = await getMetaFileNamePath(id, index, content);
+        const filePath = await getMetaFileNamePath(id, index, content);
 
         calls.push({
           startIndex: index,
           endIndex: end,
-          metaFile: path,
+          metaFile: filePath,
+          name: filePath.split('/').pop()?.split('.').shift() ?? 'no meta file',
         });
       }
 
@@ -204,7 +211,7 @@ export function scenesPlugin(): Plugin {
       for (let i = 0; i < calls.length; i++) {
         newContent += `assignInfo(`;
         newContent += content.slice(calls[i].startIndex, calls[i].endIndex + 1);
-        newContent += `, '${i}')`;
+        newContent += `, '${i}', '${calls[i].name}')`;
 
         if (i < calls.length - 1) {
           newContent += content.slice(

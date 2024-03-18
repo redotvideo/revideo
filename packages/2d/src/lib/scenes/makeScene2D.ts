@@ -16,7 +16,7 @@ export function makeScene2D(runner: ThreadGeneratorFactory<View2D>) {
 
     /**
      * We need to cast this to `FullSceneDescription` because all makeScene2D calls
-     * are transformed into `FullSceneDescription` by the vite plugin.
+     * are transformed into `FullSceneDescription` by one of the vite plugins.
      *
      * This transformation happens inside of `/packages/vite-plugin/src/partials/scenes.ts`.
      */

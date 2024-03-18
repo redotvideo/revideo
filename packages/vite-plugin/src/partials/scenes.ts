@@ -82,6 +82,39 @@ function getHotModuleReplacementCode(metaFilePaths: string[]) {
   return code;
 }
 
+async function getMetaFileNamePath(
+  filePath: string,
+  indexOfMakeScene: number,
+  fileContent: string,
+) {
+  // Extract the comment before the index
+  const comment = extractCommentBeforeIndex(fileContent, indexOfMakeScene);
+
+  /**
+   * If there is no comment, or no file is specified, we check if
+   * there is a meta file with the same name as the typescript file.
+   */
+  if (comment) {
+    const file = comment.split('meta=')[1].replace(/\s/g, '').slice(0, -2);
+    if (file) {
+      return file.trim();
+    }
+  }
+
+  // If no file is specified, we try the typescript file name
+  const path = filePath.split('.');
+  path.pop();
+  const guessedPath = path.join('.') + '.meta';
+
+  // Check if the file exists
+  try {
+    await fs.access(guessedPath);
+    return guessedPath;
+  } catch (e) {
+    throw new Error(`No meta file found for ${filePath}.`);
+  }
+}
+
 export function scenesPlugin(): Plugin {
   return {
     name: 'revideo:scene',
@@ -146,23 +179,12 @@ export function scenesPlugin(): Plugin {
           continue;
         }
 
-        // Extract the comment before the index
-        const comment = extractCommentBeforeIndex(content, index);
-
-        // TODO: add support for this
-        if (!comment) {
-          throw new Error(`${id}: TODO: needs comment`);
-        }
-
-        const file = comment.split('meta=')[1].replace(/\s/g, '').slice(0, -2);
-        if (!file) {
-          throw new Error(`${id}: TODO: needs meta file`);
-        }
+        const path = await getMetaFileNamePath(id, index, content);
 
         calls.push({
           startIndex: index,
           endIndex: end,
-          metaFile: file.trim(),
+          metaFile: path,
         });
       }
 

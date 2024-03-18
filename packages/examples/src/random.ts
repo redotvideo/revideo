@@ -1,6 +1,6 @@
 import {makeProject} from '@revideo/core';
 
-import scene from './scenes/random?scene';
+import scene from './scenes/random';
 
 export default makeProject({
   scenes: [scene],

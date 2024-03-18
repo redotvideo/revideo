@@ -1,6 +1,6 @@
 import {makeProject} from '@revideo/core';
 
-import node from './scenes/positioning?scene';
+import node from './scenes/positioning';
 
 export default makeProject({
   scenes: [node],

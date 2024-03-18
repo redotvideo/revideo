@@ -13,13 +13,9 @@ export interface ProjectSettings {
   /**
    * A list of scene descriptions that make up the project.
    *
-   * @remarks
-   * A full scene description can be obtained by loading a scene module with a
-   * `?scene` query parameter.
-   *
    * @example
    * ```ts
-   * import exampleScene from './example?scene';
+   * import exampleScene from './example';
    *
    * export default makeProject({
    *   scenes: [exampleScene],

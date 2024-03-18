@@ -1,7 +1,7 @@
 import {makeProject} from '@revideo/core';
 
-import circle from './scenes/circle?scene';
-import rect from './scenes/rect?scene';
+import circle from './scenes/circle';
+import rect from './scenes/rect';
 
 export default makeProject({
   scenes: [circle, rect],

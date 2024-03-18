@@ -8,7 +8,6 @@ import {
   waitUntil,
 } from '@revideo/core';
 
-/* meta=./scene.meta */
 export const scene = makeScene2D(function* (view) {
   const rect = createRef<Rect>();
 
@@ -23,7 +22,7 @@ export const scene = makeScene2D(function* (view) {
   yield* waitFor(0.3);
 });
 
-/* meta=./scene.meta */
+/* meta=./scene2.meta */
 export const scene2 = makeScene2D(function* (view) {
   const rect = createRef<Rect>();
 

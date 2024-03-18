@@ -40,7 +40,7 @@ function extractCommentBeforeIndex(
 }
 
 function getHotModuleReplacementCode(metaFilePaths: string[]) {
-  let code = "import {ValueDispatcher} from '@motion-canvas/core';";
+  let code = "import {ValueDispatcher} from '@revideo/core';";
   code += '\n';
 
   // Import all meta files
@@ -201,7 +201,6 @@ export function scenesPlugin(): Plugin {
       let newContent =
         hotModuleReplacementCode + content.slice(0, calls[0].startIndex);
 
-      console.log('here');
       for (let i = 0; i < calls.length; i++) {
         newContent += `assignInfo(`;
         newContent += content.slice(calls[i].startIndex, calls[i].endIndex + 1);
@@ -216,6 +215,8 @@ export function scenesPlugin(): Plugin {
           newContent += content.slice(calls[i].endIndex + 1);
         }
       }
+
+      console.log(newContent);
 
       /* language=typescript */
       return newContent;

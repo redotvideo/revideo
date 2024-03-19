@@ -111,7 +111,7 @@ const PLUGINS = {
     `template-2d-${language}`,
   );
   copyDirectory(templateDir, response.path);
-  createConfig(response, language);
+  createConfig(response, plugins, language);
 
   const manifest = JSON.parse(
     fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
@@ -181,9 +181,8 @@ function copy(src, dest) {
   }
 }
 
-function createConfig(response, language) {
+function createConfig(response, plugins, language) {
   const imports = [];
-  const plugins = [];
   for (const plugin of plugins) {
     const data = PLUGINS[plugin];
     imports.push(`import ${data.variable} from '${data.package}';\n`);

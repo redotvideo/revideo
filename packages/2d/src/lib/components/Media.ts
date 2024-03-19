@@ -108,6 +108,11 @@ export abstract class Media extends Rect {
   }
 
   protected setVolume(volume: number) {
+    if (volume < 0 || volume > 1) {
+      console.warn(
+        `${volume} is an incorrect value for volume, has to be in range [0,1]. We're clamping to the nearest value`,
+      );
+    }
     this.mediaElement().volume = Math.min(Math.max(volume, 0), 1);
   }
 

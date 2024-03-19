@@ -116,10 +116,7 @@ export class FFmpegExporterServer {
 
     const audioFilenames: string[] = [];
     for (const asset of assetPositions) {
-      if (asset.type === 'video') {
-        const filename = await this.prepareAudio(asset, endFrame);
-        audioFilenames.push(filename);
-      } else if (asset.type === 'audio') {
+      if (asset.playbackRate !== 0 && asset.volume !== 0) {
         const filename = await this.prepareAudio(asset, endFrame);
         audioFilenames.push(filename);
       }

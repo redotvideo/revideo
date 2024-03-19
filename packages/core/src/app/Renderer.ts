@@ -27,6 +27,7 @@ export interface AssetInfo {
   type: 'video' | 'audio';
   src: string;
   playbackRate: number;
+  volume: number;
   currentTime: number;
   duration: number;
 }

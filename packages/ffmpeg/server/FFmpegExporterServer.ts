@@ -34,6 +34,7 @@ interface MediaAsset {
   endInVideo: number;
   duration: number;
   playbackRate: number;
+  volume: number;
   trimLeftInSeconds: number;
 }
 
@@ -175,9 +176,10 @@ export class FFmpegExporterServer {
     const sanitizedKey = asset.key.replace(/[/[\]]/g, '-');
     const outputPath = path.join(this.jobFolder, `${sanitizedKey}.wav`);
 
+    const trimLeft = asset.trimLeftInSeconds / asset.playbackRate;
     const trimRight = Math.min(
-      asset.trimLeftInSeconds + asset.duration / this.settings.fps,
-      asset.trimLeftInSeconds + endFrame / this.settings.fps,
+      trimLeft + asset.duration / this.settings.fps,
+      trimLeft + endFrame / this.settings.fps,
     );
     const padStart = (asset.startInVideo / this.settings.fps) * 1000;
     const padEnd = Math.max(
@@ -186,6 +188,8 @@ export class FFmpegExporterServer {
         (SAMPLE_RATE * asset.duration) / this.settings.fps -
         (SAMPLE_RATE * padStart) / 1000,
     );
+
+    const atempoFilters = await this.calculateAtempoFilters(asset.playbackRate); // atempo filter value must be >=0.5 and <=100. If the value is higher or lower, this function sets multiple atempo filters
 
     let resolvedPath: string;
     if (asset.src.startsWith('/@fs')) {
@@ -197,14 +201,19 @@ export class FFmpegExporterServer {
     }
 
     await new Promise<void>((resolve, reject) => {
+      const audioFilters = [
+        ...atempoFilters,
+        `atrim=start=${trimLeft}:end=${trimRight}`,
+        `apad=pad_len=${padEnd}`,
+        `adelay=${padStart}|${padStart}|${padStart}`,
+        `volume=${asset.volume}`,
+      ].join(',');
+
       ffmpeg(resolvedPath)
         .audioChannels(2)
         .audioCodec('pcm_s16le')
         .audioFrequency(SAMPLE_RATE)
-        .outputOptions([
-          `-af`,
-          `atrim=start=${asset.trimLeftInSeconds}:end=${trimRight},apad=pad_len=${padEnd},adelay=${padStart}|${padStart}|${padStart}`,
-        ])
+        .outputOptions([`-af`, audioFilters])
         .on('end', () => {
           resolve();
         })
@@ -243,6 +252,34 @@ export class FFmpegExporterServer {
         })
         .save(path.join(this.jobFolder, `audio.wav`));
     });
+  }
+
+  private async calculateAtempoFilters(playbackRate: number) {
+    const atempoFilters = [];
+
+    // Calculate how many times we need to 100x the speed
+    let rate = playbackRate;
+    while (rate > 100.0) {
+      atempoFilters.push('atempo=100.0');
+      rate /= 100.0;
+    }
+    // Add the last atempo filter with the remaining rate
+    if (rate > 1.0) {
+      atempoFilters.push(`atempo=${rate}`);
+    }
+
+    // Calculate how many times we need to halve the speed
+    rate = playbackRate;
+    while (rate < 0.5) {
+      atempoFilters.push('atempo=0.5');
+      rate *= 2.0;
+    }
+    // Add the last atempo filter with the remaining rate
+    if (rate < 1.0) {
+      atempoFilters.push(`atempo=${rate}`);
+    }
+
+    return atempoFilters;
   }
 
   private async mergeAudioWithVideo(
@@ -297,6 +334,7 @@ function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
           endInVideo: frame,
           duration: asset.duration,
           playbackRate: asset.playbackRate,
+          volume: asset.volume,
           trimLeftInSeconds: asset.currentTime,
         });
       } else {

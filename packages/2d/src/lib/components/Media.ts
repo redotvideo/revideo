@@ -15,6 +15,7 @@ export interface MediaProps extends RectProps {
   src?: SignalValue<string>;
   loop?: SignalValue<boolean>;
   playbackRate?: number;
+  volume?: number;
   time?: SignalValue<number>;
   play?: boolean;
 }
@@ -39,6 +40,10 @@ export abstract class Media extends Rect {
   @signal()
   protected declare readonly playing: SimpleSignal<boolean, this>;
 
+  @initial(1)
+  @signal()
+  protected declare readonly volume: SimpleSignal<number, this>;
+
   protected lastTime = -1;
 
   public constructor(props: MediaProps) {
@@ -58,6 +63,10 @@ export abstract class Media extends Rect {
 
   public getDuration(): number {
     return this.mediaElement().duration;
+  }
+
+  public getVolume(): number {
+    return this.mediaElement().volume;
   }
 
   public override dispose() {
@@ -96,6 +105,10 @@ export abstract class Media extends Rect {
         }),
       );
     }
+  }
+
+  protected setVolume(volume: number) {
+    this.mediaElement().volume = Math.min(Math.max(volume, 0), 1);
   }
 
   protected setPlaybackRate(playbackRate: number) {

@@ -15,7 +15,7 @@
 </p>
 <br/>
 
-# ReVideo - Make videos with AI
+# Revideo - Make videos with AI
 
 Revideo is
 
@@ -27,7 +27,7 @@ Revideo is
 
 Think of LangChain, but for video
 
-## Using ReVideo
+## Using Revideo
 
 Check out our [getting started][docs] guide to learn how to use Revideo.
 
@@ -80,7 +80,7 @@ Let's assume the following project structure:
 
 ```
 projects/
-├── motion-canvas/ <- your local monorepo
+├── revideo/ <- your local monorepo
 └── my-project/ <- a bootstrapped project
     └── package.json
 ```
@@ -91,8 +91,8 @@ relative path to the package you want to link:
 
 ```diff
   "dependencies": {
--   "@motion-canvas/core": "^3.11.0",
-+   "@motion-canvas/core": "file:../motion-canvas/packages/core",
+-   "@revideo/core": "^3.11.0",
++   "@revideo/core": "file:../revideo/packages/core",
     // ...
   },
 ```
@@ -102,7 +102,7 @@ to allow vite to load external files:
 
 ```ts
 import {defineConfig} from 'vite';
-import motionCanvas from '@motion-canvas/vite-plugin';
+import motionCanvas from '@revideo/vite-plugin';
 
 export default defineConfig({
   server: {
@@ -131,5 +131,5 @@ help make Revideo better.
 [authenticate]:
   https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token
 [template]: https://github.com/motion-canvas/project-template#using-the-template
-[discord]: https://chat.motioncanvas.io
+[discord]: https://discord.com/invite/JDjbfp6q2G
 [docs]: https://motioncanvas.io/docs/quickstart

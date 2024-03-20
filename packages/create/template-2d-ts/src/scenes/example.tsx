@@ -4,7 +4,7 @@ import {all, chain, createRef, waitFor} from '@revideo/core';
 export default makeScene2D(function* (view) {
   const logoRef = createRef<Img>();
 
-  view.add(
+  yield view.add(
     <>
       <Video
         src={'https://revideo-example-assets.s3.amazonaws.com/stars.mp4'}

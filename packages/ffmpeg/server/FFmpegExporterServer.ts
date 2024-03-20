@@ -116,7 +116,14 @@ export class FFmpegExporterServer {
 
     const audioFilenames: string[] = [];
     for (const asset of assetPositions) {
-      if (asset.playbackRate !== 0 && asset.volume !== 0) {
+      let hasAudioStream: boolean;
+      if (asset.type === 'audio') {
+        hasAudioStream = true;
+      } else {
+        hasAudioStream = await this.checkForAudioStream(asset);
+      }
+
+      if (asset.playbackRate !== 0 && asset.volume !== 0 && hasAudioStream) {
         const filename = await this.prepareAudio(asset, endFrame);
         audioFilenames.push(filename);
       }
@@ -139,6 +146,23 @@ export class FFmpegExporterServer {
       );
       console.log(`Rendered successfully! Video saved to: ${destination}`);
     }
+  }
+
+  public async checkForAudioStream(asset: MediaAsset): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(asset.src, (err, metadata) => {
+        if (err) {
+          console.error('error checking for audioStream for asset', asset.key);
+          reject(err);
+          return;
+        }
+
+        const audioStreams = metadata.streams.filter(
+          s => s.codec_type === 'audio',
+        );
+        resolve(audioStreams.length > 0);
+      });
+    });
   }
 
   public async end(result: RendererResult) {

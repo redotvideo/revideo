@@ -102,7 +102,7 @@ const PLUGINS = {
     return;
   }
 
-  const plugins = ['core', 'ffmpeg'];
+  const plugins = [PLUGINS.core, PLUGINS.ffmpeg];
   const language = 'ts';
 
   const templateDir = path.resolve(
@@ -111,15 +111,14 @@ const PLUGINS = {
     `template-2d-${language}`,
   );
   copyDirectory(templateDir, response.path);
-  createConfig(response, PLUGINS, language);
+  createConfig(response, plugins, language);
 
   const manifest = JSON.parse(
     fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
   );
   manifest.name = response.name;
   manifest.dependencies ??= {};
-  for (const plugin of plugins) {
-    const data = PLUGINS[plugin];
+  for (const data of plugins) {
     if (data.version) {
       manifest.dependencies[data.package] = data.version;
     }
@@ -181,9 +180,10 @@ function copy(src, dest) {
   }
 }
 
-function createConfig(response, plugins, language) {
+function createConfig(response, selectedPlugins, language) {
   const imports = [];
-  for (const data of plugins) {
+  const plugins = [];
+  for (const data of selectedPlugins) {
     imports.push(`import ${data.variable} from '${data.package}';\n`);
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }

@@ -1,0 +1,31 @@
+{
+  "version": 0,
+  "shared": {
+    "background": null,
+    "range": [
+      0,
+      null
+    ],
+    "size": {
+      "x": 1024,
+      "y": 1792
+    },
+    "audioOffset": 0
+  },
+  "preview": {
+    "fps": 30,
+    "resolutionScale": 1
+  },
+  "rendering": {
+    "fps": 30,
+    "resolutionScale": 1,
+    "colorSpace": "srgb",
+    "exporter": {
+      "name": "@revideo/ffmpeg",
+      "options": {
+        "fastStart": true,
+        "includeAudio": true
+      }
+    }
+  }
+}

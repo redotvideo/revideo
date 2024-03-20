@@ -4,6 +4,7 @@ import {
   createRef,
   easeInExpo,
   easeInOutExpo,
+  useScene,
   waitFor,
   waitUntil,
 } from '@revideo/core';
@@ -17,7 +18,8 @@ export default makeScene2D(function* (view) {
 
   yield* waitUntil('rect');
   yield* rect().scale(2, 1, easeInOutExpo).to(1, 0.6, easeInExpo);
-  rect().fill('#ffa56d');
+  const circleFill = useScene().variables.get('fill', 'blue')();
+  rect().fill(circleFill);
   yield* all(rect().ripple(1));
   yield* waitFor(0.3);
 });

@@ -21,7 +21,7 @@
     "resolutionScale": 1,
     "colorSpace": "srgb",
     "exporter": {
-      "name": "@motion-canvas/ffmpeg",
+      "name": "@revideo/ffmpeg",
       "options": {
         "fastStart": true,
         "includeAudio": true

@@ -63,7 +63,7 @@ const PLUGINS = {
       type: 'text',
       name: 'name',
       message: 'Project name',
-      initial: 'my-video',
+      initial: 'my-revideo-project',
       validate: value =>
         isValidPackageName(value)
           ? true

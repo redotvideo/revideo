@@ -1,105 +1,53 @@
 ---
 sidebar_position: 1
-slug: /quickstart
+slug: /installation-and-setup
 ---
 
 import AnimationPlayer from '@site/src/components/AnimationPlayer';
 import CodeBlock from '@theme/CodeBlock';
 import source from '!!raw-loader!@revideo/examples/src/scenes/quickstart';
 
-# Quickstart
+# Installation and Setup
 
-In this guide, we'll create a simple animation using Motion Canvas.
-
-### Prerequisites
-
-Make sure that [Node.js](https://nodejs.org/) version 16 or greater is installed
-on your machine.
-
-:::tip
-
-You can run the following command to check if Node.js is already installed:
-
-```bash
-node -v
-```
-
-:::
+Let's install revideo with a sample project. To use revideo, make sure that you have [Node.js](https://nodejs.org/) version 16+ installed.
 
 ### Creating a new project
 
-Run the following command in order to scaffold a new Motion Canvas project (If
-the command fails check out the [troubleshooting](#troubleshooting) section
-below):
+Run the following command to create a new revideo project (If
+this fails, check out the [troubleshooting](#troubleshooting) section):
 
 ```bash
 npm init @revideo@latest
 ```
 
-Answer the prompts to name your project and select which language you would like
-to use; either TypeScript or plain JavaScript. We recommend using TypeScript in
-your first project, since that's the language we're using throughout this
-documentation.
+After agreeing to install the `@revideo/create` package and choosing a project path (`<project-path>`), navigate to your project and install all dependencies:
 
-You'll also be asked to choose how you'd like to export your animations. Motion
-Canvas comes with a built-in [_Image sequence_](/docs/rendering/image-sequence)
-exporter - perfect if you want to import your animations into a video editor.
-However, if you want to directly produce a finished video, you can choose to
-install the [_Video (FFmpeg)_](/docs/rendering/video) exporter. Don't worry, you
-can select multiple exporters, and you can always
-[add more](/docs/rendering/video#existing-project) later.
-
-To complete the scaffolding process, you'll need to run the following commands:
-
-1. **C**hange **D**irectory (`cd`) to the project root (You should replace
-   `<project-path>` with the path you picked during scaffolding):
    ```shell
    cd <project-path>
-   ```
-2. Install necessary dependencies:
-   ```shell
    npm install
    ```
-3. Start the editor:
-   ```shell
+
+   To preview your video in the editor, run:
+
+  ```shell
    npm start
    ```
-   The editor can be accessed by visiting
-   [http://localhost:9000/](http://localhost:9000/). We'll use it to preview our
-   animation, although for now there's not much to see.
 
-### Programming an animation
+   The editor can now be accessed by visiting
+   [http://localhost:9000/](http://localhost:9000/). Here you should see an example video.
 
-The scaffolding command will create several files for you, but for now we're
-going to focus on `src/scenes/example.tsx`, which is where we can add our
-animations. Open `example.tsx` in a text editor, and replace all code in the
-file with the following snippet.
 
-```tsx editor
-import {makeScene2D, Circle} from '@revideo/2d';
-import {all, createRef} from '@revideo/core';
+### Rendering Videos
 
-export default makeScene2D(function* (view) {
-  const myCircle = createRef<Circle>();
+To render your video, you can either use the **Export** button in the editor, or run:
 
-  view.add(
-    <Circle
-      ref={myCircle}
-      // try changing these properties:
-      x={-300}
-      width={140}
-      height={140}
-      fill="#e13238"
-    />,
-  );
+  ```shell
+   npm run render
+   ```
 
-  yield* all(
-    myCircle().position.x(300, 1).to(-300, 1),
-    myCircle().fill('#e6a700', 1).to('#e13238', 1),
-  );
-});
-```
+After running this command, you should see the exported file at `output/project.mp4`.
 
+<!---
 Now save the file. Any changes you make are automatically picked up and
 reflected in the preview.
 
@@ -288,6 +236,11 @@ This brings us back to our initial example:
 <CodeBlock language="tsx" title="src/scenes/example.tsx">
   {source}
 </CodeBlock>
+
+---->
+
+
+
 
 ## Troubleshooting
 

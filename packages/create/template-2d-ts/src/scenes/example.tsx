@@ -1,8 +1,7 @@
-import {Audio, Img, Rect, Video, makeScene2D} from '@revideo/2d';
+import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
 import {all, chain, createRef, waitFor} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
-  const upperBox = createRef<Rect>();
   const logoRef = createRef<Img>();
 
   view.add(

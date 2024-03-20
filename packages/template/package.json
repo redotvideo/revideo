@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "render": "tsc && node dist/renderScript.mjs"
+    "render": "tsc && node dist/renderScript.js"
   },
   "dependencies": {
     "@revideo/core": "*",

@@ -1,8 +1,12 @@
 import * as path from 'path';
 import puppeteer from 'puppeteer';
 import {createServer} from 'vite';
+import {rendererPlugin} from './plugin';
 
-export const renderVideo = async (configFile: string) => {
+export const renderVideo = async (
+  configFile: string,
+  params?: Record<string, unknown>,
+) => {
   console.log('Rendering...');
 
   const resolvedConfigPath = path.resolve(process.cwd(), configFile);
@@ -14,6 +18,7 @@ export const renderVideo = async (configFile: string) => {
       server: {
         port: 9000,
       },
+      plugins: [rendererPlugin(params)],
     }).then(server => server.listen()),
   ]);
 

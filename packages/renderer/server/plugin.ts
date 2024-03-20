@@ -10,7 +10,7 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
-export function rendererPlugin(): Plugin {
+export function rendererPlugin(params?: Record<string, unknown>): Plugin {
   return {
     name: 'revideo-renderer-plugin',
 
@@ -19,6 +19,8 @@ export function rendererPlugin(): Plugin {
         return `\
             import {render} from '@revideo/renderer/client/render';
             import project from './src/project.ts?project';
+
+            project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params)}\`)` : 'project.variables'};
             render(project);
             `;
       }

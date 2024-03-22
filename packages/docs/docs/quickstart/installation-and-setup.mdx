@@ -9,7 +9,7 @@ import source from '!!raw-loader!@revideo/examples/src/scenes/quickstart';
 
 # Installation and Setup
 
-Let's install revideo with a sample project. To use revideo, make sure that you have [Node.js](https://nodejs.org/) version 16+ installed.
+Let's install revideo with a sample project. To use revideo, make sure that you have [Node.js](https://nodejs.org/) version 16 or greater.
 
 ### Creating a new project
 
@@ -34,19 +34,49 @@ After agreeing to install the `@revideo/create` package and choosing a project p
    ```
 
    The editor can now be accessed by visiting
-   [http://localhost:9000/](http://localhost:9000/). Here you should see an example video.
+   [http://localhost:9000/](http://localhost:9000/). Here you should see the video shown below. On the [next page](/basic-example), we're going to take a look at the code of this example.
 
 
-### Rendering Videos
+```tsx editor
+import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
+import {all, chain, createRef, waitFor} from '@revideo/core';
 
-To render your video, you can either use the **Export** button in the editor, or run:
+export default makeScene2D(function* (view) {
+  const logoRef = createRef<Img>();
 
-  ```shell
-   npm run render
-   ```
+  yield view.add(
+    <>
+      <Video
+        src={'https://revideo-example-assets.s3.amazonaws.com/stars.mp4'}
+        play={true}
+        size={['100%', '100%']}
+      />
+      <Audio
+        src={'https://revideo-example-assets.s3.amazonaws.com/chill-beat.mp3'}
+        play={true}
+        time={17.0}
+      />
+    </>,
+  );
 
-After running this command, you should see the exported file at `output/project.mp4`.
+  yield* waitFor(1);
 
+  view.add(
+    <Img
+      width={'1%'}
+      ref={logoRef}
+      src={
+        'https://revideo-example-assets.s3.amazonaws.com/revideo-logo-white.png'
+      }
+    />,
+  );
+
+  yield* chain(
+    all(logoRef().scale(40, 2), logoRef().rotation(360, 2)),
+    logoRef().scale(60, 1),
+  );
+});
+```
 <!---
 Now save the file. Any changes you make are automatically picked up and
 reflected in the preview.

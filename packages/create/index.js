@@ -103,15 +103,13 @@ const PLUGINS = {
   }
 
   const plugins = [PLUGINS.core, PLUGINS.ffmpeg];
-  const language = 'ts';
-
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
     '..',
-    `template-2d-${language}`,
+    `template-2d-ts`,
   );
   copyDirectory(templateDir, response.path);
-  createConfig(response, plugins, language);
+  createConfig(response, plugins);
 
   const manifest = JSON.parse(
     fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
@@ -180,7 +178,7 @@ function copy(src, dest) {
   }
 }
 
-function createConfig(response, selectedPlugins, language) {
+function createConfig(response, selectedPlugins) {
   const imports = [];
   const plugins = [];
   for (const data of selectedPlugins) {
@@ -188,7 +186,7 @@ function createConfig(response, selectedPlugins, language) {
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }
 
-  const configFile = path.resolve(response.path, `vite.config.${language}`);
+  const configFile = path.resolve(response.path, `vite.config.ts`);
 
   fs.writeFileSync(
     configFile,

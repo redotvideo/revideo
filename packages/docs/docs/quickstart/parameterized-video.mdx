@@ -1,0 +1,77 @@
+---
+sidebar_position: 4
+slug: /parameterized-video
+---
+
+# Parameterized Videos
+
+To render videos with dynamic inputs or to build video apps, you can use video parameters. Consider this example of a welcome video post sign-up:
+
+
+```tsx editor
+import {Txt, makeScene2D} from '@revideo/2d';
+import {useScene, createRef} from '@revideo/core';
+
+export default makeScene2D(function* (view) {
+  const textRef = createRef<Txt>();
+  
+  const name = "new user"
+
+  view.add(
+    <Txt fontSize={1} textWrap={true} ref={textRef} fill={"white"}>Hello {name}!</Txt>,
+  );
+
+  yield* textRef().scale(30, 2);
+});
+```
+
+Instead of using the generic `"new user"` string, we might want to use the user's real name - we can do this using a project variable:
+
+```tsx
+import {Txt, makeScene2D} from '@revideo/2d';
+import {useScene, createRef} from '@revideo/core';
+
+export default makeScene2D(function* (view) {
+  const textRef = createRef<Txt>();
+
+  const name = useScene().variables.get('username', 'new user');
+
+  view.add(
+    <Txt fontSize={1} textWrap={true} ref={textRef} fill={"white"}>Hello {name}!</Txt>,
+  );
+
+  yield* textRef().scale(30, 2);
+});
+```
+
+This will also assign `"new user"` to the `name` variable, but use the username variable if it is passed to the project.
+
+### Passing Parameters to `renderVideo()`
+
+You can pass variables to `renderVideo()` as follows:
+
+```ts
+import {renderVideo} from '@revideo/renderer';
+
+renderVideo('./vite.config.ts', { username: 'Mike' });
+```
+
+### Passing Parameters to visual editor
+
+To use variables in the visual editor, you can pass them to `makeProject` in `src/project.ts`:
+
+```ts
+import {makeProject} from '@revideo/core';
+import example from './scenes/example?scene';
+
+export default makeProject({
+  scenes: [example],
+  variables: { username: 'Mike' }
+});
+```
+
+### Complex Parameters
+
+Parameters allow you to extensively customize videos. For instance, you can also pass file names as parameters, which can in turn point to audio or images generated from AI services like text-to-speech software or image generators.
+
+To understand how to build video projects with more complex parameters, you can check out our [reddit post reader example](/reddit-post-reader). This project fetches reddit posts and generates videos that reads them to the viewer using speech-to-text software.

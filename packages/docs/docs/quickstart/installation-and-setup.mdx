@@ -37,7 +37,13 @@ After agreeing to install the `@revideo/create` package and choosing a project p
    [http://localhost:9000/](http://localhost:9000/). Here you should see the video shown below. On the [next page](/basic-example), we're going to take a look at the code of this example.
 
 
-```tsx editor
+<video width="708" height="400" controls>
+  <source src="https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+
+```tsx
 import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
 import {all, chain, createRef, waitFor} from '@revideo/core';
 
@@ -77,7 +83,10 @@ export default makeScene2D(function* (view) {
   );
 });
 ```
+
+
 <!---
+
 Now save the file. Any changes you make are automatically picked up and
 reflected in the preview.
 

@@ -9,39 +9,44 @@ import source from '!!raw-loader!@revideo/examples/src/scenes/quickstart';
 
 # Installation and Setup
 
-Let's install revideo with a sample project. To use revideo, make sure that you have [Node.js](https://nodejs.org/) version 16 or greater.
+Let's install revideo with a sample project. To use revideo, make sure that you
+have [Node.js](https://nodejs.org/) version 16 or greater.
 
 ### Creating a new project
 
-Run the following command to create a new revideo project (If
-this fails, check out the [troubleshooting](#troubleshooting) section):
+Run the following command to create a new revideo project (If this fails, check
+out the [troubleshooting](#troubleshooting) section):
 
 ```bash
 npm init @revideo@latest
 ```
 
-After agreeing to install the `@revideo/create` package and choosing a project path (`<project-path>`), navigate to your project and install all dependencies:
+After agreeing to install the `@revideo/create` package and choosing a project
+path (`<project-path>`), navigate to your project and install all dependencies:
 
-   ```shell
-   cd <project-path>
-   npm install
-   ```
+```shell
+cd <project-path>
+npm install
+```
 
-   To preview your video in the editor, run:
+To preview your video in the editor, run:
 
-  ```shell
-   npm start
-   ```
+```shell
+ npm start
+```
 
-   The editor can now be accessed by visiting
-   [http://localhost:9000/](http://localhost:9000/). Here you should see the video shown below. On the [next page](/basic-example), we're going to take a look at the code of this example.
-
+The editor can now be accessed by visiting
+[http://localhost:9000/](http://localhost:9000/). Here you should see the video
+shown below. On the [next page](/basic-example), we're going to take a look at
+the code of this example.
 
 <video width="708" height="400" controls>
-  <source src="https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4" type="video/mp4" />
+  <source
+    src="https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4"
+    type="video/mp4"
+  />
   Your browser does not support the video tag.
 </video>
-
 
 ```tsx
 import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
@@ -83,7 +88,6 @@ export default makeScene2D(function* (view) {
   );
 });
 ```
-
 
 <!---
 
@@ -277,9 +281,6 @@ This brings us back to our initial example:
 </CodeBlock>
 
 ---->
-
-
-
 
 ## Troubleshooting
 

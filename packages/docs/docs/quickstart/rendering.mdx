@@ -5,18 +5,23 @@ slug: /rendering-video
 
 # Rendering Video
 
-You can render your videos and export them as .mp4 files either directly from the browser or through a node.js function call using the [renderer](https://github.com/havenhq/revideo/tree/main/packages/renderer) package.
+You can render your videos and export them as .mp4 files either directly from
+the browser or through a node.js function call using the
+[renderer](https://github.com/havenhq/revideo/tree/main/packages/renderer)
+package.
 
 ### Rendering with `renderVideo()`
 
-You can render videos through the node.js function `renderVideo` from the `@revideo/renderer` package, which uses a headless browser. After the function has run, your .mp4 file will be located in the output path specified in `vite.config.ts`, which is `output/project.mp4` by default.
+You can render videos through the node.js function `renderVideo` from the
+`@revideo/renderer` package, which uses a headless browser. After the function
+has run, your .mp4 file will be located in the output path specified in
+`vite.config.ts`, which is `output/project.mp4` by default.
 
 ```ts
 import {renderVideo} from '@revideo/renderer';
 
 renderVideo('./vite.config.ts');
 ```
-
 
 ### Rendering from the browser
 

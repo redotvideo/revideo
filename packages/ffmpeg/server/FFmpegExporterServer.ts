@@ -116,10 +116,8 @@ export class FFmpegExporterServer {
 
     const audioFilenames: string[] = [];
     for (const asset of assetPositions) {
-      let hasAudioStream: boolean;
-      if (asset.type === 'audio') {
-        hasAudioStream = true;
-      } else {
+      let hasAudioStream = true;
+      if (asset.type !== 'audio') {
         hasAudioStream = await this.checkForAudioStream(asset);
       }
 
@@ -152,7 +150,11 @@ export class FFmpegExporterServer {
     return new Promise((resolve, reject) => {
       ffmpeg.ffprobe(asset.src, (err, metadata) => {
         if (err) {
-          console.error('error checking for audioStream for asset', asset.key);
+          console.error(
+            'error checking for audioStream for asset',
+            asset.key,
+            err,
+          );
           reject(err);
           return;
         }

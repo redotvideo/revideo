@@ -75,4 +75,4 @@ export default makeScene2D(function* (view) {
 });
 ```
 
-![Alt Text](https://user-images.githubusercontent.com/66544866/173453972-6526e4e6-c6ef-41c5-ab40-5d275e724e7c.mp4)
+https://github.com/havenhq/revideo/assets/122226645/4d4e56ba-5143-4e4b-9acf-d8a04330d162

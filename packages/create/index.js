@@ -29,7 +29,7 @@ const PLUGINS = {
   ffmpeg: {
     package: '@revideo/ffmpeg',
     variable: 'ffmpeg',
-    version: '^0.1.1',
+    version: '^0.1.5',
   },
 };
 
@@ -63,7 +63,7 @@ const PLUGINS = {
       type: 'text',
       name: 'name',
       message: 'Project name',
-      initial: 'my-animation',
+      initial: 'my-revideo-project',
       validate: value =>
         isValidPackageName(value)
           ? true
@@ -95,76 +95,28 @@ const PLUGINS = {
       },
       format: value => path.resolve(value),
     },
-    {
-      type: 'select',
-      name: 'language',
-      message: 'Language',
-      choices: [
-        {
-          title: 'TypeScript (Recommended)',
-          value: 'ts',
-        },
-        {
-          title: 'JavaScript',
-          value: 'js',
-        },
-      ],
-    },
-    {
-      type: 'multiselect',
-      name: 'plugins',
-      message: 'How would you like to render your animation?',
-      choices: [
-        {
-          title: 'Image sequence',
-          value: 'core',
-          disabled: true,
-          selected: true,
-        },
-        {
-          title: 'Video (FFmpeg)',
-          value: 'ffmpeg',
-          selected: true,
-        },
-      ],
-      warn: 'This option is always included.',
-      onRender() {
-        this.value[0].selected = true;
-      },
-      validate: value => {
-        if (!Array.isArray(value)) {
-          return '"plugins" option must be an array.';
-        }
-
-        if (!value.includes('core')) {
-          return 'Image sequence is required.';
-        }
-
-        return true;
-      },
-    },
   ]);
 
-  if (!response.plugins) {
+  if (!response.path) {
     console.log(kleur.red('× Scaffolding aborted by the user.\n'));
     return;
   }
 
+  const plugins = [PLUGINS.core, PLUGINS.ffmpeg];
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
     '..',
-    `template-2d-${response.language}`,
+    `template-2d-ts`,
   );
   copyDirectory(templateDir, response.path);
-  createConfig(response);
+  createConfig(response, plugins);
 
   const manifest = JSON.parse(
     fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
   );
   manifest.name = response.name;
   manifest.dependencies ??= {};
-  for (const plugin of response.plugins) {
-    const data = PLUGINS[plugin];
+  for (const data of plugins) {
     if (data.version) {
       manifest.dependencies[data.package] = data.version;
     }
@@ -226,19 +178,15 @@ function copy(src, dest) {
   }
 }
 
-function createConfig(response) {
+function createConfig(response, selectedPlugins) {
   const imports = [];
   const plugins = [];
-  for (const plugin of response.plugins) {
-    const data = PLUGINS[plugin];
+  for (const data of selectedPlugins) {
     imports.push(`import ${data.variable} from '${data.package}';\n`);
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }
 
-  const configFile = path.resolve(
-    response.path,
-    `vite.config.${response.language}`,
-  );
+  const configFile = path.resolve(response.path, `vite.config.ts`);
 
   fs.writeFileSync(
     configFile,

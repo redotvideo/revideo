@@ -5,7 +5,8 @@
   "scripts": {
     "start": "vite",
     "serve": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "render": "tsc && node dist/render.js"
   },
   "dependencies": {
     "@revideo/core": "*",

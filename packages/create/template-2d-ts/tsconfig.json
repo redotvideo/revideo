@@ -1,4 +1,8 @@
 {
   "extends": "@revideo/2d/tsconfig.project.json",
-  "include": ["src"]
+  "include": ["src"],
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist"
+  }
 }

@@ -17,14 +17,18 @@
 
 # Revideo - Create Videos with Code
 
-Revideo lets you create videos using Typescript. It is forked from the amazing [Motion Canvas](https://motioncanvas.io/) library and extended to provide features that are essential for video, such as:
+Revideo lets you create videos using Typescript. It is forked from the amazing
+[Motion Canvas](https://motioncanvas.io/) library and extended to provide
+features that are essential for video, such as:
 
 - the ability to integrate and edit Audio
 - an API for rendering parameterized videos
 
-Revideo is meant to be an open-source alternative to [Remotion](https://www.remotion.dev/), which has a [restrictive license](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md), making it unsuitable for many projects. While Remotion is built on top of React, Revideo uses the HTML Canvas API and uses generator functions.
-<br/>
-
+Revideo is meant to be an open-source alternative to
+[Remotion](https://www.remotion.dev/), which has a
+[restrictive license](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md),
+making it unsuitable for many projects. While Remotion is built on top of React,
+Revideo uses the HTML Canvas API and uses generator functions. <br/>
 
 ## Getting Started
 
@@ -34,7 +38,8 @@ To create an example project, run the following command:
 npm init @revideo@latest
 ```
 
-The example project will have the following code, which defines the video shown below.
+The example project will have the following code, which defines the video shown
+below.
 
 ```tsx
 import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
@@ -79,7 +84,8 @@ export default makeScene2D(function* (view) {
 
 https://github.com/havenhq/revideo/assets/122226645/4d4e56ba-5143-4e4b-9acf-d8a04330d162
 
-
 ## Learn More
 
-To learn more about Revideo, feel free to check out our [documentation](http://docs.re.video/) or join our [Discord server](https://discord.gg/hexYBZGBY8).
+To learn more about Revideo, feel free to check out our
+[documentation](http://docs.re.video/) or join our
+[Discord server](https://discord.gg/hexYBZGBY8).

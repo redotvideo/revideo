@@ -23,6 +23,8 @@ Revideo lets you create videos using Typescript. It is forked from the amazing [
 - an API for rendering parameterized videos
 
 Revideo is meant to be an open-source alternative to [Remotion](https://www.remotion.dev/), which has a [restrictive license](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md), making it unsuitable for many projects. While Remotion is built on top of React, Revideo uses the HTML Canvas API and uses generator functions.
+<br/>
+
 
 ## Getting Started
 

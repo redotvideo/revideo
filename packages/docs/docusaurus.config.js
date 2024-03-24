@@ -5,12 +5,13 @@ const config = {
   title: 'Hello',
   tagline:
     'A TypeScript library for creating animated videos using the Canvas API.',
-  url: 'https://docs.re.video',
+  url: 'https://havenhq.github.io',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.svg',
-  organizationName: 'revideo',
+  organizationName: 'havenhq',
+  projectName: 'havenhq.github.io',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],

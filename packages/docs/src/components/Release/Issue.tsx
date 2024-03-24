@@ -17,7 +17,7 @@ export default function Issue({user, pr, experimental, children}: IssueProps) {
     <li className={styles.element}>
       <Contributor name={user} />
       {experimental && (
-        <Link to="/docs/experimental" title="Experimental feature">
+        <Link to="/experimental" title="Experimental feature">
           <IconScience className="experimental" />
         </Link>
       )}

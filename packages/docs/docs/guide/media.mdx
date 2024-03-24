@@ -87,7 +87,7 @@ export default makeScene2D(function* (view) {
 ```
 
 Images can also be animated like every other component in Motion Canvas. For
-this, we need to create a [`Reference`](/docs/references) and pass that to the
+this, we need to create a [`Reference`](/references) and pass that to the
 [`Img`](/api/2d/components/Img):
 
 ```tsx
@@ -141,7 +141,7 @@ export default makeScene2D(function* (view) {
 ```
 
 However this will only display the video and will not play it. In order to play
-the video we need to create a [`Reference`](/docs/references) to the element.
+the video we need to create a [`Reference`](/references) to the element.
 
 ```tsx
 // ...
@@ -154,7 +154,7 @@ export default makeScene2D(function* (view) {
 });
 ```
 
-Now that we have a [`Reference`](/docs/references) to the
+Now that we have a [`Reference`](/references) to the
 [`Video`](/api/2d/components/Video) element, we can use it to animate the video,
 as well as [`play`](/api/2d/components/Video#play) and
 [`pause`](/api/2d/components/Video#pause) it.

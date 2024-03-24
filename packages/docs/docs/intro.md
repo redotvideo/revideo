@@ -15,4 +15,4 @@ features that are essential for video, such as:
 We initially built Revideo to provide an open-source alternative to
 [Remotion](https://www.remotion.dev/) that is "good enough", but quickly noticed
 that the Motion Canvas API makes it substantially easier to build sophisticated
-videos. Below you can find some useful links:
+videos.

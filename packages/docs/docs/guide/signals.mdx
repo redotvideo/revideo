@@ -55,7 +55,7 @@ actions (The action is chosen based on the number of arguments):
    ```ts
    signal(3);
    ```
-3. create a [tween](/docs/tweening) for the value:
+3. create a [tween](/tweening) for the value:
    ```ts
    yield * signal(2, 0.3);
    ```
@@ -136,7 +136,7 @@ signal(); // <- value is reset back to 3
 ```
 
 We can also use the [`DEFAULT`](/api/core/signals#DEFAULT) symbol for
-[tweening](/docs/tweening):
+[tweening](/tweening):
 
 ```ts
 yield * signal(DEFAULT, 2);

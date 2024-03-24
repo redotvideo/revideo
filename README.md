@@ -75,4 +75,6 @@ export default makeScene2D(function* (view) {
 });
 ```
 
-![Example](https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4)
+<video width="320" height="240" controls>
+  <source src="https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4" type="video/mp4">
+</video>

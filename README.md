@@ -75,4 +75,4 @@ export default makeScene2D(function* (view) {
 });
 ```
 
-![Example Video](https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4)
+https://revideo-example-assets.s3.amazonaws.com/revideo-example.mp4

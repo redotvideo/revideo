@@ -1,6 +1,6 @@
 {
   "name": "@revideo/create",
-  "version": "0.1.3",
+  "version": "1.6.0",
   "description": "Quickly scaffold revideo projects",
   "main": "index.js",
   "author": "revideo",
@@ -22,8 +22,8 @@
   "devDependencies": {
     "@revideo/2d": "^1.6.0",
     "@revideo/core": "^1.6.0",
-    "@revideo/ui": "^1.6.0",
     "@revideo/renderer": "^1.6.0",
+    "@revideo/ui": "^1.6.0",
     "@revideo/vite-plugin": "^1.6.0"
   },
   "dependencies": {

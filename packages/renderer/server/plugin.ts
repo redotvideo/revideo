@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Plugin} from 'vite';
 
-const RendererPath = path.resolve(__dirname, '../renderer.html');
+const RendererPath = path.resolve(__dirname, 'renderer.html');
 const Content = fs.readFileSync(RendererPath, 'utf-8');
 const HtmlParts = Content.toString().split('{{source}}');
 

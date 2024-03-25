@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@revideo/core": "*",
-    "@revideo/2d": "*"
+    "@revideo/2d": "*",
+    "@revideo/renderer": "*"
   },
   "devDependencies": {
     "@revideo/ui": "*",

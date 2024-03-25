@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npm run client:build && npm run server:build",
+    "postbuild": "ncp renderer.html dist/renderer.html",
     "client:build": "tsc --project client/tsconfig.json",
     "client:dev": "tsc -w --project client/tsconfig.json",
     "server:build": "tsc --project server/tsconfig.json",
@@ -20,6 +21,7 @@
   ],
   "devDependencies": {
     "@revideo/core": "^0.1.0",
+    "ncp": "^2.0.0",
     "puppeteer": "^22.3.0"
   }
 }

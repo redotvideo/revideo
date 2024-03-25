@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.8](https://github.com/havenhq/revideo/compare/v0.1.7...v0.1.8) (2024-03-25)
+
+
+### Bug Fixes
+
+* dependencies ([86d69ef](https://github.com/havenhq/revideo/commit/86d69ef04bce64ab95e4e65bdeb6c90e2c298896))
+
+
+
+
+
+
+
+**Note:** Version bump only for package @revideo/renderer
+
+
+
+
+
 ## [0.1.7](https://github.com/havenhq/revideo/compare/v1.6.0...v0.1.7) (2024-03-25)
 
 

@@ -29,7 +29,7 @@ const PLUGINS = {
   ffmpeg: {
     package: '@revideo/ffmpeg',
     variable: 'ffmpeg',
-    version: '^0.1.5',
+    version: '^0.2.0',
   },
 };
 
@@ -186,15 +186,19 @@ function createConfig(response, selectedPlugins) {
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }
 
+  imports.push("import { rendererPlugin } from '@revideo/renderer';");
+  plugins.push('rendererPlugin()');
+
   const configFile = path.resolve(response.path, `vite.config.ts`);
 
   fs.writeFileSync(
     configFile,
     `import {defineConfig} from 'vite';
 ${imports.join('')}
+
 export default defineConfig({
   plugins: [
-    ${plugins.join('\n    ')}
+    ${plugins.join('\n    ')},
   ],
 });
 `,

@@ -1,6 +1,7 @@
 import preact from '@preact/preset-vite';
 import ffmpeg from '@revideo/ffmpeg';
 import markdown from '@revideo/internal/vite/markdown-literals';
+import {rendererPlugin} from '@revideo/renderer';
 import {defineConfig} from 'vite';
 import motionCanvas from '../vite-plugin/src/main';
 
@@ -25,6 +26,7 @@ export default defineConfig({
   plugins: [
     markdown(),
     ffmpeg(),
+    rendererPlugin(),
     preact({
       include: [
         /packages\/ui\/src\/(.*)\.tsx?$/,

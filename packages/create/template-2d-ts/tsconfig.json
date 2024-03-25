@@ -3,6 +3,7 @@
   "include": ["src"],
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "dist"
+    "outDir": "dist",
+    "module": "CommonJS"
   }
 }

@@ -39,7 +39,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.2",
     "@commitlint/config-conventional": "^18.4.2",
-    "@types/node": "~18.14.0",
+    "@types/node": "18.14.0",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",

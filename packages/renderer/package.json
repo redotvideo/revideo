@@ -22,6 +22,6 @@
   "devDependencies": {
     "@revideo/core": "^1.6.0",
     "ncp": "^2.0.0",
-    "puppeteer": "^22.3.0"
+    "puppeteer": "^22.6.0"
   }
 }

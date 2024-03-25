@@ -9,13 +9,13 @@
     "render": "tsc && node dist/render.js"
   },
   "dependencies": {
-    "@revideo/core": "*",
-    "@revideo/2d": "*",
-    "@revideo/renderer": "*"
+    "@revideo/core": "^0.1.7",
+    "@revideo/2d": "^0.1.7",
+    "@revideo/renderer": "^0.1.7"
   },
   "devDependencies": {
-    "@revideo/ui": "*",
-    "@revideo/vite-plugin": "*",
+    "@revideo/ui": "^0.1.7",
+    "@revideo/vite-plugin": "^0.1.7",
     "typescript": "^5.2.2",
     "vite": "^4.5"
   }

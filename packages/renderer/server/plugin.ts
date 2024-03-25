@@ -17,7 +17,7 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
     async load(id) {
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
-            import {render} from '@revideo/renderer/client/render';
+            import {render} from '@revideo/renderer/dist/client/render';
             import project from './src/project.ts?project';
 
             project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params)}\`)` : 'project.variables'};

@@ -1,6 +1,6 @@
 {
   "name": "@revideo/ffmpeg",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "An FFmpeg video exporter for revideo",
   "main": "lib/server/index.js",
   "author": "revideo",
@@ -27,8 +27,8 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffprobe-installer/ffprobe": "^2.0.0",
-    "@revideo/core": "^0.1.10",
-    "@revideo/vite-plugin": "^0.1.10",
+    "@revideo/core": "^0.2.0",
+    "@revideo/vite-plugin": "^0.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "uuid": "^9.0.1",
     "vite": "^4.5"

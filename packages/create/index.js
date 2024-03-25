@@ -195,7 +195,7 @@ function createConfig(response, selectedPlugins) {
     configFile,
     `import {defineConfig} from 'vite';
 ${imports.join('')}
-import { rendererPlugin } from '@revideo/renderer';
+
 export default defineConfig({
   plugins: [
     ${plugins.join('\n    ')},

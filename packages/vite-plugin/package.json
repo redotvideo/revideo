@@ -1,6 +1,6 @@
 {
   "name": "@revideo/vite-plugin",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "A Vite plugin for revideo projects",
   "main": "lib/index.js",
   "author": "revideo",
@@ -19,12 +19,12 @@
     "lib"
   ],
   "peerDependencies": {
+    "@types/node": "18.14.0",
     "vite": "^4.5"
   },
   "devDependencies": {
     "@types/follow-redirects": "^1.14.1",
-    "@types/mime-types": "^2.1.1",
-    "@types/node": "~18.14.0"
+    "@types/mime-types": "^2.1.1"
   },
   "dependencies": {
     "fast-glob": "^3.3.1",

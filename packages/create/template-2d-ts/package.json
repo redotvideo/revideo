@@ -11,11 +11,11 @@
   "dependencies": {
     "@revideo/core": "^0.1.7",
     "@revideo/2d": "^0.1.7",
-    "@revideo/renderer": "^0.1.7"
+    "@revideo/renderer": "^0.1.7",
+    "@revideo/vite-plugin": "^0.1.7"
   },
   "devDependencies": {
     "@revideo/ui": "^0.1.7",
-    "@revideo/vite-plugin": "^0.1.7",
     "typescript": "^5.2.2",
     "vite": "^4.5"
   }

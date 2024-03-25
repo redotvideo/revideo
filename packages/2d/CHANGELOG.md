@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+
+
+**Note:** Version bump only for package @revideo/2d
+
+
+
+
+
 # 0.2.0 (2024-03-25)
 
 

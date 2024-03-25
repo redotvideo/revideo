@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/havenhq/revideo/compare/v0.1.8...v0.1.9) (2024-03-25)
+
+
+### Bug Fixes
+
+* dependencies ([7413ec1](https://github.com/havenhq/revideo/commit/7413ec13fd9397ad3b7c8cbb0a861423fbb40f1b))
+
+
+
+
+
 ## [0.1.8](https://github.com/havenhq/revideo/compare/v0.1.7...v0.1.8) (2024-03-25)
 
 

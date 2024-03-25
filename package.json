@@ -58,7 +58,7 @@
     "*.{js,jsx,ts,tsx,md,scss}": "prettier --write"
   },
   "dependencies": {
-    "@preact/preset-vite": "^2.7.0",
+    "@preact/preset-vite": "^2.5.0",
     "@wooorm/starry-night": "^3.3.0",
     "lunr": "^2.3.9",
     "marked": "^12.0.1",

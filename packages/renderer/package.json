@@ -20,7 +20,7 @@
     "types"
   ],
   "devDependencies": {
-    "@revideo/core": "^0.1.0",
+    "@revideo/core": "*",
     "ncp": "^2.0.0",
     "puppeteer": "^22.3.0"
   }

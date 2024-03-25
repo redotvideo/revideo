@@ -1,37 +1,24 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 ## [0.1.1](https://github.com/havenhq/revideo/compare/v0.1.0...v0.1.1) (2024-03-17)
 
-
 ### Bug Fixes
 
-* resolve import issues in quickstart project ([e839086](https://github.com/havenhq/revideo/commit/e8390869c087c92c9d448cd16e9cc648d6b2dbe0))
-
-
-
-
-
-
+- resolve import issues in quickstart project
+  ([e839086](https://github.com/havenhq/revideo/commit/e8390869c087c92c9d448cd16e9cc648d6b2dbe0))
 
 **Note:** Version bump only for package @revideo/ffmpeg
 
-
-
-
-
 # 0.1.0 (2024-03-17)
-
 
 ### Bug Fixes
 
-* resolve asset file paths differently when they are inside project ([#5](https://github.com/havenhq/revideo/issues/5)) ([e0a3917](https://github.com/havenhq/revideo/commit/e0a39175a34f501ffce0fa4508c83e84244fd43c))
-
-
-
-
+- resolve asset file paths differently when they are inside project
+  ([#5](https://github.com/havenhq/revideo/issues/5))
+  ([e0a3917](https://github.com/havenhq/revideo/commit/e0a39175a34f501ffce0fa4508c83e84244fd43c))
 
 # Change Log
 

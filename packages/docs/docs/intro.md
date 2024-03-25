@@ -3,24 +3,16 @@ sidebar_position: 1
 slug: /
 ---
 
-# Introduction
+# Welcome to Revideo!
 
-Motion Canvas consists of two main components:
+Revideo lets you create videos programmatically. It is forked from the animation
+library [Motion Canvas](https://motioncanvas.io/) and extended to provide
+features that are essential for video, such as:
 
-- A TypeScript library that uses generators to program animations.
-- An editor providing a real-time preview of said animations.
+- the ability to integrate and edit Audio
+- an API for rendering parameterized videos
 
-It's a specialized tool designed to create informative vector animations and
-synchronize them with voice-overs. It's not meant to be a replacement for
-traditional video editing software.
-
-Aside from providing the preview, the editor allows you to edit certain aspects
-of the animation which could otherwise be tedious. You can learn more about this
-functionality in the [time events](/docs/time-events) section.
-
-Motion Canvas is a free and open source project. You can help making it better
-by reporting bugs, proposing new features, or contributing to the codebase. If
-you're interested, our [contribution guide][contributing] will help you get
-started.
-
-[contributing]: https://github.com/revideo/revideo/blob/main/CONTRIBUTING.md
+We initially built Revideo to provide an open-source alternative to
+[Remotion](https://www.remotion.dev/) that is "good enough", but quickly noticed
+that the Motion Canvas API makes it substantially easier to build sophisticated
+videos.

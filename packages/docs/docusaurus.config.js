@@ -2,16 +2,16 @@
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Motion Canvas',
+  title: 'Hello',
   tagline:
     'A TypeScript library for creating animated videos using the Canvas API.',
-  url: 'https://motioncanvas.io',
+  url: 'https://havenhq.github.io',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.svg',
-  organizationName: 'revideo',
-  projectName: 'revideo.github.io',
+  organizationName: 'havenhq',
+  projectName: 'havenhq.github.io',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -20,11 +20,9 @@ const config = {
     mermaid: true,
   },
   customFields: {
-    discordApi:
-      'https://discord.com/api/guilds/1071029581009657896/widget.json',
-    discordUrl: 'https://chat.motioncanvas.io',
-    githubApi: 'https://api.github.com/repos/revideo/revideo',
-    githubUrl: 'https://github.com/revideo/revideo',
+    discordUrl: 'https://discord.gg/a7cDKnn8',
+    githubApi: 'https://api.github.com/repos/havenhq/revideo',
+    githubUrl: 'https://github.com/havenhq/revideo',
   },
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
@@ -35,7 +33,6 @@ const config = {
         defaultMode: 'dark',
       },
       navbar: {
-        title: 'Motion Canvas',
         logo: {
           alt: 'Motion Canvas Logo',
           src: 'img/logo.svg',
@@ -49,38 +46,24 @@ const config = {
             label: 'Docs',
           },
           {to: '/api/core', label: 'API', position: 'left'},
-          {to: '/blog', label: 'Blog', position: 'left'},
         ],
       },
       footer: {
         links: [
           {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Docs',
-                to: 'docs',
-              },
-              {
-                label: 'API',
-                to: 'api/core',
-              },
-            ],
-          },
-          {
             title: 'Community',
             items: [
               {
-                label: 'Patreon',
-                href: 'https://patreon.com/aarthificial',
-              },
-              {
-                label: 'YouTube',
-                href: 'https://youtube.com/aarthificial',
-              },
-              {
                 label: 'Discord',
-                href: 'https://chat.motioncanvas.io',
+                href: 'https://discord.gg/a7cDKnn8',
+              },
+              {
+                label: 'Twitter / X',
+                href: 'https://twitter.com/redotvideo',
+              },
+              {
+                label: 'Linkedin',
+                href: 'https://www.linkedin.com/company/98191419',
               },
             ],
           },
@@ -88,17 +71,17 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'GitHub',
+                href: 'https://github.com/havenhq/revideo',
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/revideo/revideo',
+                label: 'Website',
+                href: 'https://re.video/',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Motion Canvas. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Revideo. Built with Docusaurus.`,
       },
       algolia: {
         appId: 'Q6Z7BJ83RF',
@@ -127,7 +110,7 @@ const config = {
     [
       '@docusaurus/plugin-content-docs',
       {
-        routeBasePath: '/docs',
+        routeBasePath: '/',
         sidebarPath: 'sidebars.js',
         exclude: ['**/api/core/*.md', '**/api/2d/*.md'],
         showLastUpdateAuthor: true,
@@ -144,7 +127,7 @@ const config = {
           ],
         },
         editUrl: ({versionDocsDirPath, docPath}) =>
-          `https://github.com/revideo/revideo/blob/main/packages/docs/${versionDocsDirPath}/${docPath}`,
+          `https://github.com/havenhq/revideo/blob/main/packages/docs/${versionDocsDirPath}/${docPath}`,
       },
     ],
     [
@@ -152,7 +135,7 @@ const config = {
       {
         showReadingTime: true,
         editUrl: ({blogDirPath, blogPath}) =>
-          `https://github.com/revideo/revideo/blob/main/packages/docs/${blogDirPath}/${blogPath}`,
+          `https://github.com/havenhq/revideo/blob/main/packages/docs/${blogDirPath}/${blogPath}`,
       },
     ],
     '@docusaurus/plugin-content-pages',

@@ -1,0 +1,124 @@
+---
+sidebar_position: 14
+slug: /rendering
+---
+
+import {VideoSettings} from '@site/src/Icon/VideoSettings';
+import {PhotoCamera} from '@site/src/Icon/PhotoCamera';
+import DocCardList from '@theme/DocCardList';
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
+
+# Rendering
+
+_Note: These docs were adopted from the original
+[Motion Canvas](https://motioncanvas.io/docs/) docs_
+
+The Video Settings tab serves as the main control panel for all things related
+to the display of your animation. You can open it by pressing the <VideoSettings
+  className="icon-inline"
+  alt="Video Settings"
+  title="Video Settings"
+/> icon. Here, you can configure various animation settings, initialize the
+rendering process, and enter the presentation mode.
+
+## Configuration
+
+### Background
+
+The background of your animation. This is the base color used to clear the
+canvas before drawing your scenes. Most color formats such as `#242424` or
+`rgba(255, 255, 255, 0.5)` are accepted. Leaving this option empty will make the
+background transparent.
+
+:::tip
+
+The project background cannot be animated. You can use the `fill` property of
+the view, instead:
+
+```ts
+export default makeScene2D(function* (view) {
+  view.fill('#242424'); // set the background of this scene
+  yield* view.fill('lightseagreen', 2); // animate it
+});
+```
+
+:::
+
+### Range
+
+The range is the span of frames that will be rendered. If set to a smaller range
+than the entire length of the video, it will only render a portion of the frames
+in your animation. This can be useful for quickly rendering small changes in
+your animation.
+
+### Resolution
+
+The resolution in pixels of each frame in the video. You may use this value to
+render in a higher resolution or to change the aspect ratio. Note, however, that
+animations will not scale with changes in resolution, so plan ahead for any
+adjustments to resolution.
+
+### Audio offset
+
+This option is only available if you've [set up audio](/media#audio) for the
+current project. It allows you to offset the start of the audio in relation to
+your animation. The value is stored in seconds. You can also adjust the offset
+by holding <kbd>SHIFT</kbd> over the audio track and dragging it left or right.
+
+### Frame rate
+
+The frame rate at which the animation plays and the number of frames that will
+render per one second of runtime. The most common values are 24, 30, and 60,
+though any whole integer value is allowed. Motion Canvas animations are
+resilient to changes in frame rate, so most animations will not be affected by
+changing it.
+
+### Scale
+
+Scale will increase or decrease the resolution of the animation, but, unlike the
+Resolution option, the coordinates and size of animation elements will be
+adjusted as well.
+
+:::tip
+
+Both Scale and Frame rate can be configured separately for the preview and the
+rendering. This lets you increase the performance of the preview (by rendering
+in smaller resolution and/or lower framerate) while rendering in high quality.
+
+:::
+
+### Color Space
+
+The HTML Canvas color space to use when previewing or rendering the animation.
+Current options include sRGB, a common color space for images and video, and
+DCI-P3, a wide-gamut color space.
+
+### Exporter
+
+The exporter to use when rendering the animation. Exporters are responsible for
+processing the rendered frames and saving them to the output directory. If you
+don't see this option, it means that you don't have any additional exporters
+installed and the default _Image sequence_ exporter will be used.
+
+<DocCardList items={useCurrentSidebarCategory().items} />
+
+## Rendering
+
+Clicking the `RENDER` button will initialize rendering (The button will display
+an in-progress animation during the process). Motion Canvas will play through
+the animation and save the result to `/output` in your project directory. You
+can [change the output directory](/configuration#output) in the configuration
+file. You can also use the `OUTPUT DIRECTORY` button to reveal the current
+output directory in your file explorer.
+
+The rendering process will finish once the button changes back to `RENDER`.
+Usually, this happens when the playhead reaches the end of the selected range
+but some exporters may take longer to finish processing the frames.
+
+You can abort the process at any time by pressing the `ABORT` button.
+
+## Taking Snapshots
+
+You can use the <PhotoCamera className="icon-inline"/> icon to take a snapshot
+of the current frame. Snapshots are saved in the output directory, under
+`/still`.

@@ -19,9 +19,11 @@
     "dist",
     "types"
   ],
+  "dependencies": {
+    "puppeteer": "^22.6.0"
+  },
   "devDependencies": {
     "@revideo/core": "^0.1.7",
-    "ncp": "^2.0.0",
-    "puppeteer": "^22.6.0"
+    "ncp": "^2.0.0"
   }
 }

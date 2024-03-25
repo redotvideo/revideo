@@ -1,6 +1,6 @@
 {
   "name": "@revideo/2d",
-  "version": "1.6.0",
+  "version": "0.1.7",
   "description": "A 2D renderer for revideo",
   "author": "revideo",
   "homepage": "https://re.video/",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@preact/signals": "^1.2.1",
     "@revideo/internal": "0.0.0",
-    "@revideo/ui": "^1.6.0",
+    "@revideo/ui": "^0.1.7",
     "clsx": "^2.0.0",
     "jsdom": "^22.1.0",
     "preact": "^10.19.2",
@@ -40,7 +40,7 @@
     "@codemirror/language": "^6.10.1",
     "@lezer/common": "^1.2.1",
     "@lezer/highlight": "^1.2.0",
-    "@revideo/core": "^1.6.0",
+    "@revideo/core": "^0.1.7",
     "code-fns": "^0.8.2",
     "mathjax-full": "^3.2.2",
     "parse-svg-path": "^0.1.2"

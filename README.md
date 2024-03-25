@@ -15,121 +15,77 @@
 </p>
 <br/>
 
-# Revideo - Make videos with AI
+# Revideo - Create Videos with Code
 
-Revideo is
+Revideo lets you create videos using Typescript. It is forked from the amazing
+[Motion Canvas](https://motioncanvas.io/) library and extended to provide
+features that are essential for video, such as:
 
-- A typescript library to generate videos using AI
-- A collection of API wrappers for services used in generated videos (e.g.
-  text-to-speech and text-to-image, see full list below)
-- An editor to provide instant previews of generated videos
-- Forked from the amazing Motion Canvas
+- the ability to integrate and edit Audio
+- an API for rendering parameterized videos
 
-Think of LangChain, but for video
+Revideo is meant to be an open-source alternative to
+[Remotion](https://www.remotion.dev/), which has a
+[restrictive license](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md),
+making it unsuitable for many projects. While Remotion is built on top of React,
+Revideo uses the HTML Canvas API and uses generator functions. <br/>
 
-## Using Revideo
+## Getting Started
 
-Check out our [getting started][docs] guide to learn how to use Revideo.
-
-## Developing Revideo locally
-
-The project is maintained as one monorepo containing the following packages:
-
-| Name          | Description                                                    |
-| ------------- | -------------------------------------------------------------- |
-| `2d`          | The default renderer for 2D motion graphics                    |
-| `core`        | All logic related to running and rendering animations.         |
-| `create`      | A package for bootstrapping new projects.                      |
-| `docs`        | [Our documentation website.][docs]                             |
-| `e2e`         | End-to-end tests.                                              |
-| `examples`    | Animation examples used in documentation.                      |
-| `internal`    | Internal helpers used for building the packages.               |
-| `player`      | A custom element for displaying animations in a browser.       |
-| `template`    | A template project included for developer's convenience.       |
-| `ui`          | The user interface used for editing.                           |
-| `vite-plugin` | A plugin for Vite used for developing and bundling animations. |
-
-After cloning the repo, run `npm install` in the root of the project to install
-all necessary dependencies. Then run `npx lerna run build` to build all the
-packages.
-
-### Developing Editor
-
-When developing the editor, run the following command:
+To create an example project, run the following command:
 
 ```bash
-npm run template:dev
+npm init @revideo@latest
 ```
 
-It will start a vite server that watches the `core`, `2d`, `ui`, and
-`vite-plugin` packages. The `template` package itself contains a simple Motion
-Canvas project that can be used during development.
+The example project will have the following code, which defines the video shown
+below.
 
-### Developing Player
+```tsx
+import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
+import {all, chain, createRef, waitFor} from '@revideo/core';
 
-To develop the player, first build the template: `npm run template:build`. Then,
-start `npm run player:dev`.
+export default makeScene2D(function* (view) {
+  const logoRef = createRef<Img>();
 
-## Installing a local version of Revideo in a project
+  yield view.add(
+    <>
+      <Video
+        src={'https://revideo-example-assets.s3.amazonaws.com/stars.mp4'}
+        size={['100%', '100%']}
+        play={true}
+      />
+      <Audio
+        src={'https://revideo-example-assets.s3.amazonaws.com/chill-beat.mp3'}
+        play={true}
+        time={17.0}
+      />
+    </>,
+  );
 
-It can be useful to install a local version of Revideo in a standalone project.
-For example, when you want to use your own fork with some custom-made features
-to create your animations.
+  yield* waitFor(1);
 
-Let's assume the following project structure:
+  view.add(
+    <Img
+      width={'1%'}
+      ref={logoRef}
+      src={
+        'https://revideo-example-assets.s3.amazonaws.com/revideo-logo-white.png'
+      }
+    />,
+  );
 
-```
-projects/
-├── revideo/ <- your local monorepo
-└── my-project/ <- a bootstrapped project
-    └── package.json
-```
-
-You can link the local packages from the monorepo by updating the `package.json`
-of your project. Simply replace the version with a `file:` followed by a
-relative path to the package you want to link:
-
-```diff
-  "dependencies": {
--   "@revideo/core": "^3.11.0",
-+   "@revideo/core": "file:../revideo/packages/core",
-    // ...
-  },
-```
-
-If you're linking the `ui` package, you'll also need to modify `vite.config.ts`
-to allow vite to load external files:
-
-```ts
-import {defineConfig} from 'vite';
-import motionCanvas from '@revideo/vite-plugin';
-
-export default defineConfig({
-  server: {
-    fs: {
-      // let it load external files
-      strict: false,
-    },
-  },
-  plugins: [motionCanvas()],
+  yield* chain(
+    all(logoRef().scale(40, 2), logoRef().rotation(360, 2)),
+    logoRef().scale(60, 1),
+  );
 });
 ```
 
-This is necessary because the editor styles are loaded using the `/@fs/` prefix
-and since the linked `ui` package is outside the project, vite needs permission
-to access it.
+https://github.com/havenhq/revideo/assets/122226645/4d4e56ba-5143-4e4b-9acf-d8a04330d162
 
-Then run `npm install` in to apply the changes and that's it.
+## Learn More
 
-You can use the same technique to test out any custom package you're working on.
-
-## Contributing
-
-Read through our [Contribution Guide](./CONTRIBUTING.md) to learn how you can
-help make Revideo better.
-
-[authenticate]:
-  https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token
-[template]: https://github.com/motion-canvas/project-template#using-the-template
-[discord]: https://discord.com/invite/JDjbfp6q2G
-[docs]: https://motioncanvas.io/docs/quickstart
+To learn more about Revideo, feel free to check out our
+[documentation](http://docs.re.video/) or join our
+[Discord server](https://discord.gg/hexYBZGBY8).

@@ -20,6 +20,39 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+
+
+**Note:** Version bump only for package @revideo/renderer
+
+
+
+
+
+
+
+**Note:** Version bump only for package @revideo/renderer
+
+
+
+
+
+# 0.2.0 (2024-03-25)
+
+
+### Bug Fixes
+
+* correct dependencies for create package ([#15](https://github.com/havenhq/revideo/issues/15)) ([27a2737](https://github.com/havenhq/revideo/commit/27a273782f0f22fbe261712f26709c9708020b18))
+
+
+### Features
+
+* add params to render function ([#10](https://github.com/havenhq/revideo/issues/10)) ([b23fb9d](https://github.com/havenhq/revideo/commit/b23fb9de3473eca9de23b8327c2c650f54c5c66b))
+* publish package to npm ([#6](https://github.com/havenhq/revideo/issues/6)) ([1e508b9](https://github.com/havenhq/revideo/commit/1e508b983d75cc7a647f5d6de5ce62ff4ec90953))
+
+
+
+
+
 ## [0.1.10](https://github.com/havenhq/revideo/compare/v0.1.9...v0.1.10) (2024-03-25)
 
 **Note:** Version bump only for package @revideo/renderer

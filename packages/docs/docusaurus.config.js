@@ -20,7 +20,7 @@ const config = {
     mermaid: true,
   },
   customFields: {
-    discordUrl: 'https://discord.gg/Vynmudw4jT',
+    discordUrl: 'https://discord.com/invite/JDjbfp6q2G',
     githubApi: 'https://api.github.com/repos/havenhq/revideo',
     githubUrl: 'https://github.com/havenhq/revideo',
   },

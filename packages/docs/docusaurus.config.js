@@ -2,7 +2,7 @@
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Hello',
+  title: 'Revideo',
   tagline:
     'A TypeScript library for creating animated videos using the Canvas API.',
   url: 'https://havenhq.github.io',

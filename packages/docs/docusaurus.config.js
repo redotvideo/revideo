@@ -94,6 +94,13 @@ const config = {
         additionalLanguages: ['glsl'],
       },
     }),
+  scripts: [
+    {
+      src: 'https://plausible.io/js/script.js',
+      defer: true,
+      'data-domain': 'docs.re.video',
+    },
+  ],
   themes: [
     [
       '@docusaurus/theme-classic',

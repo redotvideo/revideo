@@ -84,6 +84,20 @@ export default makeScene2D(function* (view) {
 
 https://github.com/havenhq/revideo/assets/122226645/4d4e56ba-5143-4e4b-9acf-d8a04330d162
 
+## Telemetry
+
+To understand how people use Revideo, we **anonymously** track how many videos
+are rendered using the open-source tool
+[Posthog](https://github.com/PostHog/posthog). You can find our code
+implementing Posthog
+[here](https://github.com/redotvideo/revideo/tree/main/packages/ffmpeg/server/telemetry).
+
+If you want to disable telemetry, just set the following environent variable:
+
+```bash
+DISABLE_TELEMETRY=true
+```
+
 ## Learn More
 
 To learn more about Revideo, feel free to check out our

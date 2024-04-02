@@ -1,15 +1,22 @@
 <div class="overlay" part="overlay">
   <div class="controls">
     <button
-    part="play-button"
-    title="Play / Pause"
-    class="button play-button ready"
-    tabindex="0"
-  ></button>
-  <!-- New button to the right -->
-  <span class="current-time" part="current-time">0:00 / 0:00</span>
+      part="play-button"
+      title="Play / Pause"
+      class="button play-button ready"
+      tabindex="0"
+    ></button>
+    <!-- New button to the right -->
+    <span class="current-time" part="current-time">0:00 / 0:00</span>
     <div class="timeline-container">
-      <input type="range" class="timeline" value="0" min="0" max="100" step="1">
+      <input
+        type="range"
+        class="timeline"
+        value="0"
+        min="0"
+        max="100"
+        step="1"
+      />
     </div>
   </div>
   <div part="message" class="message error">
@@ -22,6 +29,5 @@
     stroke="#ffffff"
     stroke-width="2"
     fill="transparent"
-  >
-  </svg>
+  ></svg>
 </div>

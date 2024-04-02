@@ -20,14 +20,17 @@
       variables='{"fill":"white"}'
     ></revideo-player>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         var colors = ['red', 'green', 'blue', 'yellow'];
         var index = 0;
 
-        setInterval(function() {
+        setInterval(function () {
           var revideoPlayer = document.getElementById('myRevideoPlayer');
           var color = colors[index % colors.length];
-          revideoPlayer.setAttribute('variables', JSON.stringify({ fill: color }));
+          revideoPlayer.setAttribute(
+            'variables',
+            JSON.stringify({fill: color}),
+          );
           index++;
         }, 1000); // Change color every 1000 milliseconds (1 second)
       });

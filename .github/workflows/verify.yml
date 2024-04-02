@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
-      - run: PUPPETEER_PRODUCT=firefox PUPPETEER_BROWSER_REVISION=125.0a1 npm ci
+      - run: PUPPETEER_PRODUCT=firefox npm ci
       - uses: actions/cache/save@v3
         with:
           key: ${{ github.run_id }}-node-modules

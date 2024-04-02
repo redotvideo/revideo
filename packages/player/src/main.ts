@@ -69,6 +69,7 @@ class MotionCanvasPlayer extends HTMLElement {
   private playing = false;
   private connected = false;
   private stage = new Stage();
+  private timeline: HTMLInputElement;
 
   public constructor() {
     super();
@@ -81,13 +82,28 @@ class MotionCanvasPlayer extends HTMLElement {
     this.canvas.classList.add('canvas');
     this.root.prepend(this.canvas);
 
+    this.timeline = this.root.querySelector('.timeline');
+    this.timeline.addEventListener('input', this.handleTimelineChange);
+    this.timeline.addEventListener('change', this.handleTimelineChange);
+
+    this.button.addEventListener('click', this.handleClick);
+    this.button.addEventListener('mousedown', this.handleMouseDown);
     this.overlay.addEventListener('click', this.handleClick);
     this.overlay.addEventListener('mousemove', this.handleMouseMove);
     this.overlay.addEventListener('mouseleave', this.handleMouseLeave);
-    this.button.addEventListener('mousedown', this.handleMouseDown);
+    this.overlay.addEventListener('mousedown', this.handleMouseDown);
 
     this.setState(State.Initial);
   }
+
+  private handleTimelineChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const value = parseFloat(target.value);
+    const durationInFrames = this.player?.playback.duration;
+    if (durationInFrames) {
+      this.player?.requestSeek(value);
+    }
+  };
 
   private handleMouseMove = () => {
     if (this.mouseMoveId) {
@@ -116,10 +132,19 @@ class MotionCanvasPlayer extends HTMLElement {
   };
 
   private handleMouseDown = (e: MouseEvent) => {
+    if ((e.target as Element).closest('.timeline')) {
+      return;
+    }
+
     e.preventDefault();
   };
 
-  private handleClick = () => {
+  private handleClick = (e: MouseEvent) => {
+    if ((e.target as Element).closest('.timeline')) {
+      // don't run play or pause if user clicks on timeline slider
+      return;
+    }
+
     if (this.auto) return;
     this.handleMouseMove();
     this.setPlaying(!this.playing);
@@ -223,6 +248,7 @@ class MotionCanvasPlayer extends HTMLElement {
         break;
       case 'variables':
         this.player?.setVariables(this.variables);
+        this.player.requestSeek(this.player.playback.frame); // reseek to update variables immediately
     }
   }
 
@@ -244,6 +270,36 @@ class MotionCanvasPlayer extends HTMLElement {
         this.player.playback.currentScene,
         this.player.playback.previousScene,
       );
+
+      this.timeline.setAttribute('min', '0');
+      this.timeline.setAttribute('step', '1');
+      this.timeline.setAttribute(
+        'max',
+        this.player?.playback.duration.toString(),
+      );
+
+      const currentTimeInSeconds = this.player.status.time; // Assuming this gives the current time in seconds
+      const durationInSeconds = this.player.status.framesToSeconds(
+        this.player.playback.duration,
+      ); // Assuming this gives the total duration in seconds
+      if (durationInSeconds) {
+        const value = this.player.status.secondsToFrames(currentTimeInSeconds);
+        this.timeline.value = value.toString();
+
+        const gradientStyle = `linear-gradient(to right, rgb(180, 180, 180) 0%, rgb(180, 180, 180) ${(100 * value) / this.player.status.secondsToFrames(durationInSeconds)}%, white ${(100 * value) / this.player.status.secondsToFrames(durationInSeconds)}%, white 100%)`;
+        this.timeline.style.background = gradientStyle; // Standard property
+        this.timeline.style.setProperty('--webkit-track', gradientStyle);
+        this.timeline.style.setProperty('--moz-track', gradientStyle);
+        this.timeline.style.setProperty('--ms-track', gradientStyle);
+
+        const currentTimeFormatted = this.formatTime(currentTimeInSeconds);
+        const durationFormatted = this.formatTime(durationInSeconds);
+
+        const currentTimeElement = this.root.querySelector('.current-time');
+        if (currentTimeElement) {
+          currentTimeElement.textContent = `${currentTimeFormatted} / ${durationFormatted}`;
+        }
+      }
     }
   };
 
@@ -255,6 +311,14 @@ class MotionCanvasPlayer extends HTMLElement {
     };
     this.stage.configure(settings);
     this.player.configure(settings);
+  }
+
+  private formatTime(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    const paddedSeconds = remainingSeconds.toString().padStart(2, '0');
+    return `${paddedMinutes}:${paddedSeconds}`;
   }
 }
 

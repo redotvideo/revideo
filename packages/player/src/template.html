@@ -1,10 +1,17 @@
 <div class="overlay" part="overlay">
-  <button
+  <div class="controls">
+    <button
     part="play-button"
     title="Play / Pause"
-    class="button ready"
+    class="button play-button ready"
     tabindex="0"
   ></button>
+  <!-- New button to the right -->
+  <span class="current-time" part="current-time">0:00 / 0:00</span>
+    <div class="timeline-container">
+      <input type="range" class="timeline" value="0" min="0" max="100" step="1">
+    </div>
+  </div>
   <div part="message" class="message error">
     An error occurred while loading the animation.
   </div>
@@ -16,6 +23,5 @@
     stroke-width="2"
     fill="transparent"
   >
-    <circle cx="12" cy="12" r="9" />
   </svg>
 </div>

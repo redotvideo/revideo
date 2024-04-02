@@ -30,6 +30,7 @@
     "@revideo/core": "^0.2.0",
     "@revideo/vite-plugin": "^0.2.0",
     "fluent-ffmpeg": "^2.1.2",
+    "posthog-node": "^4.0.0",
     "uuid": "^9.0.1",
     "vite": "^4.5"
   }

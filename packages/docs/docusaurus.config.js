@@ -5,13 +5,13 @@ const config = {
   title: 'Revideo',
   tagline:
     'A TypeScript library for creating animated videos using the Canvas API.',
-  url: 'https://havenhq.github.io',
+  url: 'https://redotvideo.github.io',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.svg',
-  organizationName: 'havenhq',
-  projectName: 'havenhq.github.io',
+  organizationName: 'redotvideo',
+  projectName: 'redotvideo.github.io',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -94,6 +94,13 @@ const config = {
         additionalLanguages: ['glsl'],
       },
     }),
+  scripts: [
+    {
+      src: 'https://plausible.io/js/script.js',
+      defer: true,
+      'data-domain': 'docs.re.video',
+    },
+  ],
   themes: [
     [
       '@docusaurus/theme-classic',

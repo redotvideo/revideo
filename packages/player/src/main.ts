@@ -141,7 +141,6 @@ class MotionCanvasPlayer extends HTMLElement {
 
   private handleClick = (e: MouseEvent) => {
     if ((e.target as Element).closest('.timeline')) {
-      // don't run play or pause if user clicks on timeline slider
       return;
     }
 

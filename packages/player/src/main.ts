@@ -247,7 +247,7 @@ class MotionCanvasPlayer extends HTMLElement {
         break;
       case 'variables':
         this.player?.setVariables(this.variables);
-        this.player.requestSeek(this.player.playback.frame); // reseek to update variables immediately
+        this.player?.requestSeek(this.player.playback.frame); // reseek to update variables immediately
     }
   }
 

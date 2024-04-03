@@ -277,16 +277,16 @@ class MotionCanvasPlayer extends HTMLElement {
         this.player?.playback.duration.toString(),
       );
 
-      const currentTimeInSeconds = this.player.status.time; // Assuming this gives the current time in seconds
+      const currentTimeInSeconds = this.player.status.time;
       const durationInSeconds = this.player.status.framesToSeconds(
         this.player.playback.duration,
-      ); // Assuming this gives the total duration in seconds
+      );
       if (durationInSeconds) {
         const value = this.player.status.secondsToFrames(currentTimeInSeconds);
         this.timeline.value = value.toString();
 
         const gradientStyle = `linear-gradient(to right, rgb(180, 180, 180) 0%, rgb(180, 180, 180) ${(100 * value) / this.player.status.secondsToFrames(durationInSeconds)}%, white ${(100 * value) / this.player.status.secondsToFrames(durationInSeconds)}%, white 100%)`;
-        this.timeline.style.background = gradientStyle; // Standard property
+        this.timeline.style.background = gradientStyle;
         this.timeline.style.setProperty('--webkit-track', gradientStyle);
         this.timeline.style.setProperty('--moz-track', gradientStyle);
         this.timeline.style.setProperty('--ms-track', gradientStyle);

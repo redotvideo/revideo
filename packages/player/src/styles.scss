@@ -22,36 +22,34 @@ $states: ('initial' 'loading' 'ready' 'error');
   bottom: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Align button to the left and timeline to the right */
-  bottom: 0%; /* Position the controls 5% from the bottom */
+  justify-content: space-between;
+  bottom: 0%;
   height: 10%;
-  background: rgba(0, 0, 0, 0); // semi-transparent background for controls
+  background: rgba(0, 0, 0, 0);
 }
 
 .timeline-container {
   height: 100%;
-  width: calc(100% - 32px); // Subtract the total margin from the width
+  width: calc(100% - 32px);
   top: 0%;
   position: absolute;
   z-index: 5;
 }
 
-/* General styles for the timeline */
 .timeline {
   position: absolute;
   appearance: none;
   margin-left: 16px;
   margin-right: 16px;
   width: 100%;
-  background: transparent; /* Remove default background */
+  background: transparent;
   cursor: pointer;
-  background-size: 100% 40px; // Ensure the gradient scales with the width of the track
+  background-size: 100% 40px;
   background-repeat: no-repeat;
   bottom: 10px;
   z-index: 10;
 }
 
-/* Styles for the track of the timeline */
 .timeline::-webkit-slider-runnable-track {
   width: 100%;
   height: 5px;
@@ -80,7 +78,6 @@ $states: ('initial' 'loading' 'ready' 'error');
   background: var(--ms-track, rgb(201, 199, 199));
 }
 
-/* Styles for the thumb of the timeline */
 .timeline::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -89,7 +86,7 @@ $states: ('initial' 'loading' 'ready' 'error');
   background: #fff;
   border-radius: 50%;
   cursor: pointer;
-  opacity: 0; // Thumb is invisible by default
+  opacity: 0;
   transition: opacity 0.2s ease;
   margin-top: -6px;
 }
@@ -102,7 +99,7 @@ $states: ('initial' 'loading' 'ready' 'error');
   background: #fff;
   border-radius: 50%;
   cursor: pointer;
-  opacity: 0; // Thumb is invisible by default
+  opacity: 0;
   transition: opacity 0.2s ease;
   margin-top: -6px;
 }
@@ -115,25 +112,24 @@ $states: ('initial' 'loading' 'ready' 'error');
   background: #fff;
   border-radius: 50%;
   cursor: pointer;
-  opacity: 0; // Thumb is invisible by default
+  opacity: 0;
   transition: opacity 0.2s ease;
   margin-top: -6px;
 }
 
-/* Show the thumb when hovering over the timeline */
 .timeline:hover::-webkit-slider-thumb {
-  opacity: 1; // Thumb becomes visible on hover
-  background: #fff; // Change the thumb color on hover if needed
+  opacity: 1;
+  background: #fff;
 }
 
 .timeline:hover::-moz-range-thumb {
-  opacity: 1; // Thumb becomes visible on hover
-  background: #fff; // Change the thumb color on hover if needed
+  opacity: 1;
+  background: #fff;
 }
 
 .timeline:hover::-ms-thumb {
-  opacity: 1; // Thumb becomes visible on hover
-  background: #fff; // Change the thumb color on hover if needed
+  opacity: 1;
+  background: #fff;
 }
 
 .overlay {
@@ -175,12 +171,11 @@ $states: ('initial' 'loading' 'ready' 'error');
 
 .button {
   width: 16px;
-  position: absolute; // Position the button absolutely within the player component
-  bottom: 25px; // 2.5% from the bottom of the player component
+  position: absolute;
+  bottom: 25px;
   left: 14px;
-  height: 14px; // Set the height of the button
-  // Adjust the width as necessary, or remove if the aspect ratio is to be maintained
-  border: none; // Remove any border styling if present
+  height: 14px;
+  border: none;
   transition:
     scale 0.1s ease-in,
     opacity 0.1s;
@@ -204,11 +199,11 @@ $states: ('initial' 'loading' 'ready' 'error');
 
 .current-time {
   position: absolute;
-  left: 44px; // Position the new button 10px from the right edge of the controls container
-  bottom: 25px; // Align vertically with the play button
-  color: #fff; // Set the text color (change as needed)
-  font-family: Arial, sans-serif; // Set the font (change as needed)
-  font-size: 14px; // Set the font size (change as needed)
+  left: 44px;
+  bottom: 25px;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
   line-height: 14px;
 }
 

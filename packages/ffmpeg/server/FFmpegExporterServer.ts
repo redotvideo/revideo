@@ -15,10 +15,26 @@ import {v4 as uuidv4} from 'uuid';
 import {ImageStream} from './ImageStream';
 import {EventName, sendEvent} from './telemetry/posthog';
 
+import * as fsPromises from 'fs/promises';
 const SAMPLE_RATE = 48000;
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
+
+export async function getCurrentVersion() {
+  try {
+    const packageJson = JSON.parse(
+      await fsPromises.readFile(
+        path.join(__dirname, '..', '..', 'package.json'),
+        'utf-8',
+      ),
+    );
+
+    console.log(packageJson.version);
+  } catch (e) {
+    return 'ERROR';
+  }
+}
 
 export interface FFmpegExporterSettings extends RendererSettings {
   audio?: string;
@@ -92,7 +108,8 @@ export class FFmpegExporterServer {
   }
 
   public async start() {
-    sendEvent(EventName.RenderStarted, {});
+    const version = await getCurrentVersion();
+    sendEvent(EventName.RenderStarted, {version});
     if (!fs.existsSync(this.config.output)) {
       await fs.promises.mkdir(this.config.output, {recursive: true});
     }

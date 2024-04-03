@@ -1,6 +1,6 @@
 {
   "name": "@revideo/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A web-based framework for creating videos programmatically",
   "main": "lib/index.js",
   "author": "revideo",

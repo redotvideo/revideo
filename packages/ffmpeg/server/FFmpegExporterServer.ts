@@ -23,12 +23,14 @@ ffmpeg.setFfprobePath(ffprobePath);
 
 export async function getCurrentVersion() {
   try {
-    return JSON.parse(
+    const packageData = JSON.parse(
       await fsPromises.readFile(
         path.join(__dirname, '..', '..', 'package.json'),
         'utf-8',
       ),
     );
+
+    return packageData.version;
   } catch (e) {
     return 'ERROR';
   }

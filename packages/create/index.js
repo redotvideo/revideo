@@ -186,9 +186,6 @@ function createConfig(response, selectedPlugins) {
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }
 
-  imports.push("import { rendererPlugin } from '@revideo/renderer';");
-  plugins.push('rendererPlugin()');
-
   const configFile = path.resolve(response.path, `vite.config.ts`);
 
   fs.writeFileSync(

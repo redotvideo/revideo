@@ -1,6 +1,6 @@
 {
   "name": "@revideo/ui",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A visual editor for revideo",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@preact/signals": "^1.2.1",
-    "@revideo/core": "^0.2.2",
+    "@revideo/core": "^0.2.3",
     "preact": "^10.19.2"
   },
   "devDependencies": {

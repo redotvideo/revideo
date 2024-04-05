@@ -6,6 +6,7 @@ import {rendererPlugin} from './plugin';
 export const renderVideo = async (
   configFile: string,
   params?: Record<string, unknown>,
+  outName: string = 'project',
 ) => {
   console.log('Rendering...');
 
@@ -18,7 +19,7 @@ export const renderVideo = async (
       server: {
         port: 9000,
       },
-      plugins: [rendererPlugin(params)],
+      plugins: [rendererPlugin(params, outName)],
     }).then(server => server.listen()),
   ]);
 
@@ -32,9 +33,21 @@ export const renderVideo = async (
     throw new Error('Server address is null');
   }
 
-  await page.goto(`http://localhost:${port}/render`);
-  await page.exposeFunction('onRenderComplete', async () => {
-    await Promise.all([browser.close(), server.close()]);
-    console.log('Rendering complete.');
+  const renderingComplete = new Promise<void>((resolve, reject) => {
+    page.exposeFunction('onRenderComplete', async () => {
+      await Promise.all([browser.close(), server.close()]);
+      console.log('Rendering complete.');
+      resolve(); // Resolve the promise when rendering is complete
+    });
+
+    page.exposeFunction('onRenderFailed', async (errorMessage: string) => {
+      await Promise.all([browser.close(), server.close()]);
+      console.error('Rendering failed:', errorMessage);
+      reject(new Error(errorMessage)); // Reject the promise when rendering fails
+    });
   });
+
+  await page.goto(`http://localhost:${port}/render`);
+
+  await renderingComplete;
 };

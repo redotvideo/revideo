@@ -10,7 +10,10 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
-export function rendererPlugin(params?: Record<string, unknown>): Plugin {
+export function rendererPlugin(
+  params?: Record<string, unknown>,
+  outName?: string,
+): Plugin {
   return {
     name: 'revideo-renderer-plugin',
 
@@ -20,6 +23,7 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
             import {render} from '@revideo/renderer/dist/client/render';
             import project from './src/project.ts?project';
 
+            project.name = '${outName}'; // ensures that we save file to outName.mp4
             project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params)}\`)` : 'project.variables'};
             render(project);
             `;

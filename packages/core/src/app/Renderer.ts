@@ -104,6 +104,32 @@ export class Renderer {
   }
 
   /**
+   * Returns number of frames that a project will have.
+   */
+  public async getNumberOfFrames(settings: RendererSettings) {
+    await this.lock.acquire();
+    this.estimator.reset();
+    this.state.current = RendererState.Working;
+
+    await this.reloadScenes(settings);
+    await this.playback.recalculate();
+    await this.playback.reset();
+
+    const frames = this.playback.duration;
+
+    this.state.current = RendererState.Initial;
+    this.sharedWebGLContext.dispose();
+    this.lock.release();
+
+    return frames;
+  }
+
+  public frameToTime(frame: number) {
+    const fps = this.status.fps;
+    return frame / fps;
+  }
+
+  /**
    * Render the animation using the provided settings.
    *
    * @param settings - The rendering settings.

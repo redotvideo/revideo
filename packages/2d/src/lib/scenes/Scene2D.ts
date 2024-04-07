@@ -43,7 +43,7 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     return super.next();
   }
 
-  public draw(context: CanvasRenderingContext2D) {
+  public async draw(context: CanvasRenderingContext2D) {
     context.save();
     this.renderLifecycle.dispatch([SceneRenderEvent.BeforeRender, context]);
     context.save();
@@ -51,7 +51,7 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     this.getView()
       .playbackState(this.playback.state)
       .globalTime(this.playback.time);
-    this.getView().render(context);
+    await this.getView().render(context);
     this.renderLifecycle.dispatch([SceneRenderEvent.FinishRender, context]);
     context.restore();
     this.renderLifecycle.dispatch([SceneRenderEvent.AfterRender, context]);

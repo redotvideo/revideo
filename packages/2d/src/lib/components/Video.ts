@@ -159,7 +159,7 @@ export class Video extends Media {
     return video;
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {
@@ -185,7 +185,7 @@ export class Video extends Media {
       context.clip(this.getPath());
     }
 
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 
   protected override applyFlex() {

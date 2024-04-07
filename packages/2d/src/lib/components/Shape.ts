@@ -88,12 +88,12 @@ export abstract class Shape extends Layout {
     }
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
     if (this.clip()) {
       context.clip(this.getPath());
     }
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 
   protected drawShape(context: CanvasRenderingContext2D) {

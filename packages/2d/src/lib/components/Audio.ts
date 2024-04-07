@@ -114,7 +114,7 @@ export class Audio extends Media {
     return audio;
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     const playbackState = this.view().playbackState();
 
     playbackState === PlaybackState.Playing ||
@@ -125,6 +125,6 @@ export class Audio extends Media {
     context.save();
     context.restore();
 
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 }

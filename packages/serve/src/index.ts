@@ -13,7 +13,7 @@ Program.name('revideo')
 Program.command('serve')
   .description('Start the revideo server')
   .option('--projectFile <path>', 'Path to the project file')
-  .option('--port <number>', 'Port on which to start the server', '5000')
+  .option('--port <number>', 'Port on which to start the server', '4000')
   .action(options => {
     if (!options.projectFile) {
       console.error('Error: --projectFile option must be specified.');

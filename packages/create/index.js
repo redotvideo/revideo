@@ -29,7 +29,7 @@ const PLUGINS = {
   ffmpeg: {
     package: '@revideo/ffmpeg',
     variable: 'ffmpeg',
-    version: '^0.2.3',
+    version: '^0.2.4',
   },
 };
 

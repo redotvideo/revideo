@@ -1,5 +1,6 @@
 import {
   BBox,
+  DependencyContext,
   SignalValue,
   SimpleSignal,
   capitalize,
@@ -106,6 +107,7 @@ export class TxtLeaf extends Shape {
     text: string,
     box: BBox,
   ) {
+    DependencyContext.collectPromise(document.fonts.ready);
     const y = box.y + box.height / 2;
     context.save();
     context.textBaseline = 'middle';

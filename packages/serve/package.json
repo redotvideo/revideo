@@ -15,6 +15,10 @@
   "bin": {
     "revideo": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "types"
+  ],
   "devDependencies": {
     "typescript": "^5.4.3"
   },

@@ -92,7 +92,7 @@ export class FFmpegExporterClient implements Exporter {
 
   public async handleFrame(canvas: HTMLCanvasElement): Promise<void> {
     await this.invoke('handleFrame', {
-      data: canvas.toDataURL('image/png'),
+      data: canvas.toDataURL('image/jpeg'),
     });
   }
 
@@ -134,7 +134,7 @@ export class FFmpegExporterClient implements Exporter {
             resolve(response.data as TResponse);
           } else {
             reject({
-              message: 'An error occurred while exporting the video.',
+              message: `An error occurred while exporting the video: ${response.message}`,
               remarks: `Method: ${method}<br>Server error: ${response.message}`,
               object: data,
             });

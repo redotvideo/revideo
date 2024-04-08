@@ -1,7 +1,7 @@
 {
-  "name": "@revideo/serve",
+  "name": "@revideo/cli",
   "version": "0.2.3",
-  "description": "An FFmpeg video exporter for revideo",
+  "description": "A CLI for revideo",
   "main": "dist/index.js",
   "author": "revideo",
   "homepage": "https://re.video/",
@@ -15,9 +15,13 @@
   "bin": {
     "revideo": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "types"
+  ],
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.3",
+    "@types/express": "^4.17.21"
   },
   "dependencies": {
     "@revideo/renderer": "^0.2.3",

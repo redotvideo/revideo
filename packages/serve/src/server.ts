@@ -75,11 +75,11 @@ App.post('/render', async (req, res) => {
 
 App.get('/download/:projectName', async (req, res) => {
   const {projectName} = req.params;
-  const resultFilePath = path.join(process.cwd(), `output/${projectName}.mp4`);
+  const resultFilePath = path.join(process.cwd(), `output/${projectName}`);
 
   try {
     await fs.access(resultFilePath);
-    res.download(resultFilePath, `${projectName}.mp4`, async err => {
+    res.download(resultFilePath, `${projectName}`, async err => {
       if (err) {
         console.error(err);
         res.status(500).send('Error downloading the file.');

@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2020", // Compile to a version of ECMAScript that matches Node.js
-    "module": "commonjs", // Use commonjs modules for Node.js compatibility
-    "lib": ["es2020", "dom"], // Include typings for ES2019
-    "outDir": "./dist", // Output directory for compiled files
-    "rootDir": "./src", // Root directory of source files
-    "strict": true, // Enable all strict type-checking options
-    "esModuleInterop": true // Enables __importDefault helper for importing CommonJS default exports
+    "target": "es2020",
+    "module": "commonjs", 
+    "lib": ["es2020", "dom"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true, 
+    "esModuleInterop": true 
   },
-  "include": ["src/**/*"], // Include all files in the src directory
-  "exclude": ["node_modules"] // Exclude node_modules and test files
+  "include": ["src/**/*"], 
+  "exclude": ["node_modules"]
 }

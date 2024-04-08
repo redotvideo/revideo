@@ -37,13 +37,13 @@ export const renderVideo = async (
     page.exposeFunction('onRenderComplete', async () => {
       await Promise.all([browser.close(), server.close()]);
       console.log('Rendering complete.');
-      resolve(); // Resolve the promise when rendering is complete
+      resolve();
     });
 
     page.exposeFunction('onRenderFailed', async (errorMessage: string) => {
       await Promise.all([browser.close(), server.close()]);
       console.error('Rendering failed:', errorMessage);
-      reject(new Error(errorMessage)); // Reject the promise when rendering fails
+      reject(new Error(errorMessage));
     });
   });
 

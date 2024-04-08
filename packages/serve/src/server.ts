@@ -86,7 +86,7 @@ App.listen(Port, () => {
   console.log(`Server running on port ${Port}`);
 });
 
-function scheduleCleanup(
+function scheduleCleanup( // wait 10 minutes before removing file and download endpoint
   filePath: string,
   routePath: string,
   app: express.Express,
@@ -109,6 +109,6 @@ function scheduleCleanup(
 
       console.log(`Successfully removed route: ${routePath}`);
     },
-    1 * 60 * 1000,
-  ); // 1 minute
+    10 * 60 * 1000,
+  );
 }

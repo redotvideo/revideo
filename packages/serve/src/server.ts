@@ -53,16 +53,7 @@ App.post('/render', async (req, res) => {
       throw new Error('Callback URL responded with an error');
     }
 
-    App.get(`/download/${tempProjectName}.mp4`, (_req, res) => {
-      console.log('received download request');
-      res.download(resultFilePath, `${tempProjectName}.mp4`, async err => {
-        if (err) {
-          console.error(err);
-        }
-      });
-    });
-
-    scheduleCleanup(resultFilePath, `/download/${tempProjectName}.mp4`, App);
+    scheduleCleanup(resultFilePath);
   } catch (error: any) {
     console.error(error);
     await axios.post(
@@ -82,15 +73,30 @@ App.post('/render', async (req, res) => {
   }
 });
 
+App.get('/download/:projectName', async (req, res) => {
+  const {projectName} = req.params;
+  const resultFilePath = path.join(process.cwd(), `output/${projectName}.mp4`);
+
+  try {
+    await fs.access(resultFilePath);
+    res.download(resultFilePath, `${projectName}.mp4`, async err => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error downloading the file.');
+      }
+    });
+  } catch (error) {
+    console.error(`File not found ${resultFilePath}:`, error);
+    res.status(404).send('File not found.');
+  }
+});
+
 App.listen(Port, () => {
   console.log(`Server running on port ${Port}`);
 });
 
-function scheduleCleanup( // wait 10 minutes before removing file and download endpoint
-  filePath: string,
-  routePath: string,
-  app: express.Express,
-) {
+function scheduleCleanup(filePath: string) {
+  // wait 10 minutes before removing file
   setTimeout(
     async () => {
       try {
@@ -99,15 +105,6 @@ function scheduleCleanup( // wait 10 minutes before removing file and download e
       } catch (error) {
         console.error(`Error deleting file ${filePath}: ${error}`);
       }
-
-      app._router.stack = app._router.stack.filter((layer: any) => {
-        if (layer.route) {
-          return layer.route.path !== routePath;
-        }
-        return true;
-      });
-
-      console.log(`Successfully removed route: ${routePath}`);
     },
     10 * 60 * 1000,
   );

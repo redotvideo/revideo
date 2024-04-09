@@ -1654,9 +1654,7 @@ export class Node implements Promisable<Node> {
         }
       }
     } else {
-      console.log('before drawing 2');
       await this.draw(context);
-      console.log('after drawing 2');
     }
 
     context.restore();

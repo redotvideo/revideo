@@ -4,6 +4,7 @@ import {
   FFmpegExporterServer,
   FFmpegExporterSettings,
 } from './FFmpegExporterServer';
+import {VideoFrameExtractor} from './VideoFrameExtractor';
 
 interface BrowserRequest {
   method: string;
@@ -25,6 +26,7 @@ export class FFmpegBridge {
     private readonly config: PluginConfig,
   ) {
     ws.on('revideo/ffmpeg', this.handleMessage);
+    ws.on('revideo/ffmpeg-video-frame', this.handleVideoFrameMessage);
   }
 
   private handleMessage = async ({method, data}: BrowserRequest) => {
@@ -61,6 +63,42 @@ export class FFmpegBridge {
       this.process = null;
       return;
     }
+  };
+
+  // List of VideoFrameExtractors
+  private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
+
+  private handleVideoFrameMessage = async ({data}: BrowserRequest) => {
+    const typedData = data as {
+      id: string;
+      filePath: string;
+      startTime: number;
+      duration: number;
+    };
+
+    // Check if we already have a VideoFrameExtractor for this video
+    const id = typedData.filePath + '-' + typedData.id;
+    let extractor = this.videoFrameExtractors.get(id);
+
+    if (!extractor) {
+      extractor = new VideoFrameExtractor(
+        typedData.filePath,
+        typedData.startTime,
+        30, // TODO: configure this based on playback rate
+        typedData.duration,
+      );
+      this.videoFrameExtractors.set(id, extractor);
+    }
+
+    // Go to the frame that is closest to the requested time
+    const frame = await extractor.popImage();
+
+    this.ws.send('revideo/ffmpeg-video-frame-res', {
+      status: 'success',
+      data: {
+        frame,
+      },
+    });
   };
 
   private respondSuccess(method: string, data: any = {}) {

@@ -32,10 +32,6 @@ export const render = async (
     const startFrame = framesPerWorker * workerId;
     const endFrame = Math.min(startFrame + framesPerWorker, frames);
 
-    console.log(
-      `WorkerId: ${workerId}; Rendering frames ${startFrame} to ${endFrame}`,
-    );
-
     await renderer.render({
       ...project.meta.getFullRenderingSettings(),
       name: project.name,

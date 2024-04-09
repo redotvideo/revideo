@@ -1,7 +1,6 @@
 import {
   BBox,
   DependencyContext,
-  PlaybackState,
   SerializedVector2,
   SignalValue,
   SimpleSignal,
@@ -21,6 +20,71 @@ export interface VideoProps extends MediaProps {
    * {@inheritDoc Video.smoothing}
    */
   smoothing?: SignalValue<boolean>;
+}
+
+class ImageCommunication {
+  public constructor() {
+    if (!import.meta.hot) {
+      throw new Error('FfmpegVideoFrame can only be used with HMR.');
+    }
+
+    import.meta.hot.on(
+      'revideo/ffmpeg-video-frame-res',
+      this.handler.bind(this),
+    );
+  }
+
+  private nextFrameHandlers: ((event: MessageEvent) => void)[] = [];
+
+  private handler(event: MessageEvent) {
+    const handlers = this.nextFrameHandlers;
+    this.nextFrameHandlers = [];
+
+    for (const handler of handlers) {
+      handler(event);
+    }
+  }
+
+  public async getFrame(
+    id: string,
+    src: string,
+    time: number,
+    duration: number,
+  ) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+      if (!import.meta.hot) {
+        reject('FfmpegVideoFrame can only be used with HMR.');
+        return;
+      }
+
+      function handler(event: MessageEvent) {
+        // Image is a Buffer
+        const image = new Image();
+        console.log(event.data.frame.data);
+
+        const uint8Array = new Uint8Array(event.data.frame.data);
+        const blob = new Blob([uint8Array], {type: 'image/jpeg'});
+        const url = URL.createObjectURL(blob);
+
+        image.src = url;
+
+        image.onload = () => {
+          resolve(image);
+        };
+      }
+
+      this.nextFrameHandlers.push(handler);
+
+      import.meta.hot.send('revideo/ffmpeg-video-frame', {
+        data: {
+          id: id,
+          filePath: src,
+          startTime: time,
+          duration,
+        },
+      });
+    });
+  }
 }
 
 @nodeName('Video')
@@ -50,6 +114,8 @@ export class Video extends Media {
   public declare readonly smoothing: SimpleSignal<boolean, this>;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
+
+  private static readonly imageCommunication = new ImageCommunication();
 
   public constructor(props: VideoProps) {
     super(props);
@@ -159,16 +225,43 @@ export class Video extends Media {
     return video;
   }
 
+  protected lastFrame: HTMLImageElement | null = null;
+
+  protected async serverSeekedVideo(): Promise<HTMLImageElement> {
+    const video = this.video();
+    const time = this.clampTime(this.time());
+    const duration = this.getDuration();
+
+    video.playbackRate = this.playbackRate();
+
+    if (this.lastFrame && this.lastTime === time) {
+      return this.lastFrame;
+    }
+
+    const frame = await Video.imageCommunication.getFrame(
+      this.key,
+      video.src,
+      time,
+      duration,
+    );
+    this.lastFrame = frame;
+    this.lastTime = time;
+
+    return frame;
+  }
+
   protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {
-      const playbackState = this.view().playbackState();
-      const video =
+      // const _playbackState = this.view().playbackState();
+      // TODO: Decide when to use what.
+      /*const video =
         playbackState === PlaybackState.Playing ||
         playbackState === PlaybackState.Presenting
           ? this.fastSeekedVideo()
-          : this.seekedVideo();
+          : this.seekedVideo();*/
+      const video = await this.serverSeekedVideo();
 
       const box = BBox.fromSizeCentered(this.computedSize());
       context.save();

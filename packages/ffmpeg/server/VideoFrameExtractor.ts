@@ -24,9 +24,9 @@ export class VideoFrameExtractor {
   private lastImage: Buffer | null = null;
 
   private startTime: number;
+  private duration: number;
   private toTime: number;
   private fps: number;
-  private duration: number;
 
   private process: ChildProcessByStdio<null, Readable, null>;
 
@@ -36,11 +36,18 @@ export class VideoFrameExtractor {
     fps: number,
     duration: number,
   ) {
-    this.startTime = startTime;
-    this.toTime = startTime + VideoFrameExtractor.chunkLengthInSeconds;
+    this.state = 'processing';
     this.filePath = filePath;
-    this.fps = fps;
+
+    this.startTime = startTime;
     this.duration = duration;
+    this.toTime = this.getEndTime(this.startTime);
+    this.fps = fps;
+
+    if (this.startTime >= this.duration) {
+      this.process = this.createFfmpegProcessToExtractFirstFrame(filePath);
+      return;
+    }
 
     // Create a new ffmpeg process to extract the first 10 seconds of the video.
     this.process = this.createFfmpegProcess(
@@ -49,8 +56,13 @@ export class VideoFrameExtractor {
       this.filePath,
       this.fps,
     );
+  }
 
-    this.state = 'processing';
+  private getEndTime(startTime: number) {
+    return Math.min(
+      startTime + VideoFrameExtractor.chunkLengthInSeconds,
+      this.duration,
+    );
   }
 
   private createFfmpegProcess(
@@ -86,6 +98,42 @@ export class VideoFrameExtractor {
     process.on('error', this.handleError.bind(this));
 
     return this.process;
+  }
+
+  /**
+   * We call this in the case that the time requested is greater than the
+   * duration of the video to display the first frame of the video.
+   *
+   * Note: This does NOT match the behavior of the old implementation
+   * inside of 2d/src/lib/components/Video.ts. In the old implementation, the
+   * last frame is shown instead of the first frame.
+   */
+  private createFfmpegProcessToExtractFirstFrame(filePath: string) {
+    // ffmpeg -sseof -3 -i file -vsync 0 -q:v 31 -update true out.jpg
+
+    const process = spawn(
+      'ffmpeg',
+      [
+        '-i',
+        filePath,
+        '-vframes',
+        '1',
+        '-f',
+        'image2pipe',
+        '-vcodec',
+        'mjpeg',
+        '-q:v',
+        '2',
+        '-',
+      ],
+      {stdio: ['ignore', 'pipe', 'inherit']},
+    );
+
+    process.stdout.on('data', this.processData.bind(this));
+    process.on('close', this.handleClose.bind(this));
+    process.on('error', this.handleError.bind(this));
+
+    return process;
   }
 
   private processData(data: Buffer) {

@@ -102,15 +102,14 @@ export class VideoFrameExtractor {
 
   /**
    * We call this in the case that the time requested is greater than the
-   * duration of the video to display the first frame of the video.
+   * duration of the video. In this case, we want to display the first frame
+   * of the video.
    *
    * Note: This does NOT match the behavior of the old implementation
    * inside of 2d/src/lib/components/Video.ts. In the old implementation, the
    * last frame is shown instead of the first frame.
    */
   private createFfmpegProcessToExtractFirstFrame(filePath: string) {
-    // ffmpeg -sseof -3 -i file -vsync 0 -q:v 31 -update true out.jpg
-
     const process = spawn(
       'ffmpeg',
       [

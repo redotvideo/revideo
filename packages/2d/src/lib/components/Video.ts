@@ -60,7 +60,6 @@ class ImageCommunication {
       }
 
       function handler(event: MessageEvent) {
-        // Image is a Buffer
         const image = new Image();
         console.log(event.data.frame.data);
 

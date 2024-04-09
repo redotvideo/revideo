@@ -8,5 +8,3 @@ node_modules
 /packages/*/output
 
 .idea
-
-CHANGELOG.md

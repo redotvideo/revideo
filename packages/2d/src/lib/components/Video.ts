@@ -1,6 +1,7 @@
 import {
   BBox,
   DependencyContext,
+  PlaybackState,
   SerializedVector2,
   SignalValue,
   SimpleSignal,
@@ -50,6 +51,7 @@ class ImageCommunication {
     src: string,
     time: number,
     duration: number,
+    fps: number,
   ) {
     return new Promise<HTMLImageElement>((resolve, reject) => {
       if (!import.meta.hot) {
@@ -81,6 +83,7 @@ class ImageCommunication {
           filePath: src,
           startTime: time,
           duration,
+          fps,
         },
       });
     });
@@ -238,11 +241,14 @@ export class Video extends Media {
       return this.lastFrame;
     }
 
+    const fps = this.view().fps() / this.playbackRate();
+
     const frame = await Video.imageCommunication.getFrame(
       this.key,
       video.src,
       time,
       duration,
+      fps,
     );
     this.lastFrame = frame;
     this.lastTime = time;
@@ -250,18 +256,27 @@ export class Video extends Media {
     return frame;
   }
 
+  protected async seekFunction() {
+    const playbackState = this.view().playbackState();
+    if (
+      playbackState === PlaybackState.Playing ||
+      playbackState === PlaybackState.Presenting
+    ) {
+      return this.fastSeekedVideo();
+    }
+
+    if (playbackState === PlaybackState.Rendering) {
+      return this.serverSeekedVideo();
+    }
+
+    return this.seekedVideo();
+  }
+
   protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {
-      // const _playbackState = this.view().playbackState();
-      // TODO: Decide when to use what.
-      /*const video =
-        playbackState === PlaybackState.Playing ||
-        playbackState === PlaybackState.Presenting
-          ? this.fastSeekedVideo()
-          : this.seekedVideo();*/
-      const video = await this.serverSeekedVideo();
+      const video = await this.seekFunction();
 
       const box = BBox.fromSizeCentered(this.computedSize());
       context.save();

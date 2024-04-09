@@ -25,7 +25,7 @@ export class FFmpegBridge {
     private readonly ws: WebSocketServer,
     private readonly config: PluginConfig,
   ) {
-    ws.on('revideo/ffmpeg', this.handleMessage);
+    ws.on('revideo/ffmpeg-exporter', this.handleMessage);
     ws.on('revideo/ffmpeg-video-frame', this.handleVideoFrameMessage);
   }
 
@@ -65,6 +65,22 @@ export class FFmpegBridge {
     }
   };
 
+  private respondSuccess(method: string, data: any = {}) {
+    this.ws.send('revideo/ffmpeg-exporter-ack', {
+      status: 'success',
+      method,
+      data,
+    });
+  }
+
+  private respondError(method: string, message = 'Unknown error.') {
+    this.ws.send('revideo/ffmpeg-exporter-ack', {
+      status: 'error',
+      method,
+      message,
+    });
+  }
+
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
@@ -74,6 +90,7 @@ export class FFmpegBridge {
       filePath: string;
       startTime: number;
       duration: number;
+      fps: number;
     };
 
     // Check if we already have a VideoFrameExtractor for this video
@@ -84,7 +101,7 @@ export class FFmpegBridge {
       extractor = new VideoFrameExtractor(
         typedData.filePath,
         typedData.startTime,
-        30, // TODO: configure this based on playback rate
+        typedData.fps,
         typedData.duration,
       );
       this.videoFrameExtractors.set(id, extractor);
@@ -100,20 +117,4 @@ export class FFmpegBridge {
       },
     });
   };
-
-  private respondSuccess(method: string, data: any = {}) {
-    this.ws.send('revideo/ffmpeg-ack', {
-      status: 'success',
-      method,
-      data,
-    });
-  }
-
-  private respondError(method: string, message = 'Unknown error.') {
-    this.ws.send('revideo/ffmpeg-ack', {
-      status: 'error',
-      method,
-      message,
-    });
-  }
 }

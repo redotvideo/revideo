@@ -65,7 +65,7 @@ export const renderVideo = async (
   console.log('Rendering...');
 
   const resolvedConfigPath = path.resolve(process.cwd(), configFile);
-  const numOfWorkers = 1;
+  const numOfWorkers = 1; // TODO: Change this in the future after more testing
 
   const promises = [];
   for (let i = 0; i < numOfWorkers; i++) {

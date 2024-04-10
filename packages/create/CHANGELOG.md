@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.7](https://github.com/havenhq/revideo/compare/v0.2.6...v0.2.7) (2024-04-10)
+
+
+### Bug Fixes
+
+* forgot to bump create package ([d4826c6](https://github.com/havenhq/revideo/commit/d4826c63aca300459321dbf2668406e7ad657076))
+
+
+
+
+
 ## 0.2.6 (2024-04-10)
 
 

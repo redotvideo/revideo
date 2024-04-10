@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.7](https://github.com/havenhq/revideo/compare/v0.2.6...v0.2.7) (2024-04-10)
+
+**Note:** Version bump only for package @revideo/cli
+
+
+
+
+
 ## 0.2.6 (2024-04-10)
 
 

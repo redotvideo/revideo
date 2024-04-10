@@ -25,7 +25,7 @@ async function renderWorker(
       server: {
         port: fixedPort,
       },
-      plugins: [rendererPlugin(params, outName)],
+      plugins: [rendererPlugin(params)],
     }).then(server => server.listen()),
   ]);
 
@@ -74,7 +74,7 @@ export const renderVideo = async (
   configFile: string,
   params?: Record<string, unknown>,
   settings: RenderVideoSettings = {
-    name: 'project',
+    name: 'project2',
   },
 ) => {
   console.log('Rendering...');

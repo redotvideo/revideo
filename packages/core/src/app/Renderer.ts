@@ -125,8 +125,7 @@ export class Renderer {
   }
 
   public frameToTime(frame: number) {
-    const fps = this.status.fps;
-    return frame / fps;
+    return this.status.framesToSeconds(frame);
   }
 
   /**

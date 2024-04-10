@@ -74,7 +74,7 @@ export const renderVideo = async (
   configFile: string,
   params?: Record<string, unknown>,
   settings: RenderVideoSettings = {
-    name: 'project2',
+    name: 'project',
   },
 ) => {
   console.log('Rendering...');

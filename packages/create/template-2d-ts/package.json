@@ -15,7 +15,7 @@
     "@revideo/vite-plugin": "^0.2.8"
   },
   "devDependencies": {
-    "@revideo/ui": "^0.2.7",
+    "@revideo/ui": "^0.2.8",
     "typescript": "^5.2.2",
     "vite": "^4.5"
   }

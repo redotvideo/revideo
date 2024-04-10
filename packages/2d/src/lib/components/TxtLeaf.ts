@@ -61,7 +61,7 @@ export class TxtLeaf extends Shape {
     return parent instanceof Txt ? parent : null;
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     this.requestFontUpdate();
     this.applyStyle(context);
     this.applyText(context);

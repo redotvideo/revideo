@@ -37,6 +37,10 @@ export class View2D extends Rect {
   @signal()
   public declare readonly globalTime: SimpleSignal<number, this>;
 
+  @initial(0)
+  @signal()
+  public declare readonly fps: SimpleSignal<number, this>;
+
   @signal()
   public declare readonly assetHash: SimpleSignal<string, this>;
 
@@ -61,10 +65,10 @@ export class View2D extends Rect {
     super.dispose();
   }
 
-  public override render(context: CanvasRenderingContext2D) {
+  public override async render(context: CanvasRenderingContext2D) {
     this.computedSize();
     this.computedPosition();
-    super.render(context);
+    await super.render(context);
   }
 
   /**

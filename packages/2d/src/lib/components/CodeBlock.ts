@@ -335,7 +335,7 @@ export class CodeBlock extends Shape {
     );
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     if (!CodeBlock.initialized()) return;
 
     this.requestFontUpdate();

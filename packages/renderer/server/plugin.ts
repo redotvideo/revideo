@@ -10,10 +10,7 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
-export function rendererPlugin(
-  params?: Record<string, unknown>,
-  outName?: string,
-): Plugin {
+export function rendererPlugin(params?: Record<string, unknown>): Plugin {
   return {
     name: 'revideo-renderer-plugin',
 
@@ -23,9 +20,20 @@ export function rendererPlugin(
             import {render} from '@revideo/renderer/dist/client/render';
             import project from './src/project.ts?project';
 
-            project.name = '${outName}'; // ensures that we save file to outName.mp4
+            // Read video variables
             project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params)}\`)` : 'project.variables'};
-            render(project);
+
+            // Check range of frames to render
+            const url = new URL(window.location.href);
+
+            const fileName = url.searchParams.get('fileName');
+            const workerId = url.searchParams.get('workerId');
+            const totalNumOfWorkers = url.searchParams.get('totalNumOfWorkers');
+
+            // Overwrite project name so that the rendered videos don't overwrite each other
+            project.name = fileName;
+
+            render(project, workerId, totalNumOfWorkers);
             `;
       }
     },

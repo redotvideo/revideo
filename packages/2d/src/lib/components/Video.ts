@@ -23,6 +23,71 @@ export interface VideoProps extends MediaProps {
   smoothing?: SignalValue<boolean>;
 }
 
+class ImageCommunication {
+  public constructor() {
+    if (!import.meta.hot) {
+      throw new Error('FfmpegVideoFrame can only be used with HMR.');
+    }
+
+    import.meta.hot.on(
+      'revideo/ffmpeg-video-frame-res',
+      this.handler.bind(this),
+    );
+  }
+
+  private nextFrameHandlers: ((event: MessageEvent) => void)[] = [];
+
+  private handler(event: MessageEvent) {
+    const handlers = this.nextFrameHandlers;
+    this.nextFrameHandlers = [];
+
+    for (const handler of handlers) {
+      handler(event);
+    }
+  }
+
+  public async getFrame(
+    id: string,
+    src: string,
+    time: number,
+    duration: number,
+    fps: number,
+  ) {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+      if (!import.meta.hot) {
+        reject('FfmpegVideoFrame can only be used with HMR.');
+        return;
+      }
+
+      function handler(event: MessageEvent) {
+        const image = new Image();
+
+        const uint8Array = new Uint8Array(event.data.frame.data);
+        const blob = new Blob([uint8Array], {type: 'image/jpeg'});
+        const url = URL.createObjectURL(blob);
+
+        image.src = url;
+
+        image.onload = () => {
+          resolve(image);
+        };
+      }
+
+      this.nextFrameHandlers.push(handler);
+
+      import.meta.hot.send('revideo/ffmpeg-video-frame', {
+        data: {
+          id: id,
+          filePath: src,
+          startTime: time,
+          duration,
+          fps,
+        },
+      });
+    });
+  }
+}
+
 @nodeName('Video')
 export class Video extends Media {
   /**
@@ -50,6 +115,10 @@ export class Video extends Media {
   public declare readonly smoothing: SimpleSignal<boolean, this>;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
+
+  private static readonly imageCommunication = !import.meta.hot
+    ? null
+    : new ImageCommunication();
 
   public constructor(props: VideoProps) {
     super(props);
@@ -159,16 +228,59 @@ export class Video extends Media {
     return video;
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected lastFrame: HTMLImageElement | null = null;
+
+  protected async serverSeekedVideo(): Promise<HTMLImageElement> {
+    const video = this.video();
+    const time = this.clampTime(this.time());
+    const duration = this.getDuration();
+
+    video.playbackRate = this.playbackRate();
+
+    if (this.lastFrame && this.lastTime === time) {
+      return this.lastFrame;
+    }
+
+    const fps = this.view().fps() / this.playbackRate();
+
+    if (!Video.imageCommunication) {
+      throw new Error('ServerSeekedVideo can only be used with HMR.');
+    }
+
+    const frame = await Video.imageCommunication.getFrame(
+      this.key,
+      video.src,
+      time,
+      duration,
+      fps,
+    );
+    this.lastFrame = frame;
+    this.lastTime = time;
+
+    return frame;
+  }
+
+  protected async seekFunction() {
+    const playbackState = this.view().playbackState();
+    if (
+      playbackState === PlaybackState.Playing ||
+      playbackState === PlaybackState.Presenting
+    ) {
+      return this.fastSeekedVideo();
+    }
+
+    if (playbackState === PlaybackState.Rendering) {
+      return this.serverSeekedVideo();
+    }
+
+    return this.seekedVideo();
+  }
+
+  protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {
-      const playbackState = this.view().playbackState();
-      const video =
-        playbackState === PlaybackState.Playing ||
-        playbackState === PlaybackState.Presenting
-          ? this.fastSeekedVideo()
-          : this.seekedVideo();
+      const video = await this.seekFunction();
 
       const box = BBox.fromSizeCentered(this.computedSize());
       context.save();
@@ -185,7 +297,7 @@ export class Video extends Media {
       context.clip(this.getPath());
     }
 
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 
   protected override applyFlex() {

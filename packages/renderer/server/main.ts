@@ -3,23 +3,29 @@ import puppeteer from 'puppeteer';
 import {createServer} from 'vite';
 import {rendererPlugin} from './plugin';
 
-export const renderVideo = async (
-  configFile: string,
+function buildUrl(
+  port: number,
+  fileName: string,
+  workerId: number,
+  totalNumOfWorkers: number,
+) {
+  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}`;
+}
+
+async function renderWorker(
+  fixedPort: number,
+  resolvedConfigPath: string,
+  url: string,
   params?: Record<string, unknown>,
-  outName: string = 'project',
-) => {
-  console.log('Rendering...');
-
-  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
-
+) {
   const [browser, server] = await Promise.all([
     puppeteer.launch({headless: true}),
     createServer({
       configFile: resolvedConfigPath,
       server: {
-        port: 9000,
+        port: fixedPort,
       },
-      plugins: [rendererPlugin(params, outName)],
+      plugins: [rendererPlugin(params)],
     }).then(server => server.listen()),
   ]);
 
@@ -32,6 +38,13 @@ export const renderVideo = async (
   if (port === null) {
     throw new Error('Server address is null');
   }
+
+  // Attach logs from puppeteer to the console
+  page.on('console', msg => {
+    for (let i = 0; i < msg.args().length; ++i) {
+      console.log(`${port}: ${msg.args()[i]}`);
+    }
+  });
 
   const renderingComplete = new Promise<void>((resolve, reject) => {
     page.exposeFunction('onRenderComplete', async () => {
@@ -47,7 +60,38 @@ export const renderVideo = async (
     });
   });
 
-  await page.goto(`http://localhost:${port}/render`);
+  await page.goto(url);
 
-  await renderingComplete;
+  return renderingComplete;
+}
+
+interface RenderVideoSettings {
+  // Name of the video file
+  name: string;
+}
+
+export const renderVideo = async (
+  configFile: string,
+  params?: Record<string, unknown>,
+  settings: RenderVideoSettings = {
+    name: 'project',
+  },
+) => {
+  console.log('Rendering...');
+
+  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
+
+  /**
+   * TODO: Change this in the future after more testing.
+   * We still need to concate the videos together after rendering.
+   */
+  const numOfWorkers = 1;
+
+  const promises = [];
+  for (let i = 0; i < numOfWorkers; i++) {
+    const url = buildUrl(9000 + i, settings.name, i, numOfWorkers);
+    promises.push(renderWorker(9000 + i, resolvedConfigPath, url, params));
+  }
+
+  return Promise.all(promises);
 };

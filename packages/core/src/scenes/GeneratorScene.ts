@@ -169,7 +169,7 @@ export abstract class GeneratorScene<T>
       await DependencyContext.consumePromises();
       context.save();
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      this.execute(() => this.draw(context));
+      await this.executeAsync(() => this.draw(context));
       context.restore();
     } while (DependencyContext.hasPromises() && iterations < 10);
 
@@ -178,7 +178,7 @@ export abstract class GeneratorScene<T>
     }
   }
 
-  protected abstract draw(context: CanvasRenderingContext2D): void;
+  protected abstract draw(context: CanvasRenderingContext2D): Promise<void>;
 
   public reload({
     config,
@@ -370,6 +370,20 @@ export abstract class GeneratorScene<T>
     startPlayback(this.playback);
     try {
       result = callback();
+    } finally {
+      endPlayback(this.playback);
+      endScene(this);
+    }
+
+    return result;
+  }
+
+  protected async executeAsync<T>(callback: () => Promise<T>): Promise<T> {
+    let result: T;
+    startScene(this);
+    startPlayback(this.playback);
+    try {
+      result = await callback();
     } finally {
       endPlayback(this.playback);
       endScene(this);

@@ -511,7 +511,9 @@ export class Code extends Shape {
     return size;
   }
 
-  protected override draw(context: CanvasRenderingContext2D): void {
+  protected override async draw(
+    context: CanvasRenderingContext2D,
+  ): Promise<void> {
     this.requestFontUpdate();
     this.applyStyle(context);
     this.applyText(context);
@@ -534,7 +536,7 @@ export class Code extends Shape {
 
     context.restore();
 
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 
   protected override applyText(context: CanvasRenderingContext2D) {

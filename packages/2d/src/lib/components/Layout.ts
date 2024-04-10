@@ -820,7 +820,7 @@ export class Layout extends Node {
     return BBox.fromSizeCentered(this.computedSize());
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     if (this.clip()) {
       const size = this.computedSize();
       if (size.width === 0 || size.height === 0) {
@@ -833,7 +833,7 @@ export class Layout extends Node {
       context.clip();
     }
 
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 
   public override drawOverlay(

@@ -86,7 +86,9 @@ export abstract class Media extends Rect {
 
   protected abstract fastSeekedMedia(): HTMLMediaElement;
 
-  protected abstract override draw(context: CanvasRenderingContext2D): void;
+  protected abstract override draw(
+    context: CanvasRenderingContext2D,
+  ): Promise<void>;
 
   protected setCurrentTime(value: number) {
     const media = this.mediaElement();

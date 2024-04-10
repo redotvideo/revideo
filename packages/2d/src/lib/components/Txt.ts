@@ -177,8 +177,8 @@ export class Txt extends Shape {
       : 'block';
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
-    this.drawChildren(context);
+  protected override async draw(context: CanvasRenderingContext2D) {
+    await this.drawChildren(context);
   }
 }
 

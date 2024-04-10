@@ -1355,7 +1355,7 @@ export class Node implements Promisable<Node> {
    * Get a cache canvas with the contents of this node rendered onto it.
    */
   @computed()
-  protected cachedCanvas() {
+  protected async cachedCanvas() {
     const context = this.cacheCanvas();
     const cache = this.worldSpaceCacheBBox();
     const matrix = this.localToWorld();
@@ -1371,7 +1371,7 @@ export class Node implements Promisable<Node> {
       matrix.e - cache.x,
       matrix.f - cache.y,
     );
-    this.draw(context);
+    await this.draw(context);
 
     return context;
   }
@@ -1629,7 +1629,7 @@ export class Node implements Promisable<Node> {
    *
    * @param context - The context to draw with.
    */
-  public render(context: CanvasRenderingContext2D) {
+  public async render(context: CanvasRenderingContext2D) {
     if (this.absoluteOpacity() <= 0) {
       return;
     }
@@ -1640,7 +1640,7 @@ export class Node implements Promisable<Node> {
     if (this.requiresCache()) {
       const cacheRect = this.worldSpaceCacheBBox();
       if (cacheRect.width !== 0 && cacheRect.height !== 0) {
-        const cache = this.cachedCanvas().canvas;
+        const cache = (await this.cachedCanvas()).canvas;
         const source = this.shaderCanvas(context.canvas, cache);
         if (source) {
           this.renderFromSource(context, source, 0, 0);
@@ -1654,7 +1654,7 @@ export class Node implements Promisable<Node> {
         }
       }
     } else {
-      this.draw(context);
+      await this.draw(context);
     }
 
     context.restore();
@@ -1670,13 +1670,13 @@ export class Node implements Promisable<Node> {
    *
    * @param context - The context to draw with.
    */
-  protected draw(context: CanvasRenderingContext2D) {
-    this.drawChildren(context);
+  protected async draw(context: CanvasRenderingContext2D) {
+    await this.drawChildren(context);
   }
 
-  protected drawChildren(context: CanvasRenderingContext2D) {
+  protected async drawChildren(context: CanvasRenderingContext2D) {
     for (const child of this.sortedChildren()) {
-      child.render(context);
+      await child.render(context);
     }
   }
 

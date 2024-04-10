@@ -221,7 +221,7 @@ about working with images.`,
     return context;
   }
 
-  protected override draw(context: CanvasRenderingContext2D) {
+  protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {
@@ -240,7 +240,7 @@ about working with images.`,
       context.clip(this.getPath());
     }
 
-    this.drawChildren(context);
+    await this.drawChildren(context);
   }
 
   protected override applyFlex() {

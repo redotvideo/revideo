@@ -61,7 +61,6 @@ class ImageCommunication {
 
       function handler(event: MessageEvent) {
         const image = new Image();
-        console.log(event.data.frame.data);
 
         const uint8Array = new Uint8Array(event.data.frame.data);
         const blob = new Blob([uint8Array], {type: 'image/jpeg'});

@@ -116,7 +116,9 @@ export class Video extends Media {
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
 
-  private static readonly imageCommunication = new ImageCommunication();
+  private static readonly imageCommunication = !import.meta.hot
+    ? null
+    : new ImageCommunication();
 
   public constructor(props: VideoProps) {
     super(props);
@@ -240,6 +242,10 @@ export class Video extends Media {
     }
 
     const fps = this.view().fps() / this.playbackRate();
+
+    if (!Video.imageCommunication) {
+      throw new Error('ServerSeekedVideo can only be used with HMR.');
+    }
 
     const frame = await Video.imageCommunication.getFrame(
       this.key,

@@ -25,7 +25,7 @@ async function renderWorker(
       server: {
         port: fixedPort,
       },
-      plugins: [rendererPlugin(params)],
+      plugins: [rendererPlugin(params, outName)],
     }).then(server => server.listen()),
   ]);
 

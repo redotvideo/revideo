@@ -153,6 +153,7 @@ export class Renderer {
           // do nothing
         }
         this.exporter = null;
+        throw Error(e.message);
       }
     }
 
@@ -295,13 +296,22 @@ export class Renderer {
 
     await this.exporter.stop?.(result);
 
-    if (this.exporter && this.exporter.generateAudio) {
+    if (
+      result === RendererResult.Success &&
+      this.exporter &&
+      this.exporter.generateAudio
+    ) {
+      //only generate audio when rendering images was actually successful
       const endFrame = Math.min(this.playback.duration, this.playback.frame);
-      await this.exporter.generateAudio(mediaAssets, endFrame);
+      try {
+        await this.exporter.generateAudio(mediaAssets, endFrame);
+      } catch (e: any) {
+        this.project.logger.error(e);
+        result = RendererResult.Error;
+      }
     }
 
-    await this.exporter.kill?.();
-
+    await this.exporter?.kill?.();
     this.exporter = null;
 
     return result;

@@ -10,7 +10,10 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
-export function rendererPlugin(params?: Record<string, unknown>): Plugin {
+export function rendererPlugin(
+  params?: Record<string, unknown>,
+  outName?: string,
+): Plugin {
   return {
     name: 'revideo-renderer-plugin',
 

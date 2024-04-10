@@ -135,7 +135,7 @@ export class FFmpegExporterClient implements Exporter {
             resolve(response.data as TResponse);
           } else {
             reject({
-              message: 'An error occurred while exporting the video.',
+              message: `An error occurred while exporting the video: ${response.message}`,
               remarks: `Method: ${method}<br>Server error: ${response.message}`,
               object: data,
             });

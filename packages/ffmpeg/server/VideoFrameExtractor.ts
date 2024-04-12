@@ -205,7 +205,7 @@ export class VideoFrameExtractor {
     this.state = code === 0 ? 'done' : 'error';
   }
 
-  private handleError() {
-    this.state = 'error';
+  private handleError(err: Error) {
+    throw err;
   }
 }

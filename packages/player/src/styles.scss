@@ -25,7 +25,11 @@ $states: ('initial' 'loading' 'ready' 'error');
   justify-content: space-between;
   bottom: 0%;
   height: 10%;
-  background: rgba(0, 0, 0, 0);
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 .timeline-container {

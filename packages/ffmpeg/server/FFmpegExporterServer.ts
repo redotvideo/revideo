@@ -240,11 +240,13 @@ export class FFmpegExporterServer {
       trimLeft + endFrame / this.settings.fps,
     );
     const padStart = (asset.startInVideo / this.settings.fps) * 1000;
+    const assetSampleRate = await getSampleRate(this.resolvePath(asset.src));
+
     const padEnd = Math.max(
       0,
-      (SAMPLE_RATE * endFrame) / this.settings.fps -
-        (SAMPLE_RATE * asset.duration) / this.settings.fps -
-        (SAMPLE_RATE * padStart) / 1000,
+      (assetSampleRate * endFrame) / this.settings.fps -
+        (assetSampleRate * asset.duration) / this.settings.fps -
+        (assetSampleRate * padStart) / 1000,
     );
 
     const atempoFilters = await this.calculateAtempoFilters(asset.playbackRate); // atempo filter value must be >=0.5 and <=100. If the value is higher or lower, this function sets multiple atempo filters
@@ -401,4 +403,21 @@ function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
   });
 
   return assets;
+}
+
+async function getSampleRate(filePath: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const audioStream = metadata.streams.find(s => s.codec_type === 'audio');
+      if (audioStream && audioStream.sample_rate) {
+        resolve(audioStream.sample_rate);
+      } else {
+        reject(new Error('No audio stream found'));
+      }
+    });
+  });
 }

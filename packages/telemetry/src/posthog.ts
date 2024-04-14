@@ -16,7 +16,7 @@ async function getCurrentVersion() {
     const packageData = JSON.parse(
       // Relative to this file: ../package.json
       await fs.promises.readFile(
-        path.resolve(__dirname, '../../package.json'),
+        path.resolve(__dirname, '../package.json'),
         'utf-8',
       ),
     );

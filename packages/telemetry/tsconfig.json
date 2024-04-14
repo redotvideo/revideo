@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "lib",
+    "outDir": "./dist",
     "strict": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "esModuleInterop": true,
-    "target": "es2021",
+    "target": "es2020",
     "moduleResolution": "node",
     "sourceMap": true,
     "declaration": true,

@@ -2,7 +2,7 @@
   "name": "@revideo/telemetry",
   "version": "0.2.8",
   "description": "Telemetry for Revideo. Check the documentation to learn how to disable it.",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "author": "revideo",
   "homepage": "https://re.video/",
   "bugs": "https://github.com/havenhq/revideo/issues",
@@ -17,7 +17,7 @@
     "url": "git+https://github.com/havenhq/revideo.git"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "peerDependencies": {
     "@types/node": "18.14.0"

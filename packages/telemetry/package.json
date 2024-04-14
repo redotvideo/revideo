@@ -10,7 +10,7 @@
 	"scripts": {
 		"dev": "tsc -w",
 		"build": "tsc",
-		"postinstall": "node lib/postinstall.js"
+		"postinstall": "node src/postinstall.js"
 	},
 	"repository": {
 		"type": "git",

@@ -6,8 +6,8 @@
  * Teletry can be disabled by running Revideo with the environment variable DISABLE_TELEMETRY=true
  */
 
-import fs from 'fs';
-import {v4 as uuidv4} from 'uuid';
+const fs = require('fs');
+const {v4: uuidv4} = require('uuid');
 
 function Run() {
   if (fs.existsSync('./id.txt')) {

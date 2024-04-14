@@ -2,7 +2,7 @@
   "name": "@revideo/telemetry",
   "version": "0.2.8",
   "description": "Telemetry for Revideo. Check the documentation to learn how to disable it.",
-  "main": "lib/posthog.js",
+  "main": "lib/index.js",
   "author": "revideo",
   "homepage": "https://re.video/",
   "bugs": "https://github.com/havenhq/revideo/issues",

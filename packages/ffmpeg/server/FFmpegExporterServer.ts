@@ -13,8 +13,8 @@ import * as os from 'os';
 import * as path from 'path';
 import {v4 as uuidv4} from 'uuid';
 import {ImageStream} from './ImageStream';
-import {EventName, sendEvent} from './telemetry/posthog';
 
+import {EventName, sendEvent} from '@revideo/telemetry';
 import * as fsPromises from 'fs/promises';
 const SAMPLE_RATE = 48000;
 

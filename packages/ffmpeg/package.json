@@ -28,6 +28,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffprobe-installer/ffprobe": "^2.0.0",
     "@revideo/core": "^0.2.8",
+    "@revideo/telemetry": "^0.2.8",
     "@revideo/vite-plugin": "^0.2.8",
     "fluent-ffmpeg": "^2.1.2",
     "posthog-node": "^4.0.0",

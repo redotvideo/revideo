@@ -87,6 +87,7 @@ const config = {
         appId: 'N600LQX5YP',
         apiKey: '2c77f741c3a3a9da8c86ac362b56ec52',
         indexName: 're',
+        contextualSearch: false,
       },
       prism: {
         theme: require('./config/codeTheme'),

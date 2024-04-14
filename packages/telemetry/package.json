@@ -1,28 +1,28 @@
 {
-	"name": "@revideo/telemetry",
-	"version": "0.2.8",
-	"description": "Telemetry for Revideo. Check the documentation to learn how to disable it.",
-	"main": "lib/posthog.js",
-	"author": "revideo",
-	"homepage": "https://re.video/",
-	"bugs": "https://github.com/havenhq/revideo/issues",
-	"license": "MIT",
-	"scripts": {
-		"dev": "tsc -w",
-		"build": "tsc",
-		"postinstall": "node src/postinstall.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/havenhq/revideo.git"
-	},
-	"files": [
-		"lib"
-	],
-	"peerDependencies": {
-		"@types/node": "18.14.0"
-	},
-	"dependencies": {
-		"posthog-node": "^4.0.0"
-	}
+  "name": "@revideo/telemetry",
+  "version": "0.2.8",
+  "description": "Telemetry for Revideo. Check the documentation to learn how to disable it.",
+  "main": "lib/posthog.js",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc",
+    "postinstall": "node src/postinstall.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/havenhq/revideo.git"
+  },
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "@types/node": "18.14.0"
+  },
+  "dependencies": {
+    "posthog-node": "^4.0.0"
+  }
 }

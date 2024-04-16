@@ -1,0 +1,53 @@
+---
+sidebar_position: 1
+slug: /renderer/renderVideo
+---
+
+# renderVideo()
+
+The `renderVideo` function lets you render (parameterized) videos in a nodejs
+process. It uses a headless browser to achieve this.
+
+## Example Usage
+
+```tsx
+import {renderVideo} from '@revideo/renderer';
+
+renderVideo(
+    configFile: './vite.config.ts',
+    params: { color: 'white'},
+    settings: {
+        name: "out",
+        puppeteer: {
+            args: [
+                '--no-sandbox'
+            ]
+        }
+    }
+);
+```
+
+## Arguments
+
+### configFile:
+
+A string pointing towards your Vite config file. This will almost always be
+`vite.config.ts`.
+
+### params:
+
+Parameters / or variables passed to your video. See [here](/parameterized-video)
+learn more about parameterized videos.
+
+### settings:
+
+An object with the following arguments:
+
+#### name:
+
+The file name of the video output - the video will be saved to `{name}.mp4`.
+
+#### puppeteer:
+
+Launch options for puppeteer - is an instance of puppeteer's
+[BrowserLaunchArgumentOptions](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions/)

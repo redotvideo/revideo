@@ -1,5 +1,5 @@
 import * as path from 'path';
-import puppeteer, {LaunchOptions} from 'puppeteer';
+import puppeteer, {BrowserLaunchArgumentOptions} from 'puppeteer';
 import {createServer} from 'vite';
 import {rendererPlugin} from './plugin';
 
@@ -17,7 +17,7 @@ async function renderWorker(
   resolvedConfigPath: string,
   url: string,
   params?: Record<string, unknown>,
-  puppeteerOptions?: LaunchOptions,
+  puppeteerOptions?: BrowserLaunchArgumentOptions,
 ) {
   const [browser, server] = await Promise.all([
     puppeteer.launch({headless: true, ...puppeteerOptions}),
@@ -68,17 +68,15 @@ async function renderWorker(
 
 interface RenderVideoSettings {
   // Name of the video file
-  name: string;
+  name?: string;
 
-  puppeteer?: LaunchOptions;
+  puppeteer?: BrowserLaunchArgumentOptions;
 }
 
 export const renderVideo = async (
   configFile: string,
   params?: Record<string, unknown>,
-  settings: RenderVideoSettings = {
-    name: 'project',
-  },
+  settings: RenderVideoSettings = {},
 ) => {
   console.log('Rendering...');
 
@@ -92,7 +90,7 @@ export const renderVideo = async (
 
   const promises = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    const url = buildUrl(9000 + i, settings.name, i, numOfWorkers);
+    const url = buildUrl(9000 + i, settings.name ?? 'project', i, numOfWorkers);
     promises.push(
       renderWorker(
         9000 + i,

@@ -182,4 +182,27 @@ export abstract class Media extends Rect {
     super.collectAsyncResources();
     this.seekedMedia();
   }
+
+  protected getErrorReason(errCode?: number) {
+    let reason;
+    switch (errCode) {
+      case 1:
+        reason = 'MEDIA_ERR_ABORTED';
+        break;
+      case 2:
+        reason = 'MEDIA_ERR_NETWORK. This might be a 404 error.';
+        break;
+      case 3:
+        reason =
+          'MEDIA_ERR_DECODE. This might be an issue with your video file.';
+        break;
+      case 4:
+        reason = 'MEDIA_ERR_SRC_NOT_SUPPORTED. This might be a CORS error.';
+        break;
+      default:
+        reason = 'UNKNOWN';
+    }
+
+    return reason;
+  }
 }

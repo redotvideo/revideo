@@ -164,11 +164,18 @@ export class Video extends Media {
     if (video.readyState < 2) {
       DependencyContext.collectPromise(
         new Promise<void>(resolve => {
-          const listener = () => {
+          const onCanPlay = () => {
             resolve();
-            video.removeEventListener('canplay', listener);
+            video.removeEventListener('canplay', onCanPlay);
           };
-          video.addEventListener('canplay', listener);
+
+          const onError = () => {
+            const reason = this.getErrorReason(video.error?.code);
+            console.log(`ERROR: Error loading video: ${src}, ${reason}`);
+          };
+
+          video.addEventListener('canplay', onCanPlay);
+          video.addEventListener('error', onError);
         }),
       );
     }

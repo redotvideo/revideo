@@ -36,11 +36,18 @@ export class Audio extends Media {
     if (audio.readyState < 2) {
       DependencyContext.collectPromise(
         new Promise<void>(resolve => {
-          const listener = () => {
+          const onCanPlay = () => {
             resolve();
-            audio.removeEventListener('canplay', listener);
+            audio.removeEventListener('canplay', onCanPlay);
           };
-          audio.addEventListener('canplay', listener);
+
+          const onError = () => {
+            const reason = this.getErrorReason(audio.error?.code);
+            console.log(`ERROR: Error loading audio: ${src}, ${reason}`);
+          };
+
+          audio.addEventListener('canplay', onCanPlay);
+          audio.addEventListener('error', onError);
         }),
       );
     }

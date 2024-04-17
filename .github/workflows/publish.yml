@@ -43,4 +43,4 @@ jobs:
       - if: ${{ inputs.releaseType == 'release' }}
         run: npx lerna publish --yes --force-publish --exact ${{ inputs.version }}
       - if: ${{ inputs.releaseType == 'canary' }}
-        run: npx lerna publish --yes --canary --force-publish --exact ${{ inputs.version }}
+        run: npx lerna publish --yes --canary --force-publish

@@ -107,9 +107,10 @@ export class FFmpegExporterClient implements Exporter {
 
   public async generateAudio(
     assets: AssetInfo[][],
+    startFrame: number,
     endFrame: number,
   ): Promise<void> {
-    await this.invoke('generateAudio', {assets, endFrame});
+    await this.invoke('generateAudio', {assets, startFrame, endFrame});
   }
 
   /**

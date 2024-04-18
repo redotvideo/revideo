@@ -128,6 +128,10 @@ export class Renderer {
     return this.status.framesToSeconds(frame);
   }
 
+  public timeToFrame(second: number) {
+    return this.status.secondsToFrames(second);
+  }
+
   /**
    * Render the animation using the provided settings.
    *
@@ -301,9 +305,8 @@ export class Renderer {
       this.exporter.generateAudio
     ) {
       //only generate audio when rendering images was actually successful
-      const endFrame = Math.min(this.playback.duration, this.playback.frame);
       try {
-        await this.exporter.generateAudio(mediaAssets, endFrame);
+        await this.exporter.generateAudio(mediaAssets, from, to);
       } catch (e: any) {
         this.project.logger.error(e);
         result = RendererResult.Error;

@@ -17,6 +17,8 @@ export const render = async (
   project: Project,
   workerId: number,
   totalNumOfWorkers: number,
+  startInSeconds: number,
+  endInSeconds: number,
 ) => {
   try {
     const renderer = new Renderer(project);
@@ -26,12 +28,28 @@ export const render = async (
       name: project.name,
     };
 
-    const frames = await renderer.getNumberOfFrames(settings);
+    const firstFrame = renderer.timeToFrame(startInSeconds);
+
+    let frames: number;
+    console.log('startInSeconds', startInSeconds);
+    console.log('endInSeconds', endInSeconds);
+    console.log('!isFinite', !isFinite(endInSeconds));
+    console.log('startInSeconds === 0', startInSeconds === 0);
+    if (startInSeconds === 0 && !isFinite(endInSeconds)) {
+      console.log('option 1');
+      frames = await renderer.getNumberOfFrames(settings);
+    } else {
+      console.log('option 2');
+      frames = renderer.timeToFrame(endInSeconds) - firstFrame + 1;
+    }
 
     // Get the range of frames to render (there can't be any overlap between workers)
     const framesPerWorker = Math.ceil(frames / totalNumOfWorkers);
-    const startFrame = framesPerWorker * workerId;
-    const endFrame = Math.min(startFrame + framesPerWorker, frames);
+    const startFrame = firstFrame + framesPerWorker * workerId;
+    const endFrame = Math.min(
+      startFrame + framesPerWorker,
+      startFrame + frames,
+    );
 
     await renderer.render({
       ...project.meta.getFullRenderingSettings(),

@@ -8,8 +8,10 @@ function buildUrl(
   fileName: string,
   workerId: number,
   totalNumOfWorkers: number,
+  startInSeconds: number,
+  endInSeconds?: number,
 ) {
-  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}`;
+  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${startInSeconds}&endInSeconds=${endInSeconds}`;
 }
 
 async function renderWorker(
@@ -69,7 +71,8 @@ async function renderWorker(
 interface RenderVideoSettings {
   // Name of the video file
   name?: string;
-
+  startInSeconds?: number;
+  endInSeconds?: number;
   puppeteer?: BrowserLaunchArgumentOptions;
 }
 
@@ -90,7 +93,14 @@ export const renderVideo = async (
 
   const promises = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    const url = buildUrl(9000 + i, settings.name ?? 'project', i, numOfWorkers);
+    const url = buildUrl(
+      9000 + i,
+      settings.name ?? 'project',
+      i,
+      numOfWorkers,
+      settings.startInSeconds ?? 0,
+      settings.endInSeconds ?? Infinity,
+    );
     promises.push(
       renderWorker(
         9000 + i,

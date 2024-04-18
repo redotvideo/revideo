@@ -162,13 +162,6 @@ jobs:
             packages/player/dist
             packages/vite-plugin/lib
             packages/telemetry/dist
-      - run: ls -la /home/runner/work/revideo/revideo/node_modules/@revideo/renderer/
-      - run: ls -la /home/runner/work/revideo/revideo/node_modules/@revideo/telemetry/
-      - run: ls -la /home/runner/work/revideo/revideo/packages/vite-plugin/
-      - run: ls -la /home/runner/work/revideo/revideo/packages/
-      - run: ls -la /home/runner/work/revideo/revideo/packages/telemetry/
-      - run: ls -la /home/runner/work/revideo/revideo/packages/telemetry/dist/
-      - run: ls -la /home/runner/work/revideo/revideo/node_modules/@revideo/telemetry/dist/
       - run: npm run examples:build
   e2e:
     name: E2E

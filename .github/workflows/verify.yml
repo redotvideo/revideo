@@ -106,6 +106,7 @@ jobs:
             packages/ui/dist
             packages/player/dist
             packages/vite-plugin/lib
+            packages/telemetry/dist
   tests:
     name: Unit tests
     needs: build

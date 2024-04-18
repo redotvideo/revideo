@@ -3,7 +3,7 @@
  * It creates a file in the local npm package directory that contains a uuid4 string.
  * It is used to identify the installation of the package when sending telemetry data.
  *
- * Teletry can be disabled by running Revideo with the environment variable DISABLE_TELEMETRY=true
+ * Telemetry can be disabled by running Revideo with the environment variable DISABLE_TELEMETRY=true
  */
 
 const fs = require('fs');

@@ -12,6 +12,7 @@ import {
   settingsPlugin,
   webglPlugin,
 } from './partials';
+import {metricsPlugin} from './partials/metrics';
 import {PLUGIN_OPTIONS, PluginOptions, isPlugin} from './plugins';
 import {getProjects} from './utils';
 
@@ -135,5 +136,6 @@ export default ({
     assetsPlugin({bufferedAssets}),
     webglPlugin(),
     corsProxyPlugin(proxy),
+    metricsPlugin(),
   ];
 };

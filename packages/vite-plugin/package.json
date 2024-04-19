@@ -23,6 +23,7 @@
     "vite": "^4.5"
   },
   "devDependencies": {
+    "@revideo/telemetry": "^0.2.10",
     "@types/follow-redirects": "^1.14.1",
     "@types/mime-types": "^2.1.1"
   },

@@ -106,6 +106,7 @@ jobs:
             packages/ui/dist
             packages/player/dist
             packages/vite-plugin/lib
+            packages/telemetry/dist
   tests:
     name: Unit tests
     needs: build
@@ -132,6 +133,7 @@ jobs:
             packages/ui/dist
             packages/player/dist
             packages/vite-plugin/lib
+            packages/telemetry/dist
       - run: npx lerna run test
   examples:
     name: Examples
@@ -159,6 +161,7 @@ jobs:
             packages/ui/dist
             packages/player/dist
             packages/vite-plugin/lib
+            packages/telemetry/dist
       - run: npm run examples:build
   e2e:
     name: E2E
@@ -186,6 +189,7 @@ jobs:
             packages/ui/dist
             packages/player/dist
             packages/vite-plugin/lib
+            packages/telemetry/dist
       - run: npm run e2e:test
       - uses: actions/upload-artifact@v3
         if: failure()
@@ -218,6 +222,7 @@ jobs:
             packages/ui/dist
             packages/player/dist
             packages/vite-plugin/lib
+            packages/telemetry/dist
       - run: npx lerna run bundle
       - run: npm run docs:build
         env:

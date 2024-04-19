@@ -21,6 +21,7 @@ async function renderWorker(
   params?: Record<string, unknown>,
   puppeteerOptions?: BrowserLaunchArgumentOptions,
 ) {
+  const beforeServer = Date.now();
   const [browser, server] = await Promise.all([
     puppeteer.launch({headless: true, ...puppeteerOptions}),
     createServer({
@@ -31,7 +32,10 @@ async function renderWorker(
       plugins: [rendererPlugin(params)],
     }).then(server => server.listen()),
   ]);
+  const afterServer = Date.now();
+  console.log('serverstart', (afterServer - beforeServer) / 1000);
 
+  const beforePage = Date.now();
   const page = await browser.newPage();
   if (!server.httpServer) {
     throw new Error('HTTP server is not initialized');
@@ -51,7 +55,10 @@ async function renderWorker(
 
   const renderingComplete = new Promise<void>((resolve, reject) => {
     page.exposeFunction('onRenderComplete', async () => {
+      const preClose = Date.now();
       await Promise.all([browser.close(), server.close()]);
+      const postClose = Date.now();
+      console.log('closingDuration', (postClose - preClose) / 1000);
       console.log('Rendering complete.');
       resolve();
     });
@@ -64,6 +71,8 @@ async function renderWorker(
   });
 
   await page.goto(url);
+  const afterPage = Date.now();
+  console.log('pagego', (afterPage - beforePage) / 1000);
 
   return renderingComplete;
 }

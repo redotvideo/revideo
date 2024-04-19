@@ -221,6 +221,7 @@ export class Renderer {
     settings: RendererSettings,
     signal: AbortSignal,
   ): Promise<RendererResult> {
+    const prePreRender = Date.now();
     const exporterClass = this.project.meta.rendering.exporter.exporters.find(
       exporter => exporter.id === settings.exporter.name,
     );
@@ -262,17 +263,23 @@ export class Renderer {
     let result = RendererResult.Success;
 
     const mediaAssets: AssetInfo[][] = [];
+    let renderLoopDuration = 0;
+    const preFullRenderLoop = Date.now();
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
       mediaAssets.push(this.playback.currentScene.getMediaAssets());
       this.estimator.update(clampRemap(from, to, 0, 1, this.playback.frame));
 
+      const postPreRender = Date.now();
+      console.log('preRenderDuration', (postPreRender - prePreRender) / 1000);
+
       if (signal.aborted) {
         result = RendererResult.Aborted;
       } else {
         let finished = false;
         while (!finished) {
+          const beforeRenderIteration = Date.now();
           await this.playback.progress();
           await this.exportFrame(signal);
           mediaAssets.push(this.playback.currentScene.getMediaAssets());
@@ -290,12 +297,29 @@ export class Renderer {
             result = RendererResult.Aborted;
             finished = true;
           }
+          const afterRenderIteration = Date.now();
+          console.log(
+            'render iteration duration',
+            (afterRenderIteration - beforeRenderIteration) / 1000,
+          );
+          renderLoopDuration +=
+            (afterRenderIteration - beforeRenderIteration) / 1000;
         }
       }
     } catch (e: any) {
       this.project.logger.error(e);
       result = RendererResult.Error;
     }
+
+    const postFullRenderLoop = Date.now();
+
+    console.log('renderLoopDuration', renderLoopDuration);
+    console.log(
+      'actualRenderLoopDuration',
+      (postFullRenderLoop - preFullRenderLoop) / 1000,
+    );
+
+    const preStop = Date.now();
 
     await this.exporter.stop?.(result);
 
@@ -316,6 +340,9 @@ export class Renderer {
     await this.exporter?.kill?.();
     this.exporter = null;
 
+    const postStop = Date.now();
+
+    console.log('postRenderLoop', (postStop - preStop) / 1000);
     return result;
   }
 

@@ -221,7 +221,6 @@ export class Renderer {
     settings: RendererSettings,
     signal: AbortSignal,
   ): Promise<RendererResult> {
-    const prePreRender = Date.now();
     const exporterClass = this.project.meta.rendering.exporter.exporters.find(
       exporter => exporter.id === settings.exporter.name,
     );
@@ -262,24 +261,30 @@ export class Renderer {
     let lastRefresh = performance.now();
     let result = RendererResult.Success;
 
+    const mediaByFrames = await this.getMediaByFrames(settings);
+
+    let generateAudioPromise;
+    if (this.exporter && this.exporter.generateAudio) {
+      generateAudioPromise = this.exporter.generateAudio(
+        mediaByFrames,
+        from,
+        to,
+      );
+    }
+
+    await this.playback.seek(from);
+
     const mediaAssets: AssetInfo[][] = [];
-    let renderLoopDuration = 0;
-    const preFullRenderLoop = Date.now();
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
-      mediaAssets.push(this.playback.currentScene.getMediaAssets());
       this.estimator.update(clampRemap(from, to, 0, 1, this.playback.frame));
-
-      const postPreRender = Date.now();
-      console.log('preRenderDuration', (postPreRender - prePreRender) / 1000);
 
       if (signal.aborted) {
         result = RendererResult.Aborted;
       } else {
         let finished = false;
         while (!finished) {
-          const beforeRenderIteration = Date.now();
           await this.playback.progress();
           await this.exportFrame(signal);
           mediaAssets.push(this.playback.currentScene.getMediaAssets());
@@ -297,13 +302,6 @@ export class Renderer {
             result = RendererResult.Aborted;
             finished = true;
           }
-          const afterRenderIteration = Date.now();
-          console.log(
-            'render iteration duration',
-            (afterRenderIteration - beforeRenderIteration) / 1000,
-          );
-          renderLoopDuration +=
-            (afterRenderIteration - beforeRenderIteration) / 1000;
         }
       }
     } catch (e: any) {
@@ -311,26 +309,19 @@ export class Renderer {
       result = RendererResult.Error;
     }
 
-    const postFullRenderLoop = Date.now();
-
-    console.log('renderLoopDuration', renderLoopDuration);
-    console.log(
-      'actualRenderLoopDuration',
-      (postFullRenderLoop - preFullRenderLoop) / 1000,
-    );
-
-    const preStop = Date.now();
-
     await this.exporter.stop?.(result);
 
     if (
       result === RendererResult.Success &&
       this.exporter &&
-      this.exporter.generateAudio
+      this.exporter.mergeMedia
     ) {
-      //only generate audio when rendering images was actually successful
+      //only merge media when rendering images was actually successful
       try {
-        await this.exporter.generateAudio(mediaAssets, from, to);
+        if (generateAudioPromise) {
+          await generateAudioPromise;
+        }
+        await this.exporter.mergeMedia();
       } catch (e: any) {
         this.project.logger.error(e);
         result = RendererResult.Error;
@@ -340,9 +331,6 @@ export class Renderer {
     await this.exporter?.kill?.();
     this.exporter = null;
 
-    const postStop = Date.now();
-
-    console.log('postRenderLoop', (postStop - preStop) / 1000);
     return result;
   }
 
@@ -377,5 +365,43 @@ export class Renderer {
       this.playback.currentScene.name,
       signal,
     );
+  }
+
+  private async getMediaByFrames(settings: RendererSettings) {
+    this.stage.configure(settings);
+    this.playback.fps = settings.fps;
+    this.playback.state = PlaybackState.Rendering;
+    const from = this.status.secondsToFrames(settings.range[0]);
+    this.frame.current = from;
+
+    await this.reloadScenes(settings);
+    await this.playback.recalculate();
+    await this.playback.reset();
+
+    const to = Math.min(
+      this.playback.duration,
+      this.status.secondsToFrames(settings.range[1]),
+    );
+    await this.playback.seek(from);
+
+    const mediaAssets: AssetInfo[][] = [];
+    try {
+      const currentMediaAssets = this.playback.currentScene.getMediaAssets();
+      mediaAssets.push(currentMediaAssets);
+
+      let finished = false;
+      while (!finished) {
+        await this.playback.progress();
+        mediaAssets.push(this.playback.currentScene.getMediaAssets());
+
+        if (this.playback.finished || this.playback.frame >= to) {
+          finished = true;
+        }
+      }
+    } catch (e: any) {
+      this.project.logger.error(e);
+    }
+
+    return mediaAssets;
   }
 }

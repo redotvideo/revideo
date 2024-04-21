@@ -64,11 +64,11 @@ async function getGlobalFirstAndLastFrame(
   const firstGlobalFrame = renderer.timeToFrame(startSecondFromUser);
   let lastGlobalFrame: number;
 
+  // If end value is provided by user, lastFrame can be obtained.
   if (isFinite(endSecondFromUser)) {
-    // if end value is provided by user, lastFrame can be obtained
     lastGlobalFrame = renderer.timeToFrame(endSecondFromUser);
   } else {
-    // otherwise, endSecondFromUser is infinity, so lastGlobalFrame is the duration of the video
+    // Otherwise, endSecondFromUser is infinity, so lastGlobalFrame is the duration of the video.
     const settings = {
       ...project.meta.getFullRenderingSettings(),
       name: project.name,

@@ -86,6 +86,8 @@ export interface Exporter {
     signal: AbortSignal,
   ): Promise<void>;
 
+  mergeMedia?(): Promise<void>;
+
   /**
    * Take in media assets per frame and generate audio track for the video.
    */

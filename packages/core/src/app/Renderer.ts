@@ -128,6 +128,10 @@ export class Renderer {
     return this.status.framesToSeconds(frame);
   }
 
+  public timeToFrame(second: number) {
+    return this.status.secondsToFrames(second);
+  }
+
   /**
    * Render the animation using the provided settings.
    *
@@ -261,7 +265,11 @@ export class Renderer {
 
     let generateAudioPromise;
     if (this.exporter && this.exporter.generateAudio) {
-      generateAudioPromise = this.exporter.generateAudio(mediaByFrames, to);
+      generateAudioPromise = this.exporter.generateAudio(
+        mediaByFrames,
+        from,
+        to,
+      );
     }
 
     await this.playback.seek(from);

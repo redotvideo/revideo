@@ -14,16 +14,16 @@ process. It uses a headless browser to achieve this.
 import {renderVideo} from '@revideo/renderer';
 
 renderVideo(
-    configFile: './vite.config.ts',
-    params: { color: 'white'},
-    settings: {
-        name: "out",
-        puppeteer: {
-            args: [
-                '--no-sandbox'
-            ]
-        }
-    }
+  './vite.config.ts',
+  {color: 'white'},
+  {
+    name: 'out',
+    startInSeconds: 1,
+    endInSeconds: 3,
+    puppeteer: {
+      args: ['--no-sandbox'],
+    },
+  },
 );
 ```
 
@@ -34,20 +34,31 @@ renderVideo(
 A string pointing towards your Vite config file. This will almost always be
 `vite.config.ts`.
 
-### params:
+### params (optional):
 
 Parameters / or variables passed to your video. See [here](/parameterized-video)
-learn more about parameterized videos.
+learn more about parameterized videos. `default = {}`
 
-### settings:
+### settings (optional):
 
 An object with the following arguments:
 
-#### name:
+#### name (optional):
 
 The file name of the video output - the video will be saved to `{name}.mp4`.
+`default = "project"`
 
-#### puppeteer:
+#### startInSeconds (optional):
+
+The starting second at which the video should be rendered (in case you only want
+to render an excerpt of the video). `default = 0`
+
+#### endInSeconds (optional):
+
+The starting second at which the video should be rendered (in case you only want
+to render an excerpt of the video). `default = Infinity`
+
+#### puppeteer (optional):
 
 Launch options for puppeteer - is an instance of puppeteer's
 [BrowserLaunchArgumentOptions](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions/)

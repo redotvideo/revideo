@@ -95,6 +95,8 @@ export interface Exporter {
     endFrame: number,
   ): Promise<void>;
 
+  mergeMedia?(): Promise<void>;
+
   /**
    * Finish the rendering process.
    *

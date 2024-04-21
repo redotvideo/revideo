@@ -10,7 +10,7 @@ export class VideoFrameExtractor {
   private static readonly jpegSOI = Buffer.from([0xff, 0xd8]); // Start of Image marker
   private static readonly jpegEOI = Buffer.from([0xff, 0xd9]); // End of Image marker
 
-  private static readonly chunkLengthInSeconds = 10;
+  private static readonly chunkLengthInSeconds = 45;
 
   public state: VideoFrameExtractorState;
   public filePath: string;
@@ -97,7 +97,7 @@ export class VideoFrameExtractor {
     process.on('close', this.handleClose.bind(this));
     process.on('error', this.handleError.bind(this));
 
-    return this.process;
+    return process;
   }
 
   /**

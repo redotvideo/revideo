@@ -89,7 +89,11 @@ export interface Exporter {
   /**
    * Take in media assets per frame and generate audio track for the video.
    */
-  generateAudio?(assetsInfo: AssetInfo[][], endFrame: number): Promise<void>;
+  generateAudio?(
+    assetsInfo: AssetInfo[][],
+    startFrame: number,
+    endFrame: number,
+  ): Promise<void>;
 
   /**
    * Finish the rendering process.

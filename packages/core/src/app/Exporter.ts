@@ -87,6 +87,11 @@ export interface Exporter {
   ): Promise<void>;
 
   /**
+   * after processing the image stream and generating an audio file, merge the video and audio stream as the final video
+   */
+  mergeMedia?(): Promise<void>;
+
+  /**
    * Take in media assets per frame and generate audio track for the video.
    */
   generateAudio?(

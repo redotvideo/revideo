@@ -113,6 +113,10 @@ export class FFmpegExporterClient implements Exporter {
     await this.invoke('generateAudio', {assets, startFrame, endFrame});
   }
 
+  public async mergeMedia(): Promise<void> {
+    await this.invoke('mergeMedia', {});
+  }
+
   /**
    * Remotely invoke a method on the server and wait for a response.
    *

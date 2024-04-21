@@ -301,16 +301,15 @@ export class Renderer {
 
     await this.exporter.stop?.(result);
 
+    // Only merge media when rendering images was actually successful.
     if (
       result === RendererResult.Success &&
       this.exporter &&
-      this.exporter.mergeMedia
+      this.exporter.mergeMedia &&
+      generateAudioPromise
     ) {
-      //only merge media when rendering images was actually successful
       try {
-        if (generateAudioPromise) {
-          await generateAudioPromise;
-        }
+        await generateAudioPromise;
         await this.exporter.mergeMedia();
       } catch (e: any) {
         this.project.logger.error(e);

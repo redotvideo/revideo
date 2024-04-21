@@ -64,7 +64,7 @@ export class FFmpegExporterServer {
   private readonly promise: Promise<void>;
   private readonly settings: FFmpegExporterSettings;
   private readonly jobFolder: string;
-  private audioFilenames: string[];
+  private readonly audioFilenames: string[];
 
   public constructor(
     settings: FFmpegExporterSettings,

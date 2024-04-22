@@ -24,7 +24,8 @@
     "@revideo/core": "0.2.10",
     "@revideo/renderer": "0.2.10",
     "@revideo/ui": "0.2.10",
-    "@revideo/vite-plugin": "0.2.10"
+    "@revideo/vite-plugin": "0.2.10",
+    "@revideo/ffmpeg": "0.2.10"
   },
   "dependencies": {
     "minimist": "^1.2.8",

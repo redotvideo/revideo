@@ -64,6 +64,7 @@ export class FFmpegExporterServer {
   private readonly promise: Promise<void>;
   private readonly settings: FFmpegExporterSettings;
   private readonly jobFolder: string;
+  private readonly audioFilenames: string[];
 
   public constructor(
     settings: FFmpegExporterSettings,
@@ -71,6 +72,7 @@ export class FFmpegExporterServer {
   ) {
     this.settings = settings;
     this.jobFolder = path.join(os.tmpdir(), `revideo-${uuidv4()}`);
+    this.audioFilenames = [];
     this.stream = new ImageStream();
     this.command = ffmpeg();
 
@@ -126,14 +128,15 @@ export class FFmpegExporterServer {
 
   public async generateAudio({
     assets,
+    startFrame,
     endFrame,
   }: {
     assets: AssetInfo[][];
+    startFrame: number;
     endFrame: number;
   }) {
     const assetPositions = getAssetPlacement(assets);
 
-    const audioFilenames: string[] = [];
     for (const asset of assetPositions) {
       let hasAudioStream = true;
       if (asset.type !== 'audio') {
@@ -141,13 +144,18 @@ export class FFmpegExporterServer {
       }
 
       if (asset.playbackRate !== 0 && asset.volume !== 0 && hasAudioStream) {
-        const filename = await this.prepareAudio(asset, endFrame);
-        audioFilenames.push(filename);
+        const filename = await this.prepareAudio(asset, startFrame, endFrame);
+        this.audioFilenames.push(filename);
       }
     }
 
-    if (audioFilenames.length > 0) {
-      await this.mergeAudioTracks(audioFilenames);
+    if (this.audioFilenames.length > 0) {
+      await this.mergeAudioTracks();
+    }
+  }
+
+  public async mergeMedia() {
+    if (this.audioFilenames.length > 0) {
       await this.mergeAudioWithVideo(
         path.join(this.jobFolder, `audio.wav`),
         path.join(this.jobFolder, `visuals.mp4`),
@@ -228,6 +236,7 @@ export class FFmpegExporterServer {
 
   private async prepareAudio(
     asset: MediaAsset,
+    startFrame: number,
     endFrame: number,
   ): Promise<string> {
     // Construct the output path
@@ -237,14 +246,14 @@ export class FFmpegExporterServer {
     const trimLeft = asset.trimLeftInSeconds / asset.playbackRate;
     const trimRight = Math.min(
       trimLeft + asset.duration / this.settings.fps,
-      trimLeft + endFrame / this.settings.fps,
+      trimLeft + (endFrame - startFrame + 1) / this.settings.fps,
     );
     const padStart = (asset.startInVideo / this.settings.fps) * 1000;
     const assetSampleRate = await getSampleRate(this.resolvePath(asset.src));
 
     const padEnd = Math.max(
       0,
-      (assetSampleRate * endFrame) / this.settings.fps -
+      (assetSampleRate * (endFrame - startFrame + 1)) / this.settings.fps -
         (assetSampleRate * asset.duration) / this.settings.fps -
         (assetSampleRate * padStart) / 1000,
     );
@@ -282,17 +291,17 @@ export class FFmpegExporterServer {
     return outputPath;
   }
 
-  private async mergeAudioTracks(audioFilenames: string[]): Promise<void> {
+  private async mergeAudioTracks(): Promise<void> {
     return new Promise((resolve, reject) => {
       const command = ffmpeg();
 
-      audioFilenames.forEach(filename => {
+      this.audioFilenames.forEach(filename => {
         command.input(filename);
       });
 
       command
         .complexFilter([
-          `amix=inputs=${audioFilenames.length}:duration=longest`,
+          `amix=inputs=${this.audioFilenames.length}:duration=longest`,
         ])
         .outputOptions(['-c:a', 'pcm_s16le'])
         .on('end', () => {

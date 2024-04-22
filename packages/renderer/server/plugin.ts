@@ -29,11 +29,13 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
             const fileName = url.searchParams.get('fileName');
             const workerId = url.searchParams.get('workerId');
             const totalNumOfWorkers = url.searchParams.get('totalNumOfWorkers');
+            const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
+            const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
 
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;
 
-            render(project, workerId, totalNumOfWorkers);
+            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds);
             `;
       }
     },

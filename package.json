@@ -20,6 +20,7 @@
     "ui:type": "npm run type -w packages/ui",
     "template:dev": "npm run dev -w packages/template",
     "template:build": "npm run build -w packages/template",
+    "template:render": "npm run render -w packages/template",
     "examples:dev": "npm run dev -w packages/examples",
     "examples:build": "npm run build -w packages/examples",
     "renderer:build": "npm run build -w packages/renderer",

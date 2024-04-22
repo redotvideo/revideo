@@ -26,11 +26,6 @@ const PLUGINS = {
     options: response =>
       response.language === 'js' ? `{project: './src/project.js'}` : '',
   },
-  ffmpeg: {
-    package: '@revideo/ffmpeg',
-    variable: 'ffmpeg',
-    version: '^0.2.9', // TODO: put in package.json
-  },
 };
 
 (async () => {
@@ -102,7 +97,7 @@ const PLUGINS = {
     return;
   }
 
-  const plugins = [PLUGINS.core, PLUGINS.ffmpeg];
+  const plugins = [PLUGINS.core];
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
     '..',
@@ -185,6 +180,8 @@ function createConfig(response, selectedPlugins) {
     imports.push(`import ${data.variable} from '${data.package}';\n`);
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }
+  imports.push(`import ffmpeg from '@revideo/ffmpeg';\n`);
+  plugins.push(`ffmpeg()`);
 
   const configFile = path.resolve(response.path, `vite.config.ts`);
 

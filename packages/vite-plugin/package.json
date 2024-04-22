@@ -1,6 +1,6 @@
 {
   "name": "@revideo/vite-plugin",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "A Vite plugin for revideo projects",
   "main": "lib/index.js",
   "author": "revideo",
@@ -23,7 +23,7 @@
     "vite": "^4.5"
   },
   "devDependencies": {
-    "@revideo/telemetry": "^0.2.10",
+    "@revideo/telemetry": "0.2.11",
     "@types/follow-redirects": "^1.14.1",
     "@types/mime-types": "^2.1.1"
   },

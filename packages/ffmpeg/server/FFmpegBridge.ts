@@ -25,8 +25,9 @@ export class FFmpegBridge {
     private readonly ws: WebSocketServer,
     private readonly config: PluginConfig,
   ) {
-    ws.on('revideo/ffmpeg-exporter', this.handleMessage);
-    ws.on('revideo/ffmpeg-video-frame', this.handleVideoFrameMessage);
+    ws.on('revideo:ffmpeg-exporter', this.handleMessage);
+    ws.on('revideo:ffmpeg-video-frame', this.handleVideoFrameMessage);
+    ws.on('revideo:render-finished', this.handleRenderFinished);
   }
 
   private handleMessage = async ({method, data}: BrowserRequest) => {
@@ -66,7 +67,7 @@ export class FFmpegBridge {
   };
 
   private respondSuccess(method: string, data: any = {}) {
-    this.ws.send('revideo/ffmpeg-exporter-ack', {
+    this.ws.send('revideo:ffmpeg-exporter-ack', {
       status: 'success',
       method,
       data,
@@ -74,7 +75,7 @@ export class FFmpegBridge {
   }
 
   private respondError(method: string, message = 'Unknown error.') {
-    this.ws.send('revideo/ffmpeg-exporter-ack', {
+    this.ws.send('revideo:ffmpeg-exporter-ack', {
       status: 'error',
       method,
       message,
@@ -110,11 +111,16 @@ export class FFmpegBridge {
     // Go to the frame that is closest to the requested time
     const frame = await extractor.popImage();
 
-    this.ws.send('revideo/ffmpeg-video-frame-res', {
+    this.ws.send('revideo:ffmpeg-video-frame-res', {
       status: 'success',
       data: {
         frame,
       },
     });
+  };
+
+  private handleRenderFinished = async () => {
+    this.videoFrameExtractors.forEach(extractor => extractor.destroy());
+    this.videoFrameExtractors.clear();
   };
 }

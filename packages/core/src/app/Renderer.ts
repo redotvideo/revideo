@@ -295,12 +295,16 @@ export class Renderer {
 
     await this.exporter.stop?.(result);
 
+    if (import.meta.hot) {
+      import.meta.hot.send('revideo:render-finished', {});
+    }
+
+    // Only generate audio when rendering images was actually successful.
     if (
       result === RendererResult.Success &&
       this.exporter &&
       this.exporter.generateAudio
     ) {
-      //only generate audio when rendering images was actually successful
       const endFrame = Math.min(this.playback.duration, this.playback.frame);
       try {
         await this.exporter.generateAudio(mediaAssets, endFrame);

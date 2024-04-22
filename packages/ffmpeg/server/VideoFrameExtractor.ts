@@ -97,7 +97,7 @@ export class VideoFrameExtractor {
     process.on('close', this.handleClose.bind(this));
     process.on('error', this.handleError.bind(this));
 
-    return this.process;
+    return process;
   }
 
   /**
@@ -207,5 +207,9 @@ export class VideoFrameExtractor {
 
   private handleError(err: Error) {
     throw err;
+  }
+
+  public destroy() {
+    this.process.kill();
   }
 }

@@ -1,3 +1,4 @@
+import {EventName, sendEvent} from '@revideo/telemetry';
 import {ChildProcessByStdio, spawn} from 'child_process';
 import {Readable} from 'stream';
 
@@ -90,7 +91,7 @@ export class VideoFrameExtractor {
         '2',
         '-',
       ],
-      {stdio: ['ignore', 'pipe', 'inherit']},
+      {stdio: ['ignore', 'pipe', 'ignore']},
     );
 
     process.stdout.on('data', this.processData.bind(this));
@@ -125,7 +126,7 @@ export class VideoFrameExtractor {
         '2',
         '-',
       ],
-      {stdio: ['ignore', 'pipe', 'inherit']},
+      {stdio: ['ignore', 'pipe', 'ignore']},
     );
 
     process.stdout.on('data', this.processData.bind(this));
@@ -206,7 +207,19 @@ export class VideoFrameExtractor {
   }
 
   private handleError(err: Error) {
-    throw err;
+    const code = (err as any).code;
+    if (code === 'ENOENT') {
+      console.error(
+        'Error: ffmpeg not found. Make sure ffmpeg is installed on your system.',
+      );
+      sendEvent(EventName.Error, {error: 'ffmpeg-not-found'});
+    } else {
+      console.error(
+        `An ffmpeg error occurred while fetching frames from source video ${this.filePath}:`,
+        err,
+      );
+      sendEvent(EventName.Error, {error: 'ffmpeg-error', message: err.message});
+    }
   }
 
   public destroy() {

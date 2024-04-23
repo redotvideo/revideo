@@ -9,6 +9,7 @@ const Client = new PostHog('phc_YpKoFD7smPe4SXRtVyMW766uP9AjUwnuRJ8hh2EJcVv', {
 export enum EventName {
   RenderStarted = 'revideo-render-started',
   ServerStarted = 'revideo-server-started',
+  Error = 'revideo-error',
 }
 
 async function getCurrentVersion() {

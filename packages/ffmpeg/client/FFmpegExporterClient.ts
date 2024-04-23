@@ -96,14 +96,14 @@ export class FFmpegExporterClient implements Exporter {
       canvas.toBlob(resolve, 'image/jpeg'),
     );
 
-    if (blob) {
-      const dataUrl = await this.blobToDataUrl(blob);
-      await this.invoke('handleFrame', {
-        data: dataUrl,
-      });
-    } else {
+    if (!blob) {
       throw Error('Failed to convert canvas to Blob.');
     }
+
+    const dataUrl = await this.blobToDataUrl(blob);
+    await this.invoke('handleFrame', {
+      data: dataUrl,
+    });
   }
 
   private async blobToDataUrl(blob: Blob): Promise<string> {

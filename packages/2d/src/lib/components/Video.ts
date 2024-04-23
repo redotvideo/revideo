@@ -30,7 +30,7 @@ class ImageCommunication {
     }
 
     import.meta.hot.on(
-      'revideo/ffmpeg-video-frame-res',
+      'revideo:ffmpeg-video-frame-res',
       this.handler.bind(this),
     );
   }
@@ -75,7 +75,7 @@ class ImageCommunication {
 
       this.nextFrameHandlers.push(handler);
 
-      import.meta.hot.send('revideo/ffmpeg-video-frame', {
+      import.meta.hot.send('revideo:ffmpeg-video-frame', {
         data: {
           id: id,
           filePath: src,

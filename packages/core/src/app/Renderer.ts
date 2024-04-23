@@ -309,6 +309,10 @@ export class Renderer {
 
     await this.exporter.stop?.(result);
 
+    if (import.meta.hot) {
+      import.meta.hot.send('revideo:render-finished', {});
+    }
+
     // Only merge media when rendering images was actually successful.
     if (
       result === RendererResult.Success &&

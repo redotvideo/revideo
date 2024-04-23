@@ -69,7 +69,7 @@ export class FFmpegExporterClient implements Exporter {
   static {
     if (import.meta.hot) {
       import.meta.hot.on(
-        `revideo/ffmpeg-exporter-ack`,
+        `revideo:ffmpeg-exporter-ack`,
         (response: ServerResponse) => this.response.dispatch(response),
       );
     }
@@ -147,7 +147,7 @@ export class FFmpegExporterClient implements Exporter {
           }
         };
         FFmpegExporterClient.response.subscribe(handle);
-        import.meta.hot!.send('revideo/ffmpeg-exporter', {method, data});
+        import.meta.hot!.send('revideo:ffmpeg-exporter', {method, data});
       });
     } else {
       throw new Error('FFmpegExporter can only be used locally.');

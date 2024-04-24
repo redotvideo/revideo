@@ -50,18 +50,14 @@ async function renderWorker(
     }
   });
 
-  const workerLines: Record<string, number> = {};
-  page.exposeFunction('logProgress', (port: string, progress: number) => {
+  page.exposeFunction('logProgress', (progress: number) => {
     const percentage = Math.floor(progress * 100);
     const barLength = 20;
     const filledLength = Math.floor((percentage / 100) * barLength);
     const bar = '█'.repeat(filledLength) + '-'.repeat(barLength - filledLength);
+    const consoleLine = process.stdout.rows + port - 9000;
 
-    if (workerLines[port] === undefined) {
-      workerLines[port] = process.stdout.rows + parseInt(port) - 9000;
-    }
-
-    readline.cursorTo(process.stdout, 0, workerLines[port]);
+    readline.cursorTo(process.stdout, 0, consoleLine);
     readline.clearLine(process.stdout, 0);
     process.stdout.write(
       `Progress for worker on port ${port}: [${bar}] ${percentage}%`,

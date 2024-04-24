@@ -89,7 +89,7 @@ export class TxtLeaf extends Shape {
         lineRect.width += rangeRect.width;
         line += childNode.textContent;
       } else {
-        this.drawText(context, line, lineRect);
+        await this.drawText(context, line, lineRect);
         lineRect.x = x;
         lineRect.y = y;
         lineRect.width = rangeRect.width;
@@ -98,30 +98,29 @@ export class TxtLeaf extends Shape {
       }
     }
 
-    this.drawText(context, line, lineRect);
+    await this.drawText(context, line, lineRect);
   }
 
-  protected drawText(
+  protected async drawText(
     context: CanvasRenderingContext2D,
     text: string,
     box: BBox,
   ) {
-    document.fonts.ready.then(() => {
-      const y = box.y + box.height / 2;
-      context.save();
-      context.textBaseline = 'middle';
-      text = text.replace(/\s+/g, ' ');
-      if (this.lineWidth() <= 0) {
-        context.fillText(text, box.x, y);
-      } else if (this.strokeFirst()) {
-        context.strokeText(text, box.x, y);
-        context.fillText(text, box.x, y);
-      } else {
-        context.fillText(text, box.x, y);
-        context.strokeText(text, box.x, y);
-      }
-      context.restore();
-    });
+    await new Promise(resolve => document.fonts.ready.then(resolve));
+    const y = box.y + box.height / 2;
+    context.save();
+    context.textBaseline = 'middle';
+    text = text.replace(/\s+/g, ' ');
+    if (this.lineWidth() <= 0) {
+      context.fillText(text, box.x, y);
+    } else if (this.strokeFirst()) {
+      context.strokeText(text, box.x, y);
+      context.fillText(text, box.x, y);
+    } else {
+      context.fillText(text, box.x, y);
+      context.strokeText(text, box.x, y);
+    }
+    context.restore();
   }
 
   protected override getCacheBBox(): BBox {

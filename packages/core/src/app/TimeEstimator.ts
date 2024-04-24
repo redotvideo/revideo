@@ -1,6 +1,12 @@
 import {ValueDispatcher} from '../events';
 import {clamp} from '../tweening';
 
+declare global {
+  interface Window {
+    logProgress: (port: string, progress: number) => void;
+  }
+}
+
 /**
  * An estimate of the time remaining until the process is finished.
  */
@@ -65,6 +71,10 @@ export class TimeEstimator {
   public update(completion: number, timestamp = performance.now()) {
     this.completion.current = clamp(0, 1, completion);
     this.lastUpdateTimestamp = timestamp;
+  }
+
+  public reportProgress() {
+    window.logProgress(window.location.port, this.completion.current);
   }
 
   /**

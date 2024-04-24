@@ -278,6 +278,7 @@ export class Renderer {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
       this.estimator.update(clampRemap(from, to, 0, 1, this.playback.frame));
+      this.estimator.reportProgress();
 
       if (signal.aborted) {
         result = RendererResult.Aborted;
@@ -289,6 +290,7 @@ export class Renderer {
           this.estimator.update(
             clampRemap(from, to, 0, 1, this.playback.frame),
           );
+          this.estimator.reportProgress();
           if (performance.now() - lastRefresh > 1 / 30) {
             lastRefresh = performance.now();
             await new Promise(resolve => setTimeout(resolve, 0));

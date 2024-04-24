@@ -18,8 +18,7 @@ renderVideo(
   {color: 'white'},
   {
     name: 'out',
-    startInSeconds: 1,
-    endInSeconds: 3,
+    range: [1, 3],
     puppeteer: {
       args: ['--no-sandbox'],
     },
@@ -48,15 +47,10 @@ An object with the following arguments:
 The file name of the video output - the video will be saved to `{name}.mp4`.
 `default = "project"`
 
-#### startInSeconds (optional):
+#### range (optional):
 
-The starting second at which the video should be rendered (in case you only want
-to render an excerpt of the video). `default = 0`
-
-#### endInSeconds (optional):
-
-The starting second at which the video should be rendered (in case you only want
-to render an excerpt of the video). `default = Infinity`
+The start and end second of the video. Can be used to only render a part of the
+video. `default = [0, Infinity]`
 
 #### puppeteer (optional):
 

@@ -164,7 +164,7 @@ export class FFmpegExporterServer {
         path.join(this.jobFolder, `visuals.mp4`),
         destination,
       );
-      console.log(`Rendered successfully! Video saved to: ${destination}`);
+      console.log(`\nRendered successfully! Video saved to: ${destination}`);
     }
   }
 
@@ -357,7 +357,7 @@ export class FFmpegExporterServer {
         .on('end', () => {
           resolve();
           console.log(
-            `Rendered successfully! Video saved to: ${path.join(
+            `\nRendered successfully! Video saved to: ${path.join(
               this.config.output,
               `${this.settings.name}.mp4`,
             )}`,

@@ -67,6 +67,10 @@ export class TimeEstimator {
     this.lastUpdateTimestamp = timestamp;
   }
 
+  public reportProgress() {
+    (window as any).logProgress(this.completion.current);
+  }
+
   /**
    * Reset the estimator.
    *

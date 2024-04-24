@@ -20,7 +20,8 @@
     "types"
   ],
   "dependencies": {
-    "puppeteer": "^22.6.0"
+    "puppeteer": "^22.6.0",
+    "readline": "^1.3.0"
   },
   "devDependencies": {
     "@revideo/core": "0.2.11",

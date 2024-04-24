@@ -1,5 +1,6 @@
 import * as path from 'path';
 import puppeteer, {BrowserLaunchArgumentOptions} from 'puppeteer';
+import * as readline from 'readline';
 import {createServer} from 'vite';
 import {rendererPlugin} from './plugin';
 
@@ -48,10 +49,23 @@ async function renderWorker(
     }
   });
 
+  page.exposeFunction('logProgress', (progress: number) => {
+    const percentage = Math.floor(progress * 100);
+    const barLength = 20;
+    const filledLength = Math.floor((percentage / 100) * barLength);
+    const bar = '█'.repeat(filledLength) + '-'.repeat(barLength - filledLength);
+    const consoleLine = process.stdout.rows + port - 9000;
+
+    readline.cursorTo(process.stdout, 0, consoleLine);
+    readline.clearLine(process.stdout, 0);
+    process.stdout.write(
+      `Progress for worker on port ${port}: [${bar}] ${percentage}%`,
+    );
+  });
+
   const renderingComplete = new Promise<void>((resolve, reject) => {
     page.exposeFunction('onRenderComplete', async () => {
       await Promise.all([browser.close(), server.close()]);
-      console.log('Rendering complete.');
       resolve();
     });
 

@@ -1,5 +1,3 @@
-import {path as ffmpegPath} from '@ffmpeg-installer/ffmpeg';
-import {path as ffprobePath} from '@ffprobe-installer/ffprobe';
 import type {
   AssetInfo,
   RendererResult,
@@ -17,9 +15,6 @@ import {ImageStream} from './ImageStream';
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as fsPromises from 'fs/promises';
 const SAMPLE_RATE = 48000;
-
-ffmpeg.setFfmpegPath(ffmpegPath);
-ffmpeg.setFfprobePath(ffprobePath);
 
 export async function getCurrentVersion() {
   try {

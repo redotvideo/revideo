@@ -1,6 +1,5 @@
 import {
   BBox,
-  DependencyContext,
   SignalValue,
   SimpleSignal,
   capitalize,
@@ -90,7 +89,7 @@ export class TxtLeaf extends Shape {
         lineRect.width += rangeRect.width;
         line += childNode.textContent;
       } else {
-        this.drawText(context, line, lineRect);
+        await this.drawText(context, line, lineRect);
         lineRect.x = x;
         lineRect.y = y;
         lineRect.width = rangeRect.width;
@@ -99,20 +98,19 @@ export class TxtLeaf extends Shape {
       }
     }
 
-    this.drawText(context, line, lineRect);
+    await this.drawText(context, line, lineRect);
   }
 
-  protected drawText(
+  protected async drawText(
     context: CanvasRenderingContext2D,
     text: string,
     box: BBox,
   ) {
-    DependencyContext.collectPromise(document.fonts.ready);
+    await new Promise(resolve => document.fonts.ready.then(resolve));
     const y = box.y + box.height / 2;
     context.save();
     context.textBaseline = 'middle';
     text = text.replace(/\s+/g, ' ');
-
     if (this.lineWidth() <= 0) {
       context.fillText(text, box.x, y);
     } else if (this.strokeFirst()) {
@@ -122,7 +120,6 @@ export class TxtLeaf extends Shape {
       context.fillText(text, box.x, y);
       context.strokeText(text, box.x, y);
     }
-
     context.restore();
   }
 

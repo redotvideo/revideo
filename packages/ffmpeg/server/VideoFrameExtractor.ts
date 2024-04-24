@@ -91,7 +91,7 @@ export class VideoFrameExtractor {
         '2',
         '-',
       ],
-      {stdio: ['ignore', 'pipe', 'ignore']},
+      {stdio: ['ignore', 'pipe', 'inherit']},
     );
 
     process.stdout.on('data', this.processData.bind(this));
@@ -126,7 +126,7 @@ export class VideoFrameExtractor {
         '2',
         '-',
       ],
-      {stdio: ['ignore', 'pipe', 'ignore']},
+      {stdio: ['ignore', 'pipe', 'inherit']},
     );
 
     process.stdout.on('data', this.processData.bind(this));

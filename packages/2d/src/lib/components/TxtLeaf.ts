@@ -1,6 +1,5 @@
 import {
   BBox,
-  DependencyContext,
   SignalValue,
   SimpleSignal,
   capitalize,
@@ -107,23 +106,22 @@ export class TxtLeaf extends Shape {
     text: string,
     box: BBox,
   ) {
-    DependencyContext.collectPromise(document.fonts.ready);
-    const y = box.y + box.height / 2;
-    context.save();
-    context.textBaseline = 'middle';
-    text = text.replace(/\s+/g, ' ');
-
-    if (this.lineWidth() <= 0) {
-      context.fillText(text, box.x, y);
-    } else if (this.strokeFirst()) {
-      context.strokeText(text, box.x, y);
-      context.fillText(text, box.x, y);
-    } else {
-      context.fillText(text, box.x, y);
-      context.strokeText(text, box.x, y);
-    }
-
-    context.restore();
+    document.fonts.ready.then(() => {
+      const y = box.y + box.height / 2;
+      context.save();
+      context.textBaseline = 'middle';
+      text = text.replace(/\s+/g, ' ');
+      if (this.lineWidth() <= 0) {
+        context.fillText(text, box.x, y);
+      } else if (this.strokeFirst()) {
+        context.strokeText(text, box.x, y);
+        context.fillText(text, box.x, y);
+      } else {
+        context.fillText(text, box.x, y);
+        context.strokeText(text, box.x, y);
+      }
+      context.restore();
+    });
   }
 
   protected override getCacheBBox(): BBox {

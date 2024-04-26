@@ -3,14 +3,12 @@ import type {
   RendererResult,
   RendererSettings,
 } from '@revideo/core/lib/app';
-import type {PluginConfig} from '@revideo/vite-plugin/lib/plugins';
-
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import {v4 as uuidv4} from 'uuid';
 import {ImageStream} from './ImageStream';
+import {checkForAudioStream, getSampleRate, mergeAudioWithVideo} from './utils';
 
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as fsPromises from 'fs/promises';
@@ -36,6 +34,7 @@ export interface FFmpegExporterSettings extends RendererSettings {
   audioOffset?: number;
   fastStart: boolean;
   includeAudio: boolean;
+  output: string;
 }
 
 interface MediaAsset {
@@ -61,12 +60,9 @@ export class FFmpegExporterServer {
   private readonly jobFolder: string;
   private readonly audioFilenames: string[];
 
-  public constructor(
-    settings: FFmpegExporterSettings,
-    private readonly config: PluginConfig,
-  ) {
+  public constructor(settings: FFmpegExporterSettings) {
     this.settings = settings;
-    this.jobFolder = path.join(os.tmpdir(), `revideo-${uuidv4()}`);
+    this.jobFolder = path.join(os.tmpdir(), `revideo-${this.settings.name}`);
     this.audioFilenames = [];
     this.stream = new ImageStream();
     this.command = ffmpeg();
@@ -107,8 +103,8 @@ export class FFmpegExporterServer {
   public async start() {
     const version = await getCurrentVersion();
     sendEvent(EventName.RenderStarted, {version});
-    if (!fs.existsSync(this.config.output)) {
-      await fs.promises.mkdir(this.config.output, {recursive: true});
+    if (!fs.existsSync(this.settings.output)) {
+      await fs.promises.mkdir(this.settings.output, {recursive: true});
     }
     if (!fs.existsSync(this.jobFolder)) {
       await fs.promises.mkdir(this.jobFolder, {recursive: true});
@@ -135,7 +131,7 @@ export class FFmpegExporterServer {
     for (const asset of assetPositions) {
       let hasAudioStream = true;
       if (asset.type !== 'audio') {
-        hasAudioStream = await this.checkForAudioStream(asset);
+        hasAudioStream = await checkForAudioStream(this.resolvePath(asset.src));
       }
 
       if (asset.playbackRate !== 0 && asset.volume !== 0 && hasAudioStream) {
@@ -151,20 +147,20 @@ export class FFmpegExporterServer {
 
   public async mergeMedia() {
     if (this.audioFilenames.length > 0) {
-      await this.mergeAudioWithVideo(
+      await mergeAudioWithVideo(
         path.join(this.jobFolder, `audio.wav`),
         path.join(this.jobFolder, `visuals.mp4`),
+        path.join(this.settings.output, `${this.settings.name}.mp4`),
       );
     } else {
       const destination = path.join(
-        this.config.output,
+        this.settings.output,
         `${this.settings.name}.mp4`,
       );
       await fs.promises.copyFile(
         path.join(this.jobFolder, `visuals.mp4`),
         destination,
       );
-      console.log(`\nRendered successfully! Video saved to: ${destination}`);
     }
   }
 
@@ -175,34 +171,11 @@ export class FFmpegExporterServer {
     } else if (assetPath.startsWith('http')) {
       resolvedPath = assetPath;
     } else if (assetPath.startsWith('/')) {
-      resolvedPath = path.join(this.config.output, '../public', assetPath);
+      resolvedPath = path.join(this.settings.output, '../public', assetPath);
     } else {
-      resolvedPath = path.join(this.config.output, '..', assetPath);
+      resolvedPath = path.join(this.settings.output, '..', assetPath);
     }
     return resolvedPath;
-  }
-
-  public async checkForAudioStream(asset: MediaAsset): Promise<boolean> {
-    const resolvedPath = this.resolvePath(asset.src);
-
-    return new Promise((resolve, reject) => {
-      ffmpeg.ffprobe(resolvedPath, (err, metadata) => {
-        if (err) {
-          console.error(
-            'error checking for audioStream for asset',
-            asset.key,
-            err,
-          );
-          reject(err);
-          return;
-        }
-
-        const audioStreams = metadata.streams.filter(
-          s => s.codec_type === 'audio',
-        );
-        resolve(audioStreams.length > 0);
-      });
-    });
   }
 
   public async end(result: RendererResult) {
@@ -221,7 +194,6 @@ export class FFmpegExporterServer {
 
   public async kill() {
     try {
-      await fs.promises.rm(this.jobFolder, {recursive: true, force: true}); // cleanup
       this.command.kill('SIGKILL');
       await this.promise;
     } catch (_) {
@@ -238,7 +210,8 @@ export class FFmpegExporterServer {
     const sanitizedKey = asset.key.replace(/[/[\]]/g, '-');
     const outputPath = path.join(this.jobFolder, `${sanitizedKey}.wav`);
 
-    const trimLeft = asset.trimLeftInSeconds / asset.playbackRate;
+    const originalTrimLeft = asset.trimLeftInSeconds / asset.playbackRate;
+    const trimLeft = originalTrimLeft < 1 ? 0 : originalTrimLeft;
     const trimRight = Math.min(
       trimLeft + asset.duration / this.settings.fps,
       trimLeft + (endFrame - startFrame + 1) / this.settings.fps,
@@ -337,39 +310,6 @@ export class FFmpegExporterServer {
 
     return atempoFilters;
   }
-
-  private async mergeAudioWithVideo(
-    audioPath: string,
-    videoPath: string,
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      ffmpeg()
-        .input(videoPath)
-        .input(audioPath)
-        .outputOptions([
-          '-c:v',
-          'copy',
-          '-c:a',
-          'aac',
-          '-strict',
-          'experimental',
-        ])
-        .on('end', () => {
-          resolve();
-          console.log(
-            `\nRendered successfully! Video saved to: ${path.join(
-              this.config.output,
-              `${this.settings.name}.mp4`,
-            )}`,
-          );
-        })
-        .on('error', err => {
-          console.error(`Error merging video and audio: ${err.message}`);
-          reject(err);
-        })
-        .save(path.join(this.config.output, `${this.settings.name}.mp4`));
-    });
-  }
 }
 
 function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
@@ -407,21 +347,4 @@ function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
   });
 
   return assets;
-}
-
-async function getSampleRate(filePath: string): Promise<number> {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(filePath, (err, metadata) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      const audioStream = metadata.streams.find(s => s.codec_type === 'audio');
-      if (audioStream && audioStream.sample_rate) {
-        resolve(audioStream.sample_rate);
-      } else {
-        reject(new Error('No audio stream found'));
-      }
-    });
-  });
 }

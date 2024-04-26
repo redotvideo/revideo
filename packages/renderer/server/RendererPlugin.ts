@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Plugin} from 'vite';
 
-const RendererPath = path.resolve(__dirname, 'renderer.html');
+const RendererPath = path.resolve(__dirname, '../renderer.html');
 const Content = fs.readFileSync(RendererPath, 'utf-8');
 const HtmlParts = Content.toString().split('{{source}}');
 
@@ -17,7 +17,7 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
     async load(id) {
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
-            import {render} from '@revideo/renderer/dist/client/render';
+            import {render} from '@revideo/renderer/lib/client/render';
             import project from './src/project.ts?project';
 
             // Read video variables

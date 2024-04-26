@@ -138,6 +138,7 @@ export class Renderer {
    * @param settings - The rendering settings.
    */
   public async render(settings: RendererSettings) {
+    console.log('rener triggered hahaha');
     if (this.state.current !== RendererState.Initial) return;
     await this.lock.acquire();
     this.estimator.reset();
@@ -145,6 +146,7 @@ export class Renderer {
     let result: RendererResult;
     try {
       this.abortController = new AbortController();
+      console.log('now run');
       result = await this.run(settings, this.abortController.signal);
     } catch (e: any) {
       this.project.logger.error(e);

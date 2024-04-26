@@ -11,7 +11,9 @@
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.2"
+    "next": "14.2.2",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "typescript": "^5",

@@ -1,0 +1,25 @@
+{
+  "name": "revideo",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "vite",
+    "serve": "vite",
+    "build": "tsc && vite build",
+    "render": "tsc && node dist/render.js"
+  },
+  "dependencies": {
+    "@revideo/2d": "^0.2.8",
+    "@revideo/cli": "^0.2.8",
+    "@revideo/core": "^0.2.8",
+    "@revideo/ffmpeg": "^0.2.8",
+    "@revideo/renderer": "^0.2.8",
+    "@revideo/vite-plugin": "^0.2.8",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@revideo/ui": "^0.2.8",
+    "typescript": "^5.2.2",
+    "vite": "^4.5"
+  }
+}

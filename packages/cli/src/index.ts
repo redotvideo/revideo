@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-import {execSync} from 'child_process';
 import {Command} from 'commander';
-import path from 'path';
+import {app} from './server/index';
 
-const Program = new Command();
+const program = new Command();
 
-Program.name('revideo')
+program
+  .name('revideo')
   .description('CLI to interact with the revideo service')
-  .version('1.0.0');
+  .version('0.2.13');
 
-Program.command('serve')
+program
+  .command('serve')
   .description('Start the revideo server')
   .option('--projectFile <path>', 'Path to the project file')
   .option('--port <number>', 'Port on which to start the server', '4000')
@@ -22,7 +23,10 @@ Program.command('serve')
     const {projectFile, port} = options;
     process.env.PROJECT_FILE = projectFile;
     process.env.REVIDEO_PORT = port;
-    execSync(`node ${path.join(__dirname, './server.js')}`, {stdio: 'inherit'});
+
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
   });
 
-Program.parse(process.argv);
+program.parse(process.argv);

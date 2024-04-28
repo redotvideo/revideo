@@ -31,6 +31,7 @@ interface RenderVideoSettings {
   range?: [number, number];
 
   puppeteer?: BrowserLaunchArgumentOptions;
+  numWorkers?: number;
 }
 
 export const renderVideo = async (
@@ -48,7 +49,7 @@ export const renderVideo = async (
    * We still need to concate the videos together after rendering.
    */
 
-  const numOfWorkers = 1;
+  const numOfWorkers = settings.numWorkers ?? 1;
   const launchPromises = [];
   for (let i = 0; i < numOfWorkers; i++) {
     launchPromises.push(

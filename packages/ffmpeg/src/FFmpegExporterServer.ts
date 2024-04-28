@@ -210,11 +210,10 @@ export class FFmpegExporterServer {
     const sanitizedKey = asset.key.replace(/[/[\]]/g, '-');
     const outputPath = path.join(this.jobFolder, `${sanitizedKey}.wav`);
 
-    const originalTrimLeft = asset.trimLeftInSeconds / asset.playbackRate;
-    const trimLeft = originalTrimLeft < 1 ? 0 : originalTrimLeft;
+    const trimLeft = asset.trimLeftInSeconds / asset.playbackRate;
     const trimRight = Math.min(
       trimLeft + asset.duration / this.settings.fps,
-      trimLeft + (endFrame - startFrame + 1) / this.settings.fps,
+      trimLeft + (endFrame - startFrame) / this.settings.fps,
     );
     const padStart = (asset.startInVideo / this.settings.fps) * 1000;
     const assetSampleRate = await getSampleRate(this.resolvePath(asset.src));

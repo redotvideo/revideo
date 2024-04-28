@@ -107,6 +107,8 @@ jobs:
             packages/player/dist
             packages/vite-plugin/lib
             packages/telemetry/dist
+            packages/ffmpeg/dist
+
   tests:
     name: Unit tests
     needs: build
@@ -134,6 +136,8 @@ jobs:
             packages/player/dist
             packages/vite-plugin/lib
             packages/telemetry/dist
+            packages/ffmpeg/dist
+
       - run: npx lerna run test
   examples:
     name: Examples
@@ -227,6 +231,8 @@ jobs:
             packages/player/dist
             packages/vite-plugin/lib
             packages/telemetry/dist
+            packages/ffmpeg/dist
+            
       - run: npx lerna run bundle
       - run: npm run docs:build
         env:

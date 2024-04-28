@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "outDir": "./dist",
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,

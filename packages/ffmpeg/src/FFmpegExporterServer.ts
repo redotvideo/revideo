@@ -1,8 +1,4 @@
-import type {
-  AssetInfo,
-  RendererResult,
-  RendererSettings,
-} from '@revideo/core/lib/app';
+import type {AssetInfo, RendererResult, RendererSettings} from '@revideo/core';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';

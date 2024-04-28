@@ -1,15 +1,15 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "./dist",
-        "inlineSourceMap": true,
-        "allowSyntheticDefaultImports": true,
-        "moduleResolution": "node",
-        "strict": true,
-        "module": "CommonJS",
-        "target": "es2020",
-        "declaration": true,
-        "declarationMap": true
-    },
-    "include": ["."]
-}  
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "inlineSourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "module": "CommonJS",
+    "target": "es2020",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["."]
+}

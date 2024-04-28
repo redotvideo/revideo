@@ -1,25 +1,25 @@
 {
-    "name": "@revideo/ffmpeg",
-    "version": "0.2.11",
-    "description": "ffmpeg utilities for revideo",
-    "main": "dist/index.js",
-    "author": "revideo",
-    "homepage": "https://re.video/",
-    "bugs": "https://github.com/havenhq/revideo/issues",
-    "license": "MIT",
-    "scripts": {
-      "build": "tsc"
-    },
-    "files": [
-      "dist",
-      "types"
-    ],
-    "dependencies": {
-      "@ffmpeg-installer/ffmpeg": "^1.1.0",
-      "@ffprobe-installer/ffprobe": "^2.0.0",
-      "fluent-ffmpeg": "^2.1.2"
-    },
-    "devDependencies": {
-      "@types/fluent-ffmpeg": "^2.1.21"
-    }
+  "name": "@revideo/ffmpeg",
+  "version": "0.2.11",
+  "description": "ffmpeg utilities for revideo",
+  "main": "dist/index.js",
+  "author": "revideo",
+  "homepage": "https://re.video/",
+  "bugs": "https://github.com/havenhq/revideo/issues",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.0.0",
+    "fluent-ffmpeg": "^2.1.2"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.21"
+  }
 }

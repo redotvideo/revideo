@@ -62,7 +62,6 @@ export class FFmpegExporterServer {
       `${os.tmpdir()}`,
       `revideo-${this.settings.name}-${settings.hiddenFolderId}`,
     );
-    console.log('jobFolder', this.jobFolder);
     this.audioFilenames = [];
     this.stream = new ImageStream();
     this.command = ffmpeg();

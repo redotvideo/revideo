@@ -162,6 +162,8 @@ jobs:
             packages/player/dist
             packages/vite-plugin/lib
             packages/telemetry/dist
+            packages/ffmpeg/dist
+            
       - run: npm run examples:build
   e2e:
     name: E2E

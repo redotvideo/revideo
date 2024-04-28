@@ -10,6 +10,7 @@ import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
 import * as readline from 'readline';
+import {v4 as uuidv4} from 'uuid';
 import {ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './RendererPlugin';
 
@@ -19,8 +20,9 @@ function buildUrl(
   workerId: number,
   totalNumOfWorkers: number,
   range: [number, number] = [0, Infinity],
+  hiddenFolderId: string,
 ) {
-  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}`;
+  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderId}`;
 }
 
 interface RenderVideoSettings {
@@ -43,6 +45,7 @@ export const renderVideo = async (
 
   const resolvedConfigPath = path.resolve(process.cwd(), configFile);
   const projectName = settings.name ?? 'project';
+  const hiddenFolderId = uuidv4();
 
   /**
    * TODO: Change this in the future after more testing.
@@ -72,6 +75,7 @@ export const renderVideo = async (
       i,
       numOfWorkers,
       settings.range,
+      hiddenFolderId,
     );
 
     renderPromises.push(renderVideoOnPage(browser, server, url));
@@ -82,8 +86,8 @@ export const renderVideo = async (
   const audioFiles = [];
   const videoFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}/visuals.mp4`;
-    const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}/audio.wav`;
+    const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/visuals.mp4`;
+    const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/audio.wav`;
 
     if (!(await doesFileExist(audioFilePath))) {
       const videoDuration = await getVideoDuration(videoFilePath);
@@ -111,7 +115,7 @@ export const renderVideo = async (
     `\nRendered successfully! Video saved to: ${path.join(process.cwd(), `output/${projectName}.mp4`)}`,
   );
 
-  await cleanup(projectName, numOfWorkers);
+  await cleanup(projectName, numOfWorkers, hiddenFolderId);
 };
 
 async function initBrowserAndServer(
@@ -197,11 +201,17 @@ async function renderVideoOnPage(
   return renderingComplete;
 }
 
-async function cleanup(projectName: string, numOfWorkers: number) {
+async function cleanup(
+  projectName: string,
+  numOfWorkers: number,
+  hiddenFolderId: string,
+) {
   const cleanupFolders = [];
   const cleanupFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    cleanupFolders.push(`${os.tmpdir()}/revideo-${projectName}-${i}`);
+    cleanupFolders.push(
+      `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}`,
+    );
     cleanupFiles.push(
       path.join(process.cwd(), `output/${projectName}-${i}.mp4`),
     );

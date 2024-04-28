@@ -58,7 +58,11 @@ export class FFmpegExporterServer {
 
   public constructor(settings: FFmpegExporterSettings) {
     this.settings = settings;
-    this.jobFolder = path.join(os.tmpdir(), `revideo-${this.settings.name}`);
+    this.jobFolder = path.join(
+      `${os.tmpdir()}`,
+      `revideo-${this.settings.name}-${settings.hiddenFolderId}`,
+    );
+    console.log('jobFolder', this.jobFolder);
     this.audioFilenames = [];
     this.stream = new ImageStream();
     this.command = ffmpeg();

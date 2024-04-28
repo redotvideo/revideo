@@ -41,11 +41,9 @@ export async function createSilentAudioFile(
 ) {
   return new Promise((resolve, reject) => {
     ffmpeg()
-      .addInput('anullsrc')
+      .addInput(`anullsrc=channel_layout=stereo:sample_rate=${48000}`)
       .inputFormat('lavfi')
-      .audioChannels(2)
-      .audioFrequency(48000)
-      .outputOptions(['-t', duration.toString(), '-acodec', 'aac'])
+      .duration(duration)
       .on('end', () => {
         resolve(filePath);
       })

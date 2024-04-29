@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "../lib/server",
+    "baseUrl": "./src",
+    "outDir": "./dist",
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",

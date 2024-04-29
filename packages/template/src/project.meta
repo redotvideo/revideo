@@ -21,7 +21,7 @@
     "resolutionScale": 1,
     "colorSpace": "srgb",
     "exporter": {
-      "name": "@revideo/ffmpeg",
+      "name": "@revideo/core/ffmpeg",
       "options": {
         "fastStart": true,
         "includeAudio": true

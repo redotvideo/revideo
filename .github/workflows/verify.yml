@@ -108,7 +108,6 @@ jobs:
             packages/vite-plugin/lib
             packages/telemetry/dist
             packages/ffmpeg/dist
-
   tests:
     name: Unit tests
     needs: build
@@ -137,7 +136,6 @@ jobs:
             packages/vite-plugin/lib
             packages/telemetry/dist
             packages/ffmpeg/dist
-
       - run: npx lerna run test
   examples:
     name: Examples
@@ -167,7 +165,6 @@ jobs:
             packages/vite-plugin/lib
             packages/telemetry/dist
             packages/ffmpeg/dist
-
       - run: npm run examples:build
   e2e:
     name: E2E
@@ -197,7 +194,6 @@ jobs:
             packages/vite-plugin/lib
             packages/telemetry/dist
             packages/ffmpeg/dist
-
       - run: npm run e2e:test
       - uses: actions/upload-artifact@v3
         if: failure()
@@ -232,7 +228,6 @@ jobs:
             packages/vite-plugin/lib
             packages/telemetry/dist
             packages/ffmpeg/dist
-            
       - run: npx lerna run bundle
       - run: npm run docs:build
         env:

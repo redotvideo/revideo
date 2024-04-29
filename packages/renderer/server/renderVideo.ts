@@ -33,7 +33,7 @@ interface RenderVideoSettings {
   range?: [number, number];
 
   puppeteer?: BrowserLaunchArgumentOptions;
-  numWorkers?: number;
+  workers?: number;
 }
 
 export const renderVideo = async (
@@ -47,7 +47,7 @@ export const renderVideo = async (
   const projectName = settings.name ?? 'project';
   const hiddenFolderId = uuidv4();
 
-  const numOfWorkers = settings.numWorkers ?? 1;
+  const numOfWorkers = settings.workers ?? 1;
   const renderPromises = [];
 
   for (let i = 0; i < numOfWorkers; i++) {

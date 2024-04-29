@@ -18,7 +18,7 @@ renderVideo(
   {color: 'white'},
   {
     name: 'out',
-    numWorkers: 1,
+    workers: 1,
     range: [1, 3],
     puppeteer: {
       args: ['--no-sandbox'],
@@ -48,7 +48,7 @@ An object with the following arguments:
 The file name of the video output - the video will be saved to `{name}.mp4`.
 `default = "project"`
 
-### numWorkers (optional):
+### workers (optional):
 
 The number of processes you want to use to parallelize rendering - for example,
 rendering a 100s long video with 10 workers means that 10 processes handle 10s

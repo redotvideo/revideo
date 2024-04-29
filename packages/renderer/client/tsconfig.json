@@ -12,5 +12,5 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": [".", "../../core/src/app/FFmpegExporterClient.ts"]
+  "include": ["."]
 }

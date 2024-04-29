@@ -1,7 +1,7 @@
 {
   "name": "@revideo/ffmpeg",
   "version": "0.2.11",
-  "description": "ffmpeg utilities for revideo",
+  "description": "Ffmpeg utilities for revideo",
   "main": "dist/index.js",
   "author": "revideo",
   "homepage": "https://re.video/",

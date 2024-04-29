@@ -47,42 +47,32 @@ export const renderVideo = async (
   const projectName = settings.name ?? 'project';
   const hiddenFolderId = uuidv4();
 
-  /**
-   * TODO: Change this in the future after more testing.
-   * We still need to concate the videos together after rendering.
-   */
-
   const numOfWorkers = settings.numWorkers ?? 1;
-  const launchPromises = [];
+  const renderPromises = [];
+
   for (let i = 0; i < numOfWorkers; i++) {
-    launchPromises.push(
+    const port = 9000 + i;
+    renderPromises.push(
       initBrowserAndServer(
-        9000 + i,
+        port,
         resolvedConfigPath,
         params,
         settings.puppeteer,
-      ),
+      ).then(({browser, server}) => {
+        const url = buildUrl(
+          port,
+          `${projectName}-${i}`,
+          i,
+          numOfWorkers,
+          settings.range,
+          hiddenFolderId,
+        );
+        return renderVideoOnPage(browser, server, url);
+      }),
     );
-  }
-
-  const launchedServices = await Promise.all(launchPromises);
-  const renderPromises = [];
-  for (let i = 0; i < numOfWorkers; i++) {
-    const {browser, server, port} = launchedServices[i];
-    const url = buildUrl(
-      port,
-      `${projectName}-${i}`,
-      i,
-      numOfWorkers,
-      settings.range,
-      hiddenFolderId,
-    );
-
-    renderPromises.push(renderVideoOnPage(browser, server, url));
   }
 
   await Promise.all(renderPromises);
-
   const audioFiles = [];
   const videoFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {

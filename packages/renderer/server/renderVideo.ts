@@ -214,18 +214,21 @@ async function cleanup(
     path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
   );
 
-  for (const folder of cleanupFolders) {
-    try {
-      await fs.promises.rm(folder, {recursive: true, force: true});
-    } catch (err) {
-      console.error(`Error during cleanup, couldn't remove ${folder}:`, err);
-    }
-  }
-  for (const file of cleanupFiles) {
-    try {
-      await fs.promises.unlink(file);
-    } catch (err) {
-      console.error(`Error during cleanup, couldn't remove ${file}:`, err);
-    }
-  }
+  const folderCleanupPromises = cleanupFolders.map(folder =>
+    fs.promises
+      .rm(folder, {recursive: true, force: true})
+      .catch(err =>
+        console.error(`Error during cleanup, couldn't remove ${folder}:`, err),
+      ),
+  );
+
+  const fileCleanupPromises = cleanupFiles.map(file =>
+    fs.promises
+      .unlink(file)
+      .catch(err =>
+        console.error(`Error during cleanup, couldn't remove ${file}:`, err),
+      ),
+  );
+
+  await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }

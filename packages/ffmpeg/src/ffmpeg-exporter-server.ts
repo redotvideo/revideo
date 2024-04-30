@@ -1,4 +1,6 @@
 import type {AssetInfo, RendererResult, RendererSettings} from '@revideo/core';
+import {EventName, sendEvent} from '@revideo/telemetry';
+import * as pathToFfmpeg from 'ffmpeg-static';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -6,24 +8,9 @@ import * as path from 'path';
 import {ImageStream} from './image-stream';
 import {checkForAudioStream, getSampleRate, mergeAudioWithVideo} from './utils';
 
-import {EventName, sendEvent} from '@revideo/telemetry';
-import * as fsPromises from 'fs/promises';
 const SAMPLE_RATE = 48000;
-
-export async function getCurrentVersion() {
-  try {
-    const packageData = JSON.parse(
-      await fsPromises.readFile(
-        path.join(__dirname, '..', '..', 'package.json'),
-        'utf-8',
-      ),
-    );
-
-    return packageData.version;
-  } catch (e) {
-    return 'ERROR';
-  }
-}
+ffmpeg.setFfmpegPath((pathToFfmpeg as unknown as string) || 'ffmpeg');
+console.log('ffmpeg path:', pathToFfmpeg);
 
 export interface FFmpegExporterSettings extends RendererSettings {
   audio?: string;
@@ -100,8 +87,7 @@ export class FFmpegExporterServer {
   }
 
   public async start() {
-    const version = await getCurrentVersion();
-    sendEvent(EventName.RenderStarted, {version});
+    sendEvent(EventName.RenderStarted);
     if (!fs.existsSync(this.settings.output)) {
       await fs.promises.mkdir(this.settings.output, {recursive: true});
     }
@@ -183,8 +169,8 @@ export class FFmpegExporterServer {
       try {
         this.command.kill('SIGKILL');
         await this.promise;
-      } catch (_) {
-        // do nothing
+      } catch (err) {
+        sendEvent(EventName.Error, {message: (err as Error).message});
       }
     } else {
       await this.promise;

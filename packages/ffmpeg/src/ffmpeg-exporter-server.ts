@@ -10,7 +10,6 @@ import {checkForAudioStream, getSampleRate, mergeAudioWithVideo} from './utils';
 
 const SAMPLE_RATE = 48000;
 ffmpeg.setFfmpegPath((pathToFfmpeg as unknown as string) || 'ffmpeg');
-console.log('ffmpeg path:', pathToFfmpeg);
 
 export interface FFmpegExporterSettings extends RendererSettings {
   audio?: string;

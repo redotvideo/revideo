@@ -15,7 +15,7 @@
     "types"
   ],
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "ffmpeg-static": "^5.2.0",
     "@ffprobe-installer/ffprobe": "^2.0.0",
     "@revideo/telemetry": "0.2.11",
     "@revideo/core": "0.2.11",

@@ -1,5 +1,6 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
 import {ChildProcessByStdio, spawn} from 'child_process';
+import * as pathToFfmpeg from 'ffmpeg-static';
 import {Readable} from 'stream';
 import {getVideoCodec} from './utils';
 
@@ -9,6 +10,9 @@ type VideoFrameExtractorState = 'processing' | 'done' | 'error';
  * Walks through a video file and extracts frames.
  */
 export class VideoFrameExtractor {
+  private static readonly ffmpegPath =
+    (pathToFfmpeg as unknown as string) || 'ffmpeg';
+
   private static readonly pngSignature = Buffer.from([
     0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
   ]);
@@ -121,7 +125,7 @@ export class VideoFrameExtractor {
     codec: string,
   ) {
     const args = this.getArgs(filePath, codec, [startTime, toTime], fps);
-    const process = spawn('ffmpeg', args, {
+    const process = spawn(VideoFrameExtractor.ffmpegPath, args, {
       stdio: ['ignore', 'pipe', 'inherit'],
     });
 
@@ -146,7 +150,7 @@ export class VideoFrameExtractor {
     codec: string,
   ) {
     const args = this.getArgs(filePath, codec);
-    const process = spawn('ffmpeg', args, {
+    const process = spawn(VideoFrameExtractor.ffmpegPath, args, {
       stdio: ['ignore', 'pipe', 'ignore'],
     });
 

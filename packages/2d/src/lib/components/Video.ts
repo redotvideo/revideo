@@ -63,7 +63,7 @@ class ImageCommunication {
         const image = new Image();
 
         const uint8Array = new Uint8Array(event.data.frame.data);
-        const blob = new Blob([uint8Array], {type: 'image/jpeg'});
+        const blob = new Blob([uint8Array], {type: 'image/png'});
         const url = URL.createObjectURL(blob);
 
         image.src = url;

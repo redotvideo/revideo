@@ -215,19 +215,13 @@ async function cleanup(
   );
 
   const folderCleanupPromises = cleanupFolders.map(folder =>
-    fs.promises
-      .rm(folder, {recursive: true, force: true})
-      .catch(err =>
-        console.error(`Error during cleanup, couldn't remove ${folder}:`, err),
-      ),
+    // swallow error if file doesn't exist
+    fs.promises.rm(folder, {recursive: true, force: true}).catch(),
   );
 
   const fileCleanupPromises = cleanupFiles.map(file =>
-    fs.promises
-      .unlink(file)
-      .catch(err =>
-        console.error(`Error during cleanup, couldn't remove ${file}:`, err),
-      ),
+    // swallow error if file doesn't exist
+    fs.promises.unlink(file).catch(),
   );
 
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);

@@ -1,3 +1,3 @@
-export * from './FFmpegExporterServer';
-export * from './VideoFrameExtractor';
+export * from './ffmpeg-exporter-server';
 export * from './utils';
+export * from './video-frame-extractor';

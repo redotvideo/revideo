@@ -1,6 +1,7 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
 import {ChildProcessByStdio, spawn} from 'child_process';
 import {Readable} from 'stream';
+import {getVideoCodec} from './utils';
 
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
 
@@ -8,8 +9,12 @@ type VideoFrameExtractorState = 'processing' | 'done' | 'error';
  * Walks through a video file and extracts frames.
  */
 export class VideoFrameExtractor {
-  private static readonly jpegSOI = Buffer.from([0xff, 0xd8]); // Start of Image marker
-  private static readonly jpegEOI = Buffer.from([0xff, 0xd9]); // End of Image marker
+  private static readonly pngSignature = Buffer.from([
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+  ]);
+  private static readonly pngEOF = Buffer.from([
+    0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+  ]);
 
   private static readonly chunkLengthInSeconds = 45;
 
@@ -29,7 +34,8 @@ export class VideoFrameExtractor {
   private toTime: number;
   private fps: number;
 
-  private process: ChildProcessByStdio<null, Readable, null>;
+  private codec: string | null = null;
+  private process: ChildProcessByStdio<null, Readable, null> | null = null;
 
   public constructor(
     filePath: string,
@@ -46,17 +52,27 @@ export class VideoFrameExtractor {
     this.fps = fps;
 
     if (this.startTime >= this.duration) {
-      this.process = this.createFfmpegProcessToExtractFirstFrame(filePath);
+      getVideoCodec(this.filePath).then(codec => {
+        this.process = this.createFfmpegProcessToExtractFirstFrame(
+          filePath,
+          codec,
+        );
+      });
       return;
     }
 
-    // Create a new ffmpeg process to extract the first 10 seconds of the video.
-    this.process = this.createFfmpegProcess(
-      this.startTime,
-      this.toTime,
-      this.filePath,
-      this.fps,
-    );
+    getVideoCodec(this.filePath).then(codec => {
+      this.codec = codec;
+
+      // Create a new ffmpeg process to extract the first 10 seconds of the video.
+      this.process = this.createFfmpegProcess(
+        this.startTime,
+        this.toTime,
+        this.filePath,
+        this.fps,
+        this.codec,
+      );
+    });
   }
 
   private getEndTime(startTime: number) {
@@ -66,33 +82,48 @@ export class VideoFrameExtractor {
     );
   }
 
+  private getArgs(
+    filePath: string,
+    codec: string,
+    range?: [number, number],
+    fps?: number,
+  ) {
+    const args = [];
+
+    if (range) {
+      args.push('-ss', range[0].toString(), '-to', range[1].toString());
+    }
+
+    if (codec === 'vp9') {
+      args.push('-vcodec', 'libvpx-vp9');
+    }
+
+    args.push('-i', filePath);
+
+    if (fps) {
+      args.push('-vf', `fps=fps=${fps}`);
+    }
+
+    if (!range) {
+      args.push('-vframes', '1');
+    }
+
+    args.push('-f', 'image2pipe', '-vcodec', 'png', '-');
+
+    return args;
+  }
+
   private createFfmpegProcess(
     startTime: number,
     toTime: number,
     filePath: string,
     fps: number,
+    codec: string,
   ) {
-    const process = spawn(
-      'ffmpeg',
-      [
-        '-ss',
-        startTime.toString(),
-        '-to',
-        toTime.toString(),
-        '-i',
-        filePath,
-        '-vf',
-        `fps=fps=${fps}`,
-        '-f',
-        'image2pipe',
-        '-vcodec',
-        'mjpeg',
-        '-q:v',
-        '2',
-        '-',
-      ],
-      {stdio: ['ignore', 'pipe', 'ignore']},
-    );
+    const args = this.getArgs(filePath, codec, [startTime, toTime], fps);
+    const process = spawn('ffmpeg', args, {
+      stdio: ['ignore', 'pipe', 'inherit'],
+    });
 
     process.stdout.on('data', this.processData.bind(this));
     process.on('close', this.handleClose.bind(this));
@@ -110,24 +141,14 @@ export class VideoFrameExtractor {
    * inside of 2d/src/lib/components/Video.ts. In the old implementation, the
    * last frame is shown instead of the first frame.
    */
-  private createFfmpegProcessToExtractFirstFrame(filePath: string) {
-    const process = spawn(
-      'ffmpeg',
-      [
-        '-i',
-        filePath,
-        '-vframes',
-        '1',
-        '-f',
-        'image2pipe',
-        '-vcodec',
-        'mjpeg',
-        '-q:v',
-        '2',
-        '-',
-      ],
-      {stdio: ['ignore', 'pipe', 'ignore']},
-    );
+  private createFfmpegProcessToExtractFirstFrame(
+    filePath: string,
+    codec: string,
+  ) {
+    const args = this.getArgs(filePath, codec);
+    const process = spawn('ffmpeg', args, {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
 
     process.stdout.on('data', this.processData.bind(this));
     process.on('close', this.handleClose.bind(this));
@@ -142,13 +163,12 @@ export class VideoFrameExtractor {
     let start = 0;
     let end;
 
-    // Look for JPEG_SOI and JPEG_EOI markers to extract full frames
     while (
-      (start = this.buffer.indexOf(VideoFrameExtractor.jpegSOI, start)) !==
+      (start = this.buffer.indexOf(VideoFrameExtractor.pngSignature, start)) !==
         -1 &&
-      (end = this.buffer.indexOf(VideoFrameExtractor.jpegEOI, start)) !== -1
+      (end = this.buffer.indexOf(VideoFrameExtractor.pngEOF, start)) !== -1
     ) {
-      end += 2; // Include the EOI marker itself
+      end += VideoFrameExtractor.pngEOF.length;
       const frame = this.buffer.subarray(start, end);
 
       this.imageBuffers.push(frame);
@@ -156,7 +176,7 @@ export class VideoFrameExtractor {
       this.hooksWaiting.forEach(hook => hook());
       this.hooksWaiting = [];
 
-      this.buffer = this.buffer.subarray(end); // Remove the processed frame from buffer.
+      this.buffer = this.buffer.subarray(end);
       start = 0;
     }
   }
@@ -185,11 +205,18 @@ export class VideoFrameExtractor {
         this.duration,
       );
 
+      if (!this.codec) {
+        throw new Error(
+          "Can't extract frames without a codec. This error should never happen.",
+        );
+      }
+
       this.process = this.createFfmpegProcess(
         this.startTime,
         this.toTime,
         this.filePath,
         this.fps,
+        this.codec,
       );
 
       this.state = 'processing';
@@ -223,6 +250,6 @@ export class VideoFrameExtractor {
   }
 
   public destroy() {
-    this.process.kill();
+    this.process?.kill();
   }
 }

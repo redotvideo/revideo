@@ -215,13 +215,11 @@ async function cleanup(
   );
 
   const folderCleanupPromises = cleanupFolders.map(folder =>
-    // swallow error if file doesn't exist
-    fs.promises.rm(folder, {recursive: true, force: true}).catch(),
+    fs.promises.rm(folder, {recursive: true, force: true}).catch(() => {}),
   );
 
   const fileCleanupPromises = cleanupFiles.map(file =>
-    // swallow error if file doesn't exist
-    fs.promises.unlink(file).catch(),
+    fs.promises.unlink(file).catch(() => {}),
   );
 
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);

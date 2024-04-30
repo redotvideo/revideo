@@ -278,7 +278,6 @@ export class Video extends Media {
 
     if (playbackState === PlaybackState.Rendering) {
       return this.serverSeekedVideo();
-      // return this.seekedVideo();
     }
 
     return this.seekedVideo();

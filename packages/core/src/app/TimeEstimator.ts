@@ -68,7 +68,9 @@ export class TimeEstimator {
   }
 
   public reportProgress() {
-    (window as any).logProgress(this.completion.current);
+    if ((window as any).logProgress) {
+      (window as any).logProgress(this.completion.current);
+    }
   }
 
   /**

@@ -19,6 +19,7 @@ export const render = async (
   totalNumOfWorkers: number,
   startInSeconds: number,
   endInSeconds: number,
+  hiddenFolderId: string,
 ) => {
   try {
     const renderer = new Renderer(project);
@@ -41,6 +42,7 @@ export const render = async (
     await renderer.render({
       ...project.meta.getFullRenderingSettings(),
       name: project.name,
+      hiddenFolderId: hiddenFolderId,
       range: [
         renderer.frameToTime(firstWorkerFrame),
         renderer.frameToTime(lastWorkerFrame),

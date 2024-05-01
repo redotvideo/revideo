@@ -180,8 +180,6 @@ function createConfig(response, selectedPlugins) {
     imports.push(`import ${data.variable} from '${data.package}';\n`);
     plugins.push(`${data.variable}(${data.options?.(response) ?? ''}),`);
   }
-  imports.push(`import ffmpeg from '@revideo/ffmpeg';\n`);
-  plugins.push(`ffmpeg()`);
 
   const configFile = path.resolve(response.path, `vite.config.ts`);
 

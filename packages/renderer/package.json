@@ -2,14 +2,14 @@
   "name": "@revideo/renderer",
   "version": "0.2.13",
   "description": "A headless renderer for revideo",
-  "main": "dist/index.js",
+  "main": "lib/server/index.js",
   "author": "revideo",
   "homepage": "https://re.video/",
   "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
     "build": "npm run client:build && npm run server:build",
-    "postbuild": "ncp renderer.html dist/renderer.html",
+    "postbuild": "ncp renderer.html lib/renderer.html",
     "client:build": "tsc --project client/tsconfig.json",
     "client:dev": "tsc -w --project client/tsconfig.json",
     "server:build": "tsc --project server/tsconfig.json",
@@ -21,7 +21,9 @@
   ],
   "dependencies": {
     "puppeteer": "^22.6.0",
-    "readline": "^1.3.0"
+    "readline": "^1.3.0",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.0.0"
   },
   "devDependencies": {
     "@revideo/core": "0.2.13",

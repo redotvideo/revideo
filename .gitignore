@@ -1,5 +1,7 @@
 node_modules
 
+.DS_Store
+
 /packages/*/dist
 /packages/*/editor
 /packages/*/lib

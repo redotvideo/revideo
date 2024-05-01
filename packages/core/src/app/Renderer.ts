@@ -20,6 +20,7 @@ export interface RendererSettings extends StageSettings {
     name: string;
     options: unknown;
   };
+  hiddenFolderId?: string;
 }
 
 export interface AssetInfo {

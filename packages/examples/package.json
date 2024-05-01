@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "@revideo/2d": "*",
-    "@revideo/core": "*"
+    "@revideo/core": "*",
+    "@revideo/ffmpeg": "*"
   },
   "devDependencies": {
     "@revideo/ui": "*",

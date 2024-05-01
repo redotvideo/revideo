@@ -1,14 +1,27 @@
-import {PluginConfig} from '@revideo/vite-plugin/lib/plugins';
-import type {WebSocketServer} from 'vite';
 import {
   FFmpegExporterServer,
   FFmpegExporterSettings,
-} from './FFmpegExporterServer';
-import {VideoFrameExtractor} from './VideoFrameExtractor';
+  VideoFrameExtractor,
+} from '@revideo/ffmpeg';
+import type {Plugin, WebSocketServer} from 'vite';
 
 interface BrowserRequest {
   method: string;
   data: unknown;
+}
+
+interface ExporterPluginConfig {
+  output: string;
+}
+
+export function ffmpegExporterPlugin({output}: ExporterPluginConfig): Plugin {
+  return {
+    name: 'revideo/ffmpeg',
+
+    configureServer(server) {
+      new FFmpegBridge(server.ws, {output});
+    },
+  };
 }
 
 /**
@@ -23,7 +36,7 @@ export class FFmpegBridge {
 
   public constructor(
     private readonly ws: WebSocketServer,
-    private readonly config: PluginConfig,
+    private readonly config: ExporterPluginConfig,
   ) {
     ws.on('revideo:ffmpeg-exporter', this.handleMessage);
     ws.on('revideo:ffmpeg-video-frame', this.handleVideoFrameMessage);
@@ -33,10 +46,10 @@ export class FFmpegBridge {
   private handleMessage = async ({method, data}: BrowserRequest) => {
     if (method === 'start') {
       try {
-        this.process = new FFmpegExporterServer(
-          data as FFmpegExporterSettings,
-          this.config,
-        );
+        this.process = new FFmpegExporterServer({
+          ...(data as FFmpegExporterSettings),
+          ...this.config,
+        });
         this.respondSuccess(method, await this.process.start());
       } catch (e: any) {
         this.respondError(method, e?.message);

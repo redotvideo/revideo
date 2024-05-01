@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "outDir": "../dist",
+    "baseUrl": ".",
+    "outDir": "../lib/server",
+    "inlineSourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
     "strict": true,
     "module": "CommonJS",
     "target": "es2020",
-    "moduleResolution": "node",
     "declaration": true,
-    "declarationMap": true,
-    "inlineSourceMap": true,
-    "allowSyntheticDefaultImports": true
+    "declarationMap": true
   },
-  "include": ["*", "../index.ts", "../main.ts", "../revideo.d.ts"]
+  "include": ["."]
 }

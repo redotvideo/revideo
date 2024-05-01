@@ -1,38 +1,27 @@
 {
   "name": "@revideo/ffmpeg",
   "version": "0.2.13",
-  "description": "An FFmpeg video exporter for revideo",
-  "main": "lib/server/index.js",
+  "description": "Ffmpeg utilities for revideo",
+  "main": "dist/index.js",
   "author": "revideo",
   "homepage": "https://re.video/",
   "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
-    "build": "npm run client:build && npm run server:build",
-    "client:build": "tsc --project client/tsconfig.json",
-    "client:dev": "tsc -w --project client/tsconfig.json",
-    "server:build": "tsc --project server/tsconfig.json",
-    "server:dev": "tsc -w --project server/tsconfig.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/havenhq/revideo.git"
+    "build": "tsc"
   },
   "files": [
-    "lib"
+    "dist",
+    "types"
   ],
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "@ffprobe-installer/ffprobe": "^2.0.0",
+    "@revideo/telemetry": "0.2.13",
+    "@revideo/core": "0.2.13",
+    "fluent-ffmpeg": "^2.1.2"
+  },
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.21"
-  },
-  "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@ffprobe-installer/ffprobe": "^2.0.0",
-    "@revideo/core": "0.2.13",
-    "@revideo/telemetry": "0.2.13",
-    "@revideo/vite-plugin": "0.2.13",
-    "fluent-ffmpeg": "^2.1.2",
-    "posthog-node": "^4.0.0",
-    "uuid": "^9.0.1",
-    "vite": "^4.5"
   }
 }

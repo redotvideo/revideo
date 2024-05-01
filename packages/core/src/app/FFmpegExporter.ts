@@ -1,17 +1,8 @@
-import type {
-  AssetInfo,
-  MetaField,
-  Project,
-  RendererResult,
-  RendererSettings,
-} from '@revideo/core';
-import {
-  BoolMetaField,
-  EventDispatcher,
-  Exporter,
-  ObjectMetaField,
-  ValueOf,
-} from '@revideo/core';
+import {EventDispatcher} from '../events';
+import {BoolMetaField, MetaField, ObjectMetaField, ValueOf} from '../meta';
+import {Exporter} from './Exporter';
+import {Project} from './Project';
+import type {AssetInfo, RendererResult, RendererSettings} from './Renderer';
 
 type ServerResponse =
   | {
@@ -48,7 +39,7 @@ type FFmpegExporterOptions = ValueOf<
  * initialized by invoking `start`.
  */
 export class FFmpegExporterClient implements Exporter {
-  public static readonly id = '@revideo/ffmpeg';
+  public static readonly id = '@revideo/core/ffmpeg';
   public static readonly displayName = 'Video (FFmpeg)';
 
   public static meta(project: Project): MetaField<any> {

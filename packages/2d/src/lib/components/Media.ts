@@ -197,7 +197,8 @@ export abstract class Media extends Rect {
           'MEDIA_ERR_DECODE. This might be an issue with your video file.';
         break;
       case 4:
-        reason = 'MEDIA_ERR_SRC_NOT_SUPPORTED. This might be a CORS error.';
+        reason =
+          'MEDIA_ERR_SRC_NOT_SUPPORTED. If you are sure that the path to the video is correct, this might be a CORS error.';
         break;
       default:
         reason = 'UNKNOWN';

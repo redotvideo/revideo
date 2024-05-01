@@ -9,7 +9,8 @@
     "module": "CommonJS",
     "target": "es2020",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "incremental": true
   },
   "include": ["."]
 }

@@ -10,7 +10,8 @@
     "declaration": true,
     "declarationMap": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "incremental": true
   },
   "include": ["src"]
 }

@@ -9,5 +9,8 @@ node_modules
 /packages/*/build
 /packages/*/output
 
+.rollup.cache
+tsconfig.tsbuildinfo
+
 .idea
 id.txt

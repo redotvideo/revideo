@@ -13,6 +13,7 @@
     "declarationMap": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "incremental": true,
     "plugins": [
       {
         "transform": "@revideo/internal/transformers/markdown-literals.js"

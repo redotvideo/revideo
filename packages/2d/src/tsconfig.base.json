@@ -13,6 +13,7 @@
     "inlineSourceMap": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "composite": true
+    "composite": true,
+    "incremental": true
   }
 }

@@ -15,6 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
+    "incremental": true,
     "jsxImportSource": "preact",
     "types": ["node", "preact"],
     "lib": ["DOM", "DOM.Iterable", "ESNext"]

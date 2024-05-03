@@ -16,7 +16,7 @@ export async function render(req: Request, res: Response) {
 
   try {
     const tempProjectName = uuidv4();
-    await renderVideo(process.env.PROJECT_FILE || '', variables, {
+    await renderVideo(process.env.PROJECT_FILE || '', variables, () => {}, {
       name: tempProjectName,
     });
 

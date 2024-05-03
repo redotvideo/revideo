@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "outDir": "../lib/server",
     "inlineSourceMap": true,
+    "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "strict": true,

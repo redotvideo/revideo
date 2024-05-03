@@ -154,10 +154,8 @@ export class FFmpegExporterServer {
       resolvedPath = assetPath.replace('/@fs', '');
     } else if (assetPath.startsWith('http')) {
       resolvedPath = assetPath;
-    } else if (assetPath.startsWith('/')) {
-      resolvedPath = path.join(this.settings.output, '../public', assetPath);
     } else {
-      resolvedPath = path.join(this.settings.output, '..', assetPath);
+      resolvedPath = path.join(this.settings.output, '../public', assetPath);
     }
     return resolvedPath;
   }

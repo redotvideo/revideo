@@ -92,7 +92,7 @@ export class VideoFrameExtractor {
     range?: [number, number],
     fps?: number,
   ) {
-    const args = [];
+    const args = ['-loglevel', 'error'];
 
     if (range) {
       args.push('-ss', range[0].toString(), '-to', range[1].toString());

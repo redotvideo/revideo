@@ -14,7 +14,11 @@ program
 program
   .command('serve')
   .description('Start the revideo server.')
-  .option('--projectFile <path>', 'Path to the project file')
+  .option(
+    '--projectFile <path>',
+    'Path to the project file',
+    './vite.config.ts',
+  )
   .option('--port <number>', 'Port on which to start the server', '4000')
   .action(async options => {
     await buildProject();
@@ -38,7 +42,11 @@ program
     'Start the revideo server in development mode. Watches for changes ' +
       'in the project directory and re-builds the player on each change.',
   )
-  .option('--projectFile <path>', 'Path to the project file')
+  .option(
+    '--projectFile <path>',
+    'Path to the project file',
+    './vite.config.ts',
+  )
   .option('--port <number>', 'Port on which to start the server', '4000')
   .option('--watchDir <path>', 'Directory to watch for changes', 'src')
   .action(async options => {

@@ -9,7 +9,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
-import * as readline from 'readline';
 import {v4 as uuidv4} from 'uuid';
 import {ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
@@ -76,9 +75,11 @@ async function initBrowserAndServer(
  * Navigates to the URL and renders the video on the page
  */
 async function renderVideoOnPage(
+  id: number,
   browser: Browser,
   server: ViteDevServer,
   url: string,
+  progressCallback?: (worker: number, progress: number) => void,
 ) {
   const page = await browser.newPage();
   if (!server.httpServer) {
@@ -93,22 +94,19 @@ async function renderVideoOnPage(
   // Attach logs from puppeteer to the console
   page.on('console', msg => {
     for (let i = 0; i < msg.args().length; ++i) {
-      console.log(`${port}: ${msg.args()[i]}`);
+      const message = msg.args()[i];
+      if (message.toString().includes('[vite]')) {
+        continue;
+      }
+
+      console.log(`Worker ${id}: ${msg.args()[i]}`);
     }
   });
 
   page.exposeFunction('logProgress', (progress: number) => {
-    const percentage = Math.floor(progress * 100);
-    const barLength = 20;
-    const filledLength = Math.floor((percentage / 100) * barLength);
-    const bar = '█'.repeat(filledLength) + '-'.repeat(barLength - filledLength);
-    const consoleLine = process.stdout.rows + port - 9000;
-
-    readline.cursorTo(process.stdout, 0, consoleLine);
-    readline.clearLine(process.stdout, 0);
-    process.stdout.write(
-      `Progress for worker on port ${port}: [${bar}] ${percentage}%`,
-    );
+    if (progressCallback) {
+      progressCallback(id, progress);
+    }
   });
 
   const renderingComplete = new Promise<void>((resolve, reject) => {
@@ -140,6 +138,7 @@ async function initializeBrowserAndStartRendering(
   settings: RenderVideoSettings,
   hiddenFolderId: string,
   params?: Record<string, unknown>,
+  progressCallback?: (worker: number, progress: number) => void,
 ) {
   const port = 9000 + i;
 
@@ -159,7 +158,7 @@ async function initializeBrowserAndStartRendering(
     hiddenFolderId,
   );
 
-  return renderVideoOnPage(browser, server, url);
+  return renderVideoOnPage(i, browser, server, url, progressCallback);
 }
 
 /**
@@ -248,9 +247,18 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
+/**
+ * Renders a video to a file.
+ * @param configFile - Path to the vite config file (vite.config.ts).
+ * @param params - Parameters to pass to your project (see https://docs.re.video/parameterized-video)
+ * @param progressCallback - Callback function to track rendering progress. Progress is a number between 0 and 1.
+ * @param settings - Settings for the rendering process.
+ * @returns - Path to the rendered video file.
+ */
 export const renderVideo = async (
   configFile: string,
   params?: Record<string, unknown>,
+  progressCallback?: (worker: number, progress: number) => void,
   settings: RenderVideoSettings = {},
 ) => {
   // Get settings
@@ -271,6 +279,7 @@ export const renderVideo = async (
         settings,
         hiddenFolderId,
         params,
+        progressCallback,
       ),
     );
   }

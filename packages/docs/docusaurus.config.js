@@ -97,6 +97,10 @@ const config = {
     }),
   scripts: [
     {
+      src: '/js/crisp-chat.js',
+      async: false,
+    },
+    {
       src: 'https://plausible.io/js/script.js',
       defer: true,
       'data-domain': 'docs.re.video',

@@ -1,28 +1,51 @@
 #!/usr/bin/env node
 
-import {execSync} from 'child_process';
+import {EventName, sendEvent} from '@revideo/telemetry';
 import {Command} from 'commander';
-import path from 'path';
+import {createServer} from './server/index';
+import {buildProject} from './server/player';
 
-const Program = new Command();
+const program = new Command();
 
-Program.name('revideo')
+program
+  .name('revideo')
   .description('CLI to interact with the revideo service')
-  .version('1.0.0');
+  .version('0.2.13');
 
-Program.command('serve')
-  .description('Start the revideo server')
-  .option('--projectFile <path>', 'Path to the project file')
+program
+  .command('serve')
+  .description(
+    'UNSTABLE (still WIP): Start the revideo server in development mode. Watches for changes ' +
+      'in the project directory and re-builds the player on each change.',
+  )
+  .option(
+    '--projectFile <path>',
+    'Path to the project file',
+    './vite.config.ts',
+  )
   .option('--port <number>', 'Port on which to start the server', '4000')
-  .action(options => {
+  .option('--watchDir <path>', 'Directory to watch for changes', 'src')
+  .action(async options => {
+    sendEvent(EventName.CLICommand);
+
     if (!options.projectFile) {
       console.error('Error: --projectFile option must be specified.');
       process.exit(1);
     }
+
+    await buildProject().catch(() => {
+      console.error('Error building project');
+      process.exit(1);
+    });
+
     const {projectFile, port} = options;
     process.env.PROJECT_FILE = projectFile;
     process.env.REVIDEO_PORT = port;
-    execSync(`node ${path.join(__dirname, './server.js')}`, {stdio: 'inherit'});
+
+    createServer(options.watchDir).listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+      console.log();
+    });
   });
 
-Program.parse(process.argv);
+program.parse(process.argv);

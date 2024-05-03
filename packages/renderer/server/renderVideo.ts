@@ -14,6 +14,10 @@ import {v4 as uuidv4} from 'uuid';
 import {ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './RendererPlugin';
 
+/**
+ * We pass a lot of render settings to the client side of the renderer
+ * via the URL. This function builds the URL with the necessary parameters.
+ */
 function buildUrl(
   port: number,
   fileName: string,
@@ -36,78 +40,9 @@ interface RenderVideoSettings {
   workers?: number;
 }
 
-export const renderVideo = async (
-  configFile: string,
-  params?: Record<string, unknown>,
-  settings: RenderVideoSettings = {},
-) => {
-  console.log('Rendering...');
-
-  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
-  const projectName = settings.name ?? 'project';
-  const hiddenFolderId = uuidv4();
-
-  const numOfWorkers = settings.workers ?? 1;
-  const renderPromises = [];
-
-  for (let i = 0; i < numOfWorkers; i++) {
-    const port = 9000 + i;
-    renderPromises.push(
-      initBrowserAndServer(
-        port,
-        resolvedConfigPath,
-        params,
-        settings.puppeteer,
-      ).then(({browser, server}) => {
-        const url = buildUrl(
-          port,
-          `${projectName}-${i}`,
-          i,
-          numOfWorkers,
-          settings.range,
-          hiddenFolderId,
-        );
-        return renderVideoOnPage(browser, server, url);
-      }),
-    );
-  }
-
-  await Promise.all(renderPromises);
-  const audioFiles = [];
-  const videoFiles = [];
-  for (let i = 0; i < numOfWorkers; i++) {
-    const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/visuals.mp4`;
-    const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/audio.wav`;
-
-    if (!(await doesFileExist(audioFilePath))) {
-      const videoDuration = await getVideoDuration(videoFilePath);
-      await createSilentAudioFile(audioFilePath, videoDuration);
-    }
-    videoFiles.push(videoFilePath);
-    audioFiles.push(audioFilePath);
-  }
-
-  await concatenateMedia(
-    videoFiles,
-    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
-  );
-  await concatenateMedia(
-    audioFiles,
-    path.join(process.cwd(), `output/${projectName}-audio.wav`),
-  );
-
-  await mergeAudioWithVideo(
-    path.join(process.cwd(), `output/${projectName}-audio.wav`),
-    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
-    path.join(process.cwd(), `output/${projectName}.mp4`),
-  );
-  console.log(
-    `\nRendered successfully! Video saved to: ${path.join(process.cwd(), `output/${projectName}.mp4`)}`,
-  );
-
-  await cleanup(projectName, numOfWorkers, hiddenFolderId);
-};
-
+/**
+ * Starts the vite server and creates a puppeteer browser instance
+ */
 async function initBrowserAndServer(
   fixedPort: number,
   resolvedConfigPath: string,
@@ -137,6 +72,9 @@ async function initBrowserAndServer(
   return {browser, server, port};
 }
 
+/**
+ * Navigates to the URL and renders the video on the page
+ */
 async function renderVideoOnPage(
   browser: Browser,
   server: ViteDevServer,
@@ -191,6 +129,91 @@ async function renderVideoOnPage(
   return renderingComplete;
 }
 
+/**
+ * Initializes the browser and starts rendering the video
+ */
+async function initializeBrowserAndStartRendering(
+  resolvedConfigPath: string,
+  projectName: string,
+  i: number,
+  numOfWorkers: number,
+  settings: RenderVideoSettings,
+  hiddenFolderId: string,
+  params?: Record<string, unknown>,
+) {
+  const port = 9000 + i;
+
+  const {browser, server} = await initBrowserAndServer(
+    port,
+    resolvedConfigPath,
+    params,
+    settings.puppeteer,
+  );
+
+  const url = buildUrl(
+    port,
+    `${projectName}-${i}`,
+    i,
+    numOfWorkers,
+    settings.range,
+    hiddenFolderId,
+  );
+
+  return renderVideoOnPage(browser, server, url);
+}
+
+/**
+ * Collects audio and video files from each worker and returns them.
+ * If audio file does not exist, creates a silent audio file with the same duration as the video file.
+ */
+async function collectAudioAndVideoFiles(
+  numOfWorkers: number,
+  projectName: string,
+  hiddenFolderId: string,
+) {
+  const audioFiles = [];
+  const videoFiles = [];
+  for (let i = 0; i < numOfWorkers; i++) {
+    const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/visuals.mp4`;
+    const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/audio.wav`;
+
+    if (!(await doesFileExist(audioFilePath))) {
+      const videoDuration = await getVideoDuration(videoFilePath);
+      await createSilentAudioFile(audioFilePath, videoDuration);
+    }
+    videoFiles.push(videoFilePath);
+    audioFiles.push(audioFilePath);
+  }
+
+  return {audioFiles, videoFiles};
+}
+
+/**
+ * Concatenates audio and video files and merges them into a single video file.
+ */
+async function concatenateAudioAndVideoFiles(
+  projectName: string,
+  audioFiles: string[],
+  videoFiles: string[],
+) {
+  await concatenateMedia(
+    videoFiles,
+    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
+  );
+  await concatenateMedia(
+    audioFiles,
+    path.join(process.cwd(), `output/${projectName}-audio.wav`),
+  );
+  await mergeAudioWithVideo(
+    path.join(process.cwd(), `output/${projectName}-audio.wav`),
+    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
+    path.join(process.cwd(), `output/${projectName}.mp4`),
+  );
+}
+
+/**
+ * Deletes all partial files after concatenation is done
+ */
 async function cleanup(
   projectName: string,
   numOfWorkers: number,
@@ -224,3 +247,45 @@ async function cleanup(
 
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
+
+export const renderVideo = async (
+  configFile: string,
+  params?: Record<string, unknown>,
+  settings: RenderVideoSettings = {},
+) => {
+  // Get settings
+  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
+  const projectName = settings.name ?? 'project';
+  const hiddenFolderId = uuidv4();
+  const numOfWorkers = settings.workers ?? 1;
+
+  // Start rendering
+  const renderPromises = [];
+  for (let i = 0; i < numOfWorkers; i++) {
+    renderPromises.push(
+      initializeBrowserAndStartRendering(
+        resolvedConfigPath,
+        projectName,
+        i,
+        numOfWorkers,
+        settings,
+        hiddenFolderId,
+        params,
+      ),
+    );
+  }
+
+  // Wait for workers to finish rendering
+  await Promise.all(renderPromises);
+
+  // Collect and concatenate audio and video files
+  const {audioFiles, videoFiles} = await collectAudioAndVideoFiles(
+    numOfWorkers,
+    projectName,
+    hiddenFolderId,
+  );
+  await concatenateAudioAndVideoFiles(projectName, audioFiles, videoFiles);
+  await cleanup(projectName, numOfWorkers, hiddenFolderId);
+
+  return `output/${projectName}.mp4`;
+};

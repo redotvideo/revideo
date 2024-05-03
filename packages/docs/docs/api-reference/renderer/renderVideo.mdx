@@ -13,9 +13,14 @@ process. It uses a headless browser to achieve this.
 ```tsx
 import {renderVideo} from '@revideo/renderer';
 
+function logProgress(id: number, progress: number) {
+  console.log(`[${id}] Progress: ${(progress*100).toFixed(1)}%`);
+}
+
 renderVideo(
   './vite.config.ts',
   {color: 'white'},
+  logProgress,
   {
     name: 'out',
     workers: 1,
@@ -38,6 +43,12 @@ A string pointing towards your Vite config file. This will almost always be
 
 Parameters / or variables passed to your video. See [here](/parameterized-video)
 learn more about parameterized videos. `default = {}`
+
+### progressCallback (optional):
+
+A function that gets called with the progress of the rendering process. The
+function gets called with two arguments: the id of the worker that is calling
+the function, and the progress of the rendering process (float between 0 and 1). `default = () => {}`
 
 ### settings (optional):
 

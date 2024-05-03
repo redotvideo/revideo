@@ -24,6 +24,7 @@
     "@types/node": "18.14.0"
   },
   "dependencies": {
-    "posthog-node": "^4.0.0"
+    "posthog-node": "^4.0.0",
+    "uuid": "^9.0.1"
   }
 }

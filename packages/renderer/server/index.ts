@@ -1,1 +1,1 @@
-export * from './renderVideo';
+export * from './render-video';

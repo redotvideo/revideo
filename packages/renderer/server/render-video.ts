@@ -12,7 +12,7 @@ import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
 import * as readline from 'readline';
 import {v4 as uuidv4} from 'uuid';
 import {ViteDevServer, createServer} from 'vite';
-import {rendererPlugin} from './RendererPlugin';
+import {rendererPlugin} from './renderer-plugin';
 
 /**
  * We pass a lot of render settings to the client side of the renderer

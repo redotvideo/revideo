@@ -190,7 +190,7 @@ ${imports.join('')}
 
 export default defineConfig({
   plugins: [
-    ${plugins.join('\n    ')},
+    ${plugins.join('\n    ')}
   ],
 });
 `,

@@ -26,12 +26,15 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
             // Check range of frames to render
             const url = new URL(window.location.href);
 
-            const fileName = url.searchParams.get('fileName');
+            const fileNameEscaped = url.searchParams.get('fileName');
             const workerId = url.searchParams.get('workerId');
             const totalNumOfWorkers = url.searchParams.get('totalNumOfWorkers');
             const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
             const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
-            const hiddenFolderId = url.searchParams.get('hiddenFolderId');
+            const hiddenFolderIdEscaped = url.searchParams.get('hiddenFolderId');
+
+            const fileName = decodeURIComponent(fileNameEscaped);
+            const hiddenFolderId = decodeURIComponent(hiddenFolderIdEscaped);
 
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;

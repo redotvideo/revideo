@@ -25,7 +25,10 @@ function buildUrl(
   range: [number, number] = [0, Infinity],
   hiddenFolderId: string,
 ) {
-  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderId}`;
+  const fileNameEscaped = encodeURIComponent(fileName);
+  const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
+
+  return `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderIdEscaped}`;
 }
 
 interface RenderVideoSettings {

@@ -50,7 +50,7 @@ export const render = async (
       ] as [number, number],
     };
 
-    if (videoWidth !== 0 && videoHeight !== 0) {
+    if (videoWidth && videoHeight) {
       renderSettings.size = new Vector2({x: videoWidth, y: videoHeight});
     }
 

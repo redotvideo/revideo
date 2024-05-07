@@ -38,7 +38,7 @@ function buildUrl(
   );
 }
 
-interface RenderVideoSettings {
+export interface RenderVideoSettings {
   // Name of the video file
   name?: string;
 

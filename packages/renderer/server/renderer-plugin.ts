@@ -32,6 +32,8 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
             const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
             const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
             const hiddenFolderIdEscaped = url.searchParams.get('hiddenFolderId');
+            const videoWidth = parseInt(url.searchParams.get('videoWidth'));
+            const videoHeight = parseInt(url.searchParams.get('videoHeight'));
 
             const fileName = decodeURIComponent(fileNameEscaped);
             const hiddenFolderId = decodeURIComponent(hiddenFolderIdEscaped);
@@ -39,7 +41,7 @@ export function rendererPlugin(params?: Record<string, unknown>): Plugin {
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;
 
-            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds, hiddenFolderId);
+            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds, hiddenFolderId, videoWidth, videoHeight);
             `;
       }
     },

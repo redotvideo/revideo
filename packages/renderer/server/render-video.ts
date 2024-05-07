@@ -24,11 +24,18 @@ function buildUrl(
   totalNumOfWorkers: number,
   range: [number, number] = [0, Infinity],
   hiddenFolderId: string,
+  dimensions?: [number, number],
 ) {
   const fileNameEscaped = encodeURIComponent(fileName);
   const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
+  const dimensionsString = dimensions
+    ? `&videoWidth=${dimensions[0]}&videoHeight=${dimensions[1]}`
+    : '';
 
-  return `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderIdEscaped}`;
+  return (
+    `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderIdEscaped}` +
+    dimensionsString
+  );
 }
 
 interface RenderVideoSettings {
@@ -40,6 +47,7 @@ interface RenderVideoSettings {
 
   puppeteer?: BrowserLaunchArgumentOptions;
   workers?: number;
+  dimensions?: [number, number];
 }
 
 /**
@@ -159,6 +167,7 @@ async function initializeBrowserAndStartRendering(
     numOfWorkers,
     settings.range,
     hiddenFolderId,
+    settings.dimensions,
   );
 
   return renderVideoOnPage(i, browser, server, url, progressCallback);

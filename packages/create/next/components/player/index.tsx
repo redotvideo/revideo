@@ -1,10 +1,11 @@
 'use client';
 
-import {ComponentProps, useEffect, useState} from 'react';
+import {ComponentProps, useEffect, useRef, useState} from 'react';
 
 interface MotionCanvasPlayerProps {
   src: string;
-  playing?: boolean;
+  playing?: string;
+
   width?: number;
   height?: number;
   auto?: boolean;
@@ -23,16 +24,28 @@ declare global {
 
 export function Player() {
   const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
 
-  console.log('Player rendered');
+  const playerRef = useRef<HTMLDivElement>(null);
+
+  const handleTimeUpdate = (event: Event) => {
+    const e = event as CustomEvent;
+    setCurrentTime(e.detail);
+  };
 
   useEffect(() => {
     import('./revideo-player-ts');
+
+    playerRef.current?.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+      playerRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
+    };
   }, []);
 
   return (
     <div className="relative">
-      <div className="absolute inset-0 flex items-center bg-white bg-opacity-50 z-10">
+      <div className="absolute inset-0 flex items-center bg-white bg-opacity-10 z-10">
         <button
           onClick={() => {
             setPlaying(true);
@@ -47,9 +60,14 @@ export function Player() {
         >
           Pause
         </button>
+        <span className="current-time">{currentTime}</span>
       </div>
       <div>
-        <revideo-player src="/project.js" playing={playing} />
+        <revideo-player
+          ref={playerRef}
+          src="/project.js"
+          playing={String(playing)}
+        />
       </div>
     </div>
   );

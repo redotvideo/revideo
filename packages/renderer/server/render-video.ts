@@ -47,7 +47,6 @@ interface RenderVideoSettings {
   range?: [number, number];
 
   ffmpeg?: FfmpegSettings;
-  test?: string;
 
   puppeteer?: BrowserLaunchArgumentOptions;
   workers?: number;

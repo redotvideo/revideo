@@ -20,6 +20,9 @@ export class VideoFrameExtractor {
     0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
   ]);
 
+  private static readonly jpegSOI = Buffer.from([0xff, 0xd8]);
+  private static readonly jpegEOI = Buffer.from([0xff, 0xd9]);
+
   private static readonly chunkLengthInSeconds = 45;
 
   public state: VideoFrameExtractorState;
@@ -37,6 +40,7 @@ export class VideoFrameExtractor {
   private duration: number;
   private toTime: number;
   private fps: number;
+  private transparency: boolean;
 
   private codec: string | null = null;
   private process: ChildProcessByStdio<null, Readable, null> | null = null;
@@ -46,6 +50,7 @@ export class VideoFrameExtractor {
     startTime: number,
     fps: number,
     duration: number,
+    transparent?: boolean,
   ) {
     this.state = 'processing';
     this.filePath = filePath;
@@ -54,6 +59,7 @@ export class VideoFrameExtractor {
     this.duration = duration;
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
+    this.transparency = transparent || false;
 
     if (this.startTime >= this.duration) {
       getVideoCodec(this.filePath).then(codec => {
@@ -98,7 +104,8 @@ export class VideoFrameExtractor {
       args.push('-ss', range[0].toString(), '-to', range[1].toString());
     }
 
-    if (codec === 'vp9') {
+    // Use libvpx-vp9 for transparent videos.
+    if (this.transparency && codec === 'vp9') {
       args.push('-vcodec', 'libvpx-vp9');
     }
 
@@ -112,7 +119,19 @@ export class VideoFrameExtractor {
       args.push('-vframes', '1');
     }
 
-    args.push('-f', 'image2pipe', '-vcodec', 'png', '-');
+    args.push('-f', 'image2pipe');
+
+    /**
+     * PNG is significantly slower than JPEG,
+     * so we only use it when transparency is needed.
+     */
+    if (this.transparency) {
+      args.push('-vcodec', 'png');
+    } else {
+      args.push('-vcodec', 'mjpeg');
+    }
+
+    args.push('-');
 
     return args;
   }
@@ -149,7 +168,7 @@ export class VideoFrameExtractor {
     filePath: string,
     codec: string,
   ) {
-    const args = this.getArgs(filePath, codec);
+    const args = this.getArgs(filePath, codec, undefined, undefined);
     const process = spawn(VideoFrameExtractor.ffmpegPath, args, {
       stdio: ['ignore', 'pipe', 'ignore'],
     });
@@ -167,12 +186,19 @@ export class VideoFrameExtractor {
     let start = 0;
     let end;
 
+    const startSignature = this.transparency
+      ? VideoFrameExtractor.pngSignature
+      : VideoFrameExtractor.jpegSOI;
+
+    const endSignature = this.transparency
+      ? VideoFrameExtractor.pngEOF
+      : VideoFrameExtractor.jpegEOI;
+
     while (
-      (start = this.buffer.indexOf(VideoFrameExtractor.pngSignature, start)) !==
-        -1 &&
-      (end = this.buffer.indexOf(VideoFrameExtractor.pngEOF, start)) !== -1
+      (start = this.buffer.indexOf(startSignature, start)) !== -1 &&
+      (end = this.buffer.indexOf(endSignature, start)) !== -1
     ) {
-      end += VideoFrameExtractor.pngEOF.length;
+      end += endSignature.length;
       const frame = this.buffer.subarray(start, end);
 
       this.imageBuffers.push(frame);

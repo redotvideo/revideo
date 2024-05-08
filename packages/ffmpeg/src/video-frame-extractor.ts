@@ -1,7 +1,7 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
 import {ChildProcessByStdio, spawn} from 'child_process';
-import * as pathToFfmpeg from 'ffmpeg-static';
 import {Readable} from 'stream';
+import {ffmpegSettings} from './settings';
 import {getVideoCodec} from './utils';
 
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
@@ -10,9 +10,6 @@ type VideoFrameExtractorState = 'processing' | 'done' | 'error';
  * Walks through a video file and extracts frames.
  */
 export class VideoFrameExtractor {
-  private static readonly ffmpegPath =
-    (pathToFfmpeg as unknown as string) || 'ffmpeg';
-
   private static readonly pngSignature = Buffer.from([
     0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
   ]);
@@ -24,6 +21,8 @@ export class VideoFrameExtractor {
   private static readonly jpegEOI = Buffer.from([0xff, 0xd9]);
 
   private static readonly chunkLengthInSeconds = 45;
+
+  private readonly ffmpegPath = ffmpegSettings.getFfmpegPath();
 
   public state: VideoFrameExtractorState;
   public filePath: string;
@@ -98,7 +97,7 @@ export class VideoFrameExtractor {
     range?: [number, number],
     fps?: number,
   ) {
-    const args = ['-loglevel', 'error'];
+    const args = ['-loglevel', ffmpegSettings.getLogLevel()];
 
     if (range) {
       args.push('-ss', range[0].toString(), '-to', range[1].toString());
@@ -144,7 +143,7 @@ export class VideoFrameExtractor {
     codec: string,
   ) {
     const args = this.getArgs(filePath, codec, [startTime, toTime], fps);
-    const process = spawn(VideoFrameExtractor.ffmpegPath, args, {
+    const process = spawn(this.ffmpegPath, args, {
       stdio: ['ignore', 'pipe', 'inherit'],
     });
 
@@ -169,7 +168,7 @@ export class VideoFrameExtractor {
     codec: string,
   ) {
     const args = this.getArgs(filePath, codec, undefined, undefined);
-    const process = spawn(VideoFrameExtractor.ffmpegPath, args, {
+    const process = spawn(this.ffmpegPath, args, {
       stdio: ['ignore', 'pipe', 'ignore'],
     });
 

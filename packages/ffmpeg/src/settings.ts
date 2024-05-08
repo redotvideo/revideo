@@ -30,7 +30,6 @@ class FfmpegSettingState {
   }
 
   public setFfmpegPath(ffmpegPath: string) {
-    console.log('setting path', ffmpegPath);
     this.ffmpegPath = ffmpegPath;
   }
 

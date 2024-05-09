@@ -23,8 +23,9 @@ custom path. Instructions are below. Make sure to install FFmpeg v6.
 
 :::
 
-If you want to use a custom version of FFmpeg, you can set the path to ffmpeg in
-the render function. Here is an example:
+If you want to use a custom version of FFmpeg, you can either set the
+environment variable `FFMPEG_PATH` to the path of your FFmpeg binary, or you can
+set the path to ffmpeg in the render function. Here is an example:
 
 ```tsx
 import {renderVideo} from '@revideo/renderer';

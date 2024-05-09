@@ -1,15 +1,18 @@
 import * as pathToFfmpeg from 'ffmpeg-static';
 
-type LogLevel =
-  | 'quiet'
-  | 'panic'
-  | 'fatal'
-  | 'error'
-  | 'warning'
-  | 'info'
-  | 'verbose'
-  | 'debug'
-  | 'trace';
+const ffmpegLogLevels = [
+  'quiet',
+  'panic',
+  'fatal',
+  'error',
+  'warning',
+  'info',
+  'verbose',
+  'debug',
+  'trace',
+] as const;
+
+export type LogLevel = (typeof ffmpegLogLevels)[number];
 
 export type FfmpegSettings = {
   ffmpegPath?: string;
@@ -22,7 +25,21 @@ class FfmpegSettingState {
 
   public constructor() {
     this.ffmpegPath = pathToFfmpeg as unknown as string;
+
+    // Use the FFMPEG_PATH environment variable if it is set
+    if (process.env.FFMPEG_PATH) {
+      this.ffmpegPath = process.env.FFMPEG_PATH;
+    }
+
     this.logLevel = 'error';
+
+    // Use the FFMPEG_LOG_LEVEL environment variable if it is set
+    if (
+      process.env.FFMPEG_LOG_LEVEL &&
+      ffmpegLogLevels.includes(process.env.FFMPEG_LOG_LEVEL as LogLevel)
+    ) {
+      this.logLevel = process.env.FFMPEG_LOG_LEVEL as LogLevel;
+    }
   }
 
   public getFfmpegPath() {

@@ -1,4 +1,5 @@
 import {
+  FfmpegSettings,
   concatenateMedia,
   createSilentAudioFile,
   doesFileExist,
@@ -45,6 +46,8 @@ interface RenderVideoSettings {
   // Start and end in seconds
   range?: [number, number];
 
+  ffmpeg?: FfmpegSettings;
+
   puppeteer?: BrowserLaunchArgumentOptions;
   workers?: number;
   dimensions?: [number, number];
@@ -56,17 +59,17 @@ interface RenderVideoSettings {
 async function initBrowserAndServer(
   fixedPort: number,
   resolvedConfigPath: string,
+  settings: RenderVideoSettings,
   params?: Record<string, unknown>,
-  puppeteerOptions?: BrowserLaunchArgumentOptions,
 ) {
   const [browser, server] = await Promise.all([
-    puppeteer.launch({headless: true, ...puppeteerOptions}),
+    puppeteer.launch({headless: true, ...settings.puppeteer}),
     createServer({
       configFile: resolvedConfigPath,
       server: {
         port: fixedPort,
       },
-      plugins: [rendererPlugin(params)],
+      plugins: [rendererPlugin(params, settings.ffmpeg)],
     }).then(server => server.listen()),
   ]);
 
@@ -156,8 +159,8 @@ async function initializeBrowserAndStartRendering(
   const {browser, server} = await initBrowserAndServer(
     port,
     resolvedConfigPath,
+    settings,
     params,
-    settings.puppeteer,
   );
 
   const url = buildUrl(

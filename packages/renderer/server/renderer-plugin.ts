@@ -1,3 +1,4 @@
+import {FfmpegSettings, ffmpegSettings} from '@revideo/ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
 import {Plugin} from 'vite';
@@ -10,7 +11,17 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
-export function rendererPlugin(params?: Record<string, unknown>): Plugin {
+export function rendererPlugin(
+  params?: Record<string, unknown>,
+  customFfmpegSettings?: FfmpegSettings,
+): Plugin {
+  if (customFfmpegSettings?.ffmpegPath) {
+    ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);
+  }
+  if (customFfmpegSettings?.ffmpegLogLevel) {
+    ffmpegSettings.setLogLevel(customFfmpegSettings.ffmpegLogLevel);
+  }
+
   return {
     name: 'revideo-renderer-plugin',
 

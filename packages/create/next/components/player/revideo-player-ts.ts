@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type {PlayerSettings, Project, StageSettings} from '@revideo/core';
 import {Player, Stage} from '@revideo/core';
 
@@ -41,6 +40,7 @@ class MotionCanvasPlayer extends HTMLElement {
     return [
       'src',
       'playing',
+
       'quality',
       'width',
       'height',
@@ -54,23 +54,19 @@ class MotionCanvasPlayer extends HTMLElement {
     return !!attr;
   }
 
-  private get hover() {
-    return this.getAttribute('auto') === 'hover';
-  }
-
   private get quality() {
     const attr = this.getAttribute('quality');
-    return attr ? parseFloat(attr) : this.defaultSettings.resolutionScale;
+    return attr ? parseFloat(attr) : this.defaultSettings?.resolutionScale ?? 1;
   }
 
   private get width() {
     const attr = this.getAttribute('width');
-    return attr ? parseFloat(attr) : this.defaultSettings.size.width;
+    return attr ? parseFloat(attr) : this.defaultSettings?.size.width ?? 0;
   }
 
   private get height() {
     const attr = this.getAttribute('height');
-    return attr ? parseFloat(attr) : this.defaultSettings.size.height;
+    return attr ? parseFloat(attr) : this.defaultSettings?.size.height ?? 0;
   }
 
   private get variables() {
@@ -90,20 +86,20 @@ class MotionCanvasPlayer extends HTMLElement {
   private state = State.Initial;
   private project: Project | null = null;
   private player: Player | null = null;
-  private defaultSettings: PlayerSettings & StageSettings;
+  private defaultSettings: (PlayerSettings & StageSettings) | undefined;
   private abortController: AbortController | null = null;
-  private mouseMoveId: number | null = null;
   private playing = false;
-  private connected = false;
   private stage = new Stage();
-  // private timeline: HTMLInputElement;
+
+  private time: number = 0;
+  private duration: number = 0; // in frames
 
   public constructor() {
     super();
     this.root = this.attachShadow({mode: 'open'});
     this.root.innerHTML = TEMPLATE;
 
-    this.overlay = this.root.querySelector('.overlay');
+    this.overlay = this.root.querySelector('.overlay')!;
     this.canvas = this.stage.finalBuffer;
     this.canvas.classList.add('canvas');
     this.root.prepend(this.canvas);
@@ -111,88 +107,18 @@ class MotionCanvasPlayer extends HTMLElement {
     this.setState(State.Initial);
   }
 
-  private handleTimelineChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const value = parseFloat(target.value);
-    const durationInFrames = this.player?.playback.duration;
-    if (durationInFrames) {
-      this.player?.requestSeek(value);
-    }
-  };
-
-  private handleMouseMove = () => {
-    if (this.mouseMoveId) {
-      clearTimeout(this.mouseMoveId);
-    }
-    if (this.hover && !this.playing) {
-      this.setPlaying(true);
-    }
-
-    this.mouseMoveId = window.setTimeout(() => {
-      this.mouseMoveId = null;
-      this.updateClass();
-    }, 2000);
-    this.updateClass();
-  };
-
-  private handleMouseLeave = () => {
-    if (this.hover) {
-      this.setPlaying(false);
-    }
-    if (this.mouseMoveId) {
-      clearTimeout(this.mouseMoveId);
-      this.mouseMoveId = null;
-      this.updateClass();
-    }
-  };
-
-  private handleMouseDown = (e: MouseEvent) => {
-    if ((e.target as Element).closest('.timeline')) {
-      return;
-    }
-
-    e.preventDefault();
-  };
-
-  private handleClick = (e: MouseEvent) => {
-    if ((e.target as Element).closest('.timeline')) {
-      return;
-    }
-
-    if (this.auto) return;
-    this.handleMouseMove();
-    this.setPlaying(!this.playing);
-  };
-
   private setState(state: State) {
     this.state = state;
     this.setPlaying(this.playing);
   }
 
   private setPlaying(value: boolean) {
-    if (this.state === State.Ready && (value || (this.auto && !this.hover))) {
+    if (this.state === State.Ready && value) {
       this.player?.togglePlayback(true);
       this.playing = true;
     } else {
       this.player?.togglePlayback(false);
       this.playing = false;
-    }
-    this.updateClass();
-  }
-
-  private updateClass() {
-    this.overlay.className = `overlay state-${this.state}`;
-    this.canvas.className = `canvas state-${this.state}`;
-    this.overlay.classList.toggle('playing', this.playing);
-    this.overlay.classList.toggle('auto', this.auto);
-    this.overlay.classList.toggle('hover', this.mouseMoveId !== null);
-
-    if (this.connected) {
-      if (this.mouseMoveId !== null || !this.playing) {
-        this.dataset.overlay = '';
-      } else {
-        delete this.dataset.overlay;
-      }
     }
   }
 
@@ -222,18 +148,20 @@ class MotionCanvasPlayer extends HTMLElement {
     player.setVariables(this.variables);
 
     this.player?.onRender.unsubscribe(this.render);
+    this.player?.onFrameChanged.unsubscribe(this.handleFrameChanged);
     this.player?.togglePlayback(false);
     this.player?.deactivate();
     this.project = project;
     this.player = player;
     this.updateSettings();
     this.player.onRender.subscribe(this.render);
+    this.player.onFrameChanged.subscribe(this.handleFrameChanged);
     this.player.togglePlayback(this.playing);
 
     this.setState(State.Ready);
   }
 
-  private attributeChangedCallback(name: string, _: any, newValue: any) {
+  public attributeChangedCallback(name: string, _: any, newValue: any) {
     switch (name) {
       case 'auto':
         this.setPlaying(this.playing);
@@ -255,65 +183,90 @@ class MotionCanvasPlayer extends HTMLElement {
     }
   }
 
-  private disconnectedCallback() {
-    this.connected = false;
+  /**
+   * Runs when the element is removed from the DOM.
+   */
+  public disconnectedCallback() {
     this.player?.deactivate();
     this.player?.onRender.unsubscribe(this.render);
+
+    this.removeEventListener('seekto', this.handleSeekTo);
   }
 
-  private connectedCallback() {
-    this.connected = true;
+  /**
+   * Runs when the element is added to the DOM.
+   */
+  public connectedCallback() {
     this.player?.activate();
     this.player?.onRender.subscribe(this.render);
+
+    this.addEventListener('seekto', this.handleSeekTo);
   }
 
+  /**
+   * Triggered by the timeline.
+   */
+  private handleSeekTo = (event: Event) => {
+    if (!this.project) {
+      return;
+    }
+
+    const e = event as CustomEvent;
+    this.time = e.detail;
+    this.player?.requestSeek(
+      e.detail * this.project.meta.getFullPreviewSettings().fps,
+    );
+  };
+
+  /**
+   * Triggered by the player.
+   */
+  private handleFrameChanged = (frame: number) => {
+    if (!this.project) {
+      return;
+    }
+    this.time = frame / this.project.meta.getFullPreviewSettings().fps;
+  };
+
+  /**
+   * Called on every frame.
+   */
   private render = async () => {
-    if (this.player) {
+    if (this.player && this.project) {
       await this.stage.render(
         this.player.playback.currentScene,
         this.player.playback.previousScene,
       );
 
-      try {
-        this.dispatchEvent(
-          new CustomEvent('timeupdate', {detail: this.player.status.time}),
-        );
-      } catch (e) {
-        console.error(e);
+      this.dispatchEvent(new CustomEvent('timeupdate', {detail: this.time}));
+
+      const durationInFrames = this.player.playback.duration;
+      if (durationInFrames === this.duration) {
+        return;
       }
 
-      const currentTimeInSeconds = this.player.status.time;
-      const durationInSeconds = this.player.status.framesToSeconds(
-        this.player.playback.duration,
+      this.duration = durationInFrames;
+
+      const durationInSeconds =
+        durationInFrames / this.project.meta.getFullPreviewSettings().fps;
+      this.dispatchEvent(
+        new CustomEvent('duration', {detail: durationInSeconds}),
       );
-      if (durationInSeconds) {
-        const currentTimeFormatted = this.formatTime(currentTimeInSeconds);
-        const durationFormatted = this.formatTime(durationInSeconds);
-
-        const currentTimeElement = this.root.querySelector('.current-time');
-        if (currentTimeElement) {
-          currentTimeElement.textContent = `${currentTimeFormatted} / ${durationFormatted}`;
-        }
-      }
     }
   };
 
   private updateSettings() {
+    if (!this.defaultSettings) {
+      return;
+    }
+
     const settings = {
       ...this.defaultSettings,
       size: new Vector2(this.width, this.height),
       resolutionScale: this.quality,
     };
     this.stage.configure(settings);
-    this.player.configure(settings);
-  }
-
-  private formatTime(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    const paddedMinutes = minutes.toString().padStart(2, '0');
-    const paddedSeconds = remainingSeconds.toString().padStart(2, '0');
-    return `${paddedMinutes}:${paddedSeconds}`;
+    this.player?.configure(settings);
   }
 }
 

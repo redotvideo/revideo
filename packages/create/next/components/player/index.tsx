@@ -23,6 +23,23 @@ declare global {
   }
 }
 
+function getFormattedTime(
+  timeInSeconds: number,
+  absoluteTimeInSeconds: number,
+) {
+  function toFormattedTime(timeInSeconds: number) {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60)
+      .toString()
+      .padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+
+  return `${toFormattedTime(timeInSeconds)} / ${toFormattedTime(
+    absoluteTimeInSeconds,
+  )}`;
+}
+
 function PlayPause({
   playing,
   setPlaying,
@@ -37,7 +54,7 @@ function PlayPause({
   );
 }
 
-function Bar({
+function Timeline({
   currentTime,
   duration,
   setCurrentTime,
@@ -67,23 +84,6 @@ function Bar({
   );
 }
 
-function getFormattedTime(
-  timeInSeconds: number,
-  absoluteTimeInSeconds: number,
-) {
-  function toFormattedTime(timeInSeconds: number) {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60)
-      .toString()
-      .padStart(2, '0');
-    return `${minutes}:${seconds}`;
-  }
-
-  return `${toFormattedTime(timeInSeconds)} / ${toFormattedTime(
-    absoluteTimeInSeconds,
-  )}`;
-}
-
 function Controls({
   duration,
   playing,
@@ -103,7 +103,7 @@ function Controls({
         <PlayPause playing={playing} setPlaying={setPlaying} />
         <span>{getFormattedTime(currentTime, duration)}</span>
       </div>
-      <Bar
+      <Timeline
         currentTime={currentTime}
         duration={duration}
         setCurrentTime={setForcedTime}
@@ -114,24 +114,33 @@ function Controls({
 
 export function Player() {
   const [playing, setPlaying] = useState(false);
-  const focus = useRef(false);
-
+  const [showControls, setShowControls] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [forcedTime, setForcedTime] = useState(0);
   const [duration, setDuration] = useState(-1);
 
+  const focus = useRef(false);
   const playerRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Receives the current time of the video from the player.
+   */
   const handleTimeUpdate = (event: Event) => {
     const e = event as CustomEvent;
     setCurrentTime(e.detail);
   };
 
+  /**
+   * Receives the duration of the video from the player.
+   */
   const handleDurationUpdate = (event: Event) => {
     const e = event as CustomEvent;
     setDuration(e.detail);
   };
 
+  /**
+   * Play and pause using the space key.
+   */
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === 'Space' && focus.current) {
       event.preventDefault();
@@ -173,6 +182,8 @@ export function Player() {
       onFocus={() => (focus.current = true)}
       onBlur={() => (focus.current = false)}
       tabIndex={0}
+      onMouseEnter={() => setShowControls(true)}
+      onMouseLeave={() => setShowControls(false)}
     >
       <div className="relative">
         <revideo-player
@@ -181,7 +192,11 @@ export function Player() {
           playing={String(playing)}
           onClick={() => setPlaying(prev => !prev)}
         />
-        <div className="absolute bottom-0 w-full transition-opacity duration-200">
+        <div
+          className={`absolute bottom-0 w-full transition-opacity duration-200 ${
+            playing && !showControls ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
           <Controls
             duration={duration}
             playing={playing}

@@ -1,7 +1,8 @@
 'use client';
 
 import {ComponentProps, useEffect, useRef, useState} from 'react';
-import {PauseButton, PlayButton} from './icons';
+import {Controls} from './controls';
+import {shouldShowControls} from './utils';
 
 interface MotionCanvasPlayerProps {
   src: string;
@@ -23,99 +24,28 @@ declare global {
   }
 }
 
-function getFormattedTime(
-  timeInSeconds: number,
-  absoluteTimeInSeconds: number,
-) {
-  function toFormattedTime(timeInSeconds: number) {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60)
-      .toString()
-      .padStart(2, '0');
-    return `${minutes}:${seconds}`;
-  }
+interface PlayerProps {
+  src: string;
+  controls?: boolean;
 
-  return `${toFormattedTime(timeInSeconds)} / ${toFormattedTime(
-    absoluteTimeInSeconds,
-  )}`;
+  playing?: boolean;
+  currentTime?: number;
+
+  onDurationChange?: (duration: number) => void;
+  onTimeUpdate?: (currentTime: number) => void;
 }
 
-function PlayPause({
-  playing,
-  setPlaying,
-}: {
-  playing: boolean;
-  setPlaying: (playing: boolean) => void;
-}) {
-  return (
-    <button className="p-1 z-20" onClick={() => setPlaying(!playing)}>
-      {playing ? <PauseButton /> : <PlayButton />}
-    </button>
-  );
-}
-
-function Timeline({
-  currentTime,
-  duration,
-  setCurrentTime,
-}: {
-  currentTime: number;
-  duration: number;
-  setCurrentTime: (currentTime: number) => void;
-}) {
-  const progressPercentage = (currentTime / duration) * 100;
-
-  return (
-    <div className="relative flex-1 w-full h-1.5 bg-gray-400 rounded-full overflow-hidden">
-      <div
-        className="absolute top-0 left-0 h-full bg-gray-100"
-        style={{width: `${progressPercentage}%`}}
-      />
-      <input
-        type="range"
-        value={currentTime}
-        min={0}
-        max={duration}
-        step={0.01}
-        className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-        onChange={event => setCurrentTime(Number(event.target.value))}
-      />
-    </div>
-  );
-}
-
-function Controls({
-  duration,
-  playing,
-  setPlaying,
-  currentTime,
-  setForcedTime,
-}: {
-  duration: number;
-  playing: boolean;
-  setPlaying: (playing: boolean) => void;
-  currentTime: number;
-  setForcedTime: (currentTime: number) => void;
-}) {
-  return (
-    <div className="p-4 flex-col space-y-2">
-      <div className="flex space-x-3 items-center">
-        <PlayPause playing={playing} setPlaying={setPlaying} />
-        <span>{getFormattedTime(currentTime, duration)}</span>
-      </div>
-      <Timeline
-        currentTime={currentTime}
-        duration={duration}
-        setCurrentTime={setForcedTime}
-      />
-    </div>
-  );
-}
-
-export function Player() {
-  const [playing, setPlaying] = useState(false);
-  const [showControls, setShowControls] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+export function Player({
+  src,
+  playing = false,
+  currentTime = 0,
+  onDurationChange = () => {},
+  onTimeUpdate = () => {},
+  controls = true,
+}: PlayerProps) {
+  const [playingState, setPlaying] = useState(playing);
+  const [isMouseOver, setIsMouseOver] = useState(false);
+  const [currentTimeState, setCurrentTime] = useState(currentTime);
   const [forcedTime, setForcedTime] = useState(0);
   const [duration, setDuration] = useState(-1);
 
@@ -123,11 +53,19 @@ export function Player() {
   const playerRef = useRef<HTMLDivElement>(null);
 
   /**
+   * Sync the playing prop with the player's own state when it changes.
+   */
+  useEffect(() => {
+    setPlaying(playing);
+  }, [playing]);
+
+  /**
    * Receives the current time of the video from the player.
    */
   const handleTimeUpdate = (event: Event) => {
     const e = event as CustomEvent;
     setCurrentTime(e.detail);
+    onTimeUpdate(e.detail);
   };
 
   /**
@@ -136,6 +74,7 @@ export function Player() {
   const handleDurationUpdate = (event: Event) => {
     const e = event as CustomEvent;
     setDuration(e.detail);
+    onDurationChange(e.detail);
   };
 
   /**
@@ -144,7 +83,7 @@ export function Player() {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === 'Space' && focus.current) {
       event.preventDefault();
-      setPlaying(prevPlaying => !prevPlaying);
+      setPlaying(prev => !prev);
     }
   };
 
@@ -182,26 +121,28 @@ export function Player() {
       onFocus={() => (focus.current = true)}
       onBlur={() => (focus.current = false)}
       tabIndex={0}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => setShowControls(false)}
+      onMouseEnter={() => setIsMouseOver(true)}
+      onMouseLeave={() => setIsMouseOver(false)}
     >
       <div className="relative">
         <revideo-player
           ref={playerRef}
-          src="/project.js"
-          playing={String(playing)}
+          src={src}
+          playing={String(playingState)}
           onClick={() => setPlaying(prev => !prev)}
         />
         <div
           className={`absolute bottom-0 w-full transition-opacity duration-200 ${
-            playing && !showControls ? 'opacity-0' : 'opacity-100'
+            shouldShowControls(playingState, isMouseOver, !controls)
+              ? 'opacity-100'
+              : 'opacity-0'
           }`}
         >
           <Controls
             duration={duration}
-            playing={playing}
+            playing={playingState}
             setPlaying={setPlaying}
-            currentTime={currentTime}
+            currentTime={currentTimeState}
             setForcedTime={setForcedTime}
           />
         </div>

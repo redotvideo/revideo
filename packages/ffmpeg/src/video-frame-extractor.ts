@@ -1,6 +1,5 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
-import {ChildProcessByStdio, spawn} from 'child_process';
-import {Readable} from 'stream';
+import * as ffmpeg from 'fluent-ffmpeg';
 import {ffmpegSettings} from './settings';
 import {getVideoCodec} from './utils';
 
@@ -42,7 +41,8 @@ export class VideoFrameExtractor {
   private transparency: boolean;
 
   private codec: string | null = null;
-  private process: ChildProcessByStdio<null, Readable, null> | null = null;
+  private process: ffmpeg.FfmpegCommand | null = null;
+  private terminated: boolean = false;
 
   public constructor(
     filePath: string,
@@ -96,43 +96,45 @@ export class VideoFrameExtractor {
     codec: string,
     range?: [number, number],
     fps?: number,
-  ) {
-    const args = ['-loglevel', ffmpegSettings.getLogLevel()];
+  ): {inputOptions: string[]; outputOptions: string[]} {
+    const inputOptions = [];
+    const outputOptions = [];
+
+    inputOptions.push('-loglevel', ffmpegSettings.getLogLevel());
 
     if (range) {
-      args.push('-ss', range[0].toString(), '-to', range[1].toString());
+      inputOptions.push(
+        ...['-ss', range[0].toString(), '-to', range[1].toString()],
+      );
     }
 
-    // Use libvpx-vp9 for transparent videos.
     if (this.transparency && codec === 'vp9') {
-      args.push('-vcodec', 'libvpx-vp9');
+      inputOptions.push('-vcodec', 'libvpx-vp9');
     }
 
-    args.push('-i', filePath);
+    inputOptions.push('-i', filePath);
 
     if (fps) {
-      args.push('-vf', `fps=fps=${fps}`);
+      outputOptions.push('-vf', `fps=fps=${fps}`);
     }
 
     if (!range) {
-      args.push('-vframes', '1');
+      outputOptions.push('-vframes', '1');
     }
 
-    args.push('-f', 'image2pipe');
+    outputOptions.push('-f', 'image2pipe');
 
     /**
      * PNG is significantly slower than JPEG,
      * so we only use it when transparency is needed.
      */
     if (this.transparency) {
-      args.push('-vcodec', 'png');
+      outputOptions.push('-vcodec', 'png');
     } else {
-      args.push('-vcodec', 'mjpeg');
+      outputOptions.push('-vcodec', 'mjpeg');
     }
 
-    args.push('-');
-
-    return args;
+    return {inputOptions, outputOptions};
   }
 
   private createFfmpegProcess(
@@ -141,15 +143,32 @@ export class VideoFrameExtractor {
     filePath: string,
     fps: number,
     codec: string,
-  ) {
-    const args = this.getArgs(filePath, codec, [startTime, toTime], fps);
-    const process = spawn(this.ffmpegPath, args, {
-      stdio: ['ignore', 'pipe', 'inherit'],
-    });
+  ): ffmpeg.FfmpegCommand {
+    const {inputOptions, outputOptions} = this.getArgs(
+      filePath,
+      codec,
+      [startTime, toTime],
+      fps,
+    );
 
-    process.stdout.on('data', this.processData.bind(this));
-    process.on('close', this.handleClose.bind(this));
-    process.on('error', this.handleError.bind(this));
+    const process = ffmpeg(filePath)
+      .setFfmpegPath(this.ffmpegPath)
+      .inputOptions(inputOptions)
+      .outputOptions(outputOptions)
+      .on('start', commandLine => {
+        console.log('FFmpeg process started:', commandLine);
+      })
+      .on('end', () => {
+        this.handleClose(0);
+      })
+      .on('error', err => {
+        this.handleError(err);
+      });
+
+    const ffstream = process.pipe();
+    ffstream.on('data', (data: Buffer) => {
+      this.processData(data);
+    });
 
     return process;
   }
@@ -166,19 +185,35 @@ export class VideoFrameExtractor {
   private createFfmpegProcessToExtractFirstFrame(
     filePath: string,
     codec: string,
-  ) {
-    const args = this.getArgs(filePath, codec, undefined, undefined);
-    const process = spawn(this.ffmpegPath, args, {
-      stdio: ['ignore', 'pipe', 'ignore'],
-    });
+  ): ffmpeg.FfmpegCommand {
+    const {inputOptions, outputOptions} = this.getArgs(
+      filePath,
+      codec,
+      undefined,
+      undefined,
+    );
 
-    process.stdout.on('data', this.processData.bind(this));
-    process.on('close', this.handleClose.bind(this));
-    process.on('error', this.handleError.bind(this));
+    const process = ffmpeg(filePath)
+      .setFfmpegPath(this.ffmpegPath)
+      .inputOptions(inputOptions)
+      .outputOptions(outputOptions)
+      .on('start', commandLine => {
+        console.log('FFmpeg process started:', commandLine);
+      })
+      .on('end', () => {
+        this.handleClose(0);
+      })
+      .on('error', err => {
+        this.handleError(err);
+      });
+
+    const ffstream = process.pipe();
+    ffstream.on('data', (data: Buffer) => {
+      this.processData(data);
+    });
 
     return process;
   }
-
   private processData(data: Buffer) {
     this.buffer = Buffer.concat([this.buffer, data]);
 
@@ -264,21 +299,26 @@ export class VideoFrameExtractor {
 
   private handleError(err: Error) {
     const code = (err as any).code;
+
+    if (this.terminated) {
+      return;
+    }
+
     if (code === 'ENOENT') {
-      console.error(
+      sendEvent(EventName.Error, {error: 'ffmpeg-not-found'});
+      throw new Error(
         'Error: ffmpeg not found. Make sure ffmpeg is installed on your system.',
       );
-      sendEvent(EventName.Error, {error: 'ffmpeg-not-found'});
     } else {
-      console.error(
-        `An ffmpeg error occurred while fetching frames from source video ${this.filePath}:`,
-        err,
-      );
       sendEvent(EventName.Error, {error: 'ffmpeg-error', message: err.message});
+      throw new Error(
+        `An ffmpeg error occurred while fetching frames from source video ${this.filePath}: ${err}`,
+      );
     }
   }
 
   public destroy() {
-    this.process?.kill();
+    this.terminated = true;
+    this.process?.kill('SIGTERM');
   }
 }

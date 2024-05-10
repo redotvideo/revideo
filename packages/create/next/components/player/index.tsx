@@ -31,7 +31,7 @@ function PlayPause({
   setPlaying: (playing: boolean) => void;
 }) {
   return (
-    <button onClick={() => setPlaying(!playing)}>
+    <button className="p-1 z-20" onClick={() => setPlaying(!playing)}>
       {playing ? <PauseButton /> : <PlayButton />}
     </button>
   );
@@ -46,16 +46,42 @@ function Bar({
   duration: number;
   setCurrentTime: (currentTime: number) => void;
 }) {
+  const progressPercentage = (currentTime / duration) * 100;
+
   return (
-    <input
-      type="range"
-      value={currentTime}
-      min={0}
-      max={duration}
-      step={0.01}
-      onChange={event => setCurrentTime(Number(event.target.value))}
-    />
+    <div className="relative flex-1 w-full h-1.5 bg-gray-400 rounded-full overflow-hidden">
+      <div
+        className="absolute top-0 left-0 h-full bg-gray-100"
+        style={{width: `${progressPercentage}%`}}
+      />
+      <input
+        type="range"
+        value={currentTime}
+        min={0}
+        max={duration}
+        step={0.01}
+        className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+        onChange={event => setCurrentTime(Number(event.target.value))}
+      />
+    </div>
   );
+}
+
+function getFormattedTime(
+  timeInSeconds: number,
+  absoluteTimeInSeconds: number,
+) {
+  function toFormattedTime(timeInSeconds: number) {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60)
+      .toString()
+      .padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+
+  return `${toFormattedTime(timeInSeconds)} / ${toFormattedTime(
+    absoluteTimeInSeconds,
+  )}`;
 }
 
 function Controls({
@@ -72,20 +98,23 @@ function Controls({
   setForcedTime: (currentTime: number) => void;
 }) {
   return (
-    <div className="p-1 flex space-x-3 items-center">
-      <PlayPause playing={playing} setPlaying={setPlaying} />
+    <div className="p-4 flex-col space-y-2">
+      <div className="flex space-x-3 items-center">
+        <PlayPause playing={playing} setPlaying={setPlaying} />
+        <span>{getFormattedTime(currentTime, duration)}</span>
+      </div>
       <Bar
         currentTime={currentTime}
         duration={duration}
         setCurrentTime={setForcedTime}
       />
-      <span>{currentTime.toFixed(2)}</span>
     </div>
   );
 }
 
 export function Player() {
   const [playing, setPlaying] = useState(false);
+  const focus = useRef(false);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [forcedTime, setForcedTime] = useState(0);
@@ -100,9 +129,14 @@ export function Player() {
 
   const handleDurationUpdate = (event: Event) => {
     const e = event as CustomEvent;
-    console.log('duration update', e.detail);
-
     setDuration(e.detail);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === 'Space' && focus.current) {
+      event.preventDefault();
+      setPlaying(prevPlaying => !prevPlaying);
+    }
   };
 
   /**
@@ -113,10 +147,12 @@ export function Player() {
 
     playerRef.current?.addEventListener('timeupdate', handleTimeUpdate);
     playerRef.current?.addEventListener('duration', handleDurationUpdate);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       playerRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
       playerRef.current?.removeEventListener('duration', handleDurationUpdate);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -132,9 +168,20 @@ export function Player() {
   }, [forcedTime]);
 
   return (
-    <div className="relative">
-      <div className="absolute inset-0 flex items-center bg-white bg-opacity-10 z-10">
-        <div className="absolute bottom-0">
+    <div
+      className="relative cursor-default focus:outline-none"
+      onFocus={() => (focus.current = true)}
+      onBlur={() => (focus.current = false)}
+      tabIndex={0}
+    >
+      <div className="relative">
+        <revideo-player
+          ref={playerRef}
+          src="/project.js"
+          playing={String(playing)}
+          onClick={() => setPlaying(prev => !prev)}
+        />
+        <div className="absolute bottom-0 w-full transition-opacity duration-200">
           <Controls
             duration={duration}
             playing={playing}
@@ -143,13 +190,6 @@ export function Player() {
             setForcedTime={setForcedTime}
           />
         </div>
-      </div>
-      <div>
-        <revideo-player
-          ref={playerRef}
-          src="/project.js"
-          playing={String(playing)}
-        />
       </div>
     </div>
   );

@@ -18,7 +18,9 @@ Below, we list some common issues with ffmpeg and how to fix them.
 
 ### SIGSEGV (Segmentation Fault) when running Ffmpeg.
 
-If you're on Linux, the ffmpeg version used in Revideo might cause a segmentation fault if you use remote urls for media files instead of local files.
+If you're on Linux, the ffmpeg version used in Revideo might cause a
+segmentation fault if you use remote urls for media files instead of local
+files.
 
 You can normally fix this issue by installing nscd:
 
@@ -26,8 +28,10 @@ You can normally fix this issue by installing nscd:
 sudo apt-get install nscd
 ```
 
-If you want to learn more about the root cause of this issue and its fix, check out [this](https://stackoverflow.com/questions/60528501/ffmpeg-segmentation-fault-with-network-stream-source) Stackoverflow thread,
-
+If you want to learn more about the root cause of this issue and its fix, check
+out
+[this](https://stackoverflow.com/questions/60528501/ffmpeg-segmentation-fault-with-network-stream-source)
+Stackoverflow thread,
 
 ### Using a custom ffmpeg path
 

@@ -92,7 +92,6 @@ export class VideoFrameExtractor {
   }
 
   private getArgs(
-    filePath: string,
     codec: string,
     range?: [number, number],
     fps?: number,
@@ -111,8 +110,6 @@ export class VideoFrameExtractor {
     if (this.transparency && codec === 'vp9') {
       inputOptions.push('-vcodec', 'libvpx-vp9');
     }
-
-    inputOptions.push('-i', filePath);
 
     if (fps) {
       outputOptions.push('-vf', `fps=fps=${fps}`);
@@ -145,7 +142,6 @@ export class VideoFrameExtractor {
     codec: string,
   ): ffmpeg.FfmpegCommand {
     const {inputOptions, outputOptions} = this.getArgs(
-      filePath,
       codec,
       [startTime, toTime],
       fps,
@@ -187,7 +183,6 @@ export class VideoFrameExtractor {
     codec: string,
   ): ffmpeg.FfmpegCommand {
     const {inputOptions, outputOptions} = this.getArgs(
-      filePath,
       codec,
       undefined,
       undefined,
@@ -297,8 +292,8 @@ export class VideoFrameExtractor {
     this.state = code === 0 ? 'done' : 'error';
   }
 
-  private handleError(err: Error) {
-    const code = (err as any).code;
+  private async handleError(err: any) {
+    const code = err.code;
 
     if (this.terminated) {
       return;
@@ -309,8 +304,19 @@ export class VideoFrameExtractor {
       throw new Error(
         'Error: ffmpeg not found. Make sure ffmpeg is installed on your system.',
       );
+    } else if (err.message.includes('SIGSEGV')) {
+      sendEvent(EventName.Error, {
+        error: 'ffmpeg-sigsegv',
+        message: err.message,
+      });
+      throw new Error(
+        `Error: Segmentation fault when running ffmpeg. This is a common issue on Linux, you might be able to fix it by installing nscd ('sudo apt-get install nscd'). For more information, see https://docs.re.video/common-issues/ffmpeg/`,
+      );
     } else {
-      sendEvent(EventName.Error, {error: 'ffmpeg-error', message: err.message});
+      await sendEvent(EventName.Error, {
+        error: 'ffmpeg-error',
+        message: err.message,
+      });
       throw new Error(
         `An ffmpeg error occurred while fetching frames from source video ${this.filePath}: ${err}`,
       );

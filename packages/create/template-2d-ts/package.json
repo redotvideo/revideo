@@ -9,14 +9,14 @@
     "render": "tsc && node dist/render.js"
   },
   "dependencies": {
-    "@revideo/core": "^0.3.2",
-    "@revideo/2d": "^0.3.2",
-    "@revideo/renderer": "^0.3.2",
-    "@revideo/vite-plugin": "^0.3.2",
-    "@revideo/ffmpeg": "^0.3.2"
+    "@revideo/core": "^0.2.13",
+    "@revideo/2d": "^0.2.13",
+    "@revideo/renderer": "^0.2.13",
+    "@revideo/vite-plugin": "^0.2.13",
+    "@revideo/ffmpeg": "^0.2.13"
   },
   "devDependencies": {
-    "@revideo/ui": "^0.3.2",
+    "@revideo/ui": "^0.2.13",
     "typescript": "^5.2.2",
     "vite": "^4.5"
   }

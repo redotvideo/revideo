@@ -1,4 +1,5 @@
-import {Project, Renderer, Vector2} from '@revideo/core';
+import type {Project} from '@revideo/core';
+import {Renderer} from '@revideo/core';
 
 declare global {
   interface Window {
@@ -19,8 +20,6 @@ export const render = async (
   startInSeconds: number,
   endInSeconds: number,
   hiddenFolderId: string,
-  videoWidth: number,
-  videoHeight: number,
 ) => {
   try {
     const renderer = new Renderer(project);
@@ -40,21 +39,15 @@ export const render = async (
         totalNumOfWorkers,
       );
 
-    const renderSettings = {
+    await renderer.render({
       ...project.meta.getFullRenderingSettings(),
       name: project.name,
       hiddenFolderId: hiddenFolderId,
       range: [
         renderer.frameToTime(firstWorkerFrame),
         renderer.frameToTime(lastWorkerFrame),
-      ] as [number, number],
-    };
-
-    if (videoWidth && videoHeight) {
-      renderSettings.size = new Vector2({x: videoWidth, y: videoHeight});
-    }
-
-    await renderer.render(renderSettings);
+      ],
+    });
     window.onRenderComplete();
   } catch (e: any) {
     window.onRenderFailed(e.message);

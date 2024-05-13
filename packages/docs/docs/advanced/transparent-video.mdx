@@ -14,13 +14,6 @@ These files usually have a `.webm` extension.
 You can use command line tools such as `ffmpeg` to re-encode videos from one
 codec to another.
 
-To enable transparency for your source video, you need to set the `transparency`
-property of the `<Video/>` component to `true`.
-
-```tsx
-<Video src={'/output_with_alpha.webm'} play={true} transparency={true} />
-```
-
 **Note:** There are other video codes that support transparency, such as `HEVC`,
 which might show up correctly in the preview through the ui or inside the
 player, which will lose their transparency when rendering.

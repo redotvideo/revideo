@@ -21,10 +21,6 @@ export interface VideoProps extends MediaProps {
    * {@inheritDoc Video.smoothing}
    */
   smoothing?: SignalValue<boolean>;
-  /**
-   * {@inheritDoc Video.transparency}
-   */
-  transparency?: SignalValue<boolean>;
 }
 
 class ImageCommunication {
@@ -56,7 +52,6 @@ class ImageCommunication {
     time: number,
     duration: number,
     fps: number,
-    transparency: boolean,
   ) {
     return new Promise<HTMLImageElement>((resolve, reject) => {
       if (!import.meta.hot) {
@@ -68,8 +63,7 @@ class ImageCommunication {
         const image = new Image();
 
         const uint8Array = new Uint8Array(event.data.frame.data);
-        const type = transparency ? 'image/png' : 'image/jpeg';
-        const blob = new Blob([uint8Array], {type});
+        const blob = new Blob([uint8Array], {type: 'image/png'});
         const url = URL.createObjectURL(blob);
 
         image.src = url;
@@ -88,7 +82,6 @@ class ImageCommunication {
           startTime: time,
           duration,
           fps,
-          transparency,
         },
       });
     });
@@ -120,19 +113,6 @@ export class Video extends Media {
   @initial(true)
   @signal()
   public declare readonly smoothing: SimpleSignal<boolean, this>;
-
-  /**
-   * Whether the video should be rendered as partially transparent.
-   *
-   * @remarks
-   * When enabled, the video frames will be extracted as PNGs with an alpha
-   * channel. This is significantly slower than using JPEGs which is the default.
-   *
-   * @defaultValue false
-   */
-  @initial(false)
-  @signal()
-  public declare readonly transparency: SimpleSignal<boolean, this>;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
 
@@ -280,7 +260,6 @@ export class Video extends Media {
       time,
       duration,
       fps,
-      this.transparency(),
     );
     this.lastFrame = frame;
     this.lastTime = time;

@@ -1,4 +1,3 @@
-import {FfmpegSettings, ffmpegSettings} from '@revideo/ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
 import {Plugin} from 'vite';
@@ -11,17 +10,7 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
-export function rendererPlugin(
-  params?: Record<string, unknown>,
-  customFfmpegSettings?: FfmpegSettings,
-): Plugin {
-  if (customFfmpegSettings?.ffmpegPath) {
-    ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);
-  }
-  if (customFfmpegSettings?.ffmpegLogLevel) {
-    ffmpegSettings.setLogLevel(customFfmpegSettings.ffmpegLogLevel);
-  }
-
+export function rendererPlugin(params?: Record<string, unknown>): Plugin {
   return {
     name: 'revideo-renderer-plugin',
 
@@ -37,22 +26,17 @@ export function rendererPlugin(
             // Check range of frames to render
             const url = new URL(window.location.href);
 
-            const fileNameEscaped = url.searchParams.get('fileName');
+            const fileName = url.searchParams.get('fileName');
             const workerId = url.searchParams.get('workerId');
             const totalNumOfWorkers = url.searchParams.get('totalNumOfWorkers');
             const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
             const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
-            const hiddenFolderIdEscaped = url.searchParams.get('hiddenFolderId');
-            const videoWidth = parseInt(url.searchParams.get('videoWidth'));
-            const videoHeight = parseInt(url.searchParams.get('videoHeight'));
-
-            const fileName = decodeURIComponent(fileNameEscaped);
-            const hiddenFolderId = decodeURIComponent(hiddenFolderIdEscaped);
+            const hiddenFolderId = url.searchParams.get('hiddenFolderId');
 
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;
 
-            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds, hiddenFolderId, videoWidth, videoHeight);
+            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds, hiddenFolderId);
             `;
       }
     },

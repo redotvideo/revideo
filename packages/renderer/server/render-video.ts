@@ -51,6 +51,7 @@ interface RenderVideoSettings {
   puppeteer?: BrowserLaunchArgumentOptions;
   workers?: number;
   dimensions?: [number, number];
+  logProgress?: boolean;
 }
 
 /**
@@ -94,7 +95,27 @@ async function renderVideoOnPage(
   server: ViteDevServer,
   url: string,
   progressCallback?: (worker: number, progress: number) => void,
+  logProgress?: boolean,
 ) {
+  const progressTracker = new Map<number, number>();
+
+  function printProgress() {
+    let line = '';
+    for (const [key, value] of progressTracker.entries()) {
+      line += `Render progress, worker ${key}: ${(value * 100).toFixed(0)}% `;
+    }
+
+    if (line === '') {
+      return;
+    }
+
+    console.log(line);
+  }
+
+  const interval = setInterval(() => {
+    printProgress();
+  }, 1000);
+
   const page = await browser.newPage();
   if (!server.httpServer) {
     throw new Error('HTTP server is not initialized');
@@ -121,17 +142,22 @@ async function renderVideoOnPage(
     if (progressCallback) {
       progressCallback(id, progress);
     }
+    if (logProgress) {
+      trackProgress(progressTracker, id, progress);
+    }
   });
 
   const renderingComplete = new Promise<void>((resolve, reject) => {
     page.exposeFunction('onRenderComplete', async () => {
       await Promise.all([browser.close(), server.close()]);
+      clearInterval(interval);
       resolve();
     });
 
     page.exposeFunction('onRenderFailed', async (errorMessage: string) => {
       await Promise.all([browser.close(), server.close()]);
       console.error('Rendering failed:', errorMessage);
+      clearInterval(interval);
       reject(new Error(errorMessage));
     });
   });
@@ -173,7 +199,14 @@ async function initializeBrowserAndStartRendering(
     settings.dimensions,
   );
 
-  return renderVideoOnPage(i, browser, server, url, progressCallback);
+  return renderVideoOnPage(
+    i,
+    browser,
+    server,
+    url,
+    progressCallback,
+    settings.logProgress,
+  );
 }
 
 /**
@@ -313,3 +346,11 @@ export const renderVideo = async (
 
   return `output/${projectName}.mp4`;
 };
+
+function trackProgress(
+  tracker: Map<number, number>,
+  id: number,
+  progress: number,
+) {
+  tracker.set(id, progress);
+}

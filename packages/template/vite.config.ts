@@ -30,7 +30,7 @@ export default defineConfig({
       ],
     }),
     motionCanvas({
-      buildForEditor: true,
+      buildForEditor: false,
     }),
   ],
   build: {

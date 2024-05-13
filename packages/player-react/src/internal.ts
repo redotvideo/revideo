@@ -130,9 +130,7 @@ class MotionCanvasPlayer extends HTMLElement {
 
     let project: Project;
     try {
-      const promise = import(
-        /* webpackIgnore: true */ /* @vite-ignore */ source
-      );
+      const promise = import(/* webpackIgnore: true */ source);
       const delay = new Promise(resolve => setTimeout(resolve, 200));
       await Promise.any([delay, promise]);
       this.setState(State.Loading);

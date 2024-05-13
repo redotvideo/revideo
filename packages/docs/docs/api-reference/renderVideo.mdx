@@ -13,7 +13,7 @@ process. It uses a headless browser to achieve this.
 ```tsx
 import {renderVideo} from '@revideo/renderer';
 
-function printProgress(id: number, progress: number) {
+function logProgressToConsole(id: number, progress: number) {
   console.log(`[${id}] Progress: ${(progress * 100).toFixed(1)}%`);
 }
 

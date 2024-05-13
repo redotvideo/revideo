@@ -1,4 +1,5 @@
 import * as pathToFfmpeg from 'ffmpeg-static';
+import * as pathToFfprobe from 'ffprobe-static';
 
 const ffmpegLogLevels = [
   'quiet',
@@ -16,19 +17,27 @@ export type LogLevel = (typeof ffmpegLogLevels)[number];
 
 export type FfmpegSettings = {
   ffmpegPath?: string;
+  ffprobePath?: string;
   ffmpegLogLevel?: LogLevel;
 };
 
 class FfmpegSettingState {
   private ffmpegPath: string;
+  private ffprobePath: string;
   private logLevel: LogLevel;
 
   public constructor() {
     this.ffmpegPath = pathToFfmpeg as unknown as string;
+    this.ffprobePath = pathToFfprobe.path as unknown as string;
 
     // Use the FFMPEG_PATH environment variable if it is set
     if (process.env.FFMPEG_PATH) {
       this.ffmpegPath = process.env.FFMPEG_PATH;
+    }
+
+    // Use the FFPROBE_PATH environment variable if it is set
+    if (process.env.FFPROBE_PATH) {
+      this.ffprobePath = process.env.FFPROBE_PATH;
     }
 
     this.logLevel = 'error';
@@ -48,6 +57,14 @@ class FfmpegSettingState {
 
   public setFfmpegPath(ffmpegPath: string) {
     this.ffmpegPath = ffmpegPath;
+  }
+
+  public getFfprobePath() {
+    return this.ffprobePath;
+  }
+
+  public setFfprobePath(ffprobePath: string) {
+    this.ffprobePath = ffprobePath;
   }
 
   public getLogLevel() {

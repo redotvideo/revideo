@@ -3,6 +3,10 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {v4 as uuidv4} from 'uuid';
+import {ffmpegSettings} from './settings';
+
+ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
+ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
 
 export async function concatenateMedia(
   files: string[],

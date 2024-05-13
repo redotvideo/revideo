@@ -18,6 +18,9 @@ export function rendererPlugin(
   if (customFfmpegSettings?.ffmpegPath) {
     ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);
   }
+  if (customFfmpegSettings?.ffprobePath) {
+    ffmpegSettings.setFfprobePath(customFfmpegSettings.ffprobePath);
+  }
   if (customFfmpegSettings?.ffmpegLogLevel) {
     ffmpegSettings.setLogLevel(customFfmpegSettings.ffmpegLogLevel);
   }

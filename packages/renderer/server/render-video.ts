@@ -1,4 +1,5 @@
 import {
+  FfmpegSettings,
   concatenateMedia,
   createSilentAudioFile,
   doesFileExist,
@@ -24,8 +25,18 @@ function buildUrl(
   totalNumOfWorkers: number,
   range: [number, number] = [0, Infinity],
   hiddenFolderId: string,
+  dimensions?: [number, number],
 ) {
-  return `http://localhost:${port}/render?fileName=${fileName}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderId}`;
+  const fileNameEscaped = encodeURIComponent(fileName);
+  const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
+  const dimensionsString = dimensions
+    ? `&videoWidth=${dimensions[0]}&videoHeight=${dimensions[1]}`
+    : '';
+
+  return (
+    `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderIdEscaped}` +
+    dimensionsString
+  );
 }
 
 interface RenderVideoSettings {
@@ -35,8 +46,11 @@ interface RenderVideoSettings {
   // Start and end in seconds
   range?: [number, number];
 
+  ffmpeg?: FfmpegSettings;
+
   puppeteer?: BrowserLaunchArgumentOptions;
   workers?: number;
+  dimensions?: [number, number];
 }
 
 /**
@@ -45,17 +59,17 @@ interface RenderVideoSettings {
 async function initBrowserAndServer(
   fixedPort: number,
   resolvedConfigPath: string,
+  settings: RenderVideoSettings,
   params?: Record<string, unknown>,
-  puppeteerOptions?: BrowserLaunchArgumentOptions,
 ) {
   const [browser, server] = await Promise.all([
-    puppeteer.launch({headless: true, ...puppeteerOptions}),
+    puppeteer.launch({headless: true, ...settings.puppeteer}),
     createServer({
       configFile: resolvedConfigPath,
       server: {
         port: fixedPort,
       },
-      plugins: [rendererPlugin(params)],
+      plugins: [rendererPlugin(params, settings.ffmpeg)],
     }).then(server => server.listen()),
   ]);
 
@@ -145,8 +159,8 @@ async function initializeBrowserAndStartRendering(
   const {browser, server} = await initBrowserAndServer(
     port,
     resolvedConfigPath,
+    settings,
     params,
-    settings.puppeteer,
   );
 
   const url = buildUrl(
@@ -156,6 +170,7 @@ async function initializeBrowserAndStartRendering(
     numOfWorkers,
     settings.range,
     hiddenFolderId,
+    settings.dimensions,
   );
 
   return renderVideoOnPage(i, browser, server, url, progressCallback);

@@ -1,15 +1,14 @@
 import type {AssetInfo, RendererResult, RendererSettings} from '@revideo/core';
 import {EventName, sendEvent} from '@revideo/telemetry';
-import * as pathToFfmpeg from 'ffmpeg-static';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {ImageStream} from './image-stream';
+import {ffmpegSettings} from './settings';
 import {checkForAudioStream, getSampleRate, mergeAudioWithVideo} from './utils';
 
 const SAMPLE_RATE = 48000;
-ffmpeg.setFfmpegPath((pathToFfmpeg as unknown as string) || 'ffmpeg');
 
 export interface FFmpegExporterSettings extends RendererSettings {
   audio?: string;
@@ -50,6 +49,8 @@ export class FFmpegExporterServer {
     );
     this.audioFilenames = [];
     this.stream = new ImageStream();
+
+    ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     this.command = ffmpeg();
 
     // Input image sequence

@@ -1,4 +1,3 @@
-import {spawn} from 'child_process';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -139,34 +138,17 @@ export async function getSampleRate(filePath: string): Promise<number> {
 
 export async function getVideoCodec(filePath: string) {
   return new Promise<string>((resolve, reject) => {
-    const process = spawn('ffprobe', [
-      '-v',
-      'error',
-      '-select_streams',
-      'v:0',
-      '-show_entries',
-      'stream=codec_name',
-      '-of',
-      'default=nokey=1:noprint_wrappers=1',
-      filePath,
-    ]);
-
-    let output = '';
-
-    process.stdout.on('data', (data: Buffer) => {
-      output += data.toString().trim();
-    });
-
-    process.on('close', (code: number) => {
-      if (code === 0) {
-        resolve(output);
-      } else {
-        reject(new Error(`ffprobe exited with code ${code}`));
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        reject(err);
+        return;
       }
-    });
-
-    process.on('error', (error: Error) => {
-      reject(error);
+      const videoStream = metadata.streams.find(s => s.codec_type === 'video');
+      if (videoStream && videoStream.codec_name) {
+        resolve(videoStream.codec_name);
+      } else {
+        reject(new Error('No video stream found'));
+      }
     });
   });
 }

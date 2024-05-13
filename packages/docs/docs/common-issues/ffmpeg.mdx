@@ -1,0 +1,44 @@
+---
+sidebar_position: 1
+slug: /common-issues/ffmpeg
+---
+
+# FFmpeg Issues
+
+Ffmpeg is a powerful tool for video editing. Revideo uses FFmpeg for multiple
+tasks, such as concatinating frames into a video, and audio manipulation among
+other things.
+
+Revideo uses FFmpeg v6. To make installation easier, we ship a small version of
+FFmpeg with Revideo. It is automatically downloaded into the `node_modules`
+folder. This means that you do not need to install FFmpeg globally on your
+machine.
+
+:::info
+
+We're currently investigating issues with FFmpeg on Linux (specifically Debian).
+If you're having issues with FFmpeg, you can install your own version globally
+on your machine using conventional methods and then set the ffmpeg path to a
+custom path. Instructions are below. Make sure to install FFmpeg v6.
+
+:::
+
+If you want to use a custom version of FFmpeg, you can either set the
+environment variable `FFMPEG_PATH` to the path of your FFmpeg binary, or you can
+set the path to ffmpeg in the render function. Here is an example:
+
+```tsx
+import {renderVideo} from '@revideo/renderer';
+
+// ...
+
+await renderVideo('./vite.config.ts', undefined, undefined, {
+  ffmpeg: {
+    // Points to the global ffmpeg installation,
+    ffmpegPath: 'ffmpeg',
+  },
+});
+```
+
+See the [renderVideo](/renderer/renderVideo) API documentation for more
+information.

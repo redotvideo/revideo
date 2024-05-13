@@ -41,7 +41,7 @@ export default makeScene2D(function* (view) {
 
   view.add(
     <Txt fontSize={1} textWrap={true} ref={textRef} fill={'white'}>
-      Hello {name}!
+      Hello {name()}!
     </Txt>,
   );
 

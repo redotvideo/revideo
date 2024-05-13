@@ -94,11 +94,10 @@ async function renderVideoOnPage(
   browser: Browser,
   server: ViteDevServer,
   url: string,
+  progressTracker: Map<number, number>,
   progressCallback?: (worker: number, progress: number) => void,
   logProgress?: boolean,
 ) {
-  const progressTracker = new Map<number, number>();
-
   function printProgress() {
     let line = '';
     for (const [key, value] of progressTracker.entries()) {
@@ -181,6 +180,7 @@ async function initializeBrowserAndStartRendering(
   progressCallback?: (worker: number, progress: number) => void,
 ) {
   const port = 9000 + i;
+  const progressTracker = new Map<number, number>();
 
   const {browser, server} = await initBrowserAndServer(
     port,
@@ -204,6 +204,7 @@ async function initializeBrowserAndStartRendering(
     browser,
     server,
     url,
+    progressTracker,
     progressCallback,
     settings.logProgress,
   );

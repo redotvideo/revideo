@@ -5,9 +5,6 @@ import * as path from 'path';
 import {v4 as uuidv4} from 'uuid';
 import {ffmpegSettings} from './settings';
 
-ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
-ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
-
 export async function concatenateMedia(
   files: string[],
   outputFile: string,
@@ -19,7 +16,7 @@ export async function concatenateMedia(
   await fs.promises.writeFile(tempFile, fileContent);
 
   return new Promise((resolve, reject) => {
-    // Return a new promise
+    ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     const ffmpegCommand = ffmpeg();
 
     ffmpegCommand
@@ -43,6 +40,8 @@ export async function createSilentAudioFile(
   filePath: string,
   duration: number,
 ) {
+  ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
+
   return new Promise((resolve, reject) => {
     ffmpeg()
       .addInput(`anullsrc=channel_layout=stereo:sample_rate=${48000}`)
@@ -60,6 +59,8 @@ export async function createSilentAudioFile(
 }
 
 export async function getVideoDuration(filePath: string): Promise<number> {
+  ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
+
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, metadata) => {
       if (err) {
@@ -90,6 +91,8 @@ export async function mergeAudioWithVideo(
   videoPath: string,
   outputPath: string,
 ): Promise<void> {
+  ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
+
   return new Promise((resolve, reject) => {
     ffmpeg()
       .input(videoPath)
@@ -107,6 +110,8 @@ export async function mergeAudioWithVideo(
 }
 
 export async function checkForAudioStream(file: string): Promise<boolean> {
+  ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
+
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(file, (err, metadata) => {
       if (err) {
@@ -124,6 +129,8 @@ export async function checkForAudioStream(file: string): Promise<boolean> {
 }
 
 export async function getSampleRate(filePath: string): Promise<number> {
+  ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
+
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, metadata) => {
       if (err) {
@@ -141,6 +148,8 @@ export async function getSampleRate(filePath: string): Promise<number> {
 }
 
 export async function getVideoCodec(filePath: string) {
+  ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
+
   return new Promise<string>((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, metadata) => {
       if (err) {

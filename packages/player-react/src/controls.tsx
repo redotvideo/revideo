@@ -59,7 +59,7 @@ export function Controls({
   setForcedTime: (currentTime: number) => void;
 }) {
   return (
-    <div className="p-4 flex-col space-y-2">
+    <div className="text-white p-4 flex-col space-y-2 bg-gradient-to-t from-black to-transparent">
       <div className="flex space-x-3 items-center">
         <PlayPause playing={playing} setPlaying={setPlaying} />
         <span>{getFormattedTime(currentTime, duration)}</span>

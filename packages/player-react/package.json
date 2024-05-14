@@ -7,14 +7,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify"
   },
   "keywords": [],
   "author": "revideo",
   "license": "MIT",
   "devDependencies": {
     "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.0"
+    "@types/react-dom": "^18.3.0",
+    "tailwindcss": "^3.4.3"
   },
   "peerDependencies": {
     "react": "^17.0.2",

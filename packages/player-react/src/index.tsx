@@ -1,6 +1,7 @@
 'use client';
 import {ComponentProps, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
+import './styles.css';
 import {shouldShowControls} from './utils';
 
 interface RevideoPlayerProps {

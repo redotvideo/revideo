@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import {download} from './download';
 import {createHotReloader, player} from './player';
@@ -7,11 +8,11 @@ export function createServer(hotReloadDir?: string) {
   const app = express();
 
   app.use(express.json());
+  app.use(cors());
 
   app.post('/render', render);
   app.get('/download/:projectName', download);
-
-  app.use('/player/project.js', player);
+  app.get('/player/:file', player);
 
   if (hotReloadDir) {
     createHotReloader(hotReloadDir);

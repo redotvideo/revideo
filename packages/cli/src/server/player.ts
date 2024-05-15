@@ -53,7 +53,9 @@ export async function buildProject() {
  * @param dir - Directory to watch for changes.
  */
 export async function createHotReloader(dir: string) {
-  const watcher = watch(dir);
+  const watcher = watch(dir, {
+    ignored: ['**/*.meta'],
+  });
 
   watcher.on('change', async path => {
     const rebuildingMessage = fileChangedMessage(path);

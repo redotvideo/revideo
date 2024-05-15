@@ -35,7 +35,7 @@ enum State {
   Error = 'error',
 }
 
-class MotionCanvasPlayer extends HTMLElement {
+class RevideoPlayer extends HTMLElement {
   public static get observedAttributes() {
     return [
       'src',
@@ -46,13 +46,7 @@ class MotionCanvasPlayer extends HTMLElement {
       'quality',
       'width',
       'height',
-      'auto',
     ];
-  }
-
-  private get auto() {
-    const attr = this.getAttribute('auto');
-    return !!attr;
   }
 
   private get quality() {
@@ -165,9 +159,6 @@ class MotionCanvasPlayer extends HTMLElement {
 
   public attributeChangedCallback(name: string, _: any, newValue: any) {
     switch (name) {
-      case 'auto':
-        this.setPlaying(this.playing);
-        break;
       case 'src':
         this.updateSource(newValue);
         break;
@@ -279,5 +270,5 @@ class MotionCanvasPlayer extends HTMLElement {
 }
 
 if (!customElements.get(ID)) {
-  customElements.define(ID, MotionCanvasPlayer);
+  customElements.define(ID, RevideoPlayer);
 }

@@ -13,7 +13,6 @@ interface RevideoPlayerProps {
   // Currently not used.
   width?: number;
   height?: number;
-  auto?: boolean;
   quality?: number;
 }
 

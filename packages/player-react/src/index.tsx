@@ -9,8 +9,6 @@ interface RevideoPlayerProps {
   playing?: string;
   variables?: string;
   looping?: string;
-
-  // Currently not used.
   width?: number;
   height?: number;
   quality?: number;
@@ -34,19 +32,29 @@ interface PlayerProps {
   currentTime?: number;
   looping?: boolean;
 
+  width?: number;
+  height?: number;
+  quality?: number;
+
   onDurationChange?: (duration: number) => void;
   onTimeUpdate?: (currentTime: number) => void;
 }
 
 export function Player({
   src,
+
+  controls = true,
+  variables = {},
   playing = false,
   currentTime = 0,
+  looping = true,
+
+  width = undefined,
+  height = undefined,
+  quality = undefined,
+
   onDurationChange = () => {},
   onTimeUpdate = () => {},
-  controls = true,
-  looping = true,
-  variables = {},
 }: PlayerProps) {
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
@@ -147,6 +155,9 @@ export function Player({
           onClick={() => setPlaying(prev => !prev)}
           variables={JSON.stringify(variables)}
           looping={looping ? 'true' : 'false'}
+          width={width}
+          height={height}
+          quality={quality}
         />
         <div
           className={`absolute bottom-0 w-full transition-opacity duration-200 ${

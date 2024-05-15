@@ -40,12 +40,13 @@ class MotionCanvasPlayer extends HTMLElement {
     return [
       'src',
       'playing',
+      'variables',
+      'looping',
 
       'quality',
       'width',
       'height',
       'auto',
-      'variables',
     ];
   }
 
@@ -93,6 +94,7 @@ class MotionCanvasPlayer extends HTMLElement {
 
   private time: number = 0;
   private duration: number = 0; // in frames
+  private looping = true;
 
   public constructor() {
     super();
@@ -144,6 +146,7 @@ class MotionCanvasPlayer extends HTMLElement {
     this.defaultSettings = project.meta.getFullRenderingSettings();
     const player = new Player(project, {fps: 30});
     player.setVariables(this.variables);
+    player.toggleLoop(this.looping);
 
     this.player?.onRender.unsubscribe(this.render);
     this.player?.onFrameChanged.unsubscribe(this.handleFrameChanged);
@@ -151,9 +154,6 @@ class MotionCanvasPlayer extends HTMLElement {
     this.player?.deactivate();
     this.project = project;
     this.player = player;
-
-    // TODO: remove
-    console.log('fps', this.player.playback.fps);
 
     this.updateSettings();
     this.player.onRender.subscribe(this.render);
@@ -174,14 +174,20 @@ class MotionCanvasPlayer extends HTMLElement {
       case 'playing':
         this.setPlaying(newValue === 'true');
         break;
+      case 'variables':
+        this.player?.setVariables(this.variables);
+        this.player?.requestSeek(this.player.playback.frame);
+        this.player?.playback.reload();
+        break;
+      case 'looping':
+        this.looping = newValue === 'true';
+        this.player?.toggleLoop(newValue === 'true');
+        break;
       case 'quality':
       case 'width':
       case 'height':
         this.updateSettings();
         break;
-      case 'variables':
-        this.player?.setVariables(this.variables);
-        this.player?.requestSeek(this.player.playback.frame); // reseek to update variables immediately
     }
   }
 

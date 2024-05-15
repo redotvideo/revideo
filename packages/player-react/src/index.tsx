@@ -7,13 +7,14 @@ import {shouldShowControls} from './utils';
 interface RevideoPlayerProps {
   src: string;
   playing?: string;
+  variables?: string;
+  looping?: string;
 
   // Currently not used.
   width?: number;
   height?: number;
   auto?: boolean;
   quality?: number;
-  variables?: string;
 }
 
 declare global {
@@ -27,10 +28,12 @@ declare global {
 
 interface PlayerProps {
   src: string;
-  controls?: boolean;
 
+  controls?: boolean;
+  variables?: Record<string, any>;
   playing?: boolean;
   currentTime?: number;
+  looping?: boolean;
 
   onDurationChange?: (duration: number) => void;
   onTimeUpdate?: (currentTime: number) => void;
@@ -43,6 +46,8 @@ export function Player({
   onDurationChange = () => {},
   onTimeUpdate = () => {},
   controls = true,
+  looping = true,
+  variables = {},
 }: PlayerProps) {
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
@@ -59,6 +64,16 @@ export function Player({
   useEffect(() => {
     setPlaying(playing);
   }, [playing]);
+
+  /**
+   * Sync the current time with the player's own state.
+   */
+  useEffect(() => {
+    const diff = Math.abs(currentTime - currentTimeState);
+    if (diff > 0.05) {
+      setForcedTime(currentTime);
+    }
+  }, [currentTime]);
 
   /**
    * Receives the current time of the video from the player.
@@ -131,6 +146,8 @@ export function Player({
           src={src}
           playing={String(playingState)}
           onClick={() => setPlaying(prev => !prev)}
+          variables={JSON.stringify(variables)}
+          looping={looping ? 'true' : 'false'}
         />
         <div
           className={`absolute bottom-0 w-full transition-opacity duration-200 ${

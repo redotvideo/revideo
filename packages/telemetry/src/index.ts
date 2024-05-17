@@ -6,6 +6,10 @@ const Client = new PostHog('phc_YpKoFD7smPe4SXRtVyMW766uP9AjUwnuRJ8hh2EJcVv', {
   host: 'https://eu.posthog.com',
 });
 
+process.on('beforeExit', async () => {
+  await Client.shutdown();
+});
+
 export enum EventName {
   RenderStarted = 'revideo-render-started',
   ServerStarted = 'revideo-server-started',

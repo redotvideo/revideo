@@ -6,7 +6,7 @@ slug: /common-issues/ffmpeg
 # FFmpeg Issues
 
 Ffmpeg is a powerful tool for video editing. Revideo uses FFmpeg for multiple
-tasks, such as concatinating frames into a video, and audio manipulation among
+tasks, such as concatenating frames into a video, and audio manipulation among
 other things.
 
 Revideo uses FFmpeg v6. To make installation easier, we ship a small version of
@@ -14,14 +14,26 @@ FFmpeg with Revideo. It is automatically downloaded into the `node_modules`
 folder. This means that you do not need to install FFmpeg globally on your
 machine.
 
-:::info
+Below, we list some common issues with ffmpeg and how to fix them.
 
-We're currently investigating issues with FFmpeg on Linux (specifically Debian).
-If you're having issues with FFmpeg, you can install your own version globally
-on your machine using conventional methods and then set the ffmpeg path to a
-custom path. Instructions are below. Make sure to install FFmpeg v6.
+### SIGSEGV (Segmentation Fault) when running Ffmpeg.
 
-:::
+If you're on Linux, the ffmpeg version used in Revideo might cause a
+segmentation fault if you use remote urls for media files instead of local
+files.
+
+You can normally fix this issue by installing nscd:
+
+```
+sudo apt-get install nscd
+```
+
+If you want to learn more about the root cause of this issue and its fix, check
+out
+[this](https://stackoverflow.com/questions/60528501/ffmpeg-segmentation-fault-with-network-stream-source)
+Stackoverflow thread,
+
+### Using a custom ffmpeg path
 
 If you want to use a custom version of FFmpeg, you can either set the
 environment variable `FFMPEG_PATH` to the path of your FFmpeg binary, or you can

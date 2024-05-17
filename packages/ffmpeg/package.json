@@ -19,9 +19,11 @@
     "@revideo/core": "0.3.2",
     "@revideo/telemetry": "0.3.2",
     "ffmpeg-static": "^5.2.0",
+    "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2"
   },
   "devDependencies": {
+    "@types/ffprobe-static": "^2.0.3",
     "@types/fluent-ffmpeg": "^2.1.21"
   }
 }

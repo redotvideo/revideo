@@ -133,7 +133,9 @@ async function parsePlugin(
       if (version) {
         url += `?v=${version}`;
       }
-      plugin = (await import(/* @vite-ignore */ url)).default() as Plugin;
+      plugin = (
+        await import(/* webpackIgnore: true */ /* @vite-ignore */ url)
+      ).default() as Plugin;
     } catch (e: any) {
       console.error(e);
       logger.error({

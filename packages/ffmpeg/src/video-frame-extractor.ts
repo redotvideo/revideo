@@ -159,6 +159,12 @@ export class VideoFrameExtractor {
       })
       .on('error', err => {
         this.handleError(err);
+      })
+      .on('stderr', stderrLine => {
+        console.log(stderrLine);
+      })
+      .on('stdout', stderrLine => {
+        console.log(stderrLine);
       });
 
     const ffstream = process.pipe();
@@ -200,6 +206,12 @@ export class VideoFrameExtractor {
       })
       .on('error', err => {
         this.handleError(err);
+      })
+      .on('stderr', stderrLine => {
+        console.log(stderrLine);
+      })
+      .on('stdout', stderrLine => {
+        console.log(stderrLine);
       });
 
     const ffstream = process.pipe();

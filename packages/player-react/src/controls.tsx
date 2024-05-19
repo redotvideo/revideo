@@ -27,7 +27,7 @@ function Timeline({
   const progressPercentage = (currentTime / duration) * 100;
 
   return (
-    <div className="p-relative p-flex-1 p-w-full p-h-1.5 p-bg-gray-400 p-rounded-full p-overflow-hidden">
+    <div className="p-relative p-flex-1 p-w-full p-h-1.5 p-bg-gray-300 p-rounded-full p-overflow-hidden">
       <div
         className="p-absolute p-top-0 p-left-0 p-h-full p-bg-gray-100"
         style={{width: `${progressPercentage}%`}}
@@ -59,7 +59,7 @@ export function Controls({
   setForcedTime: (currentTime: number) => void;
 }) {
   return (
-    <div className="p-text-white p-p-4 p-flex-col p-space-y-2 p-bg-gradient-to-t p-from-black p-to-transparent">
+    <div className="p-text-white p-p-4 p-flex-col p-space-y-2 p-bg-gradient-to-t p-from-gray-500 p-to-transparent">
       <div className="p-flex p-space-x-3 p-items-center">
         <PlayPause playing={playing} setPlaying={setPlaying} />
         <span>{getFormattedTime(currentTime, duration)}</span>

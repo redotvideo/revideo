@@ -251,7 +251,7 @@ export class FFmpegExporterServer {
 
       command
         .complexFilter([
-          `amix=inputs=${this.audioFilenames.length}:duration=longest`,
+          `amix=inputs=${this.audioFilenames.length}:duration=longest:normalize=0`,
         ])
         .outputOptions(['-c:a', 'pcm_s16le'])
         .on('end', () => {

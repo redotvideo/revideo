@@ -52,7 +52,6 @@ export interface RenderVideoSettings {
   workers?: number;
   dimensions?: [number, number];
   logProgress?: boolean;
-  noMerge?: boolean;
 }
 
 /**
@@ -244,7 +243,6 @@ async function concatenateAudioAndVideoFiles(
   projectName: string,
   audioFiles: string[],
   videoFiles: string[],
-  noMerge: boolean,
 ) {
   await concatenateMedia(
     videoFiles,
@@ -254,13 +252,11 @@ async function concatenateAudioAndVideoFiles(
     audioFiles,
     path.join(process.cwd(), `output/${projectName}-audio.wav`),
   );
-  if (!noMerge) {
-    await mergeAudioWithVideo(
-      path.join(process.cwd(), `output/${projectName}-audio.wav`),
-      path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
-      path.join(process.cwd(), `output/${projectName}.mp4`),
-    );
-  }
+  await mergeAudioWithVideo(
+    path.join(process.cwd(), `output/${projectName}-audio.wav`),
+    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
+    path.join(process.cwd(), `output/${projectName}.mp4`),
+  );
 }
 
 /**
@@ -270,7 +266,6 @@ async function cleanup(
   projectName: string,
   numOfWorkers: number,
   hiddenFolderId: string,
-  noMerge: boolean,
 ) {
   const cleanupFolders = [];
   const cleanupFiles = [];
@@ -283,14 +278,12 @@ async function cleanup(
     );
   }
 
-  if (!noMerge) {
-    cleanupFiles.push(
-      path.join(process.cwd(), `output/${projectName}-audio.wav`),
-    );
-    cleanupFiles.push(
-      path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
-    );
-  }
+  cleanupFiles.push(
+    path.join(process.cwd(), `output/${projectName}-audio.wav`),
+  );
+  cleanupFiles.push(
+    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
+  );
 
   const folderCleanupPromises = cleanupFolders.map(folder =>
     fs.promises.rm(folder, {recursive: true, force: true}).catch(() => {}),
@@ -385,18 +378,8 @@ export const renderVideo = async (
     projectName,
     hiddenFolderId,
   );
-  await concatenateAudioAndVideoFiles(
-    projectName,
-    audioFiles,
-    videoFiles,
-    settings.noMerge || false,
-  );
-  await cleanup(
-    projectName,
-    numOfWorkers,
-    hiddenFolderId,
-    settings.noMerge || false,
-  );
+  await concatenateAudioAndVideoFiles(projectName, audioFiles, videoFiles);
+  await cleanup(projectName, numOfWorkers, hiddenFolderId);
 
   return `output/${projectName}.mp4`;
 };

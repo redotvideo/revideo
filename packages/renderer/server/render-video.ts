@@ -296,7 +296,7 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
-export const renderPartial = async (
+export const renderPartialVideo = async (
   configFile: string,
   workerId: number,
   numWorkers: number,

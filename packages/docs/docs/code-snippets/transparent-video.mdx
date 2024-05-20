@@ -15,9 +15,11 @@ You can use command line tools such as `ffmpeg` to re-encode videos from one
 codec to another.
 
 To enable transparency for your source video, you need to set the `transparency`
-property of the `<Video/>` component to `true`. If it is set to false, you will still have transparency during preview, but the rendered video will not be transparent.
+property of the `<Video/>` component to `true`. If it is set to false, you will
+still have transparency during preview, but the rendered video will not be
+transparent.
 
-``` tsx
+```tsx
 <Video src={'your-video.webm'} play={true} transparency={true} />
 ```
 
@@ -26,8 +28,8 @@ which might show up correctly in the preview through the ui or inside the
 player, which will lose their transparency when rendering.
 
 ```tsx editor
-import { Img, Video, makeScene2D } from '@revideo/2d';
-import { waitFor, createRef, useScene } from '@revideo/core'
+import {Img, Video, makeScene2D} from '@revideo/2d';
+import {waitFor, createRef, useScene} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const avatarRef = createRef<Video>();
@@ -53,4 +55,3 @@ export default makeScene2D(function* (view) {
   yield* waitFor(avatarRef().getDuration());
 });
 ```
-

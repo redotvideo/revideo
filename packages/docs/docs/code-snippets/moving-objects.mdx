@@ -5,19 +5,22 @@ slug: /moving-manipulating-objects
 
 # Moving and Manipulating Objects
 
-You can easily move objects and manipulate them using a variety of functions. Here, we move a square along with some text around the screen, make it larger, and finally turn it into a circle:
-
+You can easily move objects and manipulate them using a variety of functions.
+Here, we move a square along with some text around the screen, make it larger,
+and finally turn it into a circle:
 
 ```tsx editor
-import { Rect, Txt, makeScene2D } from '@revideo/2d';
-import { all, waitFor, createRef, easeInBounce, easeInExpo } from '@revideo/core'
+import {Rect, Txt, makeScene2D} from '@revideo/2d';
+import {all, waitFor, createRef, easeInBounce, easeInExpo} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const rectRef = createRef<Rect>();
 
   yield view.add(
-    <Rect fill={"blue"} size={[100, 100]} ref={rectRef}>
-      <Txt fontSize={30} fontFamily={"Sans-Serif"} fill={"white"}>Hi!</Txt>
+    <Rect fill={'blue'} size={[100, 100]} ref={rectRef}>
+      <Txt fontSize={30} fontFamily={'Sans-Serif'} fill={'white'}>
+        Hi!
+      </Txt>
     </Rect>,
   );
 
@@ -30,4 +33,3 @@ export default makeScene2D(function* (view) {
   yield* waitFor(1); // do nothing for 1s
 });
 ```
-

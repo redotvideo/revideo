@@ -21,7 +21,11 @@ export async function concatenateMedia(
 
     ffmpegCommand
       .input(tempFile)
-      .inputOptions(['-f concat', '-safe 0'])
+      .inputOptions([
+        '-f concat',
+        '-safe 0',
+        '-protocol_whitelist file,http,https,tcp,tls',
+      ])
       .outputOptions(['-c copy'])
       .on('error', err => {
         console.error('Error:', err);

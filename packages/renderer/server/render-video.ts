@@ -296,6 +296,42 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
+export const renderPartialVideo = async (
+  configFile: string,
+  workerId: number,
+  numWorkers: number,
+  params?: Record<string, unknown>,
+  progressCallback?: (worker: number, progress: number) => void,
+  settings: RenderVideoSettings = {},
+) => {
+  // Get settings
+  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
+  const projectName = settings.name ?? 'project';
+  const hiddenFolderId = uuidv4();
+  const numOfWorkers = numWorkers;
+
+  await initializeBrowserAndStartRendering(
+    resolvedConfigPath,
+    projectName,
+    workerId,
+    numOfWorkers,
+    settings,
+    hiddenFolderId,
+    params,
+    progressCallback,
+  );
+
+  const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${workerId}-${hiddenFolderId}/visuals.mp4`;
+  const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${workerId}-${hiddenFolderId}/audio.wav`;
+
+  if (!(await doesFileExist(audioFilePath))) {
+    const videoDuration = await getVideoDuration(videoFilePath);
+    await createSilentAudioFile(audioFilePath, videoDuration);
+  }
+
+  return {audioFile: audioFilePath, videoFile: videoFilePath};
+};
+
 /**
  * Renders a video to a file.
  * @param configFile - Path to the vite config file (vite.config.ts).

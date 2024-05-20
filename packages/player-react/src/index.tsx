@@ -140,14 +140,14 @@ export function Player({
 
   return (
     <div
-      className="relative cursor-default focus:outline-none"
+      className="p-relative p-cursor-default p-focus:outline-none"
       onFocus={() => (focus.current = true)}
       onBlur={() => (focus.current = false)}
       tabIndex={0}
       onMouseEnter={() => setIsMouseOver(true)}
       onMouseLeave={() => setIsMouseOver(false)}
     >
-      <div className="relative">
+      <div className="p-relative">
         <revideo-player
           ref={playerRef}
           src={src}
@@ -160,10 +160,10 @@ export function Player({
           quality={quality}
         />
         <div
-          className={`absolute bottom-0 w-full transition-opacity duration-200 ${
+          className={`p-absolute p-bottom-0 p-w-full p-transition-opacity p-duration-200 ${
             shouldShowControls(playingState, isMouseOver, !controls)
-              ? 'opacity-100'
-              : 'opacity-0'
+              ? 'p-opacity-100'
+              : 'p-opacity-0'
           }`}
         >
           <Controls

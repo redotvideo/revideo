@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name('revideo')
   .description('CLI to interact with the revideo service')
-  .version('0.2.13');
+  .version('0.3.3');
 
 program
   .command('serve')
@@ -28,19 +28,13 @@ program
   .action(async options => {
     sendEvent(EventName.CLICommand);
 
-    if (!options.projectFile) {
-      console.error('Error: --projectFile option must be specified.');
-      process.exit(1);
-    }
-
-    await buildProject().catch(() => {
-      console.error('Error building project');
-      process.exit(1);
-    });
-
     const {projectFile, port} = options;
     process.env.PROJECT_FILE = projectFile;
     process.env.REVIDEO_PORT = port;
+
+    await buildProject().catch(() => {
+      process.exit(1);
+    });
 
     createServer(options.watchDir).listen(port, () => {
       console.log(`Server listening on port ${port}`);

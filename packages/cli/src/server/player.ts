@@ -1,7 +1,8 @@
-import {spawn} from 'child_process';
 import {watch} from 'chokidar';
 import {Request, Response} from 'express';
 import {promises as fs} from 'fs';
+import * as path from 'path';
+import {build} from 'vite';
 
 const YELLOW_DOT = '\u001b[33m•\u001b[0m';
 const GREEN_CHECK = '\u001b[32m✔\u001b[0m';
@@ -25,22 +26,26 @@ const successMessage = (time: number, padding: number) =>
     ' ',
   ) + '\n';
 
-/**
- * Runs `npm run build`.
- */
 export async function buildProject() {
-  const buildProcess = spawn('npm', ['run', 'build']);
-
-  return new Promise<void>((resolve, reject) => {
-    buildProcess.on('close', code => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-
-      reject();
+  try {
+    await build({
+      configFile: path.join(process.cwd(), process.env.PROJECT_FILE || ''),
+      publicDir: false,
+      build: {
+        outDir: 'dist',
+        rollupOptions: {
+          output: {
+            entryFileNames: '[name].js',
+            chunkFileNames: '[name].js',
+            assetFileNames: '[name].[ext]',
+          },
+        },
+      },
     });
-  });
+  } catch (error) {
+    console.error('Error building project:', error);
+    throw error;
+  }
 }
 
 /**
@@ -48,7 +53,9 @@ export async function buildProject() {
  * @param dir - Directory to watch for changes.
  */
 export async function createHotReloader(dir: string) {
-  const watcher = watch(dir);
+  const watcher = watch(dir, {
+    ignored: ['**/*.meta'],
+  });
 
   watcher.on('change', async path => {
     const rebuildingMessage = fileChangedMessage(path);
@@ -70,8 +77,8 @@ export async function createHotReloader(dir: string) {
   });
 }
 
-export async function player(_: Request, res: Response) {
-  const path = './dist/project.js';
+export async function player(req: Request, res: Response) {
+  const path = `./dist/${req.params.file}`;
 
   let buildTime: number | undefined = undefined;
   let error = false;
@@ -80,7 +87,9 @@ export async function player(_: Request, res: Response) {
   await fs.access(path).catch(async () => {
     buildTime = Date.now();
     process.stdout.write(fileNotFoundMessage(path));
-    await buildProject();
+    await buildProject().catch(() => {
+      res.status(500).send('Error building project');
+    });
   });
 
   // If the file still doesn't exist, send an error response.
@@ -91,7 +100,7 @@ export async function player(_: Request, res: Response) {
         fileNotFoundMessage(path).length + 1,
       ),
     );
-    res.status(500).send('Error building project');
+    res.status(404).send(`File ${path} not found`);
     error = true;
   });
 
@@ -109,5 +118,5 @@ export async function player(_: Request, res: Response) {
     );
   }
 
-  return res.sendFile('./dist/project.js', {root: './'});
+  return res.sendFile(path, {root: './'});
 }

@@ -14,7 +14,6 @@ let StageInstance: StageType = null;
 let CurrentSetter: (value: PlayerType) => void = null;
 let CurrentParent: HTMLElement = null;
 let CurrentRatio = 1;
-let ErrorHandler: (message: string) => void = null;
 
 export function disposePlayer(setter: (value: PlayerType) => void) {
   if (CurrentSetter !== setter || !ProjectInstance) return;
@@ -34,7 +33,6 @@ export async function borrowPlayer(
   setter: (value: PlayerType) => void,
   parent: HTMLDivElement,
   ratio: number,
-  onError?: (message: string) => void,
 ): Promise<PlayerType> {
   if (setter === CurrentSetter) return;
   if (
@@ -47,7 +45,6 @@ export async function borrowPlayer(
   CurrentSetter?.(null);
   CurrentSetter = setter;
   CurrentParent = parent;
-  ErrorHandler = onError;
 
   if (!ProjectInstance) {
     const {
@@ -97,7 +94,7 @@ export async function borrowPlayer(
 
     ProjectInstance.logger.onLogged.subscribe(payload => {
       if (payload.level === 'error') {
-        ErrorHandler?.(`Runtime error: ${payload.message}`);
+        return;
       }
     });
   }
@@ -123,10 +120,9 @@ export async function tryBorrowPlayer(
   setter: (value: PlayerType) => void,
   parent: HTMLDivElement,
   ratio: number,
-  onError?: (error: string) => void,
 ): Promise<PlayerType | null> {
   if (!CurrentSetter) {
-    return borrowPlayer(setter, parent, ratio, onError);
+    return borrowPlayer(setter, parent, ratio);
   }
 
   return null;

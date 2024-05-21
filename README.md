@@ -95,7 +95,7 @@ Concretely, some of the differences to Motion Canvas are the following ones:
 - **Faster Rendering:** When building an app rather than creating videos for yourself, rendering speeds are quite important. We have sped up rendering speeds by enabling [parallelized rendering](https://github.com/redotvideo/revideo/pull/74) and replacing the `seek()` operation for HTML video with our ffmpeg-based [video frame extractor](https://github.com/redotvideo/revideo/pull/33)
 - **Better Audio Support:** We have enabled audio export from `<Video/>` tags during rendering, and have also added an `<Audio/>` tag that makes it easy to synchronize audio with your animations.
 
-
+<br/>
 
 ## Telemetry
 

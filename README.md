@@ -17,14 +17,23 @@
 
 # Revideo - Create Videos with Code
 
-Revideo is an open source framework for programmatic video editing. It is forked from the amazing [Motion Canvas](https://motioncanvas.io/) editor, with the goal of turning it from a standalone application into a library that developers can use to build entire video editing apps. 
+Revideo is an open source framework for programmatic video editing. It is forked
+from the amazing [Motion Canvas](https://motioncanvas.io/) editor, with the goal
+of turning it from a standalone application into a library that developers can
+use to build entire video editing apps.
 
-Revideo lets you create video templates in Typescript and deploy an API endpoint to render them with dynamic inputs, and also provides a React player component to provide real-time preview in the browser. If you want to learn more, you can check out our [docs](https://docs.re.video/), our [examples repository](https://github.com/redotvideo/revideo-examples), and join our [Discord server](https://discord.com/invite/MVJsrqjy3j).
-
+Revideo lets you create video templates in Typescript and deploy an API endpoint
+to render them with dynamic inputs, and also provides a React player component
+to provide real-time preview in the browser. If you want to learn more, you can
+check out our [docs](https://docs.re.video/), our
+[examples repository](https://github.com/redotvideo/revideo-examples), and join
+our [Discord server](https://discord.com/invite/MVJsrqjy3j).
 
 #### News 🔥
 
-- [05/21/2024] We have released an [example](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run-parallelized) on how to parallelize rendering jobs with Google Cloud Functions
+- [05/21/2024] We have released an
+  [example](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run-parallelized)
+  on how to parallelize rendering jobs with Google Cloud Functions
 - [05/20/2024] We have a [new website](https://re.video/)!
 
 <br/>
@@ -87,13 +96,33 @@ https://github.com/havenhq/revideo/assets/122226645/4d4e56ba-5143-4e4b-9acf-d8a0
 
 ## Differences between Revideo and Motion Canvas
 
-Motion Canvas is a [standalone editor](https://github.com/orgs/motion-canvas/discussions/1015) for animations that happens to be distributed as an npm package, while Revideo aims to be a library that developers can build on top of to create their own video editing apps. These goals are somewhat conflicting, and Motion Canvas' plugin API is not yet flexible enough to enable the changes we want to make, which is why we decided to fork the project (our [blog post](https://re.video/blog/fork) explains this in detail).
+Motion Canvas is a
+[standalone editor](https://github.com/orgs/motion-canvas/discussions/1015) for
+animations that happens to be distributed as an npm package, while Revideo aims
+to be a library that developers can build on top of to create their own video
+editing apps. These goals are somewhat conflicting, and Motion Canvas' plugin
+API is not yet flexible enough to enable the changes we want to make, which is
+why we decided to fork the project (our [blog post](https://re.video/blog/fork)
+explains this in detail).
 
 Concretely, some of the differences to Motion Canvas are the following ones:
 
-- **Headless Rendering:** Motion Canvas currently requires you to press a button in its UI to render a video. We have exposed this functionality as a [function call](https://docs.re.video/renderer/renderVideo/) and are making it possible to deploy a rendering API to services like Google Cloud Run ([example](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run), or to use our CLI to expose a rendering endpoint from your Revideo project ([docs](https://docs.re.video/render-endpoint))
-- **Faster Rendering:** When building an app rather than creating videos for yourself, rendering speeds are quite important. We have sped up rendering speeds by enabling [parallelized rendering](https://github.com/redotvideo/revideo/pull/74) and replacing the `seek()` operation for HTML video with our ffmpeg-based [video frame extractor](https://github.com/redotvideo/revideo/pull/33)
-- **Better Audio Support:** We have enabled audio export from `<Video/>` tags during rendering, and have also added an `<Audio/>` tag that makes it easy to synchronize audio with your animations.
+- **Headless Rendering:** Motion Canvas currently requires you to press a button
+  in its UI to render a video. We have exposed this functionality as a
+  [function call](https://docs.re.video/renderer/renderVideo/) and are making it
+  possible to deploy a rendering API to services like Google Cloud Run
+  ([example](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run),
+  or to use our CLI to expose a rendering endpoint from your Revideo project
+  ([docs](https://docs.re.video/render-endpoint))
+- **Faster Rendering:** When building an app rather than creating videos for
+  yourself, rendering speeds are quite important. We have sped up rendering
+  speeds by enabling
+  [parallelized rendering](https://github.com/redotvideo/revideo/pull/74) and
+  replacing the `seek()` operation for HTML video with our ffmpeg-based
+  [video frame extractor](https://github.com/redotvideo/revideo/pull/33)
+- **Better Audio Support:** We have enabled audio export from `<Video/>` tags
+  during rendering, and have also added an `<Audio/>` tag that makes it easy to
+  synchronize audio with your animations.
 
 <br/>
 

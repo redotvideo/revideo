@@ -6,7 +6,7 @@
       <img width="360" alt="Revideo logo" src="./logo.svg">
     </picture>
   </a>
-</p>
+</p
 <p align="center">
   <a href="https://lerna.js.org"><img src="https://img.shields.io/badge/published%20with-lerna-c084fc?style=flat" alt="published with lerna"></a>
   <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/powered%20by-vite-646cff?style=flat" alt="powered by vite"></a>
@@ -17,18 +17,18 @@
 
 # Revideo - Create Videos with Code
 
-Revideo lets you create videos using Typescript. It is forked from the amazing
-[Motion Canvas](https://motioncanvas.io/) library and extended to provide
-features that are essential for video, such as:
+Revideo is an open source framework for programmatic video editing. It is forked from the amazing [Motion Canvas](https://motioncanvas.io/) editor, with the goal of turning it from a standalone application into a library that developers can use to build entire video editing apps. 
 
-- the ability to integrate and edit Audio
-- an API for rendering parameterized videos
+Revideo lets you create video templates in Typescript, deploy an API endpoint to render them with dynamic inputs, and also provides a React player component to provide real-time preview in the browser. If you want to learn more, you can check out our [docs](https://docs.re.video/), our [examples repository](https://github.com/redotvideo/revideo-examples), and join our [Discord server](https://discord.com/invite/MVJsrqjy3j).
 
-Revideo is meant to be an open-source alternative to
-[Remotion](https://www.remotion.dev/), which has a
-[restrictive license](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md),
-making it unsuitable for many projects. While Remotion is built on top of React,
-Revideo uses the HTML Canvas API and uses generator functions. <br/>
+<br/>
+
+#### News 🔥
+
+- [05/21/2024] We have released an [example](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run-parallelized) on how to parallelize rendering jobs with Google Cloud Functions
+- [05/20/2024] We have a [new website](https://re.video/)!
+
+<br/>
 
 ## Getting Started
 

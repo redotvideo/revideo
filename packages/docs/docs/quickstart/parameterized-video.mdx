@@ -18,7 +18,7 @@ export default makeScene2D(function* (view) {
   const name = 'new user';
 
   view.add(
-    <Txt fontSize={1} textWrap={true} ref={textRef} fill={'white'}>
+    <Txt fontSize={1} textWrap={true} ref={textRef} fill={'blue'}>
       Hello {name}!
     </Txt>,
   );
@@ -40,7 +40,7 @@ export default makeScene2D(function* (view) {
   const name = useScene().variables.get('username', 'new user');
 
   view.add(
-    <Txt fontSize={1} textWrap={true} ref={textRef} fill={'white'}>
+    <Txt fontSize={1} textWrap={true} ref={textRef} fill={'blue'}>
       Hello {name()}!
     </Txt>,
   );

@@ -1,0 +1,99 @@
+---
+sidebar_position: 4
+slug: /api/player-react/player
+---
+
+# Player
+
+You can embed your videos into your website using the Revideo react player.
+
+## Setup
+
+Install the `@revideo/player-react` package into your project:
+
+```bash
+npm install @revideo/player-react
+```
+
+## Usage
+
+```tsx
+import {Player} from '@revideo/player-react';
+
+<Player src="/project.js" />;
+```
+
+## Props
+
+### src
+
+The path to your bundled `project.js`. See here on how to obtain this file from
+your Revideo project.
+
+### controls (optional)
+
+`boolean`
+
+Disables the player controls when set to false. `default=true`
+
+### variables (optional)
+
+`Record<string, any>`
+
+Parameters / or variables passed to your video. See [here](/parameterized-video)
+learn more about parameterized videos. `default={}`
+
+### playing (optional)
+
+`boolean`
+
+Specifies if the player is currently playing. `default=false`
+
+### currentTime (optional)
+
+`number`
+
+Current time of the player in seconds.
+
+### looping (optional)
+
+`boolean`
+
+Controls whether the to loop back to the beginning when the player reaches the
+end of the video. `default=true`
+
+### width (optional)
+
+`number`
+
+Width of the underlying canvas element in pixels. It's recommended to leave this
+setting empty as it crops the scene instead of stretching it.
+`default=undefined`
+
+### height (optional)
+
+`number`
+
+See `width`. `default=undefined`
+
+### quality (optional)
+
+`number`
+
+Reduces or increases the resolution of the canvas element without affecting the
+positioning of elements. `default=1`
+
+### onDurationChange (optional)
+
+`(duration: number) => void`
+
+Gets called every time the duration of the video changes (this can happen due to
+the input variables changing).
+
+### onTimeUpdate (optional)
+
+`(time: number) => void`
+
+Gets called every time the current time of the video is changed (every few ms
+during playback). Useful when visualizing the progress of the player outside of
+the player component.

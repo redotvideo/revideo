@@ -5,14 +5,25 @@ slug: /google-cloud-run
 
 # Rendering on Google Cloud Run
 
-To avoid using a large VPS even when you're not rendering videos, you might want to deploy a rendering endpoint as a serverless function. One of the options that allow you to do so is [Google Cloud Run](https://cloud.google.com/run?hl=en) and [Google Cloud Functions](https://cloud.google.com/functions?hl=en).
+To avoid using a large VPS even when you're not rendering videos, you might want
+to deploy a rendering endpoint as a serverless function. One of the options that
+allow you to do so is [Google Cloud Run](https://cloud.google.com/run?hl=en) and
+[Google Cloud Functions](https://cloud.google.com/functions?hl=en).
 
 ### A Basic Rendering Service on Google Cloud Run
 
-We have created an example project that shows you how you can deploy a Revideo project on Cloud Run for rendering. The [repository](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run), along with its README, guides you through the whole process.
+We have created an example project that shows you how you can deploy a Revideo
+project on Cloud Run for rendering. The
+[repository](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run),
+along with its README, guides you through the whole process.
 
 ### Parallelizing Rendering Jobs across Multiple Cloud Functions
 
-You can significantly speed up rendering jobs by parallelizing the workload across many Cloud Functions instead of just one. For instance, to render a 60s video, we can spin up 6 workers that each render 10s of video and afterwards stitch together the partial videos.
+You can significantly speed up rendering jobs by parallelizing the workload
+across many Cloud Functions instead of just one. For instance, to render a 60s
+video, we can spin up 6 workers that each render 10s of video and afterwards
+stitch together the partial videos.
 
-You can find a full implementation of parallelized rendering along with a guide in the corresponding [repository](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run-parallelized).
+You can find a full implementation of parallelized rendering along with a guide
+in the corresponding
+[repository](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run-parallelized).

@@ -77,8 +77,6 @@ async function run() {
     return;
   }
 
-  console.log(`the response is ${JSON.stringify(response)}`);
-
   // Clone files
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
@@ -89,14 +87,18 @@ async function run() {
   createConfig(response);
 
   // Read package.json and modify name
-  const manifest = JSON.parse(
-    fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
-  );
-  manifest.name = response.name;
-  fs.writeFileSync(
-    path.join(response.path, 'package.json'),
-    JSON.stringify(manifest, undefined, 2),
-  );
+  try {
+    const manifest = JSON.parse(
+      fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'),
+    );
+    manifest.name = response.name;
+    fs.writeFileSync(
+      path.join(response.path, 'package.json'),
+      JSON.stringify(manifest, undefined, 2),
+    );
+  } catch (e) {
+    // Example doesn't have a package.json file
+  }
 
   // Tell user that the process is complete
   const manager = getPackageManager();

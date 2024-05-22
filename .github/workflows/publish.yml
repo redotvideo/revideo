@@ -31,6 +31,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{secrets.PUBLISH_TOKEN}}
+          submodules: 'recursive'
       - uses: actions/setup-node@v3
         with:
           node-version: 18

@@ -31,7 +31,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{secrets.PUBLISH_TOKEN}}
-          submodules: 'recursive'
+          submodules: true
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -41,7 +41,9 @@ jobs:
       - run: git config --global user.name "revideo-bot"
       - run: npm ci
       - run: npx lerna run build
-      - if: ${{ inputs.releaseType == 'release' }}
-        run: npx lerna publish --yes --force-publish --exact ${{ inputs.version }}
-      - if: ${{ inputs.releaseType == 'canary' }}
-        run: npx lerna publish --yes --canary --force-publish
+      # Print the contents of the folder packages/create
+      - run: ls -la packages/create
+      # - if: ${{ inputs.releaseType == 'release' }}
+        # run: npx lerna publish --yes --force-publish --exact ${{ inputs.version }}
+      # - if: ${{ inputs.releaseType == 'canary' }}
+        # run: npx lerna publish --yes --canary --force-publish

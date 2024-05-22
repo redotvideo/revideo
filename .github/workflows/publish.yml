@@ -43,7 +43,7 @@ jobs:
       - run: npx lerna run build
       # Print the contents of the folder packages/create
       - run: ls -la packages/create
-      # - if: ${{ inputs.releaseType == 'release' }}
-        # run: npx lerna publish --yes --force-publish --exact ${{ inputs.version }}
-      # - if: ${{ inputs.releaseType == 'canary' }}
-        # run: npx lerna publish --yes --canary --force-publish
+      - if: ${{ inputs.releaseType == 'release' }}
+        run: npx lerna publish --yes --force-publish --exact ${{ inputs.version }}
+      - if: ${{ inputs.releaseType == 'canary' }}
+        run: npx lerna publish --yes --canary --force-publish

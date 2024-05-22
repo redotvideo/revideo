@@ -1,0 +1,3 @@
+[submodule "packages/create/examples"]
+	path = packages/create/examples
+	url = https://github.com/redotvideo/examples

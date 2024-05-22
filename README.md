@@ -6,7 +6,7 @@
       <img width="360" alt="Revideo logo" src="./logo.svg">
     </picture>
   </a>
-</p
+</p>
 <p align="center">
   <a href="https://lerna.js.org"><img src="https://img.shields.io/badge/published%20with-lerna-c084fc?style=flat" alt="published with lerna"></a>
   <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/powered%20by-vite-646cff?style=flat" alt="powered by vite"></a>
@@ -23,15 +23,15 @@ of turning it from a standalone application into a library that developers can
 use to build entire video editing apps.
 
 Revideo lets you create video templates in Typescript and deploy an API endpoint
-to render them with dynamic inputs, and also provides a React player component
-to provide real-time preview in the browser. If you want to learn more, you can
+to render them with dynamic inputs. It also provides a React player component to
+preview changes in the browser in real-time. If you want to learn more, you can
 check out our [docs](https://docs.re.video/), our
 [examples repository](https://github.com/redotvideo/revideo-examples), and join
 our [Discord server](https://discord.com/invite/MVJsrqjy3j).
 
 #### News 🔥
 
-- [05/21/2024] We have released an
+- [05/21/2024] We released an
   [example](https://github.com/redotvideo/revideo-examples/tree/main/google-cloud-run-parallelized)
   on how to parallelize rendering jobs with Google Cloud Functions
 - [05/20/2024] We have a [new website](https://re.video/)!
@@ -96,14 +96,19 @@ https://github.com/havenhq/revideo/assets/122226645/4d4e56ba-5143-4e4b-9acf-d8a0
 
 ## Differences between Revideo and Motion Canvas
 
-Motion Canvas is a
+Motion Canvas aims to be a
 [standalone editor](https://github.com/orgs/motion-canvas/discussions/1015) for
-animations that happens to be distributed as an npm package, while Revideo aims
-to be a library that developers can build on top of to create their own video
-editing apps. These goals are somewhat conflicting, and Motion Canvas' plugin
-API is not yet flexible enough to enable the changes we want to make, which is
-why we decided to fork the project (our [blog post](https://re.video/blog/fork)
-explains this in detail).
+animations. While it happens to be distributed as an npm package, the
+maintainers don't intend for it to be used as a library.
+
+We started off as users of Motion Canvas but ran into those limitations. We
+wanted to build a video editing app on top of Motion Canvas. After building the
+initial version using the plugin system, we realized that we wanted to make more
+fundamental changes to the library that would be difficult to implement while
+keeping compatibility with the existing Motion Canvas API.
+
+That's why we decided to fork the project and turn it into Revideo. We wrote a
+bit more about it on our [blog](https://re.video/blog/fork).
 
 Concretely, some of the differences to Motion Canvas are the following ones:
 

@@ -101,11 +101,12 @@ Motion Canvas aims to be a
 animations. While it happens to be distributed as an npm package, the
 maintainers don't intend for it to be used as a library.
 
-We started off as users of Motion Canvas but ran into those limitations. We
-wanted to build a video editing app on top of Motion Canvas. After building the
-initial version using the plugin system, we realized that we wanted to make more
-fundamental changes to the library that would be difficult to implement while
-keeping compatibility with the existing Motion Canvas API.
+We started out as users of Motion Canvas ourselves but ran into these
+limitations when we wanted to build a video editing app on top of it. After
+building our initial version using Motion Canvas' plugin system, we realized
+that we wanted to make more fundamental changes to the codebase that would be
+difficult to implement while keeping compatibility with the existing Motion
+Canvas API.
 
 That's why we decided to fork the project and turn it into Revideo. We wrote a
 bit more about it on our [blog](https://re.video/blog/fork).

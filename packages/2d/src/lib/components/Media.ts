@@ -7,7 +7,7 @@ import {
   useLogger,
   useThread,
 } from '@revideo/core';
-import {computed, initial, signal} from '../decorators';
+import {computed, initial, nodeName, signal} from '../decorators';
 import {Rect, RectProps} from './Rect';
 import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
 
@@ -20,6 +20,7 @@ export interface MediaProps extends RectProps {
   play?: boolean;
 }
 
+@nodeName('Media')
 export abstract class Media extends Rect {
   @signal()
   public declare readonly src: SimpleSignal<string, this>;

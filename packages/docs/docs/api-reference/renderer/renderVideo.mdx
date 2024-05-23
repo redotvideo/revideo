@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-slug: /renderer/renderVideo
+slug: /api/renderer/renderVideo
 ---
 
 # renderVideo()
@@ -35,33 +35,39 @@ renderVideo('./vite.config.ts', {color: 'white'}, printProgress, {
 
 ## Arguments
 
-### configFile:
+### configFile
 
-A string pointing towards your Vite config file. This will almost always be
+`string`
+
+Points towards your Vite config file. This will almost always be
 `vite.config.ts`.
 
-### params (optional):
+### params (optional)
+
+`Record<string, any>`
 
 Parameters / or variables passed to your video. See [here](/parameterized-video)
 learn more about parameterized videos. `default = {}`
 
-### progressCallback (optional):
+### progressCallback (optional)
+
+`(workerId: number, progress: number) => void`:
 
 A function that gets called with the progress of the rendering process. The
 function gets called with two arguments: the id of the worker that is calling
 the function, and the progress of the rendering process (float between 0 and 1).
 `default = () => {}`
 
-### settings (optional):
+### settings (optional)
 
 An object with the following arguments:
 
-#### name (optional):
+#### name (optional)
 
 The file name of the video output - the video will be saved to `{name}.mp4`.
 `default = "project"`
 
-#### workers (optional):
+#### workers (optional)
 
 The number of processes you want to use to parallelize rendering - for example,
 rendering a 100s long video with 10 workers means that 10 processes handle 10s
@@ -69,35 +75,36 @@ of video each. Your laptop will probably render fastest with one worker, but VMs
 with a lot of computing power can benefit from using more than one - ideally,
 you should experiment what number gives you the best speedup. `default = 1`.
 
-#### range (optional):
+#### range (optional)
 
 The start and end second of the video. Can be used to only render a part of the
 video. `default = [0, Infinity]`
 
-#### dimensions (optional):
+#### dimensions (optional)
 
 Dimensions of the video to render as [x,y]. Default: uses the value specified in
 project.meta.
 
-#### logProgress (optional):
+#### logProgress (optional)
 
 Logs render progress to the console if set to `true`
 
-#### ffmpeg (optional):
+#### ffmpeg (optional)
 
-FFmpeg options - is an instance of FFmpegOptions.
+FFmpeg options - is an instance of FFmpegOptions. These overwrite settings set
+through environment variables.
 
-##### ffmpegLogLevel (optional):
+##### ffmpegLogLevel (optional)
 
 The log level of FFmpeg. Can be one of `error`, `warning`, `info`, `verbose`,
 `debug`, `trace`. `default = "error"`
 
-##### ffmpegPath (optional):
+##### ffmpegPath (optional)
 
 The path to the FFmpeg binary. If not specified, the FFmpeg binary shipped with
 Revideo will be used.
 
-#### puppeteer (optional):
+#### puppeteer (optional)
 
 Launch options for puppeteer - is an instance of puppeteer's
 [BrowserLaunchArgumentOptions](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions/)

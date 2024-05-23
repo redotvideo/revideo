@@ -138,7 +138,7 @@ To understand how people use Revideo, we **anonymously** track how many videos
 are rendered using the open-source tool
 [Posthog](https://github.com/PostHog/posthog). You can find our code
 implementing Posthog
-[here](https://github.com/redotvideo/revideo/tree/main/packages/ffmpeg/server/telemetry).
+[here](https://github.com/redotvideo/revideo/tree/main/packages/telemetry).
 
 If you want to disable telemetry, just set the following environent variable:
 

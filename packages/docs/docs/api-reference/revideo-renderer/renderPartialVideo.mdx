@@ -5,32 +5,50 @@ slug: /renderer/renderPartialVideo
 
 # renderVideo()
 
-The `renderPartialVideo()` function lets you render partial videos if you want to distribute the rendering workload across multiple workers. You can find an example of this in our [Cloud Functions example](https://github.com/redotvideo/examples/tree/main/google-cloud-run-parallelized).
-To use `renderPartialVideo()`, you don't have to manually assign a range of frames or timestamps to render. Instead, you just pass the worker id and the total number of workers your rendering job uses, and the function will figure out the frames to render by itself.
+The `renderPartialVideo()` function lets you render partial videos if you want
+to distribute the rendering workload across multiple workers. You can find an
+example of this in our
+[Cloud Functions example](https://github.com/redotvideo/examples/tree/main/google-cloud-run-parallelized).
+To use `renderPartialVideo()`, you don't have to manually assign a range of
+frames or timestamps to render. Instead, you just pass the worker id and the
+total number of workers your rendering job uses, and the function will figure
+out the frames to render by itself.
 
-Since merging partial videos gives you audio issues (audio becomes laggy), this function returns the path to the audio file and mute video file of the partial video. Afterwards, you should first concatenate all of the partial audio files and then concatenate all of the partial video files, and then merge the audio and video to obtain your final mp4 file.
+Since merging partial videos gives you audio issues (audio becomes laggy), this
+function returns the path to the audio file and mute video file of the partial
+video. Afterwards, you should first concatenate all of the partial audio files
+and then concatenate all of the partial video files, and then merge the audio
+and video to obtain your final mp4 file.
 
-To do this, you can use the `concatenateMedia()` and `mergeAudioWithVideo()` functions from `@revideo/ffmpeg` ([docs](/ffmpeg))
+To do this, you can use the `concatenateMedia()` and `mergeAudioWithVideo()`
+functions from `@revideo/ffmpeg` ([docs](/ffmpeg))
 
 ## Example Usage
 
 ```tsx
 import {renderPartialVideo} from '@revideo/renderer';
 
-const {audioFile, videoFile} = renderPartialVideo('./vite.config.ts', 3, 10, {color: 'white'}, () => {}, {
-  name: 'out',
-  workers: 1,
-  range: [1, 3],
-  dimensions: [1080, 1792],
-  logProgress: true,
-  fmpeg: {
-    ffmpegLogLevel: 'error',
-    ffmpegPath: 'ffmpeg',
+const {audioFile, videoFile} = renderPartialVideo(
+  './vite.config.ts',
+  3,
+  10,
+  {color: 'white'},
+  () => {},
+  {
+    name: 'out',
+    workers: 1,
+    range: [1, 3],
+    dimensions: [1080, 1792],
+    logProgress: true,
+    fmpeg: {
+      ffmpegLogLevel: 'error',
+      ffmpegPath: 'ffmpeg',
+    },
+    puppeteer: {
+      args: ['--no-sandbox'],
+    },
   },
-  puppeteer: {
-    args: ['--no-sandbox'],
-  },
-});
+);
 ```
 
 ## Arguments
@@ -42,11 +60,14 @@ A string pointing towards your Vite config file. This will almost always be
 
 ### workerId
 
-The id of the worker. We start counting at 0, so if you have 5 workers, values from 0 to 4 are accepted.
+The id of the worker. We start counting at 0, so if you have 5 workers, values
+from 0 to 4 are accepted.
 
 ### numWorkers
 
-The number of workers you use in total. This informs the function which range of the video to render. For instance, worker 0 out of 10 workers would render 1/10 of the full video, whereas worker 0 out of 2 would render half of the video.
+The number of workers you use in total. This informs the function which range of
+the video to render. For instance, worker 0 out of 10 workers would render 1/10
+of the full video, whereas worker 0 out of 2 would render half of the video.
 
 ### params (optional):
 
@@ -112,4 +133,5 @@ Launch options for puppeteer - is an instance of puppeteer's
 
 ## Returns
 
-`{ audioFile, videoFile }`, where both are strings representing the path to the files.
+`{ audioFile, videoFile }`, where both are strings representing the path to the
+files.

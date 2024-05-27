@@ -14,13 +14,15 @@ These files usually have a `.webm` extension.
 You can use command line tools such as `ffmpeg` to re-encode videos from one
 codec to another.
 
-To enable transparency for your source video, you need to set the `transparency`
-property of the `<Video/>` component to `true`. If it is set to false, you will
-still have transparency during preview, but the rendered video will not be
-transparent.
+Transparency is supported by default, but will not work when setting the `png`
+setting on the `<Video/>` component to `false`.
 
 ```tsx
-<Video src={'your-video.webm'} play={true} transparency={true} />
+// Transparency with the VP9 codec supported
+<Video src={'your-video.webm'} play={true} />
+
+// Renders faster but doesn't support transparency
+<Video src={'your-video.webm'} play={true} png={false} />
 ```
 
 **Note:** There are other video codes that support transparency, such as `HEVC`,
@@ -47,7 +49,6 @@ export default makeScene2D(function* (view) {
         play={true}
         height={'100%'}
         ref={avatarRef}
-        transparency={true}
       />
     </>,
   );

@@ -38,7 +38,7 @@ export class VideoFrameExtractor {
   private duration: number;
   private toTime: number;
   private fps: number;
-  private transparency: boolean;
+  private png: boolean;
 
   private codec: string | null = null;
   private process: ffmpeg.FfmpegCommand | null = null;
@@ -49,7 +49,7 @@ export class VideoFrameExtractor {
     startTime: number,
     fps: number,
     duration: number,
-    transparent?: boolean,
+    png?: boolean,
   ) {
     this.state = 'processing';
     this.filePath = filePath;
@@ -58,7 +58,7 @@ export class VideoFrameExtractor {
     this.duration = duration;
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
-    this.transparency = transparent || false;
+    this.png = png || false;
 
     if (this.startTime >= this.duration) {
       getVideoCodec(this.filePath).then(codec => {
@@ -107,7 +107,7 @@ export class VideoFrameExtractor {
       );
     }
 
-    if (this.transparency && codec === 'vp9') {
+    if (this.png && codec === 'vp9') {
       inputOptions.push('-vcodec', 'libvpx-vp9');
     }
 
@@ -122,10 +122,10 @@ export class VideoFrameExtractor {
     outputOptions.push('-f', 'image2pipe');
 
     /**
-     * PNG is significantly slower than JPEG,
-     * so we only use it when transparency is needed.
+     * PNG is significantly slower than JPEG
+     * but leads to better quality.
      */
-    if (this.transparency) {
+    if (this.png) {
       outputOptions.push('-vcodec', 'png');
     } else {
       outputOptions.push('-vcodec', 'mjpeg');
@@ -227,11 +227,11 @@ export class VideoFrameExtractor {
     let start = 0;
     let end;
 
-    const startSignature = this.transparency
+    const startSignature = this.png
       ? VideoFrameExtractor.pngSignature
       : VideoFrameExtractor.jpegSOI;
 
-    const endSignature = this.transparency
+    const endSignature = this.png
       ? VideoFrameExtractor.pngEOF
       : VideoFrameExtractor.jpegEOI;
 

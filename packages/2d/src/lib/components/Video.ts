@@ -22,9 +22,9 @@ export interface VideoProps extends MediaProps {
    */
   smoothing?: SignalValue<boolean>;
   /**
-   * {@inheritDoc Video.transparency}
+   * {@inheritDoc Video.png}
    */
-  transparency?: SignalValue<boolean>;
+  png?: SignalValue<boolean>;
 }
 
 class ImageCommunication {
@@ -56,7 +56,7 @@ class ImageCommunication {
     time: number,
     duration: number,
     fps: number,
-    transparency: boolean,
+    png: boolean,
   ) {
     return new Promise<HTMLImageElement>((resolve, reject) => {
       if (!import.meta.hot) {
@@ -68,7 +68,7 @@ class ImageCommunication {
         const image = new Image();
 
         const uint8Array = new Uint8Array(event.data.frame.data);
-        const type = transparency ? 'image/png' : 'image/jpeg';
+        const type = png ? 'image/png' : 'image/jpeg';
         const blob = new Blob([uint8Array], {type});
         const url = URL.createObjectURL(blob);
 
@@ -88,7 +88,7 @@ class ImageCommunication {
           startTime: time,
           duration,
           fps,
-          transparency,
+          png,
         },
       });
     });
@@ -122,17 +122,18 @@ export class Video extends Media {
   public declare readonly smoothing: SimpleSignal<boolean, this>;
 
   /**
-   * Whether the video should be rendered as partially transparent.
+   * Whether the video frames should be extracted as PNGs. Uses JPEGs when
+   * set to false.
    *
    * @remarks
-   * When enabled, the video frames will be extracted as PNGs with an alpha
-   * channel. This is significantly slower than using JPEGs which is the default.
+   * PNGs have better image quality and support transparency, but they make
+   * rendering slower.
    *
    * @defaultValue false
    */
-  @initial(false)
+  @initial(true)
   @signal()
-  public declare readonly transparency: SimpleSignal<boolean, this>;
+  public declare readonly png: SimpleSignal<boolean, this>;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
 
@@ -280,7 +281,7 @@ export class Video extends Media {
       time,
       duration,
       fps,
-      this.transparency(),
+      this.png(),
     );
     this.lastFrame = frame;
     this.lastTime = time;

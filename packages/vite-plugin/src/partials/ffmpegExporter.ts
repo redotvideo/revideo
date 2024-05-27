@@ -105,7 +105,7 @@ export class FFmpegBridge {
       startTime: number;
       duration: number;
       fps: number;
-      transparency: boolean;
+      png: boolean;
     };
 
     // Check if we already have a VideoFrameExtractor for this video
@@ -118,7 +118,7 @@ export class FFmpegBridge {
         typedData.startTime,
         typedData.fps,
         typedData.duration,
-        typedData.transparency,
+        typedData.png,
       );
       this.videoFrameExtractors.set(id, extractor);
     }

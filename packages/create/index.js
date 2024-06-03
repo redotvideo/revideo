@@ -8,12 +8,26 @@ import path from 'path';
 import prompts from 'prompts';
 
 const templates = [
-  'default',
-  'avatar-with-background',
-  'google-cloud-run',
-  'google-cloud-run-parallelized',
-  'stitching-videos',
-  'youtube-shorts',
+  {
+    value: 'saas-template',
+    title: 'Revideo with Next.js (recommended)',
+    description: 'An example project to get started with Revideo and Next.js.',
+  },
+  {
+    value: 'default',
+    title: 'Minial, standalone Revideo project',
+    description: 'A minimal example to get started with Revideo.',
+  },
+  {
+    value: 'google-cloud-run',
+    title: 'Google Cloud Run',
+    description: 'Google Cloud Run deployment.',
+  },
+  {
+    value: 'google-cloud-run-parallelized',
+    title: 'Google Cloud Run (advanced)',
+    description: 'Google Cloud Run with parallelized processing.',
+  },
 ];
 
 async function run() {
@@ -64,10 +78,7 @@ async function run() {
       type: 'select',
       name: 'starter',
       message: 'Choose a starter template',
-
-      choices: [
-        ...templates.map(template => ({title: template, value: template})),
-      ],
+      choices: templates,
     },
   ]);
 

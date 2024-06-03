@@ -14,6 +14,7 @@ export enum EventName {
   RenderStarted = 'revideo-render-started',
   ServerStarted = 'revideo-server-started',
   CLICommand = 'revideo-cli-command',
+  CreateCommand = 'revideo-create-command',
   Error = 'revideo-error',
 }
 

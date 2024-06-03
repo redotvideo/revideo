@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 //@ts-check
+import {EventName, sendEvent} from '@revideo/telemetry';
 import fs from 'fs';
 import kleur from 'kleur';
 import minimist from 'minimist';
@@ -8,12 +9,26 @@ import path from 'path';
 import prompts from 'prompts';
 
 const templates = [
-  'default',
-  'avatar-with-background',
-  'google-cloud-run',
-  'google-cloud-run-parallelized',
-  'stitching-videos',
-  'youtube-shorts',
+  {
+    value: 'saas-template',
+    title: 'Revideo with Next.js (recommended)',
+    description: 'An example project to get started with Revideo and Next.js.',
+  },
+  {
+    value: 'default',
+    title: 'Minial, standalone Revideo project',
+    description: 'A minimal example to get started with Revideo.',
+  },
+  {
+    value: 'google-cloud-run',
+    title: 'Google Cloud Run',
+    description: 'Render a Revideo Project on Google Cloud Run.',
+  },
+  {
+    value: 'google-cloud-run-parallelized',
+    title: 'Google Cloud Run (advanced)',
+    description: 'Google Cloud Run with parallelized processing.',
+  },
 ];
 
 async function run() {
@@ -64,10 +79,7 @@ async function run() {
       type: 'select',
       name: 'starter',
       message: 'Choose a starter template',
-
-      choices: [
-        ...templates.map(template => ({title: template, value: template})),
-      ],
+      choices: templates,
     },
   ]);
 
@@ -85,6 +97,12 @@ async function run() {
   );
   copyDirectory(templateDir, response.path);
   createConfig(response);
+
+  sendEvent(EventName.CreateCommand, {
+    name: response.name,
+    path: response.path,
+    starter: response.starter,
+  });
 
   // Read package.json and modify name
   try {
@@ -162,4 +180,8 @@ function getPackageManager() {
   return ua?.split(' ')[0].split('/')[0] ?? 'npm';
 }
 
-void run();
+void run().catch(e => {
+  console.error(e);
+  sendEvent(EventName.Error, {error: e});
+  process.exit(1);
+});

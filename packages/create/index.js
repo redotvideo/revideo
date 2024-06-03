@@ -22,7 +22,7 @@ const templates = [
   {
     value: 'google-cloud-run',
     title: 'Google Cloud Run',
-    description: 'Google Cloud Run deployment.',
+    description: 'Render a Revideo Project on Google Cloud Run.',
   },
   {
     value: 'google-cloud-run-parallelized',

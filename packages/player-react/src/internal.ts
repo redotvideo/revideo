@@ -1,4 +1,4 @@
-import type {PlayerSettings, Project, StageSettings} from '@revideo/core';
+import type {Project, ProjectMetadata} from '@revideo/core';
 import {Player, Stage} from '@revideo/core';
 
 import {Vector2} from '@revideo/core';
@@ -43,10 +43,16 @@ class RevideoPlayer extends HTMLElement {
       'variables',
       'looping',
 
+      'fps',
       'quality',
       'width',
       'height',
     ];
+  }
+
+  private get fps() {
+    const attr = this.getAttribute('fps');
+    return attr ? parseFloat(attr) : this.defaultSettings?.fps ?? 60;
   }
 
   private get quality() {
@@ -81,7 +87,9 @@ class RevideoPlayer extends HTMLElement {
   private state = State.Initial;
   private project: Project | null = null;
   private player: Player | null = null;
-  private defaultSettings: (PlayerSettings & StageSettings) | undefined;
+  private defaultSettings:
+    | ReturnType<typeof ProjectMetadata.prototype.getFullPreviewSettings>
+    | undefined;
   private abortController: AbortController | null = null;
   private playing = false;
   private stage = new Stage();
@@ -137,8 +145,8 @@ class RevideoPlayer extends HTMLElement {
       return;
     }
 
-    this.defaultSettings = project.meta.getFullRenderingSettings();
-    const player = new Player(project, {fps: 30});
+    this.defaultSettings = project.meta.getFullPreviewSettings();
+    const player = new Player(project);
     player.setVariables(this.variables);
     player.toggleLoop(this.looping);
 
@@ -174,6 +182,7 @@ class RevideoPlayer extends HTMLElement {
         this.looping = newValue === 'true';
         this.player?.toggleLoop(newValue === 'true');
         break;
+      case 'fps':
       case 'quality':
       case 'width':
       case 'height':
@@ -212,9 +221,7 @@ class RevideoPlayer extends HTMLElement {
 
     const e = event as CustomEvent;
     this.time = e.detail;
-    this.player?.requestSeek(
-      e.detail * this.project.meta.getFullPreviewSettings().fps,
-    );
+    this.player?.requestSeek(e.detail * this.player.playback.fps);
   };
 
   /**
@@ -224,7 +231,7 @@ class RevideoPlayer extends HTMLElement {
     if (!this.project) {
       return;
     }
-    this.time = frame / this.project.meta.getFullPreviewSettings().fps;
+    this.time = frame / this.player.playback.fps;
   };
 
   /**
@@ -246,8 +253,7 @@ class RevideoPlayer extends HTMLElement {
 
       this.duration = durationInFrames;
 
-      const durationInSeconds =
-        durationInFrames / this.project.meta.getFullPreviewSettings().fps;
+      const durationInSeconds = durationInFrames / this.player.playback.fps;
       this.dispatchEvent(
         new CustomEvent('duration', {detail: durationInSeconds}),
       );
@@ -263,6 +269,7 @@ class RevideoPlayer extends HTMLElement {
       ...this.defaultSettings,
       size: new Vector2(this.width, this.height),
       resolutionScale: this.quality,
+      fps: this.fps,
     };
     this.stage.configure(settings);
     this.player?.configure(settings);

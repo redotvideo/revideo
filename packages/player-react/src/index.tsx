@@ -12,6 +12,7 @@ interface RevideoPlayerProps {
   width?: number;
   height?: number;
   quality?: number;
+  fps?: number;
 }
 
 declare global {
@@ -31,6 +32,7 @@ interface PlayerProps {
   playing?: boolean;
   currentTime?: number;
   looping?: boolean;
+  fps?: number;
 
   width?: number;
   height?: number;
@@ -48,6 +50,7 @@ export function Player({
   playing = false,
   currentTime = 0,
   looping = true,
+  fps,
 
   width = undefined,
   height = undefined,
@@ -158,6 +161,7 @@ export function Player({
           width={width}
           height={height}
           quality={quality}
+          fps={fps}
         />
         <div
           className={`p-absolute p-bottom-0 p-w-full p-transition-opacity p-duration-200 ${

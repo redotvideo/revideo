@@ -112,6 +112,13 @@ export class FFmpegBridge {
     const id = typedData.filePath + '-' + typedData.id;
     let extractor = this.videoFrameExtractors.get(id);
 
+    // If the video has looped back to the beginning, we need to create a new extractor
+    if (extractor && typedData.startTime + 0.01 < extractor.getTime()) {
+      extractor.destroy();
+      this.videoFrameExtractors.delete(id);
+      extractor = undefined;
+    }
+
     if (!extractor) {
       extractor = new VideoFrameExtractor(
         typedData.filePath,

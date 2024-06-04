@@ -39,6 +39,7 @@ export class VideoFrameExtractor {
   private toTime: number;
   private fps: number;
   private png: boolean;
+  private framesProcessed: number = 0;
 
   private codec: string | null = null;
   private process: ffmpeg.FfmpegCommand | null = null;
@@ -82,6 +83,10 @@ export class VideoFrameExtractor {
         this.codec,
       );
     });
+  }
+
+  public getTime() {
+    return this.startTime + this.framesProcessed / this.fps;
   }
 
   private getEndTime(startTime: number) {
@@ -255,6 +260,7 @@ export class VideoFrameExtractor {
   public async popImage() {
     if (this.imageBuffers.length) {
       const image = this.imageBuffers.shift()!;
+      this.framesProcessed++;
       this.lastImage = image;
       return image;
     }
@@ -295,6 +301,7 @@ export class VideoFrameExtractor {
 
     return await new Promise<Buffer>(res => {
       this.hooksWaiting.push(() => {
+        this.framesProcessed++;
         res(this.imageBuffers.shift()!);
       });
     });

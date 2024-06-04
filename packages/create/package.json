@@ -1,6 +1,6 @@
 {
   "name": "@revideo/create",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Quickly scaffold revideo projects",
   "main": "index.js",
   "author": "revideo",
@@ -20,16 +20,16 @@
     "url": "https://github.com/havenhq/revideo.git"
   },
   "devDependencies": {
-    "@revideo/2d": "0.3.4",
-    "@revideo/core": "0.3.4",
-    "@revideo/ffmpeg": "0.3.4",
-    "@revideo/renderer": "0.3.4",
-    "@revideo/ui": "0.3.4",
-    "@revideo/vite-plugin": "0.3.4"
+    "@revideo/2d": "0.3.5",
+    "@revideo/core": "0.3.5",
+    "@revideo/ffmpeg": "0.3.5",
+    "@revideo/renderer": "0.3.5",
+    "@revideo/ui": "0.3.5",
+    "@revideo/vite-plugin": "0.3.5"
   },
   "dependencies": {
+    "@revideo/telemetry": "0.3.5",
     "minimist": "^1.2.8",
-    "prompts": "^2.4.2",
-    "@revideo/telemetry": "0.3.4"
+    "prompts": "^2.4.2"
   }
 }

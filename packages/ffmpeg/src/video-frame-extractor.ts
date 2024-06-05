@@ -108,7 +108,7 @@ export class VideoFrameExtractor {
 
     if (range) {
       inputOptions.push(
-        ...['-ss', range[0].toString(), '-to', range[1].toString()],
+        ...['-ss', range[0].toFixed(2), '-to', range[1].toFixed(2)],
       );
     }
 

@@ -30,7 +30,6 @@ export async function buildProject() {
   try {
     await build({
       configFile: path.join(process.cwd(), process.env.PROJECT_FILE || ''),
-      publicDir: false,
       build: {
         outDir: 'dist',
         rollupOptions: {

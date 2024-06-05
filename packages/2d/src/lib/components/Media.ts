@@ -5,6 +5,7 @@ import {
   clamp,
   isReactive,
   useLogger,
+  useScene,
   useThread,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
@@ -52,6 +53,18 @@ export abstract class Media extends Rect {
     if (props.play) {
       this.play();
     }
+  }
+
+  public fullSource(): string {
+    const isUrl =
+      this.src().startsWith('http://') || this.src().startsWith('https://');
+
+    if (isUrl) {
+      return this.src();
+    }
+
+    const assetRoot = useScene().assetRoot.slice(0, -1);
+    return assetRoot + this.src();
   }
 
   public isPlaying(): boolean {

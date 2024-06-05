@@ -24,7 +24,7 @@ export class Audio extends Media {
 
   @computed()
   protected audio(): HTMLAudioElement {
-    const src = viaProxy(this.src());
+    const src = viaProxy(this.fullSource());
     const key = `${this.key}/${src}`;
     let audio = Audio.pool[key];
     if (!audio) {

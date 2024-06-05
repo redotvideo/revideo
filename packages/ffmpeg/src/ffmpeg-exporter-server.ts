@@ -151,9 +151,7 @@ export class FFmpegExporterServer {
 
   private resolvePath(assetPath: string) {
     let resolvedPath: string;
-    if (assetPath.startsWith('/@fs')) {
-      resolvedPath = assetPath.replace('/@fs', '');
-    } else if (assetPath.startsWith('http')) {
+    if (assetPath.startsWith('http://') || assetPath.startsWith('https://')) {
       resolvedPath = assetPath;
     } else {
       resolvedPath = path.join(this.settings.output, '../public', assetPath);

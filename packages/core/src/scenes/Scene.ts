@@ -158,6 +158,10 @@ export interface Scene<T = unknown> {
   readonly variables: Variables;
   readonly random: Random;
   readonly meta: SceneMetadata;
+  /**
+   * The root path of the assets. Prefix for all relative paths.
+   */
+  assetRoot: string;
   creationStack?: string;
 
   /**

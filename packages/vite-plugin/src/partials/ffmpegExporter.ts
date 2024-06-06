@@ -121,7 +121,6 @@ export class FFmpegBridge {
 
     // If time has not changed, return the last frame
     if (isOldFrame) {
-      console.log('getting last frame');
       const frame = extractor!.getLastFrame();
       this.ws.send('revideo:ffmpeg-video-frame-res', {
         status: 'success',
@@ -137,7 +136,6 @@ export class FFmpegBridge {
       extractor &&
       typedData.startTime + frameDuration < extractor.getTime()
     ) {
-      console.log('video has skipped back');
       extractor.destroy();
       this.videoFrameExtractors.delete(id);
       extractor = undefined;
@@ -148,7 +146,6 @@ export class FFmpegBridge {
       extractor &&
       typedData.startTime > extractor.getTime() + frameDuration
     ) {
-      console.log('video has skipped forward');
       extractor.destroy();
       this.videoFrameExtractors.delete(id);
       extractor = undefined;

@@ -39,6 +39,7 @@ export class VideoFrameExtractor {
   private toTime: number;
   private fps: number;
   private png: boolean;
+  private framesProcessed: number = 0;
 
   private codec: string | null = null;
   private process: ffmpeg.FfmpegCommand | null = null;
@@ -84,6 +85,18 @@ export class VideoFrameExtractor {
     });
   }
 
+  public getTime() {
+    return this.startTime + this.framesProcessed / this.fps;
+  }
+
+  public getLastTime() {
+    return this.startTime + (this.framesProcessed - 1) / this.fps;
+  }
+
+  public getLastFrame() {
+    return this.lastImage;
+  }
+
   private getEndTime(startTime: number) {
     return Math.min(
       startTime + VideoFrameExtractor.chunkLengthInSeconds,
@@ -103,7 +116,7 @@ export class VideoFrameExtractor {
 
     if (range) {
       inputOptions.push(
-        ...['-ss', range[0].toString(), '-to', range[1].toString()],
+        ...['-ss', range[0].toFixed(2), '-to', range[1].toFixed(2)],
       );
     }
 
@@ -151,9 +164,6 @@ export class VideoFrameExtractor {
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', commandLine => {
-        console.log('FFmpeg process started:', commandLine);
-      })
       .on('end', () => {
         this.handleClose(0);
       })
@@ -198,9 +208,6 @@ export class VideoFrameExtractor {
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', commandLine => {
-        console.log('FFmpeg process started:', commandLine);
-      })
       .on('end', () => {
         this.handleClose(0);
       })
@@ -255,6 +262,7 @@ export class VideoFrameExtractor {
   public async popImage() {
     if (this.imageBuffers.length) {
       const image = this.imageBuffers.shift()!;
+      this.framesProcessed++;
       this.lastImage = image;
       return image;
     }
@@ -295,6 +303,7 @@ export class VideoFrameExtractor {
 
     return await new Promise<Buffer>(res => {
       this.hooksWaiting.push(() => {
+        this.framesProcessed++;
         res(this.imageBuffers.shift()!);
       });
     });

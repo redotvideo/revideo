@@ -112,6 +112,45 @@ export class FFmpegBridge {
     const id = typedData.filePath + '-' + typedData.id;
     let extractor = this.videoFrameExtractors.get(id);
 
+    const frameDuration = 1 / typedData.fps;
+
+    const isOldFrame =
+      extractor &&
+      Math.abs(typedData.startTime - extractor.getLastTime()) <
+        frameDuration / 2;
+
+    // If time has not changed, return the last frame
+    if (isOldFrame) {
+      const frame = extractor!.getLastFrame();
+      this.ws.send('revideo:ffmpeg-video-frame-res', {
+        status: 'success',
+        data: {
+          frame,
+        },
+      });
+      return;
+    }
+
+    // If the video has skipped back we need to create a new extractor
+    if (
+      extractor &&
+      typedData.startTime + frameDuration < extractor.getTime()
+    ) {
+      extractor.destroy();
+      this.videoFrameExtractors.delete(id);
+      extractor = undefined;
+    }
+
+    // If the video has skipped forward we need to create a new extractor
+    if (
+      extractor &&
+      typedData.startTime > extractor.getTime() + frameDuration
+    ) {
+      extractor.destroy();
+      this.videoFrameExtractors.delete(id);
+      extractor = undefined;
+    }
+
     if (!extractor) {
       extractor = new VideoFrameExtractor(
         typedData.filePath,

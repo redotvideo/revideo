@@ -161,16 +161,6 @@ export abstract class Media extends Rect {
     this.mediaElement().pause();
   }
 
-  public seek(time: number) {
-    const playing = this.playing();
-    this.time(this.clampTime(time));
-    if (playing) {
-      this.play();
-    } else {
-      this.pause();
-    }
-  }
-
   public clampTime(time: number): number {
     const duration = this.getDuration();
     if (this.loop()) {

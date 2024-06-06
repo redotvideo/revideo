@@ -11,6 +11,24 @@ function createHtml(src: string) {
   return HtmlParts[0] + src + HtmlParts[1];
 }
 
+function escapeSpecialChars(_: string, value: string) {
+  if (typeof value === 'string') {
+    /* eslint-disable no-useless-escape */
+    return value
+      .replace(/[\\]/g, '\\\\')
+      .replace(/[\"]/g, '\\"')
+      .replace(/[\/]/g, '\\/')
+      .replace(/[\b]/g, '\\b')
+      .replace(/[\f]/g, '\\f')
+      .replace(/[\n]/g, '\\n')
+      .replace(/[\r]/g, '\\r')
+      .replace(/[\t]/g, '\\t');
+    /* eslint-enable no-useless-escape */
+  }
+
+  return value;
+}
+
 export function rendererPlugin(
   params?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
@@ -35,7 +53,7 @@ export function rendererPlugin(
             import project from './src/project.ts?project';
 
             // Read video variables
-            project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params)}\`)` : 'project.variables'};
+            project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params, escapeSpecialChars)}\`)` : 'project.variables'};
 
             // Check range of frames to render
             const url = new URL(window.location.href);

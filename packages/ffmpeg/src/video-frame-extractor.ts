@@ -89,6 +89,14 @@ export class VideoFrameExtractor {
     return this.startTime + this.framesProcessed / this.fps;
   }
 
+  public getLastTime() {
+    return this.startTime + (this.framesProcessed - 1) / this.fps;
+  }
+
+  public getLastFrame() {
+    return this.lastImage;
+  }
+
   private getEndTime(startTime: number) {
     return Math.min(
       startTime + VideoFrameExtractor.chunkLengthInSeconds,
@@ -156,9 +164,6 @@ export class VideoFrameExtractor {
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', commandLine => {
-        console.log('FFmpeg process started:', commandLine);
-      })
       .on('end', () => {
         this.handleClose(0);
       })
@@ -203,9 +208,6 @@ export class VideoFrameExtractor {
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', commandLine => {
-        console.log('FFmpeg process started:', commandLine);
-      })
       .on('end', () => {
         this.handleClose(0);
       })

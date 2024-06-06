@@ -52,6 +52,7 @@ export interface RenderVideoSettings {
   workers?: number;
   dimensions?: [number, number];
   logProgress?: boolean;
+  basePort?: number;
 }
 
 /**
@@ -179,7 +180,8 @@ async function initializeBrowserAndStartRendering(
   params?: Record<string, unknown>,
   progressCallback?: (worker: number, progress: number) => void,
 ) {
-  const port = 9000 + i;
+  const port = (settings.basePort !== undefined ? settings.basePort : 9000) + i;
+
   const progressTracker = new Map<number, number>();
 
   const {browser, server} = await initBrowserAndServer(

@@ -9,12 +9,14 @@ export interface Projects {
 }
 
 export async function createMeta(metaPath: string) {
-  if (!fs.existsSync(metaPath)) {
-    await fs.promises.writeFile(
-      metaPath,
-      JSON.stringify({version: 0}, undefined, 2),
-      'utf8',
-    );
+  if (!process.env.META_NOWRITE) {
+    if (!fs.existsSync(metaPath)) {
+      await fs.promises.writeFile(
+        metaPath,
+        JSON.stringify({version: 0}, undefined, 2),
+        'utf8',
+      );
+    }
   }
 }
 

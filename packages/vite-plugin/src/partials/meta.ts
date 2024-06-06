@@ -47,11 +47,13 @@ export default meta;
         }
 
         timeStamps[source] = Date.now();
-        await fs.promises.writeFile(
-          source,
-          JSON.stringify(data, undefined, 2),
-          'utf8',
-        );
+        if (!process.env.META_NOWRITE) {
+          await fs.promises.writeFile(
+            source,
+            JSON.stringify(data, undefined, 2),
+            'utf8',
+          );
+        }
         client.send('revideo:meta-ack', {source});
       });
     },

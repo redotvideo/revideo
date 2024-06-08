@@ -79,12 +79,13 @@ async function initBrowserAndServer(
     throw new Error('HTTP server is not initialized');
   }
   const address = server.httpServer.address();
-  const port = address && typeof address === 'object' ? address.port : null;
-  if (port === null) {
+  const resolvedPort =
+    address && typeof address === 'object' ? address.port : null;
+  if (resolvedPort === null) {
     throw new Error('Server address is null');
   }
 
-  return {browser, server, port};
+  return {browser, server, resolvedPort};
 }
 
 /**
@@ -184,7 +185,7 @@ async function initializeBrowserAndStartRendering(
     (settings.viteBasePort !== undefined ? settings.viteBasePort : 9000) + i;
   const progressTracker = new Map<number, number>();
 
-  const {browser, server} = await initBrowserAndServer(
+  const {browser, server, resolvedPort} = await initBrowserAndServer(
     port,
     resolvedConfigPath,
     settings,
@@ -192,7 +193,7 @@ async function initializeBrowserAndStartRendering(
   );
 
   const url = buildUrl(
-    port,
+    resolvedPort,
     `${projectName}-${i}`,
     i,
     numOfWorkers,

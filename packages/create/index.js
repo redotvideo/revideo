@@ -100,7 +100,6 @@ async function run() {
 
   sendEvent(EventName.CreateCommand, {
     name: response.name,
-    path: response.path,
     starter: response.starter,
   });
 

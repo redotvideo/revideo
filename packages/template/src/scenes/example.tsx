@@ -1,25 +1,26 @@
-import {Rect, makeScene2D} from '@revideo/2d';
-import {
-  all,
-  createRef,
-  easeInExpo,
-  easeInOutExpo,
-  useScene,
-  waitFor,
-  waitUntil,
-} from '@revideo/core';
+import {Audio, Rect, makeScene2D} from '@revideo/2d';
+import {createRef, waitFor} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
   const rect = createRef<Rect>();
 
-  view.add(
-    <Rect ref={rect} size={320} radius={80} smoothCorners fill={'#f3303f'} />,
-  );
+  view.add(<Audio play={true} src={'/likethis.mp3'} />);
 
-  yield* waitUntil('rect');
-  yield* rect().scale(2, 1, easeInOutExpo).to(1, 0.6, easeInExpo);
-  const circleFill = useScene().variables.get('fill', 'blue')();
-  rect().fill(circleFill);
-  yield* all(rect().ripple(1));
-  yield* waitFor(0.3);
+  yield* waitFor(2);
+
+  view.add(<Audio play={true} src={'/lofi.mp3'} volume={0.5} />);
+
+  yield* waitFor(2);
+
+  view.add(<Audio play={true} src={'/nice.mp3'} volume={0.1} />);
+
+  yield* waitFor(2);
+
+  view.add(<Audio play={true} src={'/stomp.mp3'} />);
+
+  yield* waitFor(2);
+
+  view.add(<Audio play={true} src={'/thanks.mp3'} />);
+
+  yield* waitFor(2);
 });

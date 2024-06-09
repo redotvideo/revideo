@@ -55,6 +55,7 @@ export interface RenderVideoSettings {
   logProgress?: boolean;
   basePort?: number;
   outDir?: string;
+  viteServerHost?: string;
 }
 
 /**
@@ -74,6 +75,8 @@ async function initBrowserAndServer(
       configFile: false,
       server: {
         port: fixedPort,
+        hmr: false,
+        host: settings.viteServerHost,
       },
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),

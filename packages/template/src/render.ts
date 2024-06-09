@@ -7,7 +7,7 @@ async function render() {
     './src/project.ts',
     {fill: 'orange'},
     () => {},
-    {logProgress: true, outDir: 'out', name: 'result'},
+    {logProgress: true},
   );
 
   console.log(`Rendered video to ${file}`);

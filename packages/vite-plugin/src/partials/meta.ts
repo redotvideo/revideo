@@ -47,7 +47,7 @@ export default meta;
         }
 
         timeStamps[source] = Date.now();
-        if (!process.env.META_NOWRITE) {
+        if (!process.env.DONT_WRITE_TO_META_FILES) {
           await fs.promises.writeFile(
             source,
             JSON.stringify(data, undefined, 2),

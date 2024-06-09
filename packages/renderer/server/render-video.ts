@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
 import {v4 as uuidv4} from 'uuid';
-import {ViteDevServer, createServer} from 'vite';
+import {ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 
 /**
@@ -53,9 +53,8 @@ export interface RenderVideoSettings {
   workers?: number;
   dimensions?: [number, number];
   logProgress?: boolean;
-  basePort?: number;
   outDir?: string;
-  viteServerHost?: string;
+  viteServerOptions?: ServerOptions;
 }
 
 /**
@@ -74,9 +73,9 @@ async function initBrowserAndServer(
     createServer({
       configFile: false,
       server: {
+        ...settings.viteServerOptions,
         port: fixedPort,
         hmr: false,
-        host: settings.viteServerHost,
       },
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
@@ -191,7 +190,10 @@ async function initializeBrowserAndStartRendering(
   params?: Record<string, unknown>,
   progressCallback?: (worker: number, progress: number) => void,
 ) {
-  const port = (settings.basePort !== undefined ? settings.basePort : 9000) + i;
+  const port =
+    (settings.viteServerOptions?.port !== undefined
+      ? settings.viteServerOptions?.port
+      : 9000) + i;
 
   const progressTracker = new Map<number, number>();
 
@@ -321,7 +323,7 @@ export const renderPartialVideo = async (
   settings: RenderVideoSettings = {},
 ) => {
   // Get settings
-  const outputFileName = settings.name ?? 'result';
+  const outputFileName = settings.name ?? 'project';
   const outputFolderName = settings.outDir ?? './output';
   const hiddenFolderId = uuidv4();
   const numOfWorkers = numWorkers;
@@ -364,7 +366,7 @@ export const renderVideo = async (
   settings: RenderVideoSettings = {},
 ) => {
   // Get settings
-  const outputFileName = settings.name ?? 'result';
+  const outputFileName = settings.name ?? 'project';
   const outputFolderName = settings.outDir ?? './output';
   const hiddenFolderId = uuidv4();
   const numOfWorkers = settings.workers ?? 1;

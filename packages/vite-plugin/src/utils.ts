@@ -9,7 +9,7 @@ export interface Projects {
 }
 
 export async function createMeta(metaPath: string) {
-  if (!process.env.META_NOWRITE) {
+  if (!process.env.DONT_WRITE_TO_META_FILES) {
     if (!fs.existsSync(metaPath)) {
       await fs.promises.writeFile(
         metaPath,

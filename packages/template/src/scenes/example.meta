@@ -1,5 +1,10 @@
 {
   "version": 1,
-  "timeEvents": [],
+  "timeEvents": [
+    {
+      "name": "rect",
+      "targetTime": 0.6792665726375177
+    }
+  ],
   "seed": 3073416149
 }

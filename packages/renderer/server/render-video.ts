@@ -54,7 +54,8 @@ export interface RenderVideoSettings {
   dimensions?: [number, number];
   logProgress?: boolean;
   outDir?: string;
-  viteServerOptions?: ServerOptions;
+  viteServerOptions?: Omit<ServerOptions, 'port'>;
+  viteBasePort?: number;
 }
 
 /**
@@ -191,9 +192,7 @@ async function initializeBrowserAndStartRendering(
   progressCallback?: (worker: number, progress: number) => void,
 ) {
   const port =
-    (settings.viteServerOptions?.port !== undefined
-      ? settings.viteServerOptions?.port
-      : 9000) + i;
+    (settings.viteBasePort !== undefined ? settings.viteBasePort : 9000) + i;
 
   const progressTracker = new Map<number, number>();
 

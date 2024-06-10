@@ -17,8 +17,8 @@ out the frames to render by itself.
 Since merging partial videos gives you audio issues (audio becomes laggy), this
 function returns the path to the audio file and mute video file of the partial
 video. Afterwards, you should first concatenate all of the partial audio files
-and then concatenate all of the partial mute video files, and then merge the full audio
-and video to obtain your final mp4 file.
+and then concatenate all of the partial mute video files, and then merge the
+full audio and video to obtain your final mp4 file.
 
 To do this, you can use the `concatenateMedia()`
 ([docs](/ffmpeg/concatenateMedia)) and `mergeAudioWithVideo()`
@@ -30,8 +30,8 @@ To do this, you can use the `concatenateMedia()`
 import {renderPartialVideo} from '@revideo/renderer';
 
 const {audioFile, videoFile} = renderPartialVideo({
-  projectFile: './src/project.ts', 
-  variables: {color: 'white'}, 
+  projectFile: './src/project.ts',
+  variables: {color: 'white'},
   numWorkers: 10,
   workerId: 3,
   settings: {
@@ -43,8 +43,8 @@ const {audioFile, videoFile} = renderPartialVideo({
     },
     puppeteer: {
       args: ['--no-sandbox'],
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -54,21 +54,21 @@ An object of type `RenderPartialVideoProps` with the following attributes:
 
 ### projectFile:
 
-*string*
+_string_
 
 A string pointing towards your Vite config file. This will probably be
 `./src/project.ts`.
 
 ### workerId
 
-*number*
+_number_
 
 The id of the worker. We start counting at 0, so if you have 5 workers, values
 from 0 to 4 are accepted.
 
 ### numWorkers
 
-*number*
+_number_
 
 The number of workers you use in total. This informs the function which range of
 the video to render. For instance, worker 0 out of 10 workers would render 1/10
@@ -76,37 +76,37 @@ of the full video, whereas worker 0 out of 2 would render half of the video.
 
 ### variables?
 
-*Record<string, any>*
+_Record<string, any>_
 
 Parameters / or variables passed to your video. See [here](/parameterized-video)
 learn more about parameterized videos.
 
-
 ### settings?
 
-A `Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>` object with the following properties:
+A `Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>` object with
+the following properties:
 
 #### dimensions?
 
-*[number, number]*
+_[number, number]_
 
-Dimensions of the video to render as [x,y]. Uses the value specified in `project.meta` by default.
+Dimensions of the video to render as [x,y]. Uses the value specified in
+`project.meta` by default.
 
 #### logProgress?
 
-*boolean*
+_boolean_
 
 Logs render progress to the console if set to `true`.
 
 #### ffmpeg?
 
-FFmpeg options - is an instance of `FfmpegSettings`. These overwrite the following settings set
-through environment variables:
+FFmpeg options - is an instance of `FfmpegSettings`. These overwrite the
+following settings set through environment variables:
 
 ##### ffmpegLogLevel?
 
-*`error` | `warning` | `info` | `verbose`,
-`debug` | `trace`*
+_`error` | `warning` | `info` | `verbose`, `debug` | `trace`_
 
 The log level of FFmpeg. Can be one of `error`, `warning`, `info`, `verbose`,
 `debug`, `trace`. Default is `error`.
@@ -118,33 +118,38 @@ Revideo will be used.
 
 #### puppeteer?
 
-*BrowserLaunchArgumentOptions*
+_BrowserLaunchArgumentOptions_
 
 Launch options for puppeteer - is an instance of puppeteer's
 [BrowserLaunchArgumentOptions](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions/)
 
 #### viteBasePort?
 
-*number*
+_number_
 
-The "base port" we use for the vite server. When you have three workers and a base port 5000, the vite servers created by the three workers will use port 5000, 5001, and 5002. Default is 9000.
+The "base port" we use for the vite server. When you have three workers and a
+base port 5000, the vite servers created by the three workers will use port
+5000, 5001, and 5002. Default is 9000.
 
 #### viteServerOptions?
 
-*ServerOptions*
+_ServerOptions_
 
-Options for the vite server used for rendering. Is an instance of vite's [ServerOptions](https://vitejs.dev/config/server-options).
+Options for the vite server used for rendering. Is an instance of vite's
+[ServerOptions](https://vitejs.dev/config/server-options).
 
 #### progressCallback?
 
-*(worker: number, progress: number) => void*
+_(worker: number, progress: number) => void_
 
-A function that gets called with the progress of the rendering process, can be used to report progress back to users (e.g. in a web app). The
-function gets called with two arguments: the id of the worker that is calling
-the function, and the progress of the rendering process (float between 0 and 1). Does nothing by default
+A function that gets called with the progress of the rendering process, can be
+used to report progress back to users (e.g. in a web app). The function gets
+called with two arguments: the id of the worker that is calling the function,
+and the progress of the rendering process (float between 0 and 1). Does nothing
+by default
 
 ## Return Value
 
-*{ audioFile: string, videoFile: string }*
+_{ audioFile: string, videoFile: string }_
 
 Paths to the audio and video files of the partial render.

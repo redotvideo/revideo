@@ -21,8 +21,9 @@ The `--port` parameter is optional. By default, the service will use port 4000.
 ## Starting a render job
 
 Once your Revideo project is deployed, you can render videos using the `/render`
-endpoint by passing your desired `settings` and `variables` as a parameter. This endpoint will
-trigger a render process on the server, and respond with a download url once the rendering process has finished.
+endpoint by passing your desired `settings` and `variables` as a parameter. This
+endpoint will trigger a render process on the server, and respond with a
+download url once the rendering process has finished.
 
 **Example request:**
 
@@ -38,7 +39,8 @@ curl -X POST http://your-revideo-service.com/render \
   }'
 ```
 
-If you want to report the rendering progress back to the client, you can set the `streamProgress` parameter to true:
+If you want to report the rendering progress back to the client, you can set the
+`streamProgress` parameter to true:
 
 ```bash
 curl -X POST http://your-revideo-service.com/render \
@@ -53,13 +55,12 @@ curl -X POST http://your-revideo-service.com/render \
   }'
 ```
 
-
 ## Rendering With Callbacks
 
-If you don't want to keep the connection to the server open during the full duration of the rendering process, you can render videos
-with the `callbackUrl` parameter. This will
-trigger a render process on the server, and respond to a callback url after the
-rendering process is done.
+If you don't want to keep the connection to the server open during the full
+duration of the rendering process, you can render videos with the `callbackUrl`
+parameter. This will trigger a render process on the server, and respond to a
+callback url after the rendering process is done.
 
 **Example request:**
 
@@ -74,7 +75,6 @@ curl -X POST http://your-revideo-service.com/render \
     "callbackUrl": "http://your-callback-url.com/render-status"
   }'
 ```
-
 
 In this request, `variables` refer to the variables passed to your video, and
 `callbackUrl` is the url that will receive an update when the rendering process

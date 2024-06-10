@@ -14,13 +14,13 @@ package.
 
 You can render videos through the node.js function `renderVideo` from the
 `@revideo/renderer` package, which uses a headless browser. After the function
-has run, your .mp4 file will be located in the output path specified in
-`vite.config.ts`, which is `output/project.mp4` by default.
+has run, your .mp4 file will be located in the output path specified in the
+arguments of `renderVideo()`, which is `output/out.mp4` by default.
 
 ```ts
 import {renderVideo} from '@revideo/renderer';
 
-renderVideo('./vite.config.ts');
+renderVideo('./src/project.ts');
 ```
 
 For more advanced usage, check out the

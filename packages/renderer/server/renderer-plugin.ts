@@ -32,6 +32,7 @@ function escapeSpecialChars(_: string, value: string) {
 export function rendererPlugin(
   params?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
+  projectFile?: string,
 ): Plugin {
   if (customFfmpegSettings?.ffmpegPath) {
     ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);
@@ -50,7 +51,7 @@ export function rendererPlugin(
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
             import {render} from '@revideo/renderer/lib/client/render';
-            import project from './src/project.ts?project';
+            import project from '${projectFile}?project';
 
             // Read video variables
             project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params, escapeSpecialChars)}\`)` : 'project.variables'};

@@ -50,8 +50,7 @@
     "lint-staged": "^15.1.0",
     "prettier": "^3.1.0",
     "prettier-plugin-organize-imports": "^3.2.4",
-    "typescript": "^5.2.2",
-    "vite": "4.5.2"
+    "typescript": "^5.2.2"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",
@@ -64,6 +63,7 @@
     "marked": "^12.0.1",
     "shiki": "^1.1.7",
     "uuid": "^9.0.1",
-    "@types/node": "18.14.0"
+    "@types/node": "18.14.0",
+    "vite": "4.5.2"
   }
 }

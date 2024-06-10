@@ -104,10 +104,10 @@ async function renderWithoutCallback(req: Request, res: Response) {
       await renderVideo({
         projectFile: process.env.PROJECT_FILE || '',
         variables,
-        progressCallback: sendProgress,
         settings: {
           ...settings,
           outFile: tempProjectName,
+          progressCallback: sendProgress,
         },
       });
 

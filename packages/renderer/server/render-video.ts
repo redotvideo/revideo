@@ -67,6 +67,7 @@ export interface RenderSettings {
    */
   viteBasePort?: number;
   viteServerOptions?: Omit<ServerOptions, 'port'>;
+  progressCallback?: (worker: number, progress: number) => void;
 }
 
 /**
@@ -351,7 +352,6 @@ function getPropDefaults(settings: RenderSettings) {
 interface RenderVideoProps {
   projectFile: string;
   variables?: Record<string, unknown>;
-  progressCallback?: (worker: number, progress: number) => void;
   settings?: RenderSettings;
 }
 
@@ -366,7 +366,6 @@ interface RenderVideoProps {
 export const renderVideo = async ({
   projectFile,
   variables,
-  progressCallback,
   settings = {},
 }: RenderVideoProps) => {
   const {outputFileName, outputFolderName, numOfWorkers, hiddenFolderId} =
@@ -385,7 +384,7 @@ export const renderVideo = async ({
         settings,
         hiddenFolderId,
         variables,
-        progressCallback,
+        settings.progressCallback,
       ),
     );
   }
@@ -418,7 +417,6 @@ interface RenderPartialVideoProps extends RenderVideoProps {
 export const renderPartialVideo = async ({
   projectFile,
   variables,
-  progressCallback,
   settings,
   workerId,
 }: RenderPartialVideoProps) => {
@@ -434,7 +432,7 @@ export const renderPartialVideo = async ({
     settings,
     hiddenFolderId,
     variables,
-    progressCallback,
+    settings.progressCallback,
   );
 
   const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.mp4`;

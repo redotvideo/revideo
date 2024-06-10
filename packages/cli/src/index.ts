@@ -21,7 +21,7 @@ program
   .option(
     '--projectFile <path>',
     'Path to the project file',
-    './vite.config.ts',
+    './src/project.ts',
   )
   .option('--port <number>', 'Port on which to start the server', '4000')
   .option('--watchDir <path>', 'Directory to watch for changes', 'src')

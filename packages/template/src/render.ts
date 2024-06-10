@@ -4,7 +4,7 @@ async function render() {
   console.log('Rendering video...');
 
   const file = await renderVideo(
-    './vite.config.ts',
+    './src/project.ts',
     {fill: 'orange'},
     () => {},
     {logProgress: true},

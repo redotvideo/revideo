@@ -161,7 +161,7 @@ export interface Scene<T = unknown> {
   /**
    * The root path of the assets. Prefix for all relative paths.
    */
-  assetRoot: string;
+  assetRoot: `${string}/`;
   creationStack?: string;
 
   /**

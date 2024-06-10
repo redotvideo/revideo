@@ -5,7 +5,7 @@ import './styles.css';
 import {shouldShowControls} from './utils';
 
 interface RevideoPlayerProps {
-  src: string;
+  src: `${string}/`;
   playing?: string;
   variables?: string;
   looping?: string;
@@ -25,7 +25,7 @@ declare global {
 }
 
 interface PlayerProps {
-  src: string;
+  src: `${string}/`;
 
   controls?: boolean;
   variables?: Record<string, any>;

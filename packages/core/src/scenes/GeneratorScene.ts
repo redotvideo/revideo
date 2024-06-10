@@ -49,7 +49,7 @@ export abstract class GeneratorScene<T>
   public readonly slides: Slides;
   public readonly variables: Variables;
   public random: Random;
-  public assetRoot: string = '/';
+  public assetRoot: `${string}/` = '/';
   public creationStack?: string;
   public previousOnTop: SignalValue<boolean>;
 

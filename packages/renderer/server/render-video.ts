@@ -6,12 +6,13 @@ import {
   getVideoDuration,
   mergeAudioWithVideo,
 } from '@revideo/ffmpeg';
+import motionCanvas from '@revideo/vite-plugin';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
 import {v4 as uuidv4} from 'uuid';
-import {ViteDevServer, createServer} from 'vite';
+import {ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 
 /**
@@ -52,6 +53,8 @@ export interface RenderVideoSettings {
   workers?: number;
   dimensions?: [number, number];
   logProgress?: boolean;
+  outDir?: string;
+  viteServerOptions?: Omit<ServerOptions, 'port'>;
   viteBasePort?: number;
 }
 
@@ -60,21 +63,28 @@ export interface RenderVideoSettings {
  */
 async function initBrowserAndServer(
   fixedPort: number,
-  resolvedConfigPath: string,
+  projectFile: string,
+  outputFolderName: string,
   settings: RenderVideoSettings,
   params?: Record<string, unknown>,
 ) {
   const args = settings.puppeteer?.args ?? [];
   args.includes('--single-process') || args.push('--single-process');
 
+  const resolvedProjectPath = path.join(process.cwd(), projectFile);
   const [browser, server] = await Promise.all([
     puppeteer.launch({headless: true, ...settings.puppeteer, args}),
     createServer({
-      configFile: resolvedConfigPath,
+      configFile: false,
       server: {
+        ...settings.viteServerOptions,
         port: fixedPort,
+        hmr: false,
       },
-      plugins: [rendererPlugin(params, settings.ffmpeg)],
+      plugins: [
+        motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
+        rendererPlugin(params, settings.ffmpeg, projectFile),
+      ],
     }).then(server => server.listen()),
   ]);
 
@@ -82,12 +92,13 @@ async function initBrowserAndServer(
     throw new Error('HTTP server is not initialized');
   }
   const address = server.httpServer.address();
-  const port = address && typeof address === 'object' ? address.port : null;
-  if (port === null) {
+  const resolvedPort =
+    address && typeof address === 'object' ? address.port : null;
+  if (resolvedPort === null) {
     throw new Error('Server address is null');
   }
 
-  return {browser, server, port};
+  return {browser, server, resolvedPort};
 }
 
 /**
@@ -174,8 +185,9 @@ async function renderVideoOnPage(
  * Initializes the browser and starts rendering the video
  */
 async function initializeBrowserAndStartRendering(
-  resolvedConfigPath: string,
-  projectName: string,
+  projectFile: string,
+  outputFileName: string,
+  outputFolderName: string,
   i: number,
   numOfWorkers: number,
   settings: RenderVideoSettings,
@@ -185,18 +197,20 @@ async function initializeBrowserAndStartRendering(
 ) {
   const port =
     (settings.viteBasePort !== undefined ? settings.viteBasePort : 9000) + i;
+
   const progressTracker = new Map<number, number>();
 
-  const {browser, server} = await initBrowserAndServer(
+  const {browser, server, resolvedPort} = await initBrowserAndServer(
     port,
-    resolvedConfigPath,
+    projectFile,
+    outputFolderName,
     settings,
     params,
   );
 
   const url = buildUrl(
-    port,
-    `${projectName}-${i}`,
+    resolvedPort,
+    `${outputFileName}-${i}`,
     i,
     numOfWorkers,
     settings.range,
@@ -221,14 +235,14 @@ async function initializeBrowserAndStartRendering(
  */
 async function collectAudioAndVideoFiles(
   numOfWorkers: number,
-  projectName: string,
+  outputFileName: string,
   hiddenFolderId: string,
 ) {
   const audioFiles = [];
   const videoFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/visuals.mp4`;
-    const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}/audio.wav`;
+    const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/visuals.mp4`;
+    const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/audio.wav`;
 
     if (!(await doesFileExist(audioFilePath))) {
       const videoDuration = await getVideoDuration(videoFilePath);
@@ -245,22 +259,23 @@ async function collectAudioAndVideoFiles(
  * Concatenates audio and video files and merges them into a single video file.
  */
 async function concatenateAudioAndVideoFiles(
-  projectName: string,
+  outputFileName: string,
+  outputFolder: string,
   audioFiles: string[],
   videoFiles: string[],
 ) {
   await concatenateMedia(
     videoFiles,
-    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
+    path.join(outputFolder, `${outputFileName}-visuals.mp4`),
   );
   await concatenateMedia(
     audioFiles,
-    path.join(process.cwd(), `output/${projectName}-audio.wav`),
+    path.join(outputFolder, `${outputFileName}-audio.wav`),
   );
   await mergeAudioWithVideo(
-    path.join(process.cwd(), `output/${projectName}-audio.wav`),
-    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
-    path.join(process.cwd(), `output/${projectName}.mp4`),
+    path.join(outputFolder, `${outputFileName}-audio.wav`),
+    path.join(outputFolder, `${outputFileName}-visuals.mp4`),
+    path.join(outputFolder, `${outputFileName}.mp4`),
   );
 }
 
@@ -268,7 +283,8 @@ async function concatenateAudioAndVideoFiles(
  * Deletes all partial files after concatenation is done
  */
 async function cleanup(
-  projectName: string,
+  outputFileName: string,
+  outputFolderName: string,
   numOfWorkers: number,
   hiddenFolderId: string,
 ) {
@@ -276,18 +292,18 @@ async function cleanup(
   const cleanupFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
     cleanupFolders.push(
-      `${os.tmpdir()}/revideo-${projectName}-${i}-${hiddenFolderId}`,
+      `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}`,
     );
     cleanupFiles.push(
-      path.join(process.cwd(), `output/${projectName}-${i}.mp4`),
+      path.join(process.cwd(), outputFolderName, `${outputFileName}-${i}.mp4`),
     );
   }
 
   cleanupFiles.push(
-    path.join(process.cwd(), `output/${projectName}-audio.wav`),
+    path.join(process.cwd(), outputFolderName, `${outputFileName}-audio.wav`),
   );
   cleanupFiles.push(
-    path.join(process.cwd(), `output/${projectName}-visuals.mp4`),
+    path.join(process.cwd(), outputFolderName, `${outputFileName}-visuals.mp4`),
   );
 
   const folderCleanupPromises = cleanupFolders.map(folder =>
@@ -302,7 +318,7 @@ async function cleanup(
 }
 
 export const renderPartialVideo = async (
-  configFile: string,
+  projectFile: string,
   workerId: number,
   numWorkers: number,
   params?: Record<string, unknown>,
@@ -310,14 +326,15 @@ export const renderPartialVideo = async (
   settings: RenderVideoSettings = {},
 ) => {
   // Get settings
-  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
-  const projectName = settings.name ?? 'project';
+  const outputFileName = settings.name ?? 'project';
+  const outputFolderName = settings.outDir ?? './output';
   const hiddenFolderId = uuidv4();
   const numOfWorkers = numWorkers;
 
   await initializeBrowserAndStartRendering(
-    resolvedConfigPath,
-    projectName,
+    projectFile,
+    outputFileName,
+    outputFolderName,
     workerId,
     numOfWorkers,
     settings,
@@ -326,8 +343,8 @@ export const renderPartialVideo = async (
     progressCallback,
   );
 
-  const videoFilePath = `${os.tmpdir()}/revideo-${projectName}-${workerId}-${hiddenFolderId}/visuals.mp4`;
-  const audioFilePath = `${os.tmpdir()}/revideo-${projectName}-${workerId}-${hiddenFolderId}/audio.wav`;
+  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.mp4`;
+  const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/audio.wav`;
 
   if (!(await doesFileExist(audioFilePath))) {
     const videoDuration = await getVideoDuration(videoFilePath);
@@ -346,14 +363,14 @@ export const renderPartialVideo = async (
  * @returns - Path to the rendered video file.
  */
 export const renderVideo = async (
-  configFile: string,
+  projectFile: string,
   params?: Record<string, unknown>,
   progressCallback?: (worker: number, progress: number) => void,
   settings: RenderVideoSettings = {},
 ) => {
   // Get settings
-  const resolvedConfigPath = path.resolve(process.cwd(), configFile);
-  const projectName = settings.name ?? 'project';
+  const outputFileName = settings.name ?? 'project';
+  const outputFolderName = settings.outDir ?? './output';
   const hiddenFolderId = uuidv4();
   const numOfWorkers = settings.workers ?? 1;
 
@@ -362,8 +379,9 @@ export const renderVideo = async (
   for (let i = 0; i < numOfWorkers; i++) {
     renderPromises.push(
       initializeBrowserAndStartRendering(
-        resolvedConfigPath,
-        projectName,
+        projectFile,
+        outputFileName,
+        outputFolderName,
         i,
         numOfWorkers,
         settings,
@@ -380,13 +398,18 @@ export const renderVideo = async (
   // Collect and concatenate audio and video files
   const {audioFiles, videoFiles} = await collectAudioAndVideoFiles(
     numOfWorkers,
-    projectName,
+    outputFileName,
     hiddenFolderId,
   );
-  await concatenateAudioAndVideoFiles(projectName, audioFiles, videoFiles);
-  await cleanup(projectName, numOfWorkers, hiddenFolderId);
+  await concatenateAudioAndVideoFiles(
+    outputFileName,
+    outputFolderName,
+    audioFiles,
+    videoFiles,
+  );
+  await cleanup(outputFileName, outputFolderName, numOfWorkers, hiddenFolderId);
 
-  return `output/${projectName}.mp4`;
+  return path.join(outputFolderName, `${outputFileName}.mp4`);
 };
 
 function trackProgress(

@@ -5,6 +5,7 @@ import {
   clamp,
   isReactive,
   useLogger,
+  useScene,
   useThread,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
@@ -52,6 +53,29 @@ export abstract class Media extends Rect {
     if (props.play) {
       this.play();
     }
+  }
+
+  public assetRoot?: `${string}/`;
+
+  public fullSource(): string {
+    if (!this.assetRoot) {
+      this.assetRoot = useScene().assetRoot;
+    }
+
+    let src = this.src();
+    const isUrl = src.startsWith('http://') || src.startsWith('https://');
+
+    if (isUrl) {
+      return src;
+    }
+
+    // We remove the trailing slash from the assetRoot
+    // and make sure there is a leading slash in the src
+    if (src[0] !== '/') {
+      src = '/' + src;
+    }
+
+    return this.assetRoot.slice(0, -1) + src;
   }
 
   public isPlaying(): boolean {

@@ -30,7 +30,7 @@ function escapeSpecialChars(_: string, value: string) {
 }
 
 export function rendererPlugin(
-  params?: Record<string, unknown>,
+  variables?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
   projectFile?: string,
 ): Plugin {
@@ -54,7 +54,7 @@ export function rendererPlugin(
             import project from '${projectFile}?project';
 
             // Read video variables
-            project.variables = ${params ? `JSON.parse(\`${JSON.stringify(params, escapeSpecialChars)}\`)` : 'project.variables'};
+            project.variables = ${variables ? `JSON.parse(\`${JSON.stringify(variables, escapeSpecialChars)}\`)` : 'project.variables'};
 
             // Check range of frames to render
             const url = new URL(window.location.href);

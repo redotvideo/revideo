@@ -126,7 +126,7 @@ class RevideoPlayer extends HTMLElement {
     }
   }
 
-  private async updateSource(source: string) {
+  private async updateSource(source: `${string}/`) {
     this.setState(State.Initial);
 
     this.abortController?.abort();
@@ -134,7 +134,7 @@ class RevideoPlayer extends HTMLElement {
 
     let project: Project;
     try {
-      const promise = import(/* webpackIgnore: true */ source);
+      const promise = import(/* webpackIgnore: true */ source + 'project.js');
       const delay = new Promise(resolve => setTimeout(resolve, 200));
       await Promise.any([delay, promise]);
       this.setState(State.Loading);
@@ -148,6 +148,7 @@ class RevideoPlayer extends HTMLElement {
     this.defaultSettings = project.meta.getFullPreviewSettings();
     const player = new Player(project);
     player.setVariables(this.variables);
+    player.setAssetRoot(source);
     player.toggleLoop(this.looping);
 
     this.player?.onRender.unsubscribe(this.render);

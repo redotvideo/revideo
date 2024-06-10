@@ -172,7 +172,7 @@ export class Video extends Media {
 
   @computed()
   private video(): HTMLVideoElement {
-    const src = viaProxy(this.src());
+    const src = viaProxy(this.fullSource());
     const key = `${this.key}/${src}`;
     let video = Video.pool[key];
     if (!video) {

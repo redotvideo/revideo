@@ -15,14 +15,19 @@ export async function render(req: Request, res: Response) {
 }
 
 async function renderWithCallback(req: Request, res: Response) {
+  // TODO: validate request body
   const {variables, callbackUrl, settings} = req.body;
   const tempProjectName = uuidv4();
   res.json({tempProjectName});
 
   try {
-    await renderVideo(process.env.PROJECT_FILE || '', variables, () => {}, {
-      ...settings,
-      name: tempProjectName,
+    await renderVideo({
+      projectFile: process.env.PROJECT_FILE || '',
+      variables,
+      settings: {
+        ...settings,
+        outFile: tempProjectName,
+      },
     });
 
     const resultFilePath = path.join(
@@ -72,8 +77,9 @@ async function renderWithCallback(req: Request, res: Response) {
 }
 
 async function renderWithoutCallback(req: Request, res: Response) {
+  // TODO: validate request body
   const {variables, streamProgress, settings} = req.body;
-  const tempProjectName = uuidv4();
+  const tempProjectName: `${string}.mp4` = `${uuidv4()}.mp4`;
   const resultFilePath = path.join(
     process.cwd(),
     `output/${tempProjectName}.mp4`,
@@ -95,15 +101,15 @@ async function renderWithoutCallback(req: Request, res: Response) {
     };
 
     try {
-      await renderVideo(
-        process.env.PROJECT_FILE || '',
+      await renderVideo({
+        projectFile: process.env.PROJECT_FILE || '',
         variables,
-        sendProgress,
-        {
+        settings: {
           ...settings,
-          name: tempProjectName,
+          outFile: tempProjectName,
+          progressCallback: sendProgress,
         },
-      );
+      });
 
       const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}.mp4`;
       res.write(`event: completed\n`);
@@ -122,8 +128,13 @@ async function renderWithoutCallback(req: Request, res: Response) {
     }
   } else {
     try {
-      await renderVideo(process.env.PROJECT_FILE || '', variables, () => {}, {
-        name: tempProjectName,
+      await renderVideo({
+        projectFile: process.env.PROJECT_FILE || '',
+        variables,
+        settings: {
+          ...settings,
+          outFile: tempProjectName,
+        },
       });
 
       const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}.mp4`;

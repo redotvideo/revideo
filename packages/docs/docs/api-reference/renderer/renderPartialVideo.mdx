@@ -17,8 +17,8 @@ out the frames to render by itself.
 Since merging partial videos gives you audio issues (audio becomes laggy), this
 function returns the path to the audio file and mute video file of the partial
 video. Afterwards, you should first concatenate all of the partial audio files
-and then concatenate all of the partial video files, and then merge the audio
-and video to obtain your final mp4 file.
+and then concatenate all of the partial mute video files, and then merge the
+full audio and video to obtain your final mp4 file.
 
 To do this, you can use the `concatenateMedia()`
 ([docs](/ffmpeg/concatenateMedia)) and `mergeAudioWithVideo()`
@@ -29,16 +29,12 @@ To do this, you can use the `concatenateMedia()`
 ```tsx
 import {renderPartialVideo} from '@revideo/renderer';
 
-const {audioFile, videoFile} = renderPartialVideo(
-  './vite.config.ts',
-  3,
-  10,
-  {color: 'white'},
-  () => {},
-  {
-    name: 'out',
-    workers: 1,
-    range: [1, 3],
+const {audioFile, videoFile} = renderPartialVideo({
+  projectFile: './src/project.ts',
+  variables: {color: 'white'},
+  numWorkers: 10,
+  workerId: 3,
+  settings: {
     dimensions: [1080, 1792],
     logProgress: true,
     fmpeg: {
@@ -49,90 +45,111 @@ const {audioFile, videoFile} = renderPartialVideo(
       args: ['--no-sandbox'],
     },
   },
-);
+});
 ```
 
 ## Arguments
 
-### configFile:
+An object of type `RenderPartialVideoProps` with the following attributes:
 
-A string pointing towards your Vite config file. This will almost always be
-`vite.config.ts`.
+### projectFile:
+
+_string_
+
+A string pointing towards your Vite config file. This will probably be
+`./src/project.ts`.
 
 ### workerId
+
+_number_
 
 The id of the worker. We start counting at 0, so if you have 5 workers, values
 from 0 to 4 are accepted.
 
 ### numWorkers
 
+_number_
+
 The number of workers you use in total. This informs the function which range of
 the video to render. For instance, worker 0 out of 10 workers would render 1/10
 of the full video, whereas worker 0 out of 2 would render half of the video.
 
-### params (optional):
+### variables?
+
+_Record<string, any>_
 
 Parameters / or variables passed to your video. See [here](/parameterized-video)
-learn more about parameterized videos. `default = {}`
+learn more about parameterized videos.
 
-### progressCallback (optional):
+### settings?
 
-A function that gets called with the progress of the rendering process. The
-function gets called with two arguments: the id of the worker that is calling
-the function, and the progress of the rendering process (float between 0 and 1).
-`default = () => {}`
+A `Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>` object with
+the following properties:
 
-### settings (optional):
+#### dimensions?
 
-An object with the following arguments:
+_[number, number]_
 
-#### name (optional):
+Dimensions of the video to render as [x,y]. Uses the value specified in
+`project.meta` by default.
 
-The file name of the video output - the video will be saved to `{name}.mp4`.
-`default = "project"`
+#### logProgress?
 
-#### workers (optional):
+_boolean_
 
-The number of processes you want to use to parallelize rendering - for example,
-rendering a 100s long video with 10 workers means that 10 processes handle 10s
-of video each. Your laptop will probably render fastest with one worker, but VMs
-with a lot of computing power can benefit from using more than one - ideally,
-you should experiment what number gives you the best speedup. `default = 1`.
+Logs render progress to the console if set to `true`.
 
-#### range (optional):
+#### ffmpeg?
 
-The start and end second of the video. Can be used to only render a part of the
-video. `default = [0, Infinity]`
+FFmpeg options - is an instance of `FfmpegSettings`. These overwrite the
+following settings set through environment variables:
 
-#### dimensions (optional):
+##### ffmpegLogLevel?
 
-Dimensions of the video to render as [x,y]. Default: uses the value specified in
-project.meta.
-
-#### logProgress (optional):
-
-Logs render progress to the console if set to `true`
-
-#### ffmpeg (optional):
-
-FFmpeg options - is an instance of FFmpegOptions.
-
-##### ffmpegLogLevel (optional):
+_`error` | `warning` | `info` | `verbose`, `debug` | `trace`_
 
 The log level of FFmpeg. Can be one of `error`, `warning`, `info`, `verbose`,
-`debug`, `trace`. `default = "error"`
+`debug`, `trace`. Default is `error`.
 
-##### ffmpegPath (optional):
+##### ffmpegPath?
 
 The path to the FFmpeg binary. If not specified, the FFmpeg binary shipped with
 Revideo will be used.
 
-#### puppeteer (optional):
+#### puppeteer?
+
+_BrowserLaunchArgumentOptions_
 
 Launch options for puppeteer - is an instance of puppeteer's
 [BrowserLaunchArgumentOptions](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions/)
 
-## Returns
+#### viteBasePort?
 
-`{ audioFile, videoFile }`, where both are strings representing the path to the
-files.
+_number_
+
+The "base port" we use for the vite server. When you have three workers and a
+base port 5000, the vite servers created by the three workers will use port
+5000, 5001, and 5002. Default is 9000.
+
+#### viteServerOptions?
+
+_ServerOptions_
+
+Options for the vite server used for rendering. Is an instance of vite's
+[ServerOptions](https://vitejs.dev/config/server-options).
+
+#### progressCallback?
+
+_(worker: number, progress: number) => void_
+
+A function that gets called with the progress of the rendering process, can be
+used to report progress back to users (e.g. in a web app). The function gets
+called with two arguments: the id of the worker that is calling the function,
+and the progress of the rendering process (float between 0 and 1). Does nothing
+by default
+
+## Return Value
+
+_{ audioFile: string, videoFile: string }_
+
+Paths to the audio and video files of the partial render.

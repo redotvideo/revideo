@@ -55,16 +55,21 @@ export abstract class Media extends Rect {
     }
   }
 
-  public fullSource(): string {
-    const isUrl =
-      this.src().startsWith('http://') || this.src().startsWith('https://');
+  public assetRoot?: string;
 
-    if (isUrl) {
-      return this.src();
+  public fullSource(): string {
+    if (!this.assetRoot) {
+      this.assetRoot = useScene().assetRoot.slice(0, -1);
     }
 
-    const assetRoot = useScene().assetRoot.slice(0, -1);
-    return assetRoot + this.src();
+    const src = this.src();
+    const isUrl = src.startsWith('http://') || src.startsWith('https://');
+
+    if (isUrl) {
+      return src;
+    }
+
+    return this.assetRoot + src;
   }
 
   public isPlaying(): boolean {

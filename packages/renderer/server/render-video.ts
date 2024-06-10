@@ -206,7 +206,7 @@ async function initializeBrowserAndStartRendering(
   );
 
   const url = buildUrl(
-    port,
+    resolvedPort,
     `${outputFileName}-${i}`,
     i,
     numOfWorkers,

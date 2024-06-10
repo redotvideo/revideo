@@ -1,7 +1,7 @@
+import motionCanvas from '@revideo/vite-plugin';
 import {watch} from 'chokidar';
 import {Request, Response} from 'express';
 import {promises as fs} from 'fs';
-import * as path from 'path';
 import {build} from 'vite';
 
 const YELLOW_DOT = '\u001b[33m•\u001b[0m';
@@ -29,7 +29,8 @@ const successMessage = (time: number, padding: number) =>
 export async function buildProject() {
   try {
     await build({
-      configFile: path.join(process.cwd(), process.env.PROJECT_FILE || ''),
+      configFile: false,
+      plugins: [motionCanvas()],
       build: {
         outDir: 'dist',
         rollupOptions: {

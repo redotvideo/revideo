@@ -8,20 +8,56 @@ slug: /render-endpoint
 You can use our CLI to deploy your revideo project, which will expose a web
 server with endpoints for rendering videos and downloading rendered videos as
 mp4. An application example of this can be found in our
-[Saas template](https://github.com/redotvideo/revideo-saas-template/tree/main).
+[Saas template](https://github.com/redotvideo/examples/saas-template).
 
 To deploy a Revideo project, run the following command:
 
 ```bash
-npx revideo serve --projectFile vite.config.ts --port 3000
+npx revideo serve --projectFile ./src/project.ts --port 3000
 ```
 
 The `--port` parameter is optional. By default, the service will use port 4000.
 
-### Starting a render job
+## Starting a render job
 
 Once your Revideo project is deployed, you can render videos using the `/render`
-endpoint with parameters `variables` and `callbackUrl`. This endpoint will
+endpoint by passing your desired `settings` and `variables` as a parameter. This endpoint will
+trigger a render process on the server, and respond with a download url once the rendering process has finished.
+
+**Example request:**
+
+```bash
+curl -X POST http://your-revideo-service.com/render \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {
+      "image": "some-image.png",
+      "color": "red"
+    },
+    "settings": { "workers": 2 }
+  }'
+```
+
+If you want to report the rendering progress back to the client, you can set the `streamProgress` parameter to true:
+
+```bash
+curl -X POST http://your-revideo-service.com/render \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {
+      "image": "some-image.png",
+      "color": "red"
+    },
+    "settings": { "workers": 2 },
+    "streamProgress": true
+  }'
+```
+
+
+## Rendering With Callbacks
+
+If you don't want to keep the connection to the server open during the full duration of the rendering process, you can render videos
+with the `callbackUrl` parameter. This will
 trigger a render process on the server, and respond to a callback url after the
 rendering process is done.
 
@@ -38,6 +74,7 @@ curl -X POST http://your-revideo-service.com/render \
     "callbackUrl": "http://your-callback-url.com/render-status"
   }'
 ```
+
 
 In this request, `variables` refer to the variables passed to your video, and
 `callbackUrl` is the url that will receive an update when the rendering process

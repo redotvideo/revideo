@@ -68,9 +68,12 @@ async function initBrowserAndServer(
   settings: RenderVideoSettings,
   params?: Record<string, unknown>,
 ) {
+  const args = settings.puppeteer?.args ?? [];
+  args.includes('--single-process') || args.push('--single-process');
+
   const resolvedProjectPath = path.join(process.cwd(), projectFile);
   const [browser, server] = await Promise.all([
-    puppeteer.launch({headless: true, ...settings.puppeteer}),
+    puppeteer.launch({headless: true, ...settings.puppeteer, args}),
     createServer({
       configFile: false,
       server: {

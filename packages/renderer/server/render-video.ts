@@ -40,9 +40,12 @@ function buildUrl(
   );
 }
 
-export interface RenderVideoSettings {
-  // Name of the video file
-  name?: string;
+export interface RenderSettings {
+  // Name of the video file (default is 'video.mp4')
+  outFile?: `${string}.mp4`;
+
+  // Folder where the video will be saved (default is './out')
+  outDir?: string;
 
   // Start and end in seconds
   range?: [number, number];
@@ -50,12 +53,20 @@ export interface RenderVideoSettings {
   ffmpeg?: FfmpegSettings;
 
   puppeteer?: BrowserLaunchArgumentOptions;
+
   workers?: number;
   dimensions?: [number, number];
   logProgress?: boolean;
-  outDir?: string;
-  viteServerOptions?: Omit<ServerOptions, 'port'>;
+
+  /**
+   * When using multiple workers, this is the port of the first worker.
+   * Each worker will increment the port by 1.
+   * If the port is already in use, the next port will be used.
+   *
+   * Default is 9000
+   */
   viteBasePort?: number;
+  viteServerOptions?: Omit<ServerOptions, 'port'>;
 }
 
 /**
@@ -65,8 +76,8 @@ async function initBrowserAndServer(
   fixedPort: number,
   projectFile: string,
   outputFolderName: string,
-  settings: RenderVideoSettings,
-  params?: Record<string, unknown>,
+  settings: RenderSettings,
+  variables?: Record<string, unknown>,
 ) {
   const resolvedProjectPath = path.join(process.cwd(), projectFile);
   const [browser, server] = await Promise.all([
@@ -80,7 +91,7 @@ async function initBrowserAndServer(
       },
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
-        rendererPlugin(params, settings.ffmpeg, projectFile),
+        rendererPlugin(variables, settings.ffmpeg, projectFile),
       ],
     }).then(server => server.listen()),
   ]);
@@ -96,6 +107,14 @@ async function initBrowserAndServer(
   }
 
   return {browser, server, resolvedPort};
+}
+
+function trackProgress(
+  tracker: Map<number, number>,
+  id: number,
+  progress: number,
+) {
+  tracker.set(id, progress);
 }
 
 /**
@@ -187,9 +206,9 @@ async function initializeBrowserAndStartRendering(
   outputFolderName: string,
   i: number,
   numOfWorkers: number,
-  settings: RenderVideoSettings,
+  settings: RenderSettings,
   hiddenFolderId: string,
-  params?: Record<string, unknown>,
+  variables?: Record<string, unknown>,
   progressCallback?: (worker: number, progress: number) => void,
 ) {
   const port =
@@ -202,7 +221,7 @@ async function initializeBrowserAndStartRendering(
     projectFile,
     outputFolderName,
     settings,
-    params,
+    variables,
   );
 
   const url = buildUrl(
@@ -314,62 +333,44 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
-export const renderPartialVideo = async (
-  projectFile: string,
-  workerId: number,
-  numWorkers: number,
-  params?: Record<string, unknown>,
-  progressCallback?: (worker: number, progress: number) => void,
-  settings: RenderVideoSettings = {},
-) => {
-  // Get settings
-  const outputFileName = settings.name ?? 'project';
-  const outputFolderName = settings.outDir ?? './output';
-  const hiddenFolderId = uuidv4();
-  const numOfWorkers = numWorkers;
-
-  await initializeBrowserAndStartRendering(
-    projectFile,
-    outputFileName,
-    outputFolderName,
-    workerId,
-    numOfWorkers,
-    settings,
-    hiddenFolderId,
-    params,
-    progressCallback,
-  );
-
-  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.mp4`;
-  const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/audio.wav`;
-
-  if (!(await doesFileExist(audioFilePath))) {
-    const videoDuration = await getVideoDuration(videoFilePath);
-    await createSilentAudioFile(audioFilePath, videoDuration);
+function getPropDefaults(settings: RenderSettings) {
+  if (settings.outFile && !settings.outFile.endsWith('.mp4')) {
+    throw new Error('outFile must end with ".mp4"');
   }
 
-  return {audioFile: audioFilePath, videoFile: videoFilePath};
-};
+  const outFile = settings.outFile?.slice(0, -4) ?? 'video';
+
+  return {
+    outputFileName: outFile,
+    outputFolderName: settings.outDir ?? './output',
+    numOfWorkers: settings.workers ?? 1,
+    hiddenFolderId: uuidv4(),
+  };
+}
+
+interface RenderVideoProps {
+  projectFile: string;
+  variables?: Record<string, unknown>;
+  progressCallback?: (worker: number, progress: number) => void;
+  settings?: RenderSettings;
+}
 
 /**
  * Renders a video to a file.
- * @param configFile - Path to the vite config file (vite.config.ts).
- * @param params - Parameters to pass to your project (see https://docs.re.video/parameterized-video)
+ * @param projectFile - Path to the project.ts file.
+ * @param variables - Variables to pass to your project (see https://docs.re.video/parameterized-video)
  * @param progressCallback - Callback function to track rendering progress. Progress is a number between 0 and 1.
  * @param settings - Settings for the rendering process.
  * @returns - Path to the rendered video file.
  */
-export const renderVideo = async (
-  projectFile: string,
-  params?: Record<string, unknown>,
-  progressCallback?: (worker: number, progress: number) => void,
-  settings: RenderVideoSettings = {},
-) => {
-  // Get settings
-  const outputFileName = settings.name ?? 'project';
-  const outputFolderName = settings.outDir ?? './output';
-  const hiddenFolderId = uuidv4();
-  const numOfWorkers = settings.workers ?? 1;
+export const renderVideo = async ({
+  projectFile,
+  variables,
+  progressCallback,
+  settings = {},
+}: RenderVideoProps) => {
+  const {outputFileName, outputFolderName, numOfWorkers, hiddenFolderId} =
+    getPropDefaults(settings);
 
   // Start rendering
   const renderPromises = [];
@@ -383,7 +384,7 @@ export const renderVideo = async (
         numOfWorkers,
         settings,
         hiddenFolderId,
-        params,
+        variables,
         progressCallback,
       ),
     );
@@ -409,10 +410,40 @@ export const renderVideo = async (
   return path.join(outputFolderName, `${outputFileName}.mp4`);
 };
 
-function trackProgress(
-  tracker: Map<number, number>,
-  id: number,
-  progress: number,
-) {
-  tracker.set(id, progress);
+interface RenderPartialVideoProps extends RenderVideoProps {
+  workerId: number;
+  settings: {workers: number} & RenderSettings;
 }
+
+export const renderPartialVideo = async ({
+  projectFile,
+  variables,
+  progressCallback,
+  settings,
+  workerId,
+}: RenderPartialVideoProps) => {
+  const {outputFileName, outputFolderName, numOfWorkers, hiddenFolderId} =
+    getPropDefaults(settings);
+
+  await initializeBrowserAndStartRendering(
+    projectFile,
+    outputFileName,
+    outputFolderName,
+    workerId,
+    numOfWorkers,
+    settings,
+    hiddenFolderId,
+    variables,
+    progressCallback,
+  );
+
+  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.mp4`;
+  const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/audio.wav`;
+
+  if (!(await doesFileExist(audioFilePath))) {
+    const videoDuration = await getVideoDuration(videoFilePath);
+    await createSilentAudioFile(audioFilePath, videoDuration);
+  }
+
+  return {audioFile: audioFilePath, videoFile: videoFilePath};
+};

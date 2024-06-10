@@ -80,10 +80,7 @@ async function renderWithoutCallback(req: Request, res: Response) {
   // TODO: validate request body
   const {variables, streamProgress, settings} = req.body;
   const tempProjectName: `${string}.mp4` = `${uuidv4()}.mp4`;
-  const resultFilePath = path.join(
-    process.cwd(),
-    `output/${tempProjectName}.mp4`,
-  );
+  const resultFilePath = path.join(process.cwd(), `output/${tempProjectName}`);
 
   if (streamProgress) {
     res.writeHead(200, {
@@ -111,7 +108,7 @@ async function renderWithoutCallback(req: Request, res: Response) {
         },
       });
 
-      const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}.mp4`;
+      const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}`;
       res.write(`event: completed\n`);
       res.write(
         `data: ${JSON.stringify({status: 'success', downloadLink})}\n\n`,
@@ -137,7 +134,7 @@ async function renderWithoutCallback(req: Request, res: Response) {
         },
       });
 
-      const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}.mp4`;
+      const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}`;
 
       res.json({
         status: 'success',

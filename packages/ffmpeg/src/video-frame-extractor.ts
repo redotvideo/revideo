@@ -303,8 +303,10 @@ export class VideoFrameExtractor {
 
     return await new Promise<Buffer>(res => {
       this.hooksWaiting.push(() => {
+        const image = this.imageBuffers.shift()!;
         this.framesProcessed++;
-        res(this.imageBuffers.shift()!);
+        this.lastImage = image;
+        res(image);
       });
     });
   }

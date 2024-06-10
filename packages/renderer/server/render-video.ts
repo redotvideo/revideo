@@ -414,16 +414,18 @@ export const renderVideo = async ({
 
 interface RenderPartialVideoProps extends RenderVideoProps {
   workerId: number;
-  settings: {workers: number} & RenderSettings;
+  numWorkers: number;
+  settings: Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>;
 }
 
 export const renderPartialVideo = async ({
   projectFile,
   variables,
   settings,
+  numWorkers,
   workerId,
 }: RenderPartialVideoProps) => {
-  const {outputFileName, outputFolderName, numOfWorkers, hiddenFolderId} =
+  const {outputFileName, outputFolderName, hiddenFolderId} =
     getPropDefaults(settings);
 
   await initializeBrowserAndStartRendering(
@@ -431,7 +433,7 @@ export const renderPartialVideo = async ({
     outputFileName,
     outputFolderName,
     workerId,
-    numOfWorkers,
+    numWorkers,
     settings,
     hiddenFolderId,
     variables,

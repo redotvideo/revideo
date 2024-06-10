@@ -19,16 +19,6 @@ const templates = [
     title: 'Minial, standalone Revideo project',
     description: 'A minimal example to get started with Revideo.',
   },
-  {
-    value: 'google-cloud-run',
-    title: 'Google Cloud Run',
-    description: 'Render a Revideo Project on Google Cloud Run.',
-  },
-  {
-    value: 'google-cloud-run-parallelized',
-    title: 'Google Cloud Run (advanced)',
-    description: 'Google Cloud Run with parallelized processing.',
-  },
 ];
 
 async function run() {

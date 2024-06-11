@@ -140,7 +140,7 @@ are rendered using the open-source tool
 implementing Posthog
 [here](https://github.com/redotvideo/revideo/tree/main/packages/telemetry).
 
-If you want to disable telemetry, just set the following environent variable:
+If you want to disable telemetry, just set the following environment variable:
 
 ```bash
 DISABLE_TELEMETRY=true

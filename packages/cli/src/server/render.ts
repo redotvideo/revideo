@@ -18,6 +18,7 @@ async function renderWithCallback(req: Request, res: Response) {
   // TODO: validate request body
   const {variables, callbackUrl, settings} = req.body;
   const tempProjectName = uuidv4();
+  const outputFileName = `${tempProjectName}.mp4`;
   res.json({tempProjectName});
 
   try {
@@ -26,16 +27,13 @@ async function renderWithCallback(req: Request, res: Response) {
       variables,
       settings: {
         ...settings,
-        outFile: tempProjectName,
+        outFile: outputFileName,
       },
     });
 
-    const resultFilePath = path.join(
-      process.cwd(),
-      `output/${tempProjectName}.mp4`,
-    );
+    const resultFilePath = path.join(process.cwd(), `output/${outputFileName}`);
 
-    const downloadLink = `${req.protocol}://${req.get('host')}/download/${tempProjectName}.mp4`;
+    const downloadLink = `${req.protocol}://${req.get('host')}/download/${outputFileName}`;
 
     const response = await axios.post(
       callbackUrl,

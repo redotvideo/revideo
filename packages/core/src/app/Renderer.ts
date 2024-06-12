@@ -287,7 +287,6 @@ export class Renderer {
         let finished = false;
         while (!finished) {
           await this.playback.progress();
-          await this.exportFrame(signal);
           this.estimator.update(
             clampRemap(from, to, 0, 1, this.playback.frame),
           );
@@ -303,6 +302,7 @@ export class Renderer {
             result = RendererResult.Aborted;
             finished = true;
           }
+          await this.exportFrame(signal);
         }
       }
     } catch (e: any) {

@@ -28,6 +28,7 @@ interface MediaAsset {
   playbackRate: number;
   volume: number;
   trimLeftInSeconds: number;
+  durationInSeconds: number;
 }
 
 /**
@@ -193,7 +194,7 @@ export class FFmpegExporterServer {
 
     const trimLeft = asset.trimLeftInSeconds / asset.playbackRate;
     const trimRight = Math.min(
-      trimLeft + asset.duration / this.settings.fps,
+      trimLeft + asset.durationInSeconds,
       trimLeft + (endFrame - startFrame) / this.settings.fps,
     );
     const padStart = (asset.startInVideo / this.settings.fps) * 1000;
@@ -295,25 +296,37 @@ export class FFmpegExporterServer {
 function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
   const assets: MediaAsset[] = [];
 
-  // A map to keep track of when each asset starts.
-  const assetStartMap = new Map<string, number>();
+  // A map to keep track of the first and last currentTime for each asset.
+  const assetTimeMap = new Map<string, {start: number; end: number}>();
 
   for (let frame = 0; frame < frames.length; frame++) {
     for (const asset of frames[frame]) {
-      if (!assetStartMap.has(asset.key)) {
-        assetStartMap.set(asset.key, frame);
+      if (!assetTimeMap.has(asset.key)) {
+        // If the asset is not in the map, add it with its current time as both start and end.
+        assetTimeMap.set(asset.key, {
+          start: asset.currentTime,
+          end: asset.currentTime,
+        });
         assets.push({
           key: asset.key,
           src: asset.src,
           type: asset.type,
           startInVideo: frame,
           endInVideo: frame,
-          duration: asset.duration,
+          duration: 0, // Placeholder, will be recalculated later based on frames
+          durationInSeconds: 0, // Placeholder, will be calculated based on currentTime
           playbackRate: asset.playbackRate,
           volume: asset.volume,
           trimLeftInSeconds: asset.currentTime,
         });
       } else {
+        // If the asset is already in the map, update the end time.
+        const timeInfo = assetTimeMap.get(asset.key);
+        if (timeInfo) {
+          timeInfo.end = asset.currentTime;
+          assetTimeMap.set(asset.key, timeInfo);
+        }
+
         const existingAsset = assets.find(a => a.key === asset.key);
         if (existingAsset) {
           existingAsset.endInVideo = frame;
@@ -322,7 +335,14 @@ function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
     }
   }
 
+  // Calculate the duration based on frame count and durationInSeconds based on currentTime.
   assets.forEach(asset => {
+    const timeInfo = assetTimeMap.get(asset.key);
+    if (timeInfo) {
+      // Calculate durationInSeconds based on the start and end currentTime values.
+      asset.durationInSeconds = timeInfo.end - timeInfo.start;
+    }
+    // Recalculate the original duration based on frame count.
     asset.duration = asset.endInVideo - asset.startInVideo + 1;
   });
 

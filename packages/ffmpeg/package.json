@@ -1,6 +1,6 @@
 {
   "name": "@revideo/ffmpeg",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Ffmpeg utilities for revideo",
   "main": "dist/index.js",
   "author": "revideo",
@@ -16,8 +16,8 @@
   ],
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.0.0",
-    "@revideo/core": "0.4.0",
-    "@revideo/telemetry": "0.4.0",
+    "@revideo/core": "0.4.1",
+    "@revideo/telemetry": "0.4.1",
     "ffmpeg-static": "^5.2.0",
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2"

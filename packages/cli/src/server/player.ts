@@ -8,11 +8,6 @@ const YELLOW_DOT = '\u001b[33m•\u001b[0m';
 const GREEN_CHECK = '\u001b[32m✔\u001b[0m';
 const RED_CROSS = '\u001b[31m✘\u001b[0m';
 
-const PLAYER_FILE_NAME = (process.env.PROJECT_FILE ?? '')
-  .split('/')
-  .pop()
-  ?.replace('.ts', '.js');
-
 const fileNotFoundMessage = (filePath: string) =>
   `${YELLOW_DOT} File ${filePath} not found. Building project...`;
 
@@ -86,7 +81,11 @@ export async function player(req: Request, res: Response) {
   let path = `./dist/${req.params.file}`;
 
   if (req.params.file === 'projectFile') {
-    path = `./dist/${PLAYER_FILE_NAME}`;
+    const playerFileName = (process.env.PROJECT_FILE ?? '')
+      .split('/')
+      .pop()
+      ?.replace('.ts', '.js');
+    path = `./dist/${playerFileName}`;
   }
 
   let buildTime: number | undefined = undefined;

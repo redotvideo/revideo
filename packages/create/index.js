@@ -86,7 +86,6 @@ async function run() {
     `examples/${response.starter}`,
   );
   copyDirectory(templateDir, response.path);
-  createConfig(response);
 
   sendEvent(EventName.CreateCommand, {
     name: response.name,
@@ -148,20 +147,6 @@ function copy(src, dest) {
   } else {
     fs.copyFileSync(src, dest);
   }
-}
-
-function createConfig(response) {
-  const configFile = path.resolve(response.path, `vite.config.ts`);
-
-  fs.writeFileSync(
-    configFile,
-    `import motionCanvas from '@revideo/vite-plugin';
-    import {defineConfig} from 'vite';
-    
-    export default defineConfig({
-      plugins: [motionCanvas()],
-    });`,
-  );
 }
 
 function getPackageManager() {

@@ -8,6 +8,11 @@ const YELLOW_DOT = '\u001b[33m•\u001b[0m';
 const GREEN_CHECK = '\u001b[32m✔\u001b[0m';
 const RED_CROSS = '\u001b[31m✘\u001b[0m';
 
+const PLAYER_FILE_NAME = (process.env.PROJECT_FILE ?? '')
+  .split('/')
+  .pop()
+  ?.replace('.ts', '.js');
+
 const fileNotFoundMessage = (filePath: string) =>
   `${YELLOW_DOT} File ${filePath} not found. Building project...`;
 
@@ -30,7 +35,7 @@ export async function buildProject() {
   try {
     await build({
       configFile: false,
-      plugins: [motionCanvas()],
+      plugins: [motionCanvas({project: process.env.PROJECT_FILE})],
       build: {
         outDir: 'dist',
         rollupOptions: {
@@ -78,7 +83,11 @@ export async function createHotReloader(dir: string) {
 }
 
 export async function player(req: Request, res: Response) {
-  const path = `./dist/${req.params.file}`;
+  let path = `./dist/${req.params.file}`;
+
+  if (req.params.file === 'projectFile') {
+    path = `./dist/${PLAYER_FILE_NAME}`;
+  }
 
   let buildTime: number | undefined = undefined;
   let error = false;

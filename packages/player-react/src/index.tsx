@@ -50,7 +50,7 @@ export function Player({
   playing = false,
   currentTime = 0,
   looping = true,
-  fps,
+  fps = 30,
 
   width = undefined,
   height = undefined,

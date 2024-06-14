@@ -60,8 +60,8 @@ export function rendererPlugin(
             const url = new URL(window.location.href);
 
             const fileNameEscaped = url.searchParams.get('fileName');
-            const workerId = url.searchParams.get('workerId');
-            const totalNumOfWorkers = url.searchParams.get('totalNumOfWorkers');
+            const workerId = parseInt(url.searchParams.get('workerId'));
+            const totalNumOfWorkers = parseInt(url.searchParams.get('totalNumOfWorkers'));
             const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
             const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
             const hiddenFolderIdEscaped = url.searchParams.get('hiddenFolderId');

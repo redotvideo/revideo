@@ -67,6 +67,7 @@ export interface RenderSettings {
    */
   viteBasePort?: number;
   viteServerOptions?: Omit<ServerOptions, 'port'>;
+  viteCacheDir?: string;
   progressCallback?: (worker: number, progress: number) => void;
 }
 
@@ -97,6 +98,7 @@ async function initBrowserAndServer(
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
         rendererPlugin(variables, settings.ffmpeg, projectFile),
       ],
+      cacheDir: settings.viteCacheDir,
     }).then(server => server.listen()),
   ]);
 
@@ -415,7 +417,7 @@ export const renderVideo = async ({
 interface RenderPartialVideoProps extends RenderVideoProps {
   workerId: number;
   numWorkers: number;
-  settings: Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>;
+  settings: Omit<RenderSettings, 'workers'>;
 }
 
 export const renderPartialVideo = async ({

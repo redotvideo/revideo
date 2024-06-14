@@ -83,8 +83,27 @@ learn more about parameterized videos.
 
 ### settings?
 
-A `Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>` object with
+A `Omit<RenderSettings, 'workers'>` object with
 the following properties:
+
+#### outFile?
+
+_string, has to end with '.mp4'_
+
+The file name of the video output
+
+#### outDir?
+
+_string_
+
+The output directory of the rendered video. `default="./output"`
+
+#### range?
+
+_[number, number]_
+
+The start and end second of the video. Can be used to only render a part of the
+video.
 
 #### dimensions?
 

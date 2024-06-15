@@ -22,6 +22,7 @@ jobs:
       - run: npm ci
       - run: PUPPETEER_PRODUCT=firefox npm ci
       - run: npx puppeteer browsers install firefox
+      - run: PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer/firefox/linux-129.0a1/firefox/firefox
       - uses: actions/cache/save@v3
         with:
           key: ${{ github.run_id }}-node-modules

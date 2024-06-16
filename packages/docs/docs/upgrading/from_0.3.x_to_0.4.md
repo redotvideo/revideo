@@ -32,6 +32,17 @@ const file = await renderVideo({
 });
 ```
 
+Note that the following changes were made to the input arguments:
+
+- in the `settings` object, "`name`", which refers to the name of the output
+  file, was renamed to `outFile`. Also, you now have to append `.mp4` to
+  `outFile`. In summary, if you previously had the argument `name: "myvideo"`,
+  you should change it to `outFile: "myvideo.mp4"`.
+- the `progressCallback` argument was moved inside of `settings`.
+
+To check how you should structure your input arguments, you can take a look at
+the `renderVideo()` [docs](/api/renderer/renderVideo).
+
 ### npx revideo serve serves the player through `localhost:4000/player` instead of `localhost:4000/player/project.js`.
 
 In 0.3.x, when running `npx revideo serve`, you were previously able to obtain

@@ -1,0 +1,59 @@
+---
+sidebar_position: 2
+slug: /common-issues/slow-rendering
+---
+
+# Slow Rendering
+
+The rendering speed of Revideo projects depends on the content of your video.
+Projects that contain no `<Video/>` elements generally render much faster than
+those that do, as processing videos is an expensive operation.
+
+Here you can find some strategies that can help speed up rendering:
+
+### Set `png={false}` in `<Video/>` tags
+
+The frames of `<Video/>` elements are extracted as png by default to ensure the
+highest quality possible. If you are okay with a slightly lower quality, you can
+set `png={false}` to extract video frames as jpeg:
+
+```tsx
+<Video src={'/myvideo.mp4'} play={true} png={false} />
+```
+
+In our experience, this can speed up rendering by a factor of up to five.
+
+### Lower output resolution through `resolutionScale` in `project.meta`.
+
+You can scale down the quality of your render output by setting the
+`resolutionScale` parameter in the `rendering` section of `project.meta`. We
+have noticed that setting the scale to 0.5 made our renders twice as fast as
+with the default of 1.0.
+
+### Use smaller assets
+
+When using media such as `<Img/>` or `<Video/>` elements, processing large files
+takes Revideo longer than smaller ones. If you want to render a video with a
+resolution of 1920x1080, it would be overkill to insert a 4K video inside a
+`<Video/>` tag, as the resolution will be scaled down anyway. In this case, you
+can speed up renders by using a smaller file.
+
+### Parallelize Rendering
+
+You can parallelize your rendering workloads using the `workers`: argument in
+`renderVideo()` ([docs](https://docs.re.video/api/renderer/renderVideo/)). Note
+that this can get memory-intensive, as it spins up multiple ffmpeg workers in
+parallel - you might have to switch to more powerful hardware to support a lot
+of workers.
+
+Alternatively, you can also parallelize render workloads using
+`renderPartialVideo()`
+([docs](https://docs.re.video/renderer/renderPartialVideo/)) and serverless
+function services such as Google Cloud Run or AWS Lambda. We have released an
+[example project](https://github.com/redotvideo/examples/tree/main/google-cloud-run-parallelized)
+demostrating how you can set up parallel rendering with Google Cloud Functions,
+and will release a guide for AWS Lambda soon.
+
+We will soon release a managed platform that enables fast, parallelized
+rendering. If you are interested in getting access, feel free to register
+interest [here](https://tally.so/r/mOz4GK).

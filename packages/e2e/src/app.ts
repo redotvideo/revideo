@@ -14,7 +14,6 @@ export async function start(): Promise<App> {
   const [browser, server] = await Promise.all([
     puppeteer.launch({
       headless: 'new',
-      product: 'firefox',
     }),
     createServer({
       root: Root,

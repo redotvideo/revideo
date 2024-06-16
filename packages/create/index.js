@@ -108,19 +108,36 @@ async function run() {
 
   // Tell user that the process is complete
   const manager = getPackageManager();
-  console.log(kleur.green('\n√ Scaffolding complete. You can now run:'));
+  console.log(
+    kleur.green(
+      '\n√ Scaffolding complete. Run the following commands to get started:',
+    ),
+  );
   if (response.path !== process.cwd()) {
     console.log(
       `  ${kleur.bold('cd')} ${path.relative(process.cwd(), response.path)}`,
     );
   }
+
   const boldManager = kleur.bold(manager);
-  if (manager === 'yarn') {
-    console.log(`  ${boldManager}`);
+  const installCommand =
+    manager === 'yarn' ? `  ${boldManager}` : `  ${boldManager} install`;
+
+  if (response.starter == 'default') {
+    console.log(installCommand);
     console.log(`  ${boldManager} start`);
   } else {
-    console.log(`  ${boldManager} install`);
-    console.log(`  ${boldManager} start`);
+    console.log(kleur.blue('\n√ Start the NextJS server:'));
+    console.log(`  ${kleur.bold('cd')} next`);
+    console.log(installCommand);
+    console.log(`  ${boldManager} run dev`);
+
+    console.log(
+      kleur.blue('\nIn another terminal, serve your revideo project:'),
+    );
+    console.log(`  ${kleur.bold('cd')} revideo`);
+    console.log(installCommand);
+    console.log(`  ${kleur.bold('npx')} revideo serve`);
   }
   console.log();
 }

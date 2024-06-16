@@ -11,20 +11,21 @@ export interface App {
 }
 
 export async function start(): Promise<App> {
-  const [browser, server] = await Promise.all([
-    puppeteer.launch({
-      headless: 'new',
-      product: 'firefox',
-    }),
-    createServer({
-      root: Root,
-      configFile: path.resolve(Root, '../vite.config.ts'),
-    }).then(server => server.listen()),
-  ]);
+  console.log('starting test');
 
-  console.log('browser', browser);
+  const server = await createServer({
+    root: Root,
+    configFile: path.resolve(Root, '../vite.config.ts'),
+  }).then(server => server.listen());
 
   console.log('server', server);
+
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    product: 'firefox',
+  });
+
+  console.log('browser', browser);
 
   const page = await browser.newPage();
   await page.goto(`http://localhost:${server.config.server.port}`);

@@ -17,18 +17,52 @@ npm install @revideo/player-react
 
 ## Usage
 
+You have two options to use the player:
+
+### 1. Through the CLI (recommended)
+
+Inside your Revideo project directory, run:
+
+```bash
+npx revideo serve
+```
+
+This will start a local server that builds (and rebuilds) your project and
+serves all required assets. You can then embed the player into your website like
+this:
+
 ```tsx
 import {Player} from '@revideo/player-react';
 
-<Player src="/project.js" />;
+<Player src="http://localhost:4000/player" />;
+```
+
+### 2. Manually
+
+If you don't want to use the CLI to serve your built project, you can build it
+manually by running:
+
+```bash
+npm run build
+```
+
+This will create an `out` directory in your project root. You can then copy all
+of these files to any public directory on your server and embed the player by
+specifying the path to the directory. Say you copied the files to
+`/public/outDir`, and the folder is accessible via `https://example.com/outDir`,
+you can embed the player like this:
+
+```tsx
+import {Player} from '@revideo/player-react';
+
+<Player src="https://example.com/outDir" />;
 ```
 
 ## Props
 
 ### src
 
-The path to your bundled `project.js`. See here on how to obtain this file from
-your Revideo project.
+The path to your bundle folder.
 
 ### controls (optional)
 

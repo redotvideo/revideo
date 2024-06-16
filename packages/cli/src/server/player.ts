@@ -30,7 +30,7 @@ export async function buildProject() {
   try {
     await build({
       configFile: false,
-      plugins: [motionCanvas()],
+      plugins: [motionCanvas({project: process.env.PROJECT_FILE})],
       build: {
         outDir: 'dist',
         rollupOptions: {
@@ -78,7 +78,15 @@ export async function createHotReloader(dir: string) {
 }
 
 export async function player(req: Request, res: Response) {
-  const path = `./dist/${req.params.file}`;
+  let path = `./dist/${req.params.file}`;
+
+  if (req.params.file === 'project.js') {
+    const playerFileName = (process.env.PROJECT_FILE ?? '')
+      .split('/')
+      .pop()
+      ?.replace('.ts', '.js');
+    path = `./dist/${playerFileName}`;
+  }
 
   let buildTime: number | undefined = undefined;
   let error = false;

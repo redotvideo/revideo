@@ -72,7 +72,7 @@ Revideo doesn't have a true backend server and all of the functionality that
 does not run in the browser is handled through vite plugins. Within
 `vite-plugin/src/partials`, you'll find different vite plugins handling
 different responsibilities. For instance
-`vite-plugin/src/partials/ffmpegExporter.ts` is a ite plugin that manages the
+`vite-plugin/src/partials/ffmpegExporter.ts` is a vite plugin that manages the
 communication between the browser sending video frames to the
 `FFmpegExporterServer` from `packages/ffmpeg` through websockets. Other vite
 plugins are responsible for reading to and writing from `.meta` files.
@@ -83,7 +83,7 @@ when contributing to Revideo.
 
 ### CI / CD
 
-We use Github Actions for CI/CD, you can find its configuration in
+We use Github Actions for CI/CD, you can find their configuration in
 `.github/workflows`. Every pull request gets verified through the
 `.github/workflows/verify.yml` pipeline, which checks linting, code style, and
 runs some tests.

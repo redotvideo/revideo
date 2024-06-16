@@ -94,12 +94,14 @@ async function getWorkerFirstAndLastFrame(
   workerId: number,
   totalNumOfWorkers: number,
 ) {
-  const videoDurationInFrames = lastGlobalFrame - firstGlobalFrame + 1;
+  const videoDurationInFrames = lastGlobalFrame - firstGlobalFrame;
   const framesPerWorker = Math.ceil(videoDurationInFrames / totalNumOfWorkers);
 
-  const firstWorkerFrame = firstGlobalFrame + framesPerWorker * workerId;
+  const offset = workerId === 0 ? 0 : 1;
+  const firstWorkerFrame =
+    firstGlobalFrame + framesPerWorker * workerId + offset;
   const lastWorkerFrame = Math.min(
-    firstWorkerFrame + framesPerWorker,
+    firstWorkerFrame + framesPerWorker - offset,
     lastGlobalFrame,
   );
 

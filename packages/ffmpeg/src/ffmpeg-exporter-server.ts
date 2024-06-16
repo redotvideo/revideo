@@ -112,7 +112,7 @@ export class FFmpegExporterServer {
     startFrame: number;
     endFrame: number;
   }) {
-    const assetPositions = getAssetPlacement(assets);
+    const assetPositions = this.getAssetPlacement(assets);
 
     for (const asset of assetPositions) {
       let hasAudioStream = true;
@@ -193,10 +193,12 @@ export class FFmpegExporterServer {
     const outputPath = path.join(this.jobFolder, `${sanitizedKey}.wav`);
 
     const trimLeft = asset.trimLeftInSeconds / asset.playbackRate;
-    const trimRight = Math.min(
-      trimLeft + asset.durationInSeconds,
-      trimLeft + (endFrame - startFrame) / this.settings.fps,
-    );
+    const trimRight =
+      1 / this.settings.fps +
+      Math.min(
+        trimLeft + asset.durationInSeconds,
+        trimLeft + (endFrame - startFrame) / this.settings.fps,
+      );
     const padStart = (asset.startInVideo / this.settings.fps) * 1000;
     const assetSampleRate = await getSampleRate(this.resolvePath(asset.src));
 
@@ -291,60 +293,60 @@ export class FFmpegExporterServer {
 
     return atempoFilters;
   }
-}
 
-function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
-  const assets: MediaAsset[] = [];
+  private getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
+    const assets: MediaAsset[] = [];
 
-  // A map to keep track of the first and last currentTime for each asset.
-  const assetTimeMap = new Map<string, {start: number; end: number}>();
+    // A map to keep track of the first and last currentTime for each asset.
+    const assetTimeMap = new Map<string, {start: number; end: number}>();
 
-  for (let frame = 0; frame < frames.length; frame++) {
-    for (const asset of frames[frame]) {
-      if (!assetTimeMap.has(asset.key)) {
-        // If the asset is not in the map, add it with its current time as both start and end.
-        assetTimeMap.set(asset.key, {
-          start: asset.currentTime,
-          end: asset.currentTime,
-        });
-        assets.push({
-          key: asset.key,
-          src: asset.src,
-          type: asset.type,
-          startInVideo: frame,
-          endInVideo: frame,
-          duration: 0, // Placeholder, will be recalculated later based on frames
-          durationInSeconds: 0, // Placeholder, will be calculated based on currentTime
-          playbackRate: asset.playbackRate,
-          volume: asset.volume,
-          trimLeftInSeconds: asset.currentTime,
-        });
-      } else {
-        // If the asset is already in the map, update the end time.
-        const timeInfo = assetTimeMap.get(asset.key);
-        if (timeInfo) {
-          timeInfo.end = asset.currentTime;
-          assetTimeMap.set(asset.key, timeInfo);
-        }
+    for (let frame = 0; frame < frames.length; frame++) {
+      for (const asset of frames[frame]) {
+        if (!assetTimeMap.has(asset.key)) {
+          // If the asset is not in the map, add it with its current time as both start and end.
+          assetTimeMap.set(asset.key, {
+            start: asset.currentTime,
+            end: asset.currentTime,
+          });
+          assets.push({
+            key: asset.key,
+            src: asset.src,
+            type: asset.type,
+            startInVideo: frame,
+            endInVideo: frame,
+            duration: 0, // Placeholder, will be recalculated later based on frames
+            durationInSeconds: 0, // Placeholder, will be calculated based on currentTime
+            playbackRate: asset.playbackRate,
+            volume: asset.volume,
+            trimLeftInSeconds: asset.currentTime,
+          });
+        } else {
+          // If the asset is already in the map, update the end time.
+          const timeInfo = assetTimeMap.get(asset.key);
+          if (timeInfo) {
+            timeInfo.end = asset.currentTime;
+            assetTimeMap.set(asset.key, timeInfo);
+          }
 
-        const existingAsset = assets.find(a => a.key === asset.key);
-        if (existingAsset) {
-          existingAsset.endInVideo = frame;
+          const existingAsset = assets.find(a => a.key === asset.key);
+          if (existingAsset) {
+            existingAsset.endInVideo = frame;
+          }
         }
       }
     }
+
+    // Calculate the duration based on frame count and durationInSeconds based on currentTime.
+    assets.forEach(asset => {
+      const timeInfo = assetTimeMap.get(asset.key);
+      if (timeInfo) {
+        // Calculate durationInSeconds based on the start and end currentTime values.
+        asset.durationInSeconds = timeInfo.end - timeInfo.start;
+      }
+      // Recalculate the original duration based on frame count.
+      asset.duration = asset.endInVideo - asset.startInVideo + 1;
+    });
+
+    return assets;
   }
-
-  // Calculate the duration based on frame count and durationInSeconds based on currentTime.
-  assets.forEach(asset => {
-    const timeInfo = assetTimeMap.get(asset.key);
-    if (timeInfo) {
-      // Calculate durationInSeconds based on the start and end currentTime values.
-      asset.durationInSeconds = timeInfo.end - timeInfo.start;
-    }
-    // Recalculate the original duration based on frame count.
-    asset.duration = asset.endInVideo - asset.startInVideo + 1;
-  });
-
-  return assets;
 }

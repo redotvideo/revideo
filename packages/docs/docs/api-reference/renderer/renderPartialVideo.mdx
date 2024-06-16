@@ -83,8 +83,26 @@ learn more about parameterized videos.
 
 ### settings?
 
-A `Omit<RenderSettings, 'workers' | 'outFile' | 'outDir' | 'range'>` object with
-the following properties:
+A `Omit<RenderSettings, 'workers'>` object with the following properties:
+
+#### outFile?
+
+_string, has to end with '.mp4'_
+
+The file name of the video output
+
+#### outDir?
+
+_string_
+
+The output directory of the rendered video. `default="./output"`
+
+#### range?
+
+_[number, number]_
+
+The start and end second of the video. Can be used to only render a part of the
+video.
 
 #### dimensions?
 
@@ -131,12 +149,13 @@ The "base port" we use for the vite server. When you have three workers and a
 base port 5000, the vite servers created by the three workers will use port
 5000, 5001, and 5002. Default is 9000.
 
-#### viteServerOptions?
+#### viteConfig?
 
-_ServerOptions_
+_InlineConfig_
 
-Options for the vite server used for rendering. Is an instance of vite's
-[ServerOptions](https://vitejs.dev/config/server-options).
+Configuration of the vite server used for rendering, an instance of
+[InlineConfig](https://vitejs.dev/guide/api-javascript#inlineconfig). You can
+use these options to configure the server port, the cache directory, and more.
 
 #### progressCallback?
 

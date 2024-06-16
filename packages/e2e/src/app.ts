@@ -22,7 +22,6 @@ export async function start(): Promise<App> {
 
   const browser = await puppeteer.launch({
     headless: 'new',
-    product: 'firefox',
   });
 
   console.log('browser', browser);

@@ -22,6 +22,10 @@ export async function start(): Promise<App> {
     }).then(server => server.listen()),
   ]);
 
+  console.log('browser', browser);
+
+  console.log('server', server);
+
   const page = await browser.newPage();
   await page.goto(`http://localhost:${server.config.server.port}`);
   await page.waitForSelector('main');

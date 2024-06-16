@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
 import {v4 as uuidv4} from 'uuid';
-import {ServerOptions, ViteDevServer, createServer} from 'vite';
+import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 
 /**
@@ -66,8 +66,12 @@ export interface RenderSettings {
    * Default is 9000
    */
   viteBasePort?: number;
+
+  /**
+   * @deprecated Use `viteConfig.server` instead.
+   */
   viteServerOptions?: Omit<ServerOptions, 'port'>;
-  viteCacheDir?: string;
+  viteConfig?: InlineConfig;
   progressCallback?: (worker: number, progress: number) => void;
 }
 
@@ -89,16 +93,17 @@ async function initBrowserAndServer(
     puppeteer.launch({headless: true, ...settings.puppeteer, args}),
     createServer({
       configFile: false,
-      server: {
-        ...settings.viteServerOptions,
-        port: fixedPort,
-        hmr: false,
-      },
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
         rendererPlugin(variables, settings.ffmpeg, projectFile),
       ],
-      cacheDir: settings.viteCacheDir,
+      ...settings.viteConfig,
+      server: {
+        port: fixedPort,
+        hmr: false,
+        ...settings.viteServerOptions,
+        ...settings.viteConfig?.server,
+      },
     }).then(server => server.listen()),
   ]);
 

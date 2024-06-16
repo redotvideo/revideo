@@ -8,27 +8,6 @@ env:
   HUSKY: 0
 
 jobs:
-  prepare:
-    name: Prepare
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: npm
-      - run: npm ci
-      - run: PUPPETEER_PRODUCT=firefox npm ci
-      - run: npx puppeteer browsers install firefox
-      - run: PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer/firefox/linux-129.0a1/firefox/firefox
-      - uses: actions/cache/save@v3
-        with:
-          key: ${{ github.run_id }}-node-modules
-          path: |
-            **/node_modules
-            ~/.cache/puppeteer
   commit:
     name: Commit name
     needs: prepare

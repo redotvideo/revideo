@@ -8,6 +8,24 @@ env:
   HUSKY: 0
 
 jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - run: PUPPETEER_PRODUCT=chrome npm ci
+      - uses: actions/cache/save@v3
+        with:
+          key: ${{ github.run_id }}-node-modules
+          path: |
+            **/node_modules
+            ~/.cache/puppeteer
   commit:
     name: Commit name
     needs: prepare

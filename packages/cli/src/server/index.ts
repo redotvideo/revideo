@@ -12,7 +12,7 @@ export function createServer(hotReloadDir?: string) {
 
   app.post('/render', render);
   app.get('/download/:projectName', download);
-  app.get('/player/:file', player);
+  app.get('/player/*', player);
 
   if (hotReloadDir) {
     createHotReloader(hotReloadDir);

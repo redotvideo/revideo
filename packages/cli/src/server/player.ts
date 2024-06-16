@@ -78,9 +78,9 @@ export async function createHotReloader(dir: string) {
 }
 
 export async function player(req: Request, res: Response) {
-  let path = `./dist/${req.params.file}`;
+  let path = `./dist/${req.params[0]}`;
 
-  if (req.params.file === 'project.js') {
+  if (req.params[0] === 'project.js') {
     const playerFileName = (process.env.PROJECT_FILE ?? '')
       .split('/')
       .pop()

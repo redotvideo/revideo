@@ -106,40 +106,6 @@ async function getFileInfo(
   });
 }
 
-/**
- * Starts streaming the video at the given URI from the given offset.
- * @param file - MP4Box file. Needs to be created and configured before calling this function.
- * @param uri - URI of the video file.
- * @param offset - Offset to start streaming from.
- * @returns - A function to read more data from the response.
- */
-async function startStreamingAtOffset(file: any, uri: string, offset: number) {
-  return fetch(uri, {
-    headers: {
-      /* eslint-disable-next-line @typescript-eslint/naming-convention */
-      Range: `bytes=${offset}-`,
-    },
-  }).then(async response => {
-    if (!response.body) {
-      throw new Error('Response body is null');
-    }
-
-    const reader = response.body.getReader();
-    const sink = new MP4FileSink(file, () => {}, offset);
-
-    return async () => {
-      return reader.read().then(function process({done, value}) {
-        if (done) {
-          sink.close();
-          return;
-        }
-
-        sink.write(value);
-      });
-    };
-  });
-}
-
 export class FrameExtractor {
   private frameBuffer: VideoFrame[] = [];
   private closed = false;
@@ -149,20 +115,23 @@ export class FrameExtractor {
   private fps: number;
   private startTime: number;
 
+  // Number of frames that have been processed.
   private framesProcessed = 0;
+  // Number of samples that have been passed to the decoder but have not been output yet.
+  private framesDue = 0;
+  // Last frame that has been output.
   private lastFrame: VideoFrame | null = null;
 
   private decoder: VideoDecoder;
   private file: any;
 
   private readMoreFromResponse: () => Promise<void> = async () => {};
+  private responseFinished = false;
 
   public constructor(uri: string, fps: number, startTime: number) {
     this.uri = uri;
     this.fps = fps;
     this.startTime = startTime;
-
-    console.log('FrameExtractor constructor', uri, fps, startTime);
 
     this.decoder = new VideoDecoder({
       output: this.onFrame.bind(this),
@@ -172,6 +141,46 @@ export class FrameExtractor {
     });
   }
 
+  /**
+   * Starts streaming the video at the given URI from the given offset.
+   * @param file - MP4Box file. Needs to be created and configured before calling this function.
+   * @param uri - URI of the video file.
+   * @param offset - Offset to start streaming from.
+   * @returns - A function to read more data from the response.
+   */
+  private async startStreamingAtOffset(file: any, uri: string, offset: number) {
+    return fetch(uri, {
+      headers: {
+        /* eslint-disable-next-line @typescript-eslint/naming-convention */
+        Range: `bytes=${offset}-`,
+      },
+    }).then(async response => {
+      if (!response.body) {
+        throw new Error('Response body is null');
+      }
+
+      const reader = response.body.getReader();
+      const sink = new MP4FileSink(file, () => {}, offset);
+
+      return async () => {
+        return reader.read().then(({done, value}) => {
+          // Request is done.
+          if (done) {
+            this.responseFinished = true;
+            this.decoder.flush();
+            sink.close();
+            return;
+          }
+
+          sink.write(value);
+        });
+      };
+    });
+  }
+
+  /**
+   * Starts the extraction process.
+   */
   public async start() {
     this.file = await getFileInfo(
       this.uri,
@@ -179,20 +188,22 @@ export class FrameExtractor {
     );
     this.file.onSamples = this.onSamples.bind(this);
 
-    console.log(this.file);
-
     const seekInfo = this.file.seek(this.startTime, true);
-    this.readMoreFromResponse = await startStreamingAtOffset(
+    this.readMoreFromResponse = await this.startStreamingAtOffset(
       this.file,
       this.uri,
       seekInfo.offset,
     );
   }
 
+  /**
+   * Called when we are done with the extractor.
+   */
   public close() {
     this.closed = true;
     this.file.flush();
     this.frameBuffer.forEach(frame => frame.close());
+    this.lastFrame?.close();
   }
 
   public getTime() {
@@ -219,6 +230,7 @@ export class FrameExtractor {
         duration: (1e6 * sample.duration) / sample.timescale,
         data: sample.data,
       });
+      this.framesDue++;
       this.decoder.decode(chunk);
     }
   }
@@ -228,6 +240,7 @@ export class FrameExtractor {
    * Pushes the frame to the buffer so it can be consumed.
    */
   private onFrame(frame: VideoFrame) {
+    this.framesDue--;
     const timestampInSeconds = frame.timestamp / 1e6;
     if (timestampInSeconds < this.startTime) {
       frame.close();
@@ -243,16 +256,72 @@ export class FrameExtractor {
     this.frameBuffer.push(frame);
   }
 
-  public async getNextFrame(): Promise<VideoFrame> {
-    while (this.frameBuffer.length === 0) {
-      await this.readMoreFromResponse();
+  /*currentlyLoading = false;
+  frameAvailableNotifier: (() => void)[] = [];
 
-      // Hand control back to the event loop.
+  semaphore = new Promise<void>(res => res());
+
+  private async framesAvailable() {
+    // If we're not loading, start loading frames.
+    if (!this.currentlyLoading) {
+      (async () => {
+        this.currentlyLoading = true;
+        while (this.frameBuffer.length < 100) {
+          if (this.frameBuffer.length) {
+            this.frameAvailableNotifier.forEach(listener => listener());
+          }
+
+          // TODO: handle done
+          console.log('framesAvailable', this.frameBuffer.length);
+          await this.readMoreFromResponse();
+          await new Promise(res => setTimeout(res, 0));
+        }
+        this.currentlyLoading = false;
+      })();
+    }
+
+    // If there is a frame available, return.
+    if (this.frameBuffer.length) {
+      return;
+    }
+
+    // If we're currently loading, wait for the loading to finish.
+    await new Promise<void>(res => this.frameAvailableNotifier.push(res));
+    return;
+  }*/
+
+  public async getNextFrame(): Promise<VideoFrame> {
+    // Fetch more frames if we don't have any.
+    while (this.frameBuffer.length === 0 && !this.responseFinished) {
+      await this.readMoreFromResponse();
       await new Promise(res => setTimeout(res, 0));
     }
 
+    // Wait for decoder if there are frames due.
+    if (this.frameBuffer.length === 0 && this.framesDue) {
+      let maxIterations = 1000;
+      while (this.frameBuffer.length === 0) {
+        console.log('waiting for frame', this.framesDue, maxIterations);
+        await new Promise(res => setTimeout(res, 10));
+        maxIterations--;
+
+        if (maxIterations === 0) {
+          throw new Error(
+            'Timed out while waiting for VideoDecoder to produce a frame.',
+          );
+        }
+      }
+    }
+
+    // We're at the end of the video and there are no more frames to extract.
+    if (this.frameBuffer.length === 0) {
+      return this.lastFrame!;
+    }
+
     const frame = this.frameBuffer.shift()!;
+    this.lastFrame?.close();
     this.lastFrame = frame;
+    this.framesProcessed++;
     return frame;
   }
 }

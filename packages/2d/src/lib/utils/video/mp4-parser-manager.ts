@@ -9,8 +9,6 @@ export async function getFrame(
   time: number,
   fps: number,
 ) {
-  console.log('calling getframe', id, filePath, time, fps);
-
   // Check if we already have a VideoFrameExtractor for this video
   const extractorId = filePath + '-' + id;
   let extractor = videoFrameExtractors.get(extractorId);

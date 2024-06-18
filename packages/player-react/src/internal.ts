@@ -145,6 +145,15 @@ class RevideoPlayer extends HTMLElement {
       return;
     }
 
+    try {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = source + 'project.css';
+      document.head.appendChild(link);
+    } catch (e) {
+      console.error(e);
+    }
+
     this.defaultSettings = project.meta.getFullPreviewSettings();
     const player = new Player(project);
     player.setVariables(this.variables);

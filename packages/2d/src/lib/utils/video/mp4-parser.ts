@@ -43,80 +43,20 @@ function description(file: any, track: any) {
   throw new Error('avcC, hvcC, vpcC, or av1C box not found');
 }
 
-/**
- * Loads the file at the given URI until it finds the moov box.
- * Once found, it calls `setConfig` with the video configuration.
- * @param uri - The URI of the video file.
- * @param setConfig - Callback to set the video configuration.
- * @returns
- */
-async function getFileInfo(
-  uri: string,
-  setConfig: (config: VideoDecoderConfig) => void,
-) {
-  return new Promise<any>((res, rej) => {
-    const file = createFile();
-    let found = false;
-
-    file.onReady = (info: any) => {
-      found = true;
-
-      const track = info.videoTracks[0];
-
-      const config = {
-        // Browser doesn't support parsing full vp8 codec (eg: `vp08.00.41.08`),
-        // they only support `vp8`.
-        codec: track.codec.startsWith('vp08') ? 'vp8' : track.codec,
-        codedHeight: track.video.height,
-        codedWidth: track.video.width,
-        description: description(file, track),
-      };
-
-      setConfig(config);
-
-      file.setExtractionOptions(track.id);
-      file.start();
-
-      res(file);
-    };
-
-    console.log('fetching uri', uri);
-    return fetch(uri).then(async response => {
-      console.log(response);
-
-      if (!response.body) {
-        throw new Error('Response body is null');
-      }
-
-      const reader = response.body.getReader();
-      const sink = new MP4FileSink(file, () => {});
-
-      while (!found) {
-        await reader.read().then(({done, value}) => {
-          if (done) {
-            file.flush();
-            rej('Could not find moov');
-            return;
-          }
-
-          sink.write(value);
-        });
-      }
-    });
-  });
-}
-
 export class FrameExtractor {
   private frameBuffer: VideoFrame[] = [];
   private closed = false;
 
+  // URI of the video.
   private uri: string;
-  // TODO
-  private fps: number;
+  // FPS to target when extracting frames. We use frame sampling.
+  private targetFps: number;
+  // Actual FPS of the video.
+  private sourceFps: number;
+  // Offset when the video starts.
   private startTime: number;
-
-  // Number of frames that have been processed.
-  private framesProcessed = 0;
+  // Number of frames that have been requested and returned.
+  private framesRequested = 0;
   // Number of samples that have been passed to the decoder but have not been output yet.
   private framesDue = 0;
   // Last frame that has been output.
@@ -128,10 +68,13 @@ export class FrameExtractor {
   private readMoreFromResponse: () => Promise<void> = async () => {};
   private responseFinished = false;
 
-  public constructor(uri: string, fps: number, startTime: number) {
+  public constructor(uri: string, targetFps: number, startTime: number) {
     this.uri = uri;
-    this.fps = fps;
     this.startTime = startTime;
+
+    // Initialized after the file is loaded.
+    this.sourceFps = 0;
+    this.targetFps = targetFps;
 
     this.decoder = new VideoDecoder({
       output: this.onFrame.bind(this),
@@ -179,10 +122,75 @@ export class FrameExtractor {
   }
 
   /**
+   * Loads the file at the given URI until it finds the moov box.
+   * Once found, it calls `setConfig` with the video configuration.
+   * @param uri - The URI of the video file.
+   * @param setConfig - Callback to set the video configuration.
+   * @returns
+   */
+  private async getFileInfo(
+    uri: string,
+    setConfig: (config: VideoDecoderConfig) => void,
+  ) {
+    return new Promise<any>((res, rej) => {
+      const file = createFile();
+      let found = false;
+
+      file.onReady = (info: any) => {
+        found = true;
+
+        const track = info.videoTracks[0];
+
+        const config = {
+          // Browser doesn't support parsing full vp8 codec (eg: `vp08.00.41.08`),
+          // they only support `vp8`.
+          codec: track.codec.startsWith('vp08') ? 'vp8' : track.codec,
+          codedHeight: track.video.height,
+          codedWidth: track.video.width,
+          description: description(file, track),
+        };
+
+        // Calculate FPS
+        if (track.nb_samples && track.timescale && info.duration) {
+          this.sourceFps = track.nb_samples / (info.duration / info.timescale);
+        }
+
+        setConfig(config);
+
+        file.setExtractionOptions(track.id);
+        file.start();
+
+        res(file);
+      };
+
+      return fetch(uri).then(async response => {
+        if (!response.body) {
+          throw new Error('Response body is null');
+        }
+
+        const reader = response.body.getReader();
+        const sink = new MP4FileSink(file, () => {});
+
+        while (!found) {
+          await reader.read().then(({done, value}) => {
+            if (done) {
+              file.flush();
+              rej('Could not find moov');
+              return;
+            }
+
+            sink.write(value);
+          });
+        }
+      });
+    });
+  }
+
+  /**
    * Starts the extraction process.
    */
   public async start() {
-    this.file = await getFileInfo(
+    this.file = await this.getFileInfo(
       this.uri,
       this.decoder.configure.bind(this.decoder),
     );
@@ -206,12 +214,18 @@ export class FrameExtractor {
     this.lastFrame?.close();
   }
 
+  /**
+   * @returns - Time in seconds of the current frame (using the target FPS)
+   */
   public getTime() {
-    return this.startTime + this.framesProcessed / this.fps;
+    return this.startTime + this.framesRequested / this.targetFps;
   }
 
+  /**
+   * @returns - Time in seconds of the last frame (using the target FPS)
+   */
   public getLastTime() {
-    return this.startTime + (this.framesProcessed - 1) / this.fps;
+    return this.startTime + (this.framesRequested - 1) / this.targetFps;
   }
 
   public getLastFrame() {
@@ -256,41 +270,17 @@ export class FrameExtractor {
     this.frameBuffer.push(frame);
   }
 
-  /*currentlyLoading = false;
-  frameAvailableNotifier: (() => void)[] = [];
-
-  semaphore = new Promise<void>(res => res());
-
-  private async framesAvailable() {
-    // If we're not loading, start loading frames.
-    if (!this.currentlyLoading) {
-      (async () => {
-        this.currentlyLoading = true;
-        while (this.frameBuffer.length < 100) {
-          if (this.frameBuffer.length) {
-            this.frameAvailableNotifier.forEach(listener => listener());
-          }
-
-          // TODO: handle done
-          console.log('framesAvailable', this.frameBuffer.length);
-          await this.readMoreFromResponse();
-          await new Promise(res => setTimeout(res, 0));
-        }
-        this.currentlyLoading = false;
-      })();
-    }
-
-    // If there is a frame available, return.
-    if (this.frameBuffer.length) {
-      return;
-    }
-
-    // If we're currently loading, wait for the loading to finish.
-    await new Promise<void>(res => this.frameAvailableNotifier.push(res));
-    return;
-  }*/
+  private sum = 0;
 
   public async getNextFrame(): Promise<VideoFrame> {
+    const samplingRate = this.sourceFps / this.targetFps;
+    this.sum += samplingRate;
+
+    if (this.sum <= 1 && this.lastFrame) {
+      this.framesRequested++;
+      return this.lastFrame;
+    }
+
     // Fetch more frames if we don't have any.
     while (this.frameBuffer.length === 0 && !this.responseFinished) {
       await this.readMoreFromResponse();
@@ -301,7 +291,6 @@ export class FrameExtractor {
     if (this.frameBuffer.length === 0 && this.framesDue) {
       let maxIterations = 1000;
       while (this.frameBuffer.length === 0) {
-        console.log('waiting for frame', this.framesDue, maxIterations);
         await new Promise(res => setTimeout(res, 10));
         maxIterations--;
 
@@ -318,10 +307,23 @@ export class FrameExtractor {
       return this.lastFrame!;
     }
 
-    const frame = this.frameBuffer.shift()!;
-    this.lastFrame?.close();
-    this.lastFrame = frame;
-    this.framesProcessed++;
-    return frame;
+    while (this.sum >= 2) {
+      // Burn frame
+      const frame = this.frameBuffer.shift()!;
+      frame.close();
+      this.sum -= 1;
+    }
+
+    if (this.sum >= 1 || !this.lastFrame) {
+      this.sum -= 1;
+      const frame = this.frameBuffer.shift()!;
+      this.lastFrame?.close();
+      this.lastFrame = frame;
+      this.framesRequested++;
+      return frame;
+    }
+
+    // One of the three if statements above is always true.
+    throw new Error('Unreachable code');
   }
 }

@@ -10,6 +10,8 @@ import {
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
+import {ImageCommunication} from '../utils/video/ffmpeg-client';
+import {getFrame} from '../utils/video/mp4-parser-manager';
 import {Media, MediaProps} from './Media';
 
 export interface VideoProps extends MediaProps {
@@ -25,74 +27,6 @@ export interface VideoProps extends MediaProps {
    * {@inheritDoc Video.png}
    */
   png?: SignalValue<boolean>;
-}
-
-class ImageCommunication {
-  public constructor() {
-    if (!import.meta.hot) {
-      throw new Error('FfmpegVideoFrame can only be used with HMR.');
-    }
-
-    import.meta.hot.on(
-      'revideo:ffmpeg-video-frame-res',
-      this.handler.bind(this),
-    );
-  }
-
-  private nextFrameHandlers: ((event: MessageEvent) => void)[] = [];
-
-  private handler(event: MessageEvent) {
-    const handlers = this.nextFrameHandlers;
-    this.nextFrameHandlers = [];
-
-    for (const handler of handlers) {
-      handler(event);
-    }
-  }
-
-  public async getFrame(
-    id: string,
-    src: string,
-    time: number,
-    duration: number,
-    fps: number,
-    png: boolean,
-  ) {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-      if (!import.meta.hot) {
-        reject('FfmpegVideoFrame can only be used with HMR.');
-        return;
-      }
-
-      function handler(event: MessageEvent) {
-        const image = new Image();
-
-        const uint8Array = new Uint8Array(event.data.frame.data);
-        const type = png ? 'image/png' : 'image/jpeg';
-        const blob = new Blob([uint8Array], {type});
-        const url = URL.createObjectURL(blob);
-
-        image.src = url;
-
-        image.onload = () => {
-          resolve(image);
-        };
-      }
-
-      this.nextFrameHandlers.push(handler);
-
-      import.meta.hot.send('revideo:ffmpeg-video-frame', {
-        data: {
-          id: id,
-          filePath: src,
-          startTime: time,
-          duration,
-          fps,
-          png,
-        },
-      });
-    });
-  }
 }
 
 @nodeName('Video')
@@ -258,6 +192,20 @@ export class Video extends Media {
 
   protected lastFrame: HTMLImageElement | null = null;
 
+  protected async webcodecSeekedVideo(): Promise<CanvasImageSource> {
+    const video = this.video();
+    const time = this.clampTime(this.time());
+
+    video.playbackRate = this.playbackRate();
+
+    if (this.lastFrame && this.lastTime === time) {
+      return this.lastFrame;
+    }
+
+    const fps = this.view().fps() / this.playbackRate();
+    return getFrame(this.key, video.src, time, fps);
+  }
+
   protected async serverSeekedVideo(): Promise<HTMLImageElement> {
     const video = this.video();
     const time = this.clampTime(this.time());
@@ -299,7 +247,8 @@ export class Video extends Media {
     }
 
     if (playbackState === PlaybackState.Rendering) {
-      return this.serverSeekedVideo();
+      return this.webcodecSeekedVideo();
+      // return this.serverSeekedVideo();
     }
 
     return this.seekedVideo();

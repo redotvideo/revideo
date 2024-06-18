@@ -116,7 +116,7 @@ async function getFileInfo(
 async function startStreamingAtOffset(file: any, uri: string, offset: number) {
   return fetch(uri, {
     headers: {
-      /* eslint-disable */
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
       Range: `bytes=${offset}-`,
     },
   }).then(async response => {
@@ -210,11 +210,8 @@ export class FrameExtractor {
   /**
    * Called when samples are available on the MP4 file.
    * Sends chunks to the decoder.
-   * @param _
-   * @param __
-   * @param samples
    */
-  private onSamples(_: any, __: any, samples: any) {
+  private onSamples(_unused1: any, _unused2: any, samples: any) {
     for (const sample of samples) {
       const chunk = new EncodedVideoChunk({
         type: sample.is_sync ? 'key' : 'delta',
@@ -229,7 +226,6 @@ export class FrameExtractor {
   /**
    * Called when the decoder has a frame ready.
    * Pushes the frame to the buffer so it can be consumed.
-   * @param frame
    */
   private onFrame(frame: VideoFrame) {
     const timestampInSeconds = frame.timestamp / 1e6;

@@ -10,6 +10,8 @@ import {
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
+import {ImageCommunication} from '../utils/video/ffmpeg-client';
+import {getFrame} from '../utils/video/mp4-parser-manager';
 import {Media, MediaProps} from './Media';
 
 export interface VideoProps extends MediaProps {
@@ -25,74 +27,6 @@ export interface VideoProps extends MediaProps {
    * {@inheritDoc Video.png}
    */
   png?: SignalValue<boolean>;
-}
-
-class ImageCommunication {
-  public constructor() {
-    if (!import.meta.hot) {
-      throw new Error('FfmpegVideoFrame can only be used with HMR.');
-    }
-
-    import.meta.hot.on(
-      'revideo:ffmpeg-video-frame-res',
-      this.handler.bind(this),
-    );
-  }
-
-  private nextFrameHandlers: ((event: MessageEvent) => void)[] = [];
-
-  private handler(event: MessageEvent) {
-    const handlers = this.nextFrameHandlers;
-    this.nextFrameHandlers = [];
-
-    for (const handler of handlers) {
-      handler(event);
-    }
-  }
-
-  public async getFrame(
-    id: string,
-    src: string,
-    time: number,
-    duration: number,
-    fps: number,
-    png: boolean,
-  ) {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-      if (!import.meta.hot) {
-        reject('FfmpegVideoFrame can only be used with HMR.');
-        return;
-      }
-
-      function handler(event: MessageEvent) {
-        const image = new Image();
-
-        const uint8Array = new Uint8Array(event.data.frame.data);
-        const type = png ? 'image/png' : 'image/jpeg';
-        const blob = new Blob([uint8Array], {type});
-        const url = URL.createObjectURL(blob);
-
-        image.src = url;
-
-        image.onload = () => {
-          resolve(image);
-        };
-      }
-
-      this.nextFrameHandlers.push(handler);
-
-      import.meta.hot.send('revideo:ffmpeg-video-frame', {
-        data: {
-          id: id,
-          filePath: src,
-          startTime: time,
-          duration,
-          fps,
-          png,
-        },
-      });
-    });
-  }
 }
 
 @nodeName('Video')
@@ -122,18 +56,19 @@ export class Video extends Media {
   public declare readonly smoothing: SimpleSignal<boolean, this>;
 
   /**
-   * Whether the video frames should be extracted as PNGs. Uses JPEGs when
-   * set to false.
+   * Which decoder to use during rendering. The `web` decoder is the fastest
+   * but only supports MP4 files. The `ffmpeg` decoder is slower and more resource
+   * intensive but supports more formats. The `slow` decoder is the slowest but
+   * supports all formats.
    *
-   * @remarks
-   * PNGs have better image quality and support transparency, but they make
-   * rendering slower.
-   *
-   * @defaultValue false
+   * @defaultValue null
    */
-  @initial(true)
+  @initial(null)
   @signal()
-  public declare readonly png: SimpleSignal<boolean, this>;
+  public declare readonly decoder: SimpleSignal<
+    'web' | 'ffmpeg' | 'slow' | null,
+    this
+  >;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
 
@@ -143,6 +78,13 @@ export class Video extends Media {
 
   public constructor(props: VideoProps) {
     super(props);
+
+    // If the file is not mp4, warn.
+    if (!this.fullSource().endsWith('.mp4')) {
+      console.warn(
+        `WARNING: Video source is not an MP4 file. This may significantly slow down rendering: ${this.fullSource()}`,
+      );
+    }
   }
 
   protected override desiredSize(): SerializedVector2<DesiredLength> {
@@ -258,7 +200,21 @@ export class Video extends Media {
 
   protected lastFrame: HTMLImageElement | null = null;
 
-  protected async serverSeekedVideo(): Promise<HTMLImageElement> {
+  protected async webcodecSeekedVideo(): Promise<CanvasImageSource> {
+    const video = this.video();
+    const time = this.clampTime(this.time());
+
+    video.playbackRate = this.playbackRate();
+
+    if (this.lastFrame && this.lastTime === time) {
+      return this.lastFrame;
+    }
+
+    const fps = this.view().fps() / this.playbackRate();
+    return getFrame(this.key, video.src, time, fps);
+  }
+
+  protected async ffmpegSeekedVideo(): Promise<HTMLImageElement> {
     const video = this.video();
     const time = this.clampTime(this.time());
     const duration = this.getDuration();
@@ -281,7 +237,6 @@ export class Video extends Media {
       time,
       duration,
       fps,
-      this.png(),
     );
     this.lastFrame = frame;
     this.lastTime = time;
@@ -291,6 +246,8 @@ export class Video extends Media {
 
   protected async seekFunction() {
     const playbackState = this.view().playbackState();
+
+    // During playback
     if (
       playbackState === PlaybackState.Playing ||
       playbackState === PlaybackState.Presenting
@@ -298,8 +255,30 @@ export class Video extends Media {
       return this.fastSeekedVideo();
     }
 
-    if (playbackState === PlaybackState.Rendering) {
-      return this.serverSeekedVideo();
+    if (playbackState === PlaybackState.Paused) {
+      return this.seekedVideo();
+    }
+
+    // During rendering, if set explicitly
+    if (this.decoder() === 'slow') {
+      return this.seekedVideo();
+    }
+
+    if (this.decoder() === 'ffmpeg') {
+      return this.ffmpegSeekedVideo();
+    }
+
+    if (this.decoder() === 'web') {
+      return this.webcodecSeekedVideo();
+    }
+
+    // If not set explicitly, use file extension to determine decoder
+    if (this.src().endsWith('.mp4')) {
+      return this.webcodecSeekedVideo();
+    }
+
+    if (this.src().endsWith('.webm')) {
+      return this.ffmpegSeekedVideo();
     }
 
     return this.seekedVideo();

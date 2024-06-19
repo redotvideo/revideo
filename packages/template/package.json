@@ -12,10 +12,10 @@
     "render": "tsc && node dist/render.js"
   },
   "dependencies": {
-    "@revideo/core": "*",
     "@revideo/2d": "*",
-    "@revideo/renderer": "*",
-    "@revideo/ffmpeg": "*"
+    "@revideo/core": "*",
+    "@revideo/ffmpeg": "*",
+    "@revideo/renderer": "*"
   },
   "devDependencies": {
     "@revideo/ui": "*",

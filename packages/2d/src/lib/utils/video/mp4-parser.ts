@@ -272,15 +272,7 @@ export class FrameExtractor {
 
   private sum = 0;
 
-  public async getNextFrame(): Promise<VideoFrame> {
-    const samplingRate = this.sourceFps / this.targetFps;
-    this.sum += samplingRate;
-
-    if (this.sum <= 1 && this.lastFrame) {
-      this.framesRequested++;
-      return this.lastFrame;
-    }
-
+  private async populateBuffer() {
     // Fetch more frames if we don't have any.
     while (this.frameBuffer.length === 0 && !this.responseFinished) {
       await this.readMoreFromResponse();
@@ -301,6 +293,18 @@ export class FrameExtractor {
         }
       }
     }
+  }
+
+  public async getNextFrame(): Promise<VideoFrame> {
+    const samplingRate = this.sourceFps / this.targetFps;
+    this.sum += samplingRate;
+
+    if (this.sum <= 1 && this.lastFrame) {
+      this.framesRequested++;
+      return this.lastFrame;
+    }
+
+    await this.populateBuffer();
 
     // We're at the end of the video and there are no more frames to extract.
     if (this.frameBuffer.length === 0) {
@@ -312,6 +316,11 @@ export class FrameExtractor {
       const frame = this.frameBuffer.shift()!;
       frame.close();
       this.sum -= 1;
+
+      await this.populateBuffer();
+      if (this.frameBuffer.length === 0) {
+        return this.lastFrame!;
+      }
     }
 
     if (this.sum >= 1 || !this.lastFrame) {

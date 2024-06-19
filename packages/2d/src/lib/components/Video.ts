@@ -56,18 +56,19 @@ export class Video extends Media {
   public declare readonly smoothing: SimpleSignal<boolean, this>;
 
   /**
-   * Whether the video frames should be extracted as PNGs. Uses JPEGs when
-   * set to false.
+   * Which decoder to use during rendering. The `web` decoder is the fastest
+   * but only supports MP4 files. The `ffmpeg` decoder is slower and more resource
+   * intensive but supports more formats. The `slow` decoder is the slowest but
+   * supports all formats.
    *
-   * @remarks
-   * PNGs have better image quality and support transparency, but they make
-   * rendering slower.
-   *
-   * @defaultValue false
+   * @defaultValue null
    */
-  @initial(true)
+  @initial(null)
   @signal()
-  public declare readonly png: SimpleSignal<boolean, this>;
+  public declare readonly decoder: SimpleSignal<
+    'web' | 'ffmpeg' | 'slow' | null,
+    this
+  >;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
 
@@ -77,6 +78,13 @@ export class Video extends Media {
 
   public constructor(props: VideoProps) {
     super(props);
+
+    // If the file is not mp4, warn.
+    if (!this.fullSource().endsWith('.mp4')) {
+      console.warn(
+        `WARNING: Video source is not an MP4 file. This may significantly slow down rendering: ${this.fullSource()}`,
+      );
+    }
   }
 
   protected override desiredSize(): SerializedVector2<DesiredLength> {
@@ -206,7 +214,7 @@ export class Video extends Media {
     return getFrame(this.key, video.src, time, fps);
   }
 
-  protected async serverSeekedVideo(): Promise<HTMLImageElement> {
+  protected async ffmpegSeekedVideo(): Promise<HTMLImageElement> {
     const video = this.video();
     const time = this.clampTime(this.time());
     const duration = this.getDuration();
@@ -229,7 +237,6 @@ export class Video extends Media {
       time,
       duration,
       fps,
-      this.png(),
     );
     this.lastFrame = frame;
     this.lastTime = time;
@@ -239,6 +246,8 @@ export class Video extends Media {
 
   protected async seekFunction() {
     const playbackState = this.view().playbackState();
+
+    // During playback
     if (
       playbackState === PlaybackState.Playing ||
       playbackState === PlaybackState.Presenting
@@ -246,9 +255,30 @@ export class Video extends Media {
       return this.fastSeekedVideo();
     }
 
-    if (playbackState === PlaybackState.Rendering) {
+    if (playbackState === PlaybackState.Paused) {
+      return this.seekedVideo();
+    }
+
+    // During rendering, if set explicitly
+    if (this.decoder() === 'slow') {
+      return this.seekedVideo();
+    }
+
+    if (this.decoder() === 'ffmpeg') {
+      return this.ffmpegSeekedVideo();
+    }
+
+    if (this.decoder() === 'web') {
       return this.webcodecSeekedVideo();
-      // return this.serverSeekedVideo();
+    }
+
+    // If not set explicitly, use file extension to determine decoder
+    if (this.src().endsWith('.mp4')) {
+      return this.webcodecSeekedVideo();
+    }
+
+    if (this.src().endsWith('.webm')) {
+      return this.ffmpegSeekedVideo();
     }
 
     return this.seekedVideo();

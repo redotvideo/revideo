@@ -24,9 +24,9 @@ export interface VideoProps extends MediaProps {
    */
   smoothing?: SignalValue<boolean>;
   /**
-   * {@inheritDoc Video.png}
+   * {@inheritDoc Video.decoder}
    */
-  png?: SignalValue<boolean>;
+  decoder?: SignalValue<'web' | 'ffmpeg' | 'slow' | null>;
 }
 
 @nodeName('Video')

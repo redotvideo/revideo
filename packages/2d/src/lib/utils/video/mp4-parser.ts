@@ -196,7 +196,9 @@ export class FrameExtractor {
     );
     this.file.onSamples = this.onSamples.bind(this);
 
-    const seekInfo = this.file.seek(this.startTime, true);
+    const videoTrack = this.file.getInfo().videoTracks[0];
+    const trak = this.file.getTrackById(videoTrack.id);
+    const seekInfo = this.file.seekTrack(this.startTime, true, trak);
     this.readMoreFromResponse = await this.startStreamingAtOffset(
       this.file,
       this.uri,

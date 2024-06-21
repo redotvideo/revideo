@@ -10,7 +10,7 @@ import motionCanvas from '@revideo/vite-plugin';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import puppeteer, {Browser, BrowserLaunchArgumentOptions} from 'puppeteer';
+import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
 import {v4 as uuidv4} from 'uuid';
 import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
@@ -52,7 +52,7 @@ export interface RenderSettings {
 
   ffmpeg?: FfmpegSettings;
 
-  puppeteer?: BrowserLaunchArgumentOptions;
+  puppeteer?: PuppeteerLaunchOptions;
 
   workers?: number;
   dimensions?: [number, number];

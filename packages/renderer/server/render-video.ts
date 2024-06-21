@@ -201,6 +201,10 @@ async function renderVideoOnPage(
       clearInterval(interval);
       reject(new Error(errorMessage));
     });
+
+    page.exposeFunction('browserError', (message: string) => {
+      reject(new Error(message));
+    });
   });
 
   await page.goto(url);

@@ -154,7 +154,7 @@ export class Renderer {
         try {
           await this.exporter.stop?.(result);
         } catch (_) {
-          // do nothing
+          throw Error(e.message);
         }
         this.exporter = null;
         throw Error(e.message);

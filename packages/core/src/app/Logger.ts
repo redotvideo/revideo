@@ -112,30 +112,64 @@ export class Logger {
   }
 
   public error(payload: string | LogPayload) {
+    console.error(
+      'error from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Error, payload);
+
+    if ((window as any).browserError) {
+      (window as any).browserError(
+        typeof payload === 'string' ? payload : payload.message,
+      );
+    }
   }
 
   public warn(payload: string | LogPayload) {
+    console.warn(
+      'warning from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Warn, payload);
   }
 
   public info(payload: string | LogPayload) {
+    console.info(
+      'info from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Info, payload);
   }
 
   public http(payload: string | LogPayload) {
+    console.log(
+      'http log from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Http, payload);
   }
 
   public verbose(payload: string | LogPayload) {
+    console.log(
+      'verbose log from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Verbose, payload);
   }
 
   public debug(payload: string | LogPayload) {
+    console.debug(
+      'debug log from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Debug, payload);
   }
 
   public silly(payload: string | LogPayload) {
+    console.log(
+      'silly log from browser process:',
+      typeof payload === 'string' ? payload : payload.message,
+    );
     this.logLevel(LogLevel.Silly, payload);
   }
 

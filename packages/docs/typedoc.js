@@ -66,6 +66,7 @@ module.exports = () => ({
           '../2d/src/lib/utils',
         ],
         tsconfig: '../2d/src/lib/tsconfig.json',
+        skipErrorChecking: true,
       },
       '2d',
       core,

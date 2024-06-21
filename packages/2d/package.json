@@ -44,6 +44,7 @@
     "code-fns": "^0.8.2",
     "mathjax-full": "^3.2.2",
     "mp4box": "^0.5.2",
-    "parse-svg-path": "^0.1.2"
+    "parse-svg-path": "^0.1.2",
+    "hls.js": "^1.5.11"
   }
 }

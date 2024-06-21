@@ -7,6 +7,7 @@ import {
   SimpleSignal,
   viaProxy,
 } from '@revideo/core';
+import Hls from 'hls.js';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
@@ -120,7 +121,15 @@ export class Video extends Media {
     if (!video) {
       video = document.createElement('video');
       video.crossOrigin = 'anonymous';
-      video.src = src;
+
+      if (src.endsWith('.m3u8')) {
+        const hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(video);
+      } else {
+        video.src = src;
+      }
+
       Video.pool[key] = video;
     }
 

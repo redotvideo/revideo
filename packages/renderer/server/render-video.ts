@@ -203,7 +203,6 @@ async function renderVideoOnPage(
     });
 
     page.exposeFunction('browserError', (message: string) => {
-      console.log('HIIIIIEEER');
       reject(new Error(message));
     });
   });

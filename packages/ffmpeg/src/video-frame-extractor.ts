@@ -5,6 +5,8 @@ import {getVideoCodec} from './utils';
 
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
 
+// TODO: investigate if jpeg option was correctly removed on main
+
 /**
  * Walks through a video file and extracts frames.
  */

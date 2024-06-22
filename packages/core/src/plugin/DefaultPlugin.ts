@@ -1,4 +1,5 @@
-import {FFmpegExporterClient, ImageExporter} from '../app';
+import {FFmpegExporterClient, ImageExporter} from '../exporter';
+import {WasmExporter} from '../exporter/WasmExporter';
 import {makePlugin} from './makePlugin';
 
 /**
@@ -9,6 +10,6 @@ import {makePlugin} from './makePlugin';
 export default makePlugin({
   name: '@revideo/core/default',
   exporters() {
-    return [FFmpegExporterClient, ImageExporter];
+    return [WasmExporter, FFmpegExporterClient, ImageExporter];
   },
 });

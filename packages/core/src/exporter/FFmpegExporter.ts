@@ -1,8 +1,12 @@
+import {Project} from '../app/Project';
+import type {
+  AssetInfo,
+  RendererResult,
+  RendererSettings,
+} from '../app/Renderer';
 import {EventDispatcher} from '../events';
 import {BoolMetaField, MetaField, ObjectMetaField, ValueOf} from '../meta';
 import {Exporter} from './Exporter';
-import {Project} from './Project';
-import type {AssetInfo, RendererResult, RendererSettings} from './Renderer';
 
 type ServerResponse =
   | {

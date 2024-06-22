@@ -1,10 +1,10 @@
 import {EventDispatcher, ValueDispatcher} from '../events';
+import type {Exporter} from '../exporter';
 import type {Scene} from '../scenes';
 import {ReadOnlyTimeEvents} from '../scenes/timeEvents';
 import {clampRemap} from '../tweening';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
-import type {Exporter} from './Exporter';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
 import type {Project} from './Project';
@@ -222,6 +222,7 @@ export class Renderer {
     settings: RendererSettings,
     signal: AbortSignal,
   ): Promise<RendererResult> {
+    // Select exporter
     const exporterClass = this.project.meta.rendering.exporter.exporters.find(
       exporter => exporter.id === settings.exporter.name,
     );
@@ -232,6 +233,7 @@ export class Renderer {
       return RendererResult.Error;
     }
 
+    // Instantiate exporter
     this.exporter = await exporterClass.create(this.project, settings);
     if (this.exporter.configuration) {
       settings = {
@@ -245,12 +247,14 @@ export class Renderer {
     const from = this.status.secondsToFrames(settings.range[0]);
     this.frame.current = from;
 
+    // Reset
     await this.reloadScenes(settings);
     await this.playback.recalculate();
     if (signal.aborted) return RendererResult.Aborted;
     await this.playback.reset();
     if (signal.aborted) return RendererResult.Aborted;
 
+    // TODO: check if we can move this up
     const to = Math.min(
       this.playback.duration,
       this.status.secondsToFrames(settings.range[1]),
@@ -264,6 +268,7 @@ export class Renderer {
 
     const mediaByFrames = await this.getMediaByFrames(settings);
 
+    // Start audio export
     let generateAudioPromise;
     if (this.exporter && this.exporter.generateAudio) {
       generateAudioPromise = this.exporter.generateAudio(
@@ -273,8 +278,10 @@ export class Renderer {
       );
     }
 
+    // TODO: possibly doubled?
     await this.playback.seek(from);
 
+    // Main rendering loop
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
@@ -312,6 +319,8 @@ export class Renderer {
 
     await this.exporter.stop?.(result);
 
+    // Destroys frame extractor processes (only required for FfmpegExporter)
+    // TODO: check what this event does
     if (import.meta.hot) {
       import.meta.hot.send('revideo:render-finished', {});
     }

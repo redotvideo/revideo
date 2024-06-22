@@ -26,7 +26,8 @@
   ],
   "dependencies": {
     "@types/chroma-js": "^2.1.4",
-    "chroma-js": "^2.4.2"
+    "chroma-js": "^2.4.2",
+    "mp4-wasm": "^1.0.6"
   },
   "devDependencies": {
     "@revideo/internal": "0.0.0",

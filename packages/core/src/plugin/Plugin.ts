@@ -1,11 +1,11 @@
 import type {
-  ExporterClass,
   Player,
   Presenter,
   Project,
   ProjectSettings,
   Renderer,
 } from '../app';
+import type {ExporterClass} from '../exporter';
 
 /**
  * Represents a runtime Motion Canvas plugin.

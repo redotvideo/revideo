@@ -29,8 +29,6 @@ export function wasmExporterPlugin(): Plugin {
           const uploadPath = path.join(process.cwd(), 'uploads');
           const filePath = path.join(uploadPath, 'video.mp4');
 
-          const start = Date.now();
-
           try {
             await fs.promises.mkdir(uploadPath, {recursive: true});
             const writeStream = fs.createWriteStream(filePath);
@@ -43,10 +41,8 @@ export function wasmExporterPlugin(): Plugin {
 
             writeStream.end();
 
-            console.log('Video uploaded:', filePath);
             res.statusCode = 200;
             res.end();
-            console.log(`Uploading took ${(Date.now() - start) / 1000}s`);
           } catch (err) {
             console.error('Error uploading video:', err);
             res.statusCode = 500;

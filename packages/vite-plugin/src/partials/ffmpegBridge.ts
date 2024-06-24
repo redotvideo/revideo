@@ -75,7 +75,6 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
           );
 
           try {
-            console.log('merging!', output, outputFilename, tempDir);
             await mergeMedia(outputFilename, output, tempDir);
             res.statusCode = 200;
           } catch (e) {

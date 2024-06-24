@@ -81,7 +81,9 @@ export class Video extends Media {
     super(props);
 
     // If the file is not mp4, warn.
-    if (!this.fullSource().endsWith('.mp4')) {
+    // strip the query string from the source
+    const src = this.fullSource().split('?')[0];
+    if (!src.endsWith('.mp4')) {
       console.warn(
         `WARNING: Video source is not an MP4 file. This may significantly slow down rendering: ${this.fullSource()}`,
       );

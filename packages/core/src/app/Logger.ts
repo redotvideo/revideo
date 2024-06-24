@@ -158,10 +158,13 @@ export class Logger {
   }
 
   public debug(payload: string | LogPayload) {
+    // TODO: include again with logLevel option
+    /*
     console.debug(
       'debug log from browser process:',
       typeof payload === 'string' ? payload : payload.message,
     );
+    */
     this.logLevel(LogLevel.Debug, payload);
   }
 

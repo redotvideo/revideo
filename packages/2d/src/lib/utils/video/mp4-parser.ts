@@ -301,7 +301,7 @@ export class FrameExtractor {
     const samplingRate = this.sourceFps / this.targetFps;
     this.sum += samplingRate;
 
-    if (this.sum <= 1 && this.lastFrame) {
+    if (this.sum < 1 && this.lastFrame) {
       this.framesRequested++;
       return this.lastFrame;
     }

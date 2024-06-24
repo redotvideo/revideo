@@ -53,7 +53,7 @@ export enum RendererResult {
  * player, a renderer does not use an update loop. It plays through the
  * animation as fast as it can, occasionally pausing to keep the UI responsive.
  *
- * The actual exporting is outsourced to an {@link Exporter}.
+ * The actual exporting is outsourced to an Exporter.
  */
 export class Renderer {
   public get onStateChanged() {

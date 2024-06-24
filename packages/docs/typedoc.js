@@ -34,6 +34,7 @@ module.exports = () => ({
           '../core/src/app',
           '../core/src/decorators',
           '../core/src/events',
+          '../core/src/exporter',
           '../core/src/flow',
           '../core/src/media',
           '../core/src/meta',

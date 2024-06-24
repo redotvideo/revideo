@@ -25,6 +25,7 @@
   "devDependencies": {
     "@revideo/telemetry": "0.4.2",
     "@types/follow-redirects": "^1.14.1",
+    "@types/formidable": "^3.4.5",
     "@types/mime-types": "^2.1.1"
   },
   "dependencies": {

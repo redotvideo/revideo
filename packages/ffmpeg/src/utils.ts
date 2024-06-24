@@ -15,6 +15,17 @@ export function resolvePath(output: string, assetPath: string) {
   return resolvedPath;
 }
 
+export async function makeSureFolderExists(folderPath: string) {
+  if (
+    await fs.promises
+      .access(folderPath)
+      .then(() => false)
+      .catch(() => true)
+  ) {
+    await fs.promises.mkdir(folderPath, {recursive: true});
+  }
+}
+
 export async function concatenateMedia(
   files: string[],
   outputFile: string,

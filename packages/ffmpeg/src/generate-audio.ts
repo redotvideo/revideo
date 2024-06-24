@@ -6,6 +6,7 @@ import * as path from 'path';
 import {
   checkForAudioStream,
   getSampleRate,
+  makeSureFolderExists,
   mergeAudioWithVideo,
   resolvePath,
 } from './utils';
@@ -215,6 +216,9 @@ export async function generateAudio({
   fps: number;
 }) {
   const fullTempDir = path.join(os.tmpdir(), tempDir);
+  await makeSureFolderExists(outputDir);
+  await makeSureFolderExists(fullTempDir);
+
   const assetPositions = getAssetPlacement(assets);
   const audioFilenames: string[] = [];
 
@@ -252,6 +256,8 @@ export async function mergeMedia(
   tempDir: string,
 ) {
   const fullTempDir = path.join(os.tmpdir(), tempDir);
+  await makeSureFolderExists(outputDir);
+  await makeSureFolderExists(fullTempDir);
 
   const audioWavExists = fs.existsSync(path.join(fullTempDir, `audio.wav`));
   if (audioWavExists) {

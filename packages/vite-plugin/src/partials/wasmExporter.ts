@@ -1,4 +1,6 @@
+import formidable, {IncomingForm} from 'formidable';
 import * as fs from 'fs';
+import * as os from 'os';
 import path from 'path';
 import {Readable} from 'stream';
 import {Plugin} from 'vite';
@@ -24,32 +26,40 @@ export function wasmExporterPlugin(): Plugin {
       });
 
       // Endpoint to download the video file from the client
-      server.middlewares.use('/uploadVideoFile', async (req, res, next) => {
+      server.middlewares.use('/uploadVideoFile', async (req, res) => {
         if (req.method === 'POST') {
-          const uploadPath = path.join(process.cwd(), 'uploads');
-          const filePath = path.join(uploadPath, 'video.mp4');
+          const form = new IncomingForm();
 
-          try {
-            await fs.promises.mkdir(uploadPath, {recursive: true});
-            const writeStream = fs.createWriteStream(filePath);
+          form.parse(req, async (err, fields, files) => {
+            if (err) {
+              console.error('Error parsing form:', err);
+              res.statusCode = 500;
+              res.end();
+              return;
+            }
 
-            await new Promise((resolve, reject) => {
-              req.on('data', chunk => writeStream.write(chunk));
-              req.on('end', resolve);
-              req.on('error', reject);
-            });
+            try {
+              const tempDir = fields.tempDir![0];
+              const file = files.file![0] as formidable.File;
 
-            writeStream.end();
+              const outputPath = path.join(os.tmpdir(), tempDir, 'visuals.mp4');
+              const writeStream = fs.createWriteStream(outputPath);
 
-            res.statusCode = 200;
-            res.end();
-          } catch (err) {
-            console.error('Error uploading video:', err);
-            res.statusCode = 500;
-            res.end();
-          }
-        } else {
-          next();
+              await new Promise((resolve, reject) => {
+                fs.createReadStream(file.filepath)
+                  .pipe(writeStream)
+                  .on('finish', resolve)
+                  .on('error', reject);
+              });
+
+              res.statusCode = 200;
+              res.end();
+            } catch (err) {
+              console.error('Error uploading video:', err);
+              res.statusCode = 500;
+              res.end();
+            }
+          });
         }
       });
     },

@@ -1,7 +1,6 @@
 import type {RendererResult, RendererSettings} from '@revideo/core';
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as ffmpeg from 'fluent-ffmpeg';
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {ImageStream} from './image-stream';
@@ -70,13 +69,6 @@ export class FFmpegExporterServer {
   }
 
   public async start() {
-    sendEvent(EventName.RenderStarted);
-    if (!fs.existsSync(this.settings.output)) {
-      await fs.promises.mkdir(this.settings.output, {recursive: true});
-    }
-    if (!fs.existsSync(this.jobFolder)) {
-      await fs.promises.mkdir(this.jobFolder, {recursive: true});
-    }
     this.command.run();
   }
 

@@ -47,13 +47,16 @@ export class WasmExporter implements Exporter {
   public async stop(): Promise<void> {
     const buf = await this.encoder.end();
 
+    const formData = new FormData();
+    formData.append('file', new Blob([buf], {type: 'video/mp4'}), 'video.mp4');
+    formData.append(
+      'tempDir',
+      `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
+    );
+
     await fetch('/uploadVideoFile', {
       method: 'POST',
-      body: buf,
-      headers: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'Content-Type': 'video/mp4',
-      },
+      body: formData,
     });
   }
 

@@ -45,19 +45,15 @@ export class WasmExporter implements Exporter {
   }
 
   public async stop(): Promise<void> {
-    // TODO: use rendering result
-
     const buf = await this.encoder.end();
 
-    fetch('/uploadVideoFile', {
+    await fetch('/uploadVideoFile', {
       method: 'POST',
       body: buf,
       headers: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-Type': 'video/mp4',
       },
-    }).then(res => {
-      console.log(res);
     });
   }
 

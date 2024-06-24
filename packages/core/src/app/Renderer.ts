@@ -250,11 +250,8 @@ export class Renderer {
     // Reset
     await this.reloadScenes(settings);
     await this.playback.recalculate();
-    if (signal.aborted) return RendererResult.Aborted;
     await this.playback.reset();
-    if (signal.aborted) return RendererResult.Aborted;
 
-    // TODO: check if we can move this up
     const to = Math.min(
       this.playback.duration,
       this.status.secondsToFrames(settings.range[1]),
@@ -278,10 +275,8 @@ export class Renderer {
       );
     }
 
-    // TODO: possibly doubled?
-    await this.playback.seek(from);
-
     // Main rendering loop
+    await this.playback.seek(from);
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
@@ -319,8 +314,6 @@ export class Renderer {
 
     await this.exporter.stop?.(result);
 
-    // Destroys frame extractor processes (only required for FfmpegExporter)
-    // TODO: check what this event does
     if (import.meta.hot) {
       import.meta.hot.send('revideo:ffmpeg-decoder:finished', {});
     }

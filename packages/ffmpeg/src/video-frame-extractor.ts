@@ -18,9 +18,6 @@ export class VideoFrameExtractor {
     0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
   ]);
 
-  private static readonly jpegSOI = Buffer.from([0xff, 0xd8]);
-  private static readonly jpegEOI = Buffer.from([0xff, 0xd9]);
-
   private static readonly chunkLengthInSeconds = 45;
 
   private readonly ffmpegPath = ffmpegSettings.getFfmpegPath();
@@ -40,7 +37,6 @@ export class VideoFrameExtractor {
   private duration: number;
   private toTime: number;
   private fps: number;
-  private png: boolean;
   private framesProcessed: number = 0;
 
   private codec: string | null = null;
@@ -52,7 +48,6 @@ export class VideoFrameExtractor {
     startTime: number,
     fps: number,
     duration: number,
-    png?: boolean,
   ) {
     this.state = 'processing';
     this.filePath = filePath;
@@ -61,7 +56,6 @@ export class VideoFrameExtractor {
     this.duration = duration;
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
-    this.png = png || false;
 
     if (this.startTime >= this.duration) {
       getVideoCodec(this.filePath).then(codec => {
@@ -122,7 +116,7 @@ export class VideoFrameExtractor {
       );
     }
 
-    if (this.png && codec === 'vp9') {
+    if (codec === 'vp9') {
       inputOptions.push('-vcodec', 'libvpx-vp9');
     }
 
@@ -135,16 +129,7 @@ export class VideoFrameExtractor {
     }
 
     outputOptions.push('-f', 'image2pipe');
-
-    /**
-     * PNG is significantly slower than JPEG
-     * but leads to better quality.
-     */
-    if (this.png) {
-      outputOptions.push('-vcodec', 'png');
-    } else {
-      outputOptions.push('-vcodec', 'mjpeg');
-    }
+    outputOptions.push('-vcodec', 'png');
 
     return {inputOptions, outputOptions};
   }
@@ -236,13 +221,8 @@ export class VideoFrameExtractor {
     let start = 0;
     let end;
 
-    const startSignature = this.png
-      ? VideoFrameExtractor.pngSignature
-      : VideoFrameExtractor.jpegSOI;
-
-    const endSignature = this.png
-      ? VideoFrameExtractor.pngEOF
-      : VideoFrameExtractor.jpegEOI;
+    const startSignature = VideoFrameExtractor.pngSignature;
+    const endSignature = VideoFrameExtractor.pngEOF;
 
     while (
       (start = this.buffer.indexOf(startSignature, start)) !== -1 &&

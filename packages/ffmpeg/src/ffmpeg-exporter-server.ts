@@ -45,7 +45,7 @@ export class FFmpegExporterServer {
   public constructor(settings: FFmpegExporterSettings) {
     this.settings = settings;
     this.jobFolder = path.join(
-      `${os.tmpdir()}`,
+      os.tmpdir(),
       `revideo-${this.settings.name}-${settings.hiddenFolderId}`,
     );
     this.audioFilenames = [];
@@ -132,7 +132,10 @@ export class FFmpegExporterServer {
   }
 
   public async mergeMedia() {
-    if (this.audioFilenames.length > 0) {
+    const audioWavExists = fs.existsSync(
+      path.join(this.jobFolder, `audio.wav`),
+    );
+    if (audioWavExists) {
       await mergeAudioWithVideo(
         path.join(this.jobFolder, `audio.wav`),
         path.join(this.jobFolder, `visuals.mp4`),

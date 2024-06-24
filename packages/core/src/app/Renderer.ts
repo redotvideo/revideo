@@ -322,7 +322,7 @@ export class Renderer {
     // Destroys frame extractor processes (only required for FfmpegExporter)
     // TODO: check what this event does
     if (import.meta.hot) {
-      import.meta.hot.send('revideo:render-finished', {});
+      import.meta.hot.send('revideo:ffmpeg-decoder:finished', {});
     }
 
     // Only merge media when rendering images was actually successful.

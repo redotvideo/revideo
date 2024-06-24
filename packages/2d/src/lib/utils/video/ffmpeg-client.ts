@@ -57,6 +57,7 @@ export class ImageCommunication {
           startTime: time,
           duration,
           fps,
+          png: true,
         },
       });
     });

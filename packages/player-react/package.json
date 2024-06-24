@@ -1,6 +1,6 @@
 {
   "name": "@revideo/player-react",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "",
   "main": "dist/index.js",
   "files": [
@@ -22,7 +22,7 @@
     "react-dom": ">=17"
   },
   "dependencies": {
-    "@revideo/core": "0.4.2",
+    "@revideo/core": "0.4.3",
     "react": "^18",
     "react-dom": "^18"
   }

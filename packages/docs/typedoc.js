@@ -47,6 +47,7 @@ module.exports = () => ({
           '../core/src/utils',
         ],
         tsconfig: '../core/tsconfig.build.json',
+        skipErrorChecking: true,
       },
       'core',
     );

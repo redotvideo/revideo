@@ -71,7 +71,7 @@ export class Video extends Media {
     this
   >;
 
-  public detectedFileType: string = 'unknown';
+  public detectedFileType: 'mp4' | 'webm' | 'unknown' = 'unknown';
   private fileTypeWasDetected: boolean = false;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};
@@ -317,7 +317,7 @@ export class Video extends Media {
     await this.drawChildren(context);
   }
 
-  protected override async applyFlex() {
+  protected override applyFlex() {
     super.applyFlex();
     const video = this.video();
     this.element.style.aspectRatio = (

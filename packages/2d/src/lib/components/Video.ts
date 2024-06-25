@@ -71,6 +71,9 @@ export class Video extends Media {
     this
   >;
 
+  public detectedFileType: string = 'unknown';
+  private fileTypeWasDetected: boolean = false;
+
   private static readonly pool: Record<string, HTMLVideoElement> = {};
 
   private static readonly imageCommunication = !import.meta.hot
@@ -79,15 +82,6 @@ export class Video extends Media {
 
   public constructor(props: VideoProps) {
     super(props);
-
-    // If the file is not mp4, warn.
-    // strip the query string from the source
-    const src = this.fullSource().split('?')[0];
-    if (!src.endsWith('.mp4')) {
-      console.warn(
-        `WARNING: Video source is not an MP4 file. This may significantly slow down rendering: ${this.fullSource()}`,
-      );
-    }
   }
 
   protected override desiredSize(): SerializedVector2<DesiredLength> {
@@ -256,6 +250,10 @@ export class Video extends Media {
   }
 
   protected async seekFunction() {
+    if (!this.fileTypeWasDetected) {
+      this.detectedFileType = await this.detectFileType();
+      this.fileTypeWasDetected = true;
+    }
     const playbackState = this.view().playbackState();
 
     // During playback
@@ -283,16 +281,16 @@ export class Video extends Media {
       return this.webcodecSeekedVideo();
     }
 
-    // If not set explicitly, use file extension to determine decoder
-    if (this.src().endsWith('.mp4')) {
-      return this.webcodecSeekedVideo();
-    }
-
-    if (this.src().endsWith('.webm')) {
+    // If not set explicitly, use detected file type to determine decoder
+    if (this.detectedFileType === 'webm') {
       return this.ffmpegSeekedVideo();
     }
 
-    return this.seekedVideo();
+    if (this.detectedFileType === 'hls') {
+      return this.seekedVideo();
+    }
+
+    return this.webcodecSeekedVideo();
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
@@ -319,11 +317,45 @@ export class Video extends Media {
     await this.drawChildren(context);
   }
 
-  protected override applyFlex() {
+  protected override async applyFlex() {
     super.applyFlex();
     const video = this.video();
     this.element.style.aspectRatio = (
       this.ratio() ?? video.videoWidth / video.videoHeight
     ).toString();
+  }
+
+  private async detectFileType(): Promise<'mp4' | 'webm' | 'hls' | 'unknown'> {
+    if (this.fullSource().split('?')[0].endsWith('.mp4')) return 'mp4';
+    if (this.fullSource().split('?')[0].endsWith('.webm')) return 'webm';
+    if (this.fullSource().split('?')[0].endsWith('.m3u8')) return 'hls';
+
+    if (
+      this.fullSource().startsWith('http:') ||
+      this.fullSource().startsWith('https:')
+    ) {
+      try {
+        const response = await fetch(this.fullSource(), {method: 'HEAD'});
+        const contentType = response.headers.get('Content-Type');
+
+        if (contentType) {
+          if (contentType.includes('video/mp4')) return 'mp4';
+          if (contentType.includes('video/webm')) return 'webm';
+          if (
+            contentType.includes('application/vnd.apple.mpegurl') ||
+            contentType.includes('application/x-mpegURL')
+          ) {
+            return 'hls';
+          }
+        }
+      } catch (error) {
+        // do nothing
+      }
+    }
+
+    console.warn(
+      `WARNING: Could not detect file type of video (${this.fullSource()}), will default to using mp4 decoder. If your video file is no mp4 file, this will lead to an error - to fix this, reencode your video as an mp4 file (better performance) or specify a different decoder: https://docs.re.video/common-issues/slow-rendering#use-mp4-decoder`,
+    );
+    return 'unknown';
   }
 }

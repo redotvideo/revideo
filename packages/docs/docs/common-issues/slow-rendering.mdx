@@ -11,17 +11,31 @@ those that do, as processing videos is an expensive operation.
 
 Here you can find some strategies that can help speed up rendering:
 
-### Set `png={false}` in `<Video/>` tags
+### Upgrade to >=v0.4.4
 
-The frames of `<Video/>` elements are extracted as png by default to ensure the
-highest quality possible. If you are okay with a slightly lower quality, you can
-set `png={false}` to extract video frames as jpeg:
+We regularly release new versions of Revideo that often come with performance improvements. To get the best rendering speeds possible, make sure to upgrade Revideo to >=v0.4.4.
+
+### Use MP4 decoder
+
+We use the Webcodecs API to extract frames from `<Video/>` elements during rendering. This, however, is currently only supported for mp4 files, and Revideo will use Ffmpeg-based decoder or naively seek set the `.currentTime` attribute on the HTMLVideoElement if it detects another file type. If Revideo fails to detect a file type, you will receive the following warning: 
+
+_WARNING: Could not detect file type of video, will default to using mp4 decoder. If your video file is no mp4 file, this will lead to an error - to fix this, reencode your video as an mp4 file (better performance) or specify a different decoder._
+
+If this occurs, you can set the decoder explicitly as a prop of your `<Video/>` tag:
 
 ```tsx
-<Video src={'/myvideo.mp4'} play={true} png={false} />
+yield view.add(<Video
+    src={"your_file"}
+    decoder={"web"}
+/>);
 ```
 
-In our experience, this can speed up rendering by a factor of up to five.
+You should use the following decoder for different file types:
+
+- `decoder={"web"}` for mp4
+- `decoder={"ffmpeg"}` for .webm
+- `decoder={"slow"}` for everything else
+
 
 ### Lower output resolution through `resolutionScale` in `project.meta`.
 

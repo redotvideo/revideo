@@ -21,11 +21,8 @@
     "resolutionScale": 1,
     "colorSpace": "srgb",
     "exporter": {
-      "name": "@revideo/core/ffmpeg",
-      "options": {
-        "fastStart": true,
-        "includeAudio": true
-      }
+      "name": "@revideo/core/wasm",
+      "options": {}
     }
   }
 }

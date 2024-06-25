@@ -34,6 +34,7 @@ module.exports = () => ({
           '../core/src/app',
           '../core/src/decorators',
           '../core/src/events',
+          '../core/src/exporter',
           '../core/src/flow',
           '../core/src/media',
           '../core/src/meta',
@@ -47,6 +48,7 @@ module.exports = () => ({
           '../core/src/utils',
         ],
         tsconfig: '../core/tsconfig.build.json',
+        skipErrorChecking: true,
       },
       'core',
     );

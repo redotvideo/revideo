@@ -25,12 +25,14 @@
   "devDependencies": {
     "@revideo/telemetry": "0.4.3",
     "@types/follow-redirects": "^1.14.1",
+    "@types/formidable": "^3.4.5",
     "@types/mime-types": "^2.1.1"
   },
   "dependencies": {
     "@revideo/ffmpeg": "0.4.3",
     "fast-glob": "^3.3.1",
     "follow-redirects": "^1.15.2",
+    "formidable": "^3.5.1",
     "mime-types": "^2.1.35",
     "source-map": "^0.6.1"
   }

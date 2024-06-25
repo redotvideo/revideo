@@ -5,6 +5,27 @@ import * as path from 'path';
 import {v4 as uuidv4} from 'uuid';
 import {ffmpegSettings} from './settings';
 
+export function resolvePath(output: string, assetPath: string) {
+  let resolvedPath: string;
+  if (assetPath.startsWith('http://') || assetPath.startsWith('https://')) {
+    resolvedPath = assetPath;
+  } else {
+    resolvedPath = path.join(output, '../public', assetPath);
+  }
+  return resolvedPath;
+}
+
+export async function makeSureFolderExists(folderPath: string) {
+  if (
+    await fs.promises
+      .access(folderPath)
+      .then(() => false)
+      .catch(() => true)
+  ) {
+    await fs.promises.mkdir(folderPath, {recursive: true});
+  }
+}
+
 export async function concatenateMedia(
   files: string[],
   outputFile: string,

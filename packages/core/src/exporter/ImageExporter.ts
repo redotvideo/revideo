@@ -1,3 +1,7 @@
+import type {Logger} from '../app/Logger';
+import type {Project} from '../app/Project';
+import type {RendererSettings} from '../app/Renderer';
+import {FileTypes} from '../app/presets';
 import {EventDispatcher} from '../events';
 import {
   BoolMetaField,
@@ -9,10 +13,6 @@ import {
 import {clamp} from '../tweening';
 import {CanvasOutputMimeType} from '../types';
 import type {Exporter} from './Exporter';
-import type {Logger} from './Logger';
-import type {Project} from './Project';
-import type {RendererSettings} from './Renderer';
-import {FileTypes} from './presets';
 
 const EXPORT_FRAME_LIMIT = 256;
 const EXPORT_RETRY_DELAY = 1000;

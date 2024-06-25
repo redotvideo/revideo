@@ -2,6 +2,8 @@ import {
   FFmpegExporterServer,
   FFmpegExporterSettings,
   VideoFrameExtractor,
+  generateAudio,
+  mergeMedia,
 } from '@revideo/ffmpeg';
 import type {Plugin, WebSocketServer} from 'vite';
 
@@ -14,12 +16,75 @@ interface ExporterPluginConfig {
   output: string;
 }
 
-export function ffmpegExporterPlugin({output}: ExporterPluginConfig): Plugin {
+export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
   return {
     name: 'revideo/ffmpeg',
 
     configureServer(server) {
       new FFmpegBridge(server.ws, {output});
+
+      server.middlewares.use(
+        '/audio-processing/generate-audio',
+        async (req, res) => {
+          if (req.method !== 'POST') {
+            return;
+          }
+
+          const {tempDir, assets, startFrame, endFrame, fps} = JSON.parse(
+            await new Promise((resolve, reject) => {
+              let body = '';
+              req.on('data', chunk => (body += chunk));
+              req.on('end', () => resolve(body));
+              req.on('error', reject);
+            }),
+          );
+
+          try {
+            await generateAudio({
+              outputDir: output,
+              tempDir,
+              assets,
+              startFrame,
+              endFrame,
+              fps,
+            });
+            res.statusCode = 200;
+          } catch (e) {
+            console.error(e);
+            res.statusCode = 500;
+          } finally {
+            res.end();
+          }
+        },
+      );
+
+      server.middlewares.use(
+        '/audio-processing/merge-media',
+        async (req, res) => {
+          if (req.method !== 'POST') {
+            return;
+          }
+
+          const {outputFilename, tempDir} = JSON.parse(
+            await new Promise((resolve, reject) => {
+              let body = '';
+              req.on('data', chunk => (body += chunk));
+              req.on('end', () => resolve(body));
+              req.on('error', reject);
+            }),
+          );
+
+          try {
+            await mergeMedia(outputFilename, output, tempDir);
+            res.statusCode = 200;
+          } catch (e) {
+            console.error(e);
+            res.statusCode = 500;
+          } finally {
+            res.end();
+          }
+        },
+      );
     },
   };
 }
@@ -39,8 +104,8 @@ export class FFmpegBridge {
     private readonly config: ExporterPluginConfig,
   ) {
     ws.on('revideo:ffmpeg-exporter', this.handleMessage);
-    ws.on('revideo:ffmpeg-video-frame', this.handleVideoFrameMessage);
-    ws.on('revideo:render-finished', this.handleRenderFinished);
+    ws.on('revideo:ffmpeg-decoder:video-frame', this.handleDecodeVideoFrame);
+    ws.on('revideo:ffmpeg-decoder:finished', this.handleRenderFinished);
   }
 
   private handleMessage = async ({method, data}: BrowserRequest) => {
@@ -98,14 +163,13 @@ export class FFmpegBridge {
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
-  private handleVideoFrameMessage = async ({data}: BrowserRequest) => {
+  private handleDecodeVideoFrame = async ({data}: BrowserRequest) => {
     const typedData = data as {
       id: string;
       filePath: string;
       startTime: number;
       duration: number;
       fps: number;
-      png: boolean;
     };
 
     // Check if we already have a VideoFrameExtractor for this video
@@ -122,7 +186,7 @@ export class FFmpegBridge {
     // If time has not changed, return the last frame
     if (isOldFrame) {
       const frame = extractor!.getLastFrame();
-      this.ws.send('revideo:ffmpeg-video-frame-res', {
+      this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
         status: 'success',
         data: {
           frame,
@@ -157,7 +221,6 @@ export class FFmpegBridge {
         typedData.startTime,
         typedData.fps,
         typedData.duration,
-        typedData.png,
       );
       this.videoFrameExtractors.set(id, extractor);
     }
@@ -165,7 +228,7 @@ export class FFmpegBridge {
     // Go to the frame that is closest to the requested time
     const frame = await extractor.popImage();
 
-    this.ws.send('revideo:ffmpeg-video-frame-res', {
+    this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
       status: 'success',
       data: {
         frame,

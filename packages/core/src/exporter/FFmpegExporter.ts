@@ -1,8 +1,12 @@
+import {Project} from '../app/Project';
+import type {
+  AssetInfo,
+  RendererResult,
+  RendererSettings,
+} from '../app/Renderer';
 import {EventDispatcher} from '../events';
 import {BoolMetaField, MetaField, ObjectMetaField, ValueOf} from '../meta';
 import {Exporter} from './Exporter';
-import {Project} from './Project';
-import type {AssetInfo, RendererResult, RendererSettings} from './Renderer';
 
 type ServerResponse =
   | {
@@ -119,11 +123,29 @@ export class FFmpegExporterClient implements Exporter {
     startFrame: number,
     endFrame: number,
   ): Promise<void> {
-    await this.invoke('generateAudio', {assets, startFrame, endFrame});
+    await fetch('/audio-processing/generate-audio', {
+      method: 'POST',
+      body: JSON.stringify({
+        tempDir: `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
+        assets,
+        startFrame,
+        endFrame,
+        fps: this.settings.fps,
+      }),
+    });
   }
 
   public async mergeMedia(): Promise<void> {
-    await this.invoke('mergeMedia', {});
+    const outputFilename = this.settings.name;
+    const tempDir = `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`;
+
+    await fetch('/audio-processing/merge-media', {
+      method: 'POST',
+      body: JSON.stringify({
+        outputFilename,
+        tempDir,
+      }),
+    });
   }
 
   /**

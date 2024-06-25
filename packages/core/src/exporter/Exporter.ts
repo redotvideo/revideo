@@ -1,6 +1,10 @@
+import type {Project} from '../app/Project';
+import type {
+  AssetInfo,
+  RendererResult,
+  RendererSettings,
+} from '../app/Renderer';
 import type {MetaField} from '../meta';
-import type {Project} from './Project';
-import type {AssetInfo, RendererResult, RendererSettings} from './Renderer';
 
 /**
  * The static interface for exporters.

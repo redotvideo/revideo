@@ -6,14 +6,15 @@ import {
   corsProxyPlugin,
   editorPlugin,
   exporterPlugin,
-  ffmpegExporterPlugin,
+  ffmpegBridgePlugin,
   metaPlugin,
+  metricsPlugin,
   projectsPlugin,
   scenesPlugin,
   settingsPlugin,
+  wasmExporterPlugin,
   webglPlugin,
 } from './partials';
-import {metricsPlugin} from './partials/metrics';
 import {PLUGIN_OPTIONS, PluginOptions, isPlugin} from './plugins';
 import {getProjects} from './utils';
 
@@ -132,10 +133,11 @@ export default ({
     settingsPlugin(),
     scenesPlugin(),
     exporterPlugin({outputPath}),
-    ffmpegExporterPlugin({output: outputPath}),
+    ffmpegBridgePlugin({output: outputPath}),
     editorPlugin({editor, projects}),
     projectsPlugin({projects, plugins, buildForEditor}),
     assetsPlugin({bufferedAssets}),
+    wasmExporterPlugin(),
     webglPlugin(),
     corsProxyPlugin(proxy),
     metricsPlugin(),

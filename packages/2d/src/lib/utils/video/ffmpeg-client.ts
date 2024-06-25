@@ -5,7 +5,7 @@ export class ImageCommunication {
     }
 
     import.meta.hot.on(
-      'revideo:ffmpeg-video-frame-res',
+      'revideo:ffmpeg-decoder:video-frame-res',
       this.handler.bind(this),
     );
   }
@@ -50,14 +50,13 @@ export class ImageCommunication {
 
       this.nextFrameHandlers.push(handler);
 
-      import.meta.hot.send('revideo:ffmpeg-video-frame', {
+      import.meta.hot.send('revideo:ffmpeg-decoder:video-frame', {
         data: {
           id: id,
           filePath: src,
           startTime: time,
           duration,
           fps,
-          png: true,
         },
       });
     });

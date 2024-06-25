@@ -1,5 +1,6 @@
-import type {ExporterClass, Project} from '../app';
+import type {Project} from '../app';
 import {ValueDispatcher} from '../events';
+import type {ExporterClass} from '../exporter';
 import {EnumMetaField} from './EnumMetaField';
 import {MetaField} from './MetaField';
 

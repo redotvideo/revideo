@@ -71,7 +71,7 @@ export class Video extends Media {
     this
   >;
 
-  public detectedFileType: 'mp4' | 'webm' | 'unknown' = 'unknown';
+  public detectedFileType: 'mp4' | 'webm' | 'hls' | 'unknown' = 'unknown';
   private fileTypeWasDetected: boolean = false;
 
   private static readonly pool: Record<string, HTMLVideoElement> = {};

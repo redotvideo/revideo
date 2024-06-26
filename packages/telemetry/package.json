@@ -1,6 +1,6 @@
 {
   "name": "@revideo/telemetry",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Telemetry for Revideo. Check the documentation to learn how to disable it.",
   "main": "dist/index.js",
   "author": "revideo",

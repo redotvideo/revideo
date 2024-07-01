@@ -345,6 +345,7 @@ export class Video extends Media {
         if (contentType) {
           if (contentType.includes('video/mp4')) return 'mp4';
           if (contentType.includes('video/webm')) return 'webm';
+          if (contentType.includes('video/quicktime')) return 'mov';
           if (
             contentType.includes('application/vnd.apple.mpegurl') ||
             contentType.includes('application/x-mpegURL')

@@ -1,7 +1,7 @@
-import {FrameExtractor} from './mp4-parser';
+import {Mp4Parser} from './parser';
 
 // List of VideoFrameExtractors
-const videoFrameExtractors = new Map<string, FrameExtractor>();
+const videoFrameExtractors = new Map<string, Mp4Parser>();
 
 export async function getFrame(
   id: string,
@@ -53,7 +53,7 @@ export async function getFrame(
   }
 
   if (!extractor) {
-    extractor = new FrameExtractor(filePath, fps, time);
+    extractor = new Mp4Parser(filePath, fps, time);
     await extractor.start();
     videoFrameExtractors.set(extractorId, extractor);
   }

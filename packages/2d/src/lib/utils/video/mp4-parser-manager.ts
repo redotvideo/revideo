@@ -3,6 +3,15 @@ import {Mp4Parser} from './parser';
 // List of VideoFrameExtractors
 const videoFrameExtractors = new Map<string, Mp4Parser>();
 
+export async function dropExtractor(id: string, filePath: string) {
+  const extractorId = filePath + '-' + id;
+  const extractor = videoFrameExtractors.get(extractorId);
+  if (extractor) {
+    extractor.close();
+    videoFrameExtractors.delete(extractorId);
+  }
+}
+
 export async function getFrame(
   id: string,
   filePath: string,

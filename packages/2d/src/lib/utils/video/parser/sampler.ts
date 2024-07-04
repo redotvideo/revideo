@@ -56,11 +56,6 @@ export class FrameSampler {
     return this.lastFrame;
   }
 
-  public async close() {
-    this.lastFrame?.close();
-    this.segment.close();
-  }
-
   public getSum() {
     return this.sum;
   }

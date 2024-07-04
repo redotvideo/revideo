@@ -189,6 +189,7 @@ export class Segment {
    */
   public close() {
     this.frameBuffer.forEach(frame => frame.close());
+    this.decoder.close();
   }
 
   public getFramesProcessed() {

@@ -1,4 +1,13 @@
 .revideo-player-wrapper {
+    all: initial;
+  }
+  
+  .revideo-player-wrapper * {
+    all: unset;
+    box-sizing: border-box;
+  }
+  
+  .revideo-player-wrapper {
     @tailwind base;
     @tailwind components;
     @tailwind utilities;

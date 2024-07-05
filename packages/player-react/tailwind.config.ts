@@ -5,6 +5,9 @@ const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   prefix: 'p-',
   important: '.revideo-player-wrapper',
+  corePlugins: {
+    preflight: false,
+  },
   theme: {
     extend: {
       colors: {
@@ -23,9 +26,6 @@ const config: Config = {
         },
       },
     },
-  },
-  corePlugins: {
-    preflight: false,
   },
   plugins: [],
 };

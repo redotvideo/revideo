@@ -2,8 +2,9 @@
 import type {Config} from 'tailwindcss';
 
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   prefix: 'p-',
+  important: '.revideo-player-wrapper',
   theme: {
     extend: {
       colors: {
@@ -23,6 +24,10 @@ const config: Config = {
       },
     },
   },
+  corePlugins: {
+    preflight: false,
+  },
   plugins: [],
 };
+
 export default config;

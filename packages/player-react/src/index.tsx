@@ -143,7 +143,7 @@ export function Player({
   }, [forcedTime]);
 
   return (
-    <div data-player="true" style={{display: 'contents'}}>
+    <div className="revideo-player-wrapper" style={{display: 'contents'}}>
       <div
         className="p-relative p-cursor-default p-focus:outline-none"
         onFocus={() => (focus.current = true)}

@@ -1,7 +1,0 @@
-[data-player='true'] {
-    all: revert;
-  }
-  
-  [data-player='true'] * {
-    all: revert;
-  }

@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify && tailwindcss -i ./src/player-wrapper.css -o ./dist/player-wrapper.css --minify"
+    "build": "tsc && tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify"
   },
   "keywords": [],
   "author": "revideo",

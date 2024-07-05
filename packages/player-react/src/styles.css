@@ -1,3 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.revideo-player-wrapper {
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+  }

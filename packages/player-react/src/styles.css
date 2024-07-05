@@ -1,3 +1,6 @@
-@tailwind base;
+[data-player='true'] {
+  @tailwind base;
+}
+
 @tailwind components;
 @tailwind utilities;

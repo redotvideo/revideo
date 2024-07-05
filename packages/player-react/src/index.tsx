@@ -1,6 +1,7 @@
 'use client';
 import {ComponentProps, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
+import './player-wrapper.css';
 import './styles.css';
 import {shouldShowControls} from './utils';
 
@@ -142,41 +143,43 @@ export function Player({
   }, [forcedTime]);
 
   return (
-    <div
-      className="p-relative p-cursor-default p-focus:outline-none"
-      onFocus={() => (focus.current = true)}
-      onBlur={() => (focus.current = false)}
-      tabIndex={0}
-      onMouseEnter={() => setIsMouseOver(true)}
-      onMouseLeave={() => setIsMouseOver(false)}
-    >
-      <div className="p-relative">
-        <revideo-player
-          ref={playerRef}
-          src={src}
-          playing={String(playingState)}
-          onClick={() => setPlaying(prev => !prev)}
-          variables={JSON.stringify(variables)}
-          looping={looping ? 'true' : 'false'}
-          width={width}
-          height={height}
-          quality={quality}
-          fps={fps}
-        />
-        <div
-          className={`p-absolute p-bottom-0 p-w-full p-transition-opacity p-duration-200 ${
-            shouldShowControls(playingState, isMouseOver, !controls)
-              ? 'p-opacity-100'
-              : 'p-opacity-0'
-          }`}
-        >
-          <Controls
-            duration={duration}
-            playing={playingState}
-            setPlaying={setPlaying}
-            currentTime={currentTimeState}
-            setForcedTime={setForcedTime}
+    <div data-player="true" style={{display: 'contents'}}>
+      <div
+        className="p-relative p-cursor-default p-focus:outline-none"
+        onFocus={() => (focus.current = true)}
+        onBlur={() => (focus.current = false)}
+        tabIndex={0}
+        onMouseEnter={() => setIsMouseOver(true)}
+        onMouseLeave={() => setIsMouseOver(false)}
+      >
+        <div className="p-relative">
+          <revideo-player
+            ref={playerRef}
+            src={src}
+            playing={String(playingState)}
+            onClick={() => setPlaying(prev => !prev)}
+            variables={JSON.stringify(variables)}
+            looping={looping ? 'true' : 'false'}
+            width={width}
+            height={height}
+            quality={quality}
+            fps={fps}
           />
+          <div
+            className={`p-absolute p-bottom-0 p-w-full p-transition-opacity p-duration-200 ${
+              shouldShowControls(playingState, isMouseOver, !controls)
+                ? 'p-opacity-100'
+                : 'p-opacity-0'
+            }`}
+          >
+            <Controls
+              duration={duration}
+              playing={playingState}
+              setPlaying={setPlaying}
+              currentTime={currentTimeState}
+              setForcedTime={setForcedTime}
+            />
+          </div>
         </div>
       </div>
     </div>

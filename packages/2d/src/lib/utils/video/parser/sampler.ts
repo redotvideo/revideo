@@ -1,6 +1,7 @@
 import {Segment} from './segment';
 
 export class FrameSampler {
+  private framesRequested = 0;
   private lastFrame?: VideoFrame;
 
   public constructor(
@@ -13,6 +14,7 @@ export class FrameSampler {
   public async getNextFrame() {
     const samplingRate = this.sourceFps / this.targetFps;
     this.sum += samplingRate;
+    this.framesRequested += 1;
 
     // Return last frame if we haven't progressed enough to get a new frame.
     if (this.sum < 1 && this.lastFrame) {
@@ -62,5 +64,9 @@ export class FrameSampler {
 
   public getSegment() {
     return this.segment;
+  }
+
+  public getTime(framesToSubtract: number) {
+    return (this.framesRequested - framesToSubtract) / this.targetFps;
   }
 }

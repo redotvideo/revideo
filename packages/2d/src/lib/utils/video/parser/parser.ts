@@ -53,7 +53,8 @@ async function getFileInfo(uri: string) {
       // Calculate FPS for each segment
       const edits = editsWithoutFps.map(edit => {
         const trackDurationInSec = track.duration / track.timescale;
-        const segmentDurationInSec = edit.segmentDuration / track.timescale;
+        const segmentDurationInSec =
+          edit.segmentDuration / track.movie_timescale;
         const segmentFrames =
           track.nb_samples * (segmentDurationInSec / trackDurationInSec);
         const mediaRate =
@@ -204,7 +205,7 @@ export class Mp4Parser {
   private getSecondDurationOfSegment(edit: Edit) {
     const mediaRate = edit.mediaRateInteger + edit.mediaRateFraction / 0xffff;
     const duration =
-      edit.segmentDuration / this.file.getInfo().videoTracks[0].timescale;
+      edit.segmentDuration / this.file.getInfo().videoTracks[0].movie_timescale;
     return duration / mediaRate;
   }
 
@@ -220,16 +221,16 @@ export class Mp4Parser {
       .slice(0, this.nextSegment - 1)
       .reduce((acc, edit) => acc + this.getSecondDurationOfSegment(edit), 0);
 
-    const currentSegment = this.sampler?.getSegment();
-    if (!currentSegment) {
+    if (!this.sampler) {
       throw new Error('No current segment');
     }
 
-    const currentSegmentFrames = currentSegment.getFramesProcessed() - frames;
-    const currentSegmentFps = this.edits[this.nextSegment - 1].fps;
-    const currentSegmentDuration = currentSegmentFrames / currentSegmentFps;
+    const currentSegmentStartTime = this.sampler.getSegment().getStartTime();
+    const samplerTime = this.sampler.getTime(frames);
 
-    return durationOfPastSegmentsInSeconds + currentSegmentDuration;
+    return (
+      durationOfPastSegmentsInSeconds + currentSegmentStartTime + samplerTime
+    );
   }
 
   public getTime() {

@@ -136,7 +136,8 @@ export class Segment {
 
     // Check if we are past the segment duration.
     const segmentDurationInSec =
-      this.edit.segmentDuration / this.file.getInfo().videoTracks[0].timescale;
+      this.edit.segmentDuration /
+      this.file.getInfo().videoTracks[0].movie_timescale;
     const segmentEndTime = mediaTimeInSec + segmentDurationInSec;
     if (frameTimeInSec > segmentEndTime) {
       frame.close();
@@ -193,5 +194,9 @@ export class Segment {
 
   public getFramesProcessed() {
     return this.framesProcessed;
+  }
+
+  public getStartTime() {
+    return this.startTime;
   }
 }

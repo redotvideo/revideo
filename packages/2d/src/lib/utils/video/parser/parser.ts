@@ -163,7 +163,8 @@ export class Mp4Parser {
 
     // If there are no more frames in the current segment, start the next segment
     while (!frame && this.nextSegment < this.edits.length) {
-      this.sampler.close();
+      this.sampler.getSegment().close();
+      this.sampler.getLastFrame()?.close();
       const segment = new Segment(
         this.uri,
         this.file,
@@ -187,6 +188,9 @@ export class Mp4Parser {
     // If there are no more frames, return the last frame
     if (!frame) {
       frame = this.sampler.getLastFrame();
+
+      // We can close the segment
+      this.sampler.getSegment().close();
 
       // If we still don't have a frame, throw an error
       if (!frame) {
@@ -241,7 +245,8 @@ export class Mp4Parser {
   }
 
   public close() {
-    this.sampler?.close();
-    this.file.close();
+    this.sampler?.getSegment().close();
+    this.sampler?.getLastFrame()?.close();
+    this.file.flush();
   }
 }

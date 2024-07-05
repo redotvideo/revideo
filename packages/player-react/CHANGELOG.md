@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.6 (2024-06-27)
+
+
+### Features
+
+* let player use css served from cli ([#155](https://github.com/redotvideo/revideo/issues/155)) ([0f5c600](https://github.com/redotvideo/revideo/commit/0f5c600b43a0ef57f632c8e306bc7be361792351))
+* react player component ([#101](https://github.com/redotvideo/revideo/issues/101)) ([e59b197](https://github.com/redotvideo/revideo/commit/e59b197be1d1d1b1940d2bdedbb3e3fb743125fc))
+* serve assets through cli ([#124](https://github.com/redotvideo/revideo/issues/124)) ([fdccde1](https://github.com/redotvideo/revideo/commit/fdccde12f058811382e7e2084ebe4b9e05af1b80))
+
+
+
+
+
+## 0.4.5 (2024-06-26)
+
+
+### Features
+
+* let player use css served from cli ([#155](https://github.com/redotvideo/revideo/issues/155)) ([0f5c600](https://github.com/redotvideo/revideo/commit/0f5c600b43a0ef57f632c8e306bc7be361792351))
+* react player component ([#101](https://github.com/redotvideo/revideo/issues/101)) ([e59b197](https://github.com/redotvideo/revideo/commit/e59b197be1d1d1b1940d2bdedbb3e3fb743125fc))
+* serve assets through cli ([#124](https://github.com/redotvideo/revideo/issues/124)) ([fdccde1](https://github.com/redotvideo/revideo/commit/fdccde12f058811382e7e2084ebe4b9e05af1b80))
+
+
+
+
+
 ## 0.4.4 (2024-06-25)
 
 

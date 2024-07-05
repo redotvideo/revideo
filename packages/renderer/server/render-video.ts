@@ -6,6 +6,7 @@ import {
   getVideoDuration,
   mergeAudioWithVideo,
 } from '@revideo/ffmpeg';
+import {EventName, sendEvent} from '@revideo/telemetry';
 import motionCanvas from '@revideo/vite-plugin';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -165,6 +166,11 @@ async function renderVideoOnPage(
   const port = address && typeof address === 'object' ? address.port : null;
   if (port === null) {
     throw new Error('Server address is null');
+  }
+
+  // only report for worker 0
+  if (id === 0) {
+    sendEvent(EventName.RenderStarted);
   }
 
   // Attach logs from puppeteer to the console

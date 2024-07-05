@@ -3,6 +3,7 @@ import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import {ffmpegSettings} from './settings';
 import {
   checkForAudioStream,
   getSampleRate,
@@ -152,6 +153,7 @@ async function prepareAudio(
       `volume=${asset.volume}`,
     ].join(',');
 
+    ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     ffmpeg(resolvedPath)
       .audioChannels(2)
       .audioCodec('pcm_s16le')
@@ -178,6 +180,7 @@ async function mergeAudioTracks(
   audioFilenames: string[],
 ): Promise<void> {
   return new Promise((resolve, reject) => {
+    ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     const command = ffmpeg();
 
     audioFilenames.forEach(filename => {

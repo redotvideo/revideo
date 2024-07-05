@@ -1,5 +1,14 @@
+/* Global Tailwind styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Scoped styles for the player wrapper */
 .revideo-player-wrapper {
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
-  }
+  all: initial;
+}
+
+.revideo-player-wrapper * {
+  all: unset;
+  box-sizing: border-box;
+}

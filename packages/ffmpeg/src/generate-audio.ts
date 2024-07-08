@@ -276,4 +276,9 @@ export async function mergeMedia(
       destination,
     );
   }
+  if (fullTempDir.endsWith('-undefined')) {
+    await fs.promises
+      .rm(fullTempDir, {recursive: true, force: true})
+      .catch(() => {});
+  }
 }

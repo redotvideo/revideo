@@ -19,9 +19,11 @@ async function getFileInfo(uri: string) {
   }>((res, rej) => {
     const file = createFile();
     let found = false;
+    const controller = new AbortController();
 
     file.onReady = (info: any) => {
       found = true;
+      controller.abort();
 
       const track = info.videoTracks[0];
 
@@ -46,7 +48,7 @@ async function getFileInfo(uri: string) {
       );
 
       // If there are no entries, use the default edit
-      const editsWithoutFps = editsFromVideo.length
+      const editsWithoutFps = editsFromVideo?.length
         ? editsFromVideo
         : [defaultEdit];
 
@@ -69,7 +71,7 @@ async function getFileInfo(uri: string) {
       res({file, edits, config});
     };
 
-    return fetch(uri).then(async response => {
+    return fetch(uri, {signal: controller.signal}).then(async response => {
       if (!response.body) {
         throw new Error('Response body is null');
       }
@@ -81,6 +83,7 @@ async function getFileInfo(uri: string) {
         await reader.read().then(({done, value}) => {
           if (done) {
             file.flush();
+            controller.abort();
             rej('Could not find moov');
             return;
           }

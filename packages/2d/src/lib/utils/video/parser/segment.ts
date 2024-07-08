@@ -3,6 +3,7 @@ import {Edit} from './utils';
 
 export class Segment {
   private done: boolean = false;
+  private abortController = new AbortController();
   private uri: string;
 
   private file: any;
@@ -76,6 +77,7 @@ export class Segment {
         /* eslint-disable-next-line @typescript-eslint/naming-convention */
         Range: `bytes=${offset}-`,
       },
+      signal: this.abortController.signal,
     }).then(async response => {
       if (!response.body) {
         throw new Error('Response body is null');
@@ -89,6 +91,7 @@ export class Segment {
           // Request is done.
           if (done) {
             this.responseFinished = true;
+            this.abortController.abort();
             this.decoder.flush();
             sink.close();
             return;
@@ -114,6 +117,10 @@ export class Segment {
       });
       this.framesDue++;
       this.decoder.decode(chunk);
+
+      const videoTrack = this.file.getInfo().videoTracks[0];
+      const trak = this.file.getTrackById(videoTrack.id);
+      this.file.releaseSample(trak, sample.number);
     }
   }
 
@@ -189,7 +196,9 @@ export class Segment {
    * Called when we are done with the extractor.
    */
   public close() {
+    this.abortController.abort();
     this.frameBuffer.forEach(frame => frame.close());
+    this.decoder.close();
   }
 
   public getFramesProcessed() {

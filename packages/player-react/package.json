@@ -24,6 +24,7 @@
   "dependencies": {
     "@revideo/core": "0.4.6",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "uuid": "^10.0.0"
   }
 }

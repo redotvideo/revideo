@@ -1,5 +1,6 @@
 import type {Project, ProjectMetadata} from '@revideo/core';
 import {Player, Stage} from '@revideo/core';
+import {v4 as uuidv4} from 'uuid';
 
 import {Vector2} from '@revideo/core';
 
@@ -134,7 +135,9 @@ class RevideoPlayer extends HTMLElement {
 
     let project: Project;
     try {
-      const promise = import(/* webpackIgnore: true */ source + 'project.js');
+      const promise = import(
+        /* webpackIgnore: true */ source + `project.js?instance=${uuidv4()}`
+      );
       const delay = new Promise(resolve => setTimeout(resolve, 200));
       await Promise.any([delay, promise]);
       this.setState(State.Loading);

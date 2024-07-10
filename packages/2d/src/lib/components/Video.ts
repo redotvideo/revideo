@@ -12,7 +12,7 @@ import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
 import {ImageCommunication} from '../utils/video/ffmpeg-client';
-import {getFrame} from '../utils/video/mp4-parser-manager';
+import {dropExtractor, getFrame} from '../utils/video/mp4-parser-manager';
 import {Media, MediaProps} from './Media';
 
 export interface VideoProps extends MediaProps {
@@ -324,6 +324,12 @@ export class Video extends Media {
     this.element.style.aspectRatio = (
       this.ratio() ?? video.videoWidth / video.videoHeight
     ).toString();
+  }
+
+  public override remove() {
+    super.remove();
+    dropExtractor(this.key, this.video().src);
+    return this;
   }
 
   private async detectFileType(): Promise<

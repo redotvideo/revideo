@@ -432,13 +432,13 @@ export const renderVideo = async ({
 interface RenderPartialVideoProps extends RenderVideoProps {
   workerId: number;
   numWorkers: number;
-  settings: Omit<RenderSettings, 'workers'>;
+  settings?: Omit<RenderSettings, 'workers'>;
 }
 
 export const renderPartialVideo = async ({
   projectFile,
   variables,
-  settings,
+  settings = {},
   numWorkers,
   workerId,
 }: RenderPartialVideoProps) => {

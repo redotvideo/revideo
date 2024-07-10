@@ -86,6 +86,11 @@ export abstract class GeneratorScene<T>
   }
   private readonly thread = new ValueDispatcher<Thread | null>(null);
 
+  public get onFinished() {
+    return this.finished.subscribable;
+  }
+  private readonly finished = new EventDispatcher<void>();
+
   public get onRenderLifecycle() {
     return this.renderLifecycle.subscribable;
   }
@@ -277,6 +282,7 @@ export abstract class GeneratorScene<T>
 
     if (result.done) {
       this.state = SceneState.Finished;
+      this.finished.dispatch();
     }
   }
 

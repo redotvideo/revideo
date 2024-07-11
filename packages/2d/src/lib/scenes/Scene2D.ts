@@ -11,7 +11,7 @@ import {
   Vector2,
   useLogger,
 } from '@revideo/core';
-import {Audio, Node, Video, View2D} from '../components';
+import {Audio, Media, Node, Video, View2D} from '../components';
 
 export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
   private view: View2D | null = null;
@@ -197,6 +197,16 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     );
 
     return returnObjects;
+  }
+
+  public override stopAllMedia() {
+    const playingMedia = Array.from(this.registeredNodes.values())
+      .filter((node): node is Media => node instanceof Media)
+      .filter(video => (video as Media).isPlaying());
+
+    for (const media of playingMedia) {
+      media.dispose();
+    }
   }
 
   protected recreateView() {

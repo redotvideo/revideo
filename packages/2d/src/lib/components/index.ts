@@ -11,6 +11,7 @@ export * from './Knot';
 export * from './Latex';
 export * from './Layout';
 export * from './Line';
+export * from './Media';
 export * from './Node';
 export * from './Path';
 export * from './Polygon';

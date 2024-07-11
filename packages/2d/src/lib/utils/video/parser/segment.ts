@@ -61,7 +61,6 @@ export class Segment {
       const height = this.file.getInfo().videoTracks[0].track_height;
       const width = this.file.getInfo().videoTracks[0].track_width;
 
-      // Buffersize is calculated (we're using BRGA) x * y * 4
       const bufferSize = height * width * 4;
       const buffer = new ArrayBuffer(bufferSize);
       const uint8Array = new Uint8Array(buffer);

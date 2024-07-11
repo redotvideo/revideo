@@ -195,7 +195,8 @@ export class Video extends Media {
       }
     }
 
-    if (Math.abs(video.currentTime - time) > 0.3) {
+    // reseek when video is out of sync by more than one second
+    if (Math.abs(video.currentTime - time) > 1) {
       this.setCurrentTime(time);
     } else if (!playing) {
       video.currentTime = time;

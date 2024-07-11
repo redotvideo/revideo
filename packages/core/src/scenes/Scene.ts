@@ -344,6 +344,8 @@ export interface Scene<T = unknown> {
    */
   getMediaAssets(): Array<AssetInfo>;
 
+  stopAllMedia(): void;
+
   /**
    * Should this scene be rendered below the previous scene during a transition?
    */

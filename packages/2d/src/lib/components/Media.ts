@@ -9,7 +9,6 @@ import {
   useThread,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {useScene2D} from '../scenes';
 import {Rect, RectProps} from './Rect';
 import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
 
@@ -178,11 +177,6 @@ export abstract class Media extends Rect {
     const playbackRate = this.playbackRate();
     this.playing(true);
     this.time(() => this.clampTime(offset + (time() - start) * playbackRate));
-
-    const scene = useScene2D();
-    scene.onFinished.subscribe(() => {
-      this.dispose();
-    });
   }
 
   public pause() {

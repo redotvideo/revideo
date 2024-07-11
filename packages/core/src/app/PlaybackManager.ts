@@ -87,6 +87,7 @@ export class PlaybackManager {
     ) {
       const scene = this.findBestScene(frame);
       if (scene !== this.currentScene) {
+        this.currentScene.stopAllMedia();
         this.previousScene = null;
         this.currentScene = scene;
 

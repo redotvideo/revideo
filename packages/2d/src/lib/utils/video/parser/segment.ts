@@ -121,13 +121,13 @@ export class Segment {
       const sink = new MP4FileSink(file, () => {}, offset);
 
       return async () => {
-        return reader.read().then(({done, value}) => {
+        return reader.read().then(async ({done, value}) => {
           // Request is done.
           if (done) {
             this.responseFinished = true;
             this.abortController.abort();
-            this.decoder.flush();
             sink.close();
+            await this.decoder.flush();
             return;
           }
 
@@ -162,7 +162,7 @@ export class Segment {
    * Called when the decoder has a frame ready.
    * Pushes the frame to the buffer so it can be consumed.
    */
-  private onFrame(frame: VideoFrame) {
+  private async onFrame(frame: VideoFrame) {
     this.framesDue--;
 
     // If the frame comes before the seek time, close it.
@@ -183,7 +183,7 @@ export class Segment {
     if (frameTimeInSec > segmentEndTime) {
       frame.close();
       this.done = true;
-      this.decoder.flush();
+      await this.decoder.flush();
       return;
     }
 

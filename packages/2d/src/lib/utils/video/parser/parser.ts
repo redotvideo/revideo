@@ -194,7 +194,7 @@ export class Mp4Parser {
       frame = this.sampler.getLastFrame();
 
       // We can close the segment
-      this.sampler.getSegment().close();
+      await this.sampler.getSegment().close();
 
       // If we still don't have a frame, throw an error
       if (!frame) {

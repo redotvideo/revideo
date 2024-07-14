@@ -47,6 +47,40 @@ export class Segment {
   }
 
   public async start(decoderConfig: VideoDecoderConfig) {
+    // If this is an empty edit, we just need to fill the buffer with empty frames.
+    if (this.edit.mediaTime === -1) {
+      this.done = true;
+      this.responseFinished = true;
+      this.decoder.close();
+
+      const segmentDurationInSeconds =
+        this.edit.segmentDuration /
+        this.file.getInfo().videoTracks[0].movie_timescale;
+      const framesToFill = segmentDurationInSeconds * this.edit.fps;
+
+      const height = this.file.getInfo().videoTracks[0].track_height;
+      const width = this.file.getInfo().videoTracks[0].track_width;
+
+      const bufferSize = height * width * 4;
+      const buffer = new ArrayBuffer(bufferSize);
+      const uint8Array = new Uint8Array(buffer);
+
+      // Make the frame black
+      uint8Array.fill(0);
+
+      this.frameBuffer = Array.from({length: framesToFill}, () => {
+        return new VideoFrame(uint8Array, {
+          timestamp: 0,
+          duration: 1 / this.edit.fps,
+          codedHeight: height,
+          codedWidth: width,
+          format: 'BGRA',
+        });
+      });
+
+      return;
+    }
+
     this.decoder.configure(decoderConfig);
     const videoTrack = this.file.getInfo().videoTracks[0];
     const trak = this.file.getTrackById(videoTrack.id);
@@ -87,13 +121,13 @@ export class Segment {
       const sink = new MP4FileSink(file, () => {}, offset);
 
       return async () => {
-        return reader.read().then(({done, value}) => {
+        return reader.read().then(async ({done, value}) => {
           // Request is done.
           if (done) {
             this.responseFinished = true;
             this.abortController.abort();
-            this.decoder.flush();
             sink.close();
+            await this.decoder.flush();
             return;
           }
 
@@ -128,7 +162,7 @@ export class Segment {
    * Called when the decoder has a frame ready.
    * Pushes the frame to the buffer so it can be consumed.
    */
-  private onFrame(frame: VideoFrame) {
+  private async onFrame(frame: VideoFrame) {
     this.framesDue--;
 
     // If the frame comes before the seek time, close it.
@@ -149,7 +183,7 @@ export class Segment {
     if (frameTimeInSec > segmentEndTime) {
       frame.close();
       this.done = true;
-      this.decoder.flush();
+      await this.decoder.flush();
       return;
     }
 
@@ -195,10 +229,17 @@ export class Segment {
   /**
    * Called when we are done with the extractor.
    */
-  public close() {
+  public async close() {
     this.abortController.abort();
     this.frameBuffer.forEach(frame => frame.close());
-    this.decoder.close();
+    try {
+      if (this.decoder.state === 'configured') {
+        await this.decoder.flush();
+        this.decoder.close();
+      }
+    } catch (e) {
+      // Ignore
+    }
   }
 
   public getFramesProcessed() {

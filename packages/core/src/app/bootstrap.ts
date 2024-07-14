@@ -1,6 +1,7 @@
 import {MetaFile} from '../meta';
 import {Plugin} from '../plugin';
 import DefaultPlugin from '../plugin/DefaultPlugin';
+import {setAssetBase} from '../utils';
 import {Logger} from './Logger';
 import {Project, ProjectSettings, Versions} from './Project';
 import {ProjectMetadata} from './ProjectMetadata';
@@ -38,6 +39,7 @@ export function bootstrap(
     versions,
     settings,
     logger,
+    setAssetBase: setAssetBase,
   } as Project;
 
   project.meta = new ProjectMetadata(project);

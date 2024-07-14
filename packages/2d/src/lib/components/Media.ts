@@ -5,11 +5,11 @@ import {
   clamp,
   isReactive,
   useLogger,
-  useScene,
   useThread,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {Rect, RectProps} from './Rect';
+import {Asset} from './Asset';
+import {RectProps} from './Rect';
 import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
 
 export interface MediaProps extends RectProps {
@@ -22,10 +22,7 @@ export interface MediaProps extends RectProps {
 }
 
 @nodeName('Media')
-export abstract class Media extends Rect {
-  @signal()
-  public declare readonly src: SimpleSignal<string, this>;
-
+export abstract class Media extends Asset {
   @initial(false)
   @signal()
   public declare readonly loop: SimpleSignal<boolean, this>;
@@ -53,29 +50,6 @@ export abstract class Media extends Rect {
     if (props.play) {
       this.play();
     }
-  }
-
-  public assetRoot?: `${string}/`;
-
-  public fullSource(): string {
-    if (!this.assetRoot) {
-      this.assetRoot = useScene().assetRoot;
-    }
-
-    let src = this.src();
-    const isUrl = src.startsWith('http://') || src.startsWith('https://');
-
-    if (isUrl) {
-      return src;
-    }
-
-    // We remove the trailing slash from the assetRoot
-    // and make sure there is a leading slash in the src
-    if (src[0] !== '/') {
-      src = '/' + src;
-    }
-
-    return this.assetRoot.slice(0, -1) + src;
   }
 
   public isPlaying(): boolean {

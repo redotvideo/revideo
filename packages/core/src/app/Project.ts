@@ -91,6 +91,16 @@ export interface Project {
   variables?: Record<string, unknown>;
   versions: Versions;
   experimentalFeatures: boolean;
+
+  /**
+   * TODO(konsti): When moving away from `.meta` files,
+   * all settings will be passed to the project through
+   * an object instead of the file.
+   *
+   * When we do that, we can remove this method and
+   * provide this as a property on the settings object.
+   */
+  setAssetBase: (base: string) => void;
 }
 
 export function makeProject(settings: ProjectSettings) {

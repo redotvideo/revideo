@@ -14,7 +14,8 @@ import {
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
-import {Rect, RectProps} from './Rect';
+import {Asset} from './Asset';
+import {RectProps} from './Rect';
 import imageWithoutSource from './__logs__/image-without-source.md';
 
 export interface ImgProps extends RectProps {
@@ -66,7 +67,7 @@ export interface ImgProps extends RectProps {
  * ```
  */
 @nodeName('Img')
-export class Img extends Rect {
+export class Img extends Asset {
   private static pool: Record<string, HTMLImageElement> = {};
 
   static {
@@ -80,24 +81,6 @@ export class Img extends Rect {
       });
     }
   }
-
-  /**
-   * The source of this image.
-   *
-   * @example
-   * Using a local image:
-   * ```tsx
-   * import image from './example.png';
-   * // ...
-   * view.add(<Img src={image} />)
-   * ```
-   * Loading an image from the internet:
-   * ```tsx
-   * view.add(<Img src="https://example.com/image.png" />)
-   * ```
-   */
-  @signal()
-  public declare readonly src: SimpleSignal<string, this>;
 
   /**
    * The alpha value of this image.
@@ -149,7 +132,7 @@ export class Img extends Rect {
 
   @computed()
   protected image(): HTMLImageElement {
-    const rawSrc = this.src();
+    const rawSrc = this.fullSource();
     let src = '';
     let key = '';
     if (rawSrc) {

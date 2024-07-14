@@ -100,7 +100,7 @@ export interface Project {
    * When we do that, we can remove this method and
    * provide this as a property on the settings object.
    */
-  setAssetBase: (base: string) => void;
+  setAssetBase: (base: `${string}/`) => void;
 }
 
 export function makeProject(settings: ProjectSettings) {

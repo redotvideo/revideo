@@ -21,6 +21,7 @@ export class View2D extends Rect {
       frame.style.pointerEvents = 'none';
       frame.style.top = '0';
       frame.style.left = '0';
+      frame.style.fontFeatureSettings = 'normal'; // TODO: find solution that fully isolates CSS
       frame.style.opacity = '0';
       frame.style.overflow = 'hidden';
       document.body.prepend(frame);

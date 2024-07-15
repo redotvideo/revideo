@@ -121,13 +121,13 @@ export class Segment {
       const sink = new MP4FileSink(file, () => {}, offset);
 
       return async () => {
-        return reader.read().then(async ({done, value}) => {
+        return reader.read().then(({done, value}) => {
           // Request is done.
           if (done) {
             this.responseFinished = true;
             this.abortController.abort();
             sink.close();
-            await this.decoder.flush();
+            this.decoder.flush();
             return;
           }
 

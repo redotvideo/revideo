@@ -342,8 +342,8 @@ export class Video extends Media {
     if (this.fullSource().split('?')[0].endsWith('.mov')) return 'mov';
 
     if (
-      this.fullSource().startsWith('http:') ||
-      this.fullSource().startsWith('https:')
+      this.fullSource().startsWith('http://') ||
+      this.fullSource().startsWith('https://')
     ) {
       try {
         const response = await fetch(this.fullSource(), {method: 'HEAD'});

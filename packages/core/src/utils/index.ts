@@ -20,6 +20,7 @@ export * from './getContext';
 export * from './math';
 export * from './proxyUtils';
 export * from './range';
+export * from './useAssetBase';
 export * from './useContext';
 export * from './useDuration';
 export * from './usePlayback';

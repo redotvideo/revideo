@@ -157,10 +157,11 @@ class RevideoPlayer extends HTMLElement {
       console.error(e);
     }
 
+    project.setAssetBase(source);
+
     this.defaultSettings = project.meta.getFullPreviewSettings();
     const player = new Player(project);
     player.setVariables(this.variables);
-    player.setAssetRoot(source);
     player.toggleLoop(this.looping);
 
     this.player?.onRender.unsubscribe(this.render);

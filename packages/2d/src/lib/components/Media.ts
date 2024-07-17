@@ -167,6 +167,16 @@ export abstract class Media extends Asset {
     return clamp(0, duration, time);
   }
 
+  public seek(time: number) {
+    const playing = this.playing();
+    this.time(this.clampTime(time));
+    if (playing) {
+      this.play();
+    } else {
+      this.pause();
+    }
+  }
+
   protected override collectAsyncResources() {
     super.collectAsyncResources();
     this.seekedMedia();

@@ -26,10 +26,7 @@ export abstract class Asset extends Rect {
   public assetRoot?: `${string}/`;
 
   public fullSource(): string {
-    console.log(`Calling fullSource for ${this.src()}`);
-
     if (!this.assetRoot) {
-      console.log('Setting assetRoot', useAssetBase());
       this.assetRoot = useAssetBase();
     }
 

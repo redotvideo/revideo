@@ -28,7 +28,7 @@ export function wasmExporterPlugin(): Plugin {
       // Endpoint to download the video file from the client
       server.middlewares.use('/uploadVideoFile', async (req, res) => {
         if (req.method === 'POST') {
-          const form = new IncomingForm();
+          const form = new IncomingForm({maxFileSize: 1024 * 1024 * 1024 * 10}); // 10GB limit
 
           form.parse(req, async (err, fields, files) => {
             if (err) {

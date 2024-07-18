@@ -62,7 +62,6 @@ export function Player({
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [currentTimeState, setCurrentTime] = useState(currentTime);
-  const [forcedTime, setForcedTime] = useState(0);
   const [duration, setDuration] = useState(-1);
 
   const focus = useRef(false);
@@ -133,13 +132,13 @@ export function Player({
   /**
    * When the forced time changes, seek to that time.
    */
-  useEffect(() => {
+  function setForcedTime(forcedTime: number) {
     if (playerRef.current) {
       playerRef.current.dispatchEvent(
         new CustomEvent('seekto', {detail: forcedTime}),
       );
     }
-  }, [forcedTime]);
+  }
 
   return (
     <div data-player="true" style={{display: 'contents'}}>

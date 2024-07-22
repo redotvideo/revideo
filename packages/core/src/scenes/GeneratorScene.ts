@@ -279,7 +279,6 @@ export abstract class GeneratorScene<T>
 
     if (result.done) {
       this.state = SceneState.Finished;
-      this.stopAllMedia();
     }
   }
 

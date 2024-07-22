@@ -209,6 +209,7 @@ export class PlaybackManager {
       this.previousScene = this.currentScene;
       const nextScene = this.getNextScene(this.previousScene);
       if (nextScene) {
+        this.previousScene.stopAllMedia();
         this.currentScene = nextScene;
         await this.currentScene.reset(this.previousScene);
       }

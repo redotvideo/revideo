@@ -126,6 +126,10 @@ export function Player({
       playerRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
       playerRef.current?.removeEventListener('duration', handleDurationUpdate);
       document.removeEventListener('keydown', handleKeyDown);
+      const frameElement = document.getElementById('revideo-2d-frame');
+      if (frameElement) {
+        frameElement.remove();
+      }
     };
   }, []);
 

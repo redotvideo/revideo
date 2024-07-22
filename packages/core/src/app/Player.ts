@@ -348,6 +348,7 @@ export class Player {
   public deactivate() {
     this.active = false;
     this.sharedWebGLContext.dispose();
+    this.playback.currentScene.stopAllMedia();
     if (this.requestId !== null) {
       cancelAnimationFrame(this.requestId);
       this.requestId = null;

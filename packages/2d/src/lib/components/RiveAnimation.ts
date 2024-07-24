@@ -5,7 +5,7 @@ import {
   useThread,
   viaProxy,
 } from '@revideo/core';
-import Rive, {
+import RiveInitializer, {
   Artboard,
   File,
   LinearAnimationInstance,
@@ -16,13 +16,13 @@ import {computed, initial, nodeName, signal} from '../decorators';
 import {Asset} from './Asset';
 import {RectProps} from './Rect';
 
-export interface RiveAnimationProps extends RectProps {
+export interface RiveProps extends RectProps {
   src?: SignalValue<string>;
   artboardId?: SignalValue<string | number>;
   animationId?: SignalValue<string | number>;
 }
 
-interface RiveAnimationInstance {
+interface RiveInstance {
   rive: RiveCanvas;
   renderer: Renderer;
   artboard: Artboard;
@@ -30,8 +30,8 @@ interface RiveAnimationInstance {
   canvas: HTMLCanvasElement;
 }
 
-@nodeName('RiveAnimation')
-export class RiveAnimation extends Asset {
+@nodeName('Rive')
+export class Rive extends Asset {
   @initial(0)
   @signal()
   public declare readonly artboardId: SimpleSignal<number | string, this>;
@@ -47,7 +47,7 @@ export class RiveAnimation extends Asset {
   protected currentTime: number = 0;
   protected lastTime: number = 0;
 
-  public constructor(props: RiveAnimationProps) {
+  public constructor(props: RiveProps) {
     super(props);
 
     const time = useThread().time;
@@ -56,11 +56,12 @@ export class RiveAnimation extends Asset {
   }
 
   @computed()
-  private async rive(): Promise<RiveAnimationInstance> {
+  private async rive(): Promise<RiveInstance> {
     const src = viaProxy(this.fullSource());
-    const rive = await Rive({
-      locateFile: () =>
-        `https://unpkg.com/@rive-app/canvas-advanced@2.7.3/rive.wasm`,
+    const rive = await RiveInitializer({
+      locateFile: () => {
+        return '/@rive-wasm';
+      },
     });
     const canvas = document.createElement('canvas');
     canvas.width = this.width();
@@ -70,23 +71,11 @@ export class RiveAnimation extends Asset {
     const bytes = await (await fetch(new Request(src))).arrayBuffer();
     const file = (await rive.load(new Uint8Array(bytes))) as File;
 
-    const artboartId = this.artboardId();
-    const artboard =
-      typeof artboartId === 'string'
-        ? file.artboardByName(artboartId)
-        : typeof this.artboardId() === 'number'
-          ? file.artboardByIndex(artboartId)
-          : file.defaultArtboard();
+    const artboardId = this.artboardId();
+    const artboard = this.getArtboard(artboardId, file);
 
     const animationId = this.animationId();
-    const animation = new rive.LinearAnimationInstance(
-      typeof animationId === 'number'
-        ? artboard.animationByIndex(animationId)
-        : typeof animationId === 'string'
-          ? artboard.animationByName(animationId)
-          : artboard.animationByIndex(0),
-      artboard,
-    );
+    const animation = this.getAnimation(animationId, artboard, rive);
 
     return {rive, renderer, artboard, animation, canvas};
   }
@@ -137,5 +126,31 @@ export class RiveAnimation extends Asset {
     }
 
     await this.drawChildren(context);
+  }
+
+  private getArtboard(artboardId: string | number, file: File): Artboard {
+    if (typeof artboardId === 'string') {
+      return file.artboardByName(artboardId);
+    }
+    if (typeof artboardId === 'number') {
+      return file.artboardByIndex(artboardId);
+    }
+    return file.defaultArtboard();
+  }
+
+  private getAnimation(
+    animationId: string | number,
+    artboard: Artboard,
+    rive: RiveCanvas,
+  ): LinearAnimationInstance {
+    let animation;
+    if (typeof animationId === 'number') {
+      animation = artboard.animationByIndex(animationId);
+    } else if (typeof animationId === 'string') {
+      animation = artboard.animationByName(animationId);
+    } else {
+      animation = artboard.animationByIndex(0);
+    }
+    return new rive.LinearAnimationInstance(animation, artboard);
   }
 }

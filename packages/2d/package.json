@@ -41,6 +41,7 @@
     "@lezer/common": "^1.2.1",
     "@lezer/highlight": "^1.2.0",
     "@revideo/core": "0.4.8",
+    "@rive-app/canvas-advanced": "2.7.3",
     "code-fns": "^0.8.2",
     "hls.js": "^1.5.11",
     "mathjax-full": "^3.2.2",

@@ -15,6 +15,7 @@ import {
   wasmExporterPlugin,
   webglPlugin,
 } from './partials';
+import {rivePlugin} from './partials/rive';
 import {PLUGIN_OPTIONS, PluginOptions, isPlugin} from './plugins';
 import {getProjects} from './utils';
 
@@ -138,6 +139,7 @@ export default ({
     projectsPlugin({projects, plugins, buildForEditor}),
     assetsPlugin({bufferedAssets}),
     wasmExporterPlugin(),
+    rivePlugin(),
     webglPlugin(),
     corsProxyPlugin(proxy),
     metricsPlugin(),

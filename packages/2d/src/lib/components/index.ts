@@ -18,7 +18,7 @@ export * from './Polygon';
 export * from './QuadBezier';
 export * from './Ray';
 export * from './Rect';
-export * from './RiveAnimation';
+export * from './Rive';
 export * from './SVG';
 export * from './Shape';
 export * from './Spline';

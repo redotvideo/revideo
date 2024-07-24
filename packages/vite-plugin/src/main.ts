@@ -10,12 +10,12 @@ import {
   metaPlugin,
   metricsPlugin,
   projectsPlugin,
+  rivePlugin,
   scenesPlugin,
   settingsPlugin,
   wasmExporterPlugin,
   webglPlugin,
 } from './partials';
-import {rivePlugin} from './partials/rive';
 import {PLUGIN_OPTIONS, PluginOptions, isPlugin} from './plugins';
 import {getProjects} from './utils';
 

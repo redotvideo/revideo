@@ -6,6 +6,7 @@ export * from './imageExporter';
 export * from './meta';
 export * from './metrics';
 export * from './projects';
+export * from './rive';
 export * from './scenes';
 export * from './settings';
 export * from './wasmExporter';

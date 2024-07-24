@@ -1,6 +1,6 @@
 {
   "name": "@revideo/renderer",
-  "version": "0.4.8",
+  "version": "0.5.0",
   "description": "A headless renderer for revideo",
   "main": "lib/server/index.js",
   "author": "revideo",
@@ -20,11 +20,11 @@
     "types"
   ],
   "dependencies": {
-    "@revideo/ffmpeg": "0.4.8",
+    "@revideo/ffmpeg": "0.5.0",
     "puppeteer": "^22.6.0"
   },
   "devDependencies": {
-    "@revideo/core": "0.4.8",
+    "@revideo/core": "0.5.0",
     "ncp": "^2.0.0"
   }
 }

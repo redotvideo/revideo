@@ -1,8 +1,7 @@
 import {
   BBox,
   createSignal,
-  ExperimentalError,
-  lazy,
+  experimentalLog,
   map,
   SerializedVector2,
   Signal,
@@ -11,6 +10,8 @@ import {
   ThreadGenerator,
   TimingFunction,
   unwrap,
+  useLogger,
+  useScene,
   Vector2,
 } from '@revideo/core';
 import {
@@ -23,10 +24,8 @@ import {
   CodeSignal,
   codeSignal,
   CodeSignalContext,
-  DefaultHighlightStyle,
   findAllCodeRanges,
   isPointInCodeSelection,
-  LezerHighlighter,
   lines,
   parseCodeSelection,
   PossibleCodeScope,
@@ -35,7 +34,6 @@ import {
 } from '../code';
 import {computed, initial, nodeName, parser, signal} from '../decorators';
 import {DesiredLength} from '../partials';
-import {useScene2D} from '../scenes';
 import {Shape, ShapeProps} from './Shape';
 
 export interface DrawTokenHook {
@@ -75,10 +73,6 @@ export interface CodeProps extends ShapeProps {
    * {@inheritDoc Code.highlighter}
    */
   highlighter?: SignalValue<CodeHighlighter | null>;
-  /**
-   * {@inheritDoc Code.dialect}
-   */
-  dialect?: SignalValue<string>;
   /**
    * {@inheritDoc Code.code}
    */
@@ -143,59 +137,19 @@ export class Code extends Shape {
    *
    * @param initial - The initial code.
    * @param highlighter - Custom highlighter to use.
-   * @param dialect - Custom dialect to use.
    */
   public static createSignal(
     initial: PossibleCodeScope,
     highlighter?: SignalValue<CodeHighlighter>,
-    dialect?: SignalValue<string>,
   ): CodeSignal<void> {
     return new CodeSignalContext<void>(
       initial,
       undefined,
       highlighter,
-      dialect,
     ).toSignal();
   }
 
-  @lazy(() => new LezerHighlighter(DefaultHighlightStyle))
-  public static readonly defaultHighlighter: LezerHighlighter;
-
-  /**
-   * The dialect to use for highlighting the code.
-   *
-   * @remarks
-   * This value will be passed to the {@link code.CodeHighlighter}
-   * defined by the {@link highlighter} property. Different highlighters may use
-   * it differently.
-   *
-   * The default {@link code.LezerHighlighter} uses it to select
-   * the language parser to use. The parser for the given dialect can be
-   * registered as follows:
-   * ```tsx
-   * // Import the lezer parser:
-   * import {parser} from '@lezer/javascript';
-   *
-   * // Register it in the highlighter:
-   * LezerHighlighter.registerParser(parser, 'js');
-   *
-   * // Use the dialect in a code node:
-   * <Code dialect="js" code="const a = 7;" />
-   * ```
-   * When no dialect is provided, the highlighter will use the default
-   * parser:
-   * ```tsx
-   * // Register the default parser by omitting the dialect:
-   * LezerHighlighter.registerParser(parser);
-   *
-   * // Code nodes with no dialect will now use the default parser:
-   * <Code code="const a = 7;" />
-   * ```
-   */
-  @initial('')
-  @signal()
-  public declare readonly dialect: SimpleSignal<string, this>;
-
+  public static defaultHighlighter: CodeHighlighter | null = null;
   /**
    * The code highlighter to use for this code node.
    *
@@ -204,7 +158,10 @@ export class Code extends Shape {
    */
   @initial(() => Code.defaultHighlighter)
   @signal()
-  public declare readonly highlighter: SimpleSignal<CodeHighlighter, this>;
+  public declare readonly highlighter: SimpleSignal<
+    CodeHighlighter | null,
+    this
+  >;
 
   /**
    * The code to display.
@@ -245,6 +202,20 @@ export class Code extends Shape {
   })
   @signal()
   public declare readonly drawHooks: SimpleSignal<DrawHooks, this>;
+
+  protected setDrawHooks(value: DrawHooks) {
+    if (
+      !useScene().experimentalFeatures &&
+      value !== this.drawHooks.context.getInitial()
+    ) {
+      useLogger().log({
+        ...experimentalLog(`Code uses experimental draw hooks.`),
+        inspect: this.key,
+      });
+    } else {
+      this.drawHooks.context.setter(value);
+    }
+  }
 
   /**
    * The currently selected code range.
@@ -309,11 +280,10 @@ export class Code extends Shape {
     const code = this.code();
     const before = resolveScope(code, false);
     const after = resolveScope(code, true);
-    const dialect = this.dialect();
 
     return {
-      before: highlighter.prepare(before, dialect),
-      after: highlighter.prepare(after, dialect),
+      before: highlighter.prepare(before),
+      after: highlighter.prepare(after),
     };
   }
 
@@ -328,9 +298,6 @@ export class Code extends Shape {
       fontFamily: 'monospace',
       ...props,
     });
-    if (!useScene2D().experimentalFeatures) {
-      throw new ExperimentalError('The Code node is an experimental feature');
-    }
   }
 
   /**
@@ -343,7 +310,6 @@ export class Code extends Shape {
       initial,
       this,
       this.highlighter,
-      this.dialect,
     ).toSignal();
   }
 

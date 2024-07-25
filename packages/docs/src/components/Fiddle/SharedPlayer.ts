@@ -1,3 +1,4 @@
+import {parser as javascript} from '@lezer/javascript';
 import type {View2D} from '@revideo/2d';
 import type {
   FullSceneDescription,
@@ -55,7 +56,15 @@ export async function borrowPlayer(
       ValueDispatcher,
       DefaultPlugin,
     } = await import(/* webpackIgnore: true */ '@revideo/core');
-    const {makeScene2D} = await import(/* webpackIgnore: true */ '@revideo/2d');
+    const {makeScene2D, Code, LezerHighlighter} = await import(
+      /* webpackIgnore: true */ '@revideo/2d'
+    );
+
+    Code.defaultHighlighter = new LezerHighlighter(
+      javascript.configure({
+        dialect: 'jsx ts',
+      }),
+    );
 
     Description = makeScene2D(function* () {
       yield;

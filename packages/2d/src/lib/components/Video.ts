@@ -98,6 +98,10 @@ export class Video extends Media {
     return custom;
   }
 
+  protected override requiresCache(): boolean {
+    return false;
+  }
+
   protected mediaElement(): HTMLVideoElement {
     return this.video();
   }

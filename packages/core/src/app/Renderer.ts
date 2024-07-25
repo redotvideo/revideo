@@ -223,6 +223,7 @@ export class Renderer {
     signal: AbortSignal,
   ): Promise<RendererResult> {
     // Select exporter
+    console.time('startrender');
     const exporterClass = this.project.meta.rendering.exporter.exporters.find(
       exporter => exporter.id === settings.exporter.name,
     );
@@ -263,9 +264,18 @@ export class Renderer {
     let lastRefresh = performance.now();
     let result = RendererResult.Success;
 
-    const mediaByFrames = await this.getMediaByFrames(settings);
+    console.timeEnd('startrender');
 
+    console.time('mediaByFrames');
+    //const mediaByFrames = await this.getMediaByFrames(settings);
+    const mediaByFrames = [];
+    console.timeEnd('mediaByFrames');
+
+    console.time('mediatofirstframe');
+
+    console.time('genaudio');
     // Start audio export
+    /*
     let generateAudioPromise;
     if (this.exporter && this.exporter.generateAudio) {
       generateAudioPromise = this.exporter.generateAudio(
@@ -274,14 +284,23 @@ export class Renderer {
         to,
       );
     }
+    */
+    console.timeEnd('genaudio');
 
+    console.time('mainrenderloop');
     // Main rendering loop
+    console.time('seek');
     await this.playback.seek(from);
+    console.timeEnd('seek');
     try {
       this.estimator.reset(1 / (to - from));
       await this.exportFrame(signal);
+      const currentMediaAssets = this.playback.currentScene.getMediaAssets();
+      mediaByFrames.push(currentMediaAssets);
+
       this.estimator.update(clampRemap(from, to, 0, 1, this.playback.frame));
       this.estimator.reportProgress();
+      console.timeEnd('mediatofirstframe');
 
       if (signal.aborted) {
         result = RendererResult.Aborted;
@@ -290,6 +309,10 @@ export class Renderer {
         while (!finished) {
           await this.playback.progress();
           await this.exportFrame(signal);
+          const currentMediaAssets =
+            this.playback.currentScene.getMediaAssets();
+          mediaByFrames.push(currentMediaAssets);
+
           this.estimator.update(
             clampRemap(from, to, 0, 1, this.playback.frame),
           );
@@ -312,12 +335,20 @@ export class Renderer {
       result = RendererResult.Error;
     }
 
+    let generateAudioPromise;
+    if (this.exporter && this.exporter.generateAudio) {
+      generateAudioPromise = this.exporter.generateAudio(
+        mediaByFrames,
+        from,
+        to,
+      );
+    }
+
     await this.exporter.stop?.(result);
 
     if (import.meta.hot) {
       import.meta.hot.send('revideo:ffmpeg-decoder:finished', {});
     }
-
     // Only merge media when rendering images was actually successful.
     if (
       result === RendererResult.Success &&
@@ -336,6 +367,8 @@ export class Renderer {
 
     await this.exporter?.kill?.();
     this.exporter = null;
+
+    console.timeEnd('mainrenderloop');
 
     return result;
   }

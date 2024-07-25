@@ -74,7 +74,8 @@ function getAssetPlacement(frames: AssetInfo[][]): MediaAsset[] {
     const timeInfo = assetTimeMap.get(asset.key);
     if (timeInfo) {
       // Calculate durationInSeconds based on the start and end currentTime values.
-      asset.durationInSeconds = timeInfo.end - timeInfo.start;
+      asset.durationInSeconds =
+        (timeInfo.end - timeInfo.start) / asset.playbackRate;
     }
     // Recalculate the original duration based on frame count.
     asset.duration = asset.endInVideo - asset.startInVideo + 1;

@@ -82,12 +82,13 @@ export class Rive extends Asset {
 
   protected override async draw(context: CanvasRenderingContext2D) {
     this.drawShape(context);
-    const {rive, renderer, canvas, artboard, animation} = await this.rive();
-    const box = BBox.fromSizeCentered(this.computedSize());
 
     this.currentTime = this.time();
     const timeToAdvance = this.currentTime - this.lastTime;
     this.lastTime = this.currentTime;
+
+    const {rive, renderer, canvas, artboard, animation} = await this.rive();
+    const box = BBox.fromSizeCentered(this.computedSize());
 
     const renderPromise = new Promise<void>(resolve => {
       function renderLoop() {

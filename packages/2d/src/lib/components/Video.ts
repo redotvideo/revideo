@@ -98,10 +98,6 @@ export class Video extends Media {
     return custom;
   }
 
-  protected override requiresCache(): boolean {
-    return false;
-  }
-
   protected mediaElement(): HTMLVideoElement {
     return this.video();
   }
@@ -256,10 +252,6 @@ export class Video extends Media {
   }
 
   protected async seekFunction() {
-    if (!this.fileTypeWasDetected) {
-      this.detectedFileType = await this.detectFileType();
-      this.fileTypeWasDetected = true;
-    }
     const playbackState = this.view().playbackState();
 
     // During playback
@@ -285,6 +277,10 @@ export class Video extends Media {
 
     if (this.decoder() === 'web') {
       return this.webcodecSeekedVideo();
+    }
+
+    if (!this.fileTypeWasDetected) {
+      this.detectFileType();
     }
 
     // If not set explicitly, use detected file type to determine decoder
@@ -337,41 +333,67 @@ export class Video extends Media {
     return this;
   }
 
-  private async detectFileType(): Promise<
-    'mp4' | 'webm' | 'hls' | 'mov' | 'unknown'
-  > {
-    if (this.fullSource().split('?')[0].endsWith('.mp4')) return 'mp4';
-    if (this.fullSource().split('?')[0].endsWith('.webm')) return 'webm';
-    if (this.fullSource().split('?')[0].endsWith('.m3u8')) return 'hls';
-    if (this.fullSource().split('?')[0].endsWith('.mov')) return 'mov';
+  private detectFileType() {
+    return DependencyContext.collectPromise(
+      (async () => {
+        const src = this.fullSource();
+        const extension = src.split('?')[0].split('.').pop()?.toLowerCase();
 
-    if (
-      this.fullSource().startsWith('http://') ||
-      this.fullSource().startsWith('https://')
-    ) {
-      try {
-        const response = await fetch(this.fullSource(), {method: 'HEAD'});
-        const contentType = response.headers.get('Content-Type');
+        switch (extension) {
+          case 'mp4':
+          case 'webm':
+          case 'mov':
+            this.detectedFileType = extension;
+            this.fileTypeWasDetected = true;
+            return;
 
-        if (contentType) {
-          if (contentType.includes('video/mp4')) return 'mp4';
-          if (contentType.includes('video/webm')) return 'webm';
-          if (contentType.includes('video/quicktime')) return 'mov';
-          if (
-            contentType.includes('application/vnd.apple.mpegurl') ||
-            contentType.includes('application/x-mpegURL')
-          ) {
-            return 'hls';
+          case 'm3u8':
+            this.detectedFileType = 'hls';
+            this.fileTypeWasDetected = true;
+            return;
+        }
+
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+          try {
+            const response = await fetch(src, {method: 'HEAD'});
+            const contentType = response.headers.get('Content-Type');
+
+            if (contentType) {
+              switch (true) {
+                case contentType.includes('video/mp4'):
+                  console.log('made the request');
+                  this.detectedFileType = 'mp4';
+                  this.fileTypeWasDetected = true;
+                  return;
+
+                case contentType.includes('video/webm'):
+                  this.detectedFileType = 'webm';
+                  this.fileTypeWasDetected = true;
+                  return;
+
+                case contentType.includes('video/quicktime'):
+                  this.detectedFileType = 'mov';
+                  this.fileTypeWasDetected = true;
+                  return;
+
+                case contentType.includes('application/vnd.apple.mpegurl'):
+                case contentType.includes('application/x-mpegURL'):
+                  this.detectedFileType = 'hls';
+                  this.fileTypeWasDetected = true;
+                  return;
+              }
+            }
+          } catch (error) {
+            // do nothing
           }
         }
-      } catch (error) {
-        // do nothing
-      }
-    }
 
-    console.warn(
-      `WARNING: Could not detect file type of video (${this.fullSource()}), will default to using mp4 decoder. If your video file is no mp4 file, this will lead to an error - to fix this, reencode your video as an mp4 file (better performance) or specify a different decoder: https://docs.re.video/common-issues/slow-rendering#use-mp4-decoder`,
+        console.warn(
+          `WARNING: Could not detect file type of video (${src}), will default to using mp4 decoder. If your video file is not an mp4 file, this will lead to an error - to fix this, reencode your video as an mp4 file (better performance) or specify a different decoder: https://docs.re.video/common-issues/slow-rendering#use-mp4-decoder`,
+        );
+        this.detectedFileType = 'unknown';
+        this.fileTypeWasDetected = true;
+      })(),
     );
-    return 'unknown';
   }
 }

@@ -55,10 +55,6 @@ export class Rive extends Asset {
     this.time(() => time() - start);
   }
 
-  protected override requiresCache(): boolean {
-    return false;
-  }
-
   @computed()
   private async rive(): Promise<RiveInstance> {
     const src = viaProxy(this.fullSource());

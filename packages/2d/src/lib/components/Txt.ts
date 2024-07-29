@@ -1,6 +1,5 @@
 import {
   DEFAULT,
-  DependencyContext,
   InterpolationFunction,
   SignalValue,
   SimpleSignal,
@@ -111,8 +110,7 @@ export class Txt extends Shape {
       this.text.save();
     }
 
-    DependencyContext.collectPromise(document.fonts.ready);
-    const leaf = yield this.childAs<TxtLeaf>(0)!;
+    const leaf = this.childAs<TxtLeaf>(0)!;
     const oldText = leaf.text.context.raw();
     const oldSize = this.size.context.raw();
     leaf.text(value);

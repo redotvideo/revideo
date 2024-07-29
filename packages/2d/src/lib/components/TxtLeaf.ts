@@ -1,5 +1,6 @@
 import {
   BBox,
+  DependencyContext,
   SignalValue,
   SimpleSignal,
   capitalize,
@@ -49,6 +50,9 @@ export class TxtLeaf extends Shape {
 
   public constructor({children, ...rest}: TxtLeafProps) {
     super(rest);
+    DependencyContext.collectPromise(
+      document.fonts?.ready ?? Promise.resolve(),
+    );
     if (children) {
       this.text(children);
     }
@@ -61,7 +65,7 @@ export class TxtLeaf extends Shape {
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
-    await document.fonts.ready;
+    await document.fonts?.ready;
     this.requestFontUpdate();
     this.applyStyle(context);
     this.applyText(context);

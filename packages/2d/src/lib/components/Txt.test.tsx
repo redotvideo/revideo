@@ -8,8 +8,9 @@ import {mockScene2D} from './__tests__/mockScene2D';
 describe('Txt', () => {
   mockScene2D();
 
-  it('Handle plain text', () => {
+  it('Handle plain text', async () => {
     const node = (<Txt lineWidth={8}>test</Txt>) as Txt;
+    await node.toPromise();
 
     const parseSpy = vi.spyOn(node as any, 'parseChildren');
     const leaf = node.childAs<TxtLeaf>(0);
@@ -32,12 +33,13 @@ describe('Txt', () => {
     expect(parseSpy).toHaveBeenCalledTimes(0);
   });
 
-  it('Handle complex text', () => {
+  it('Handle complex text', async () => {
     const node = (
       <Txt lineWidth={8}>
         Apple <Txt>Banana</Txt> Cherry
       </Txt>
     ) as Txt;
+    await node.toPromise();
 
     const first = node.childAs<TxtLeaf>(0);
     const second = node.childAs<Txt>(1);
@@ -67,6 +69,7 @@ describe('Txt', () => {
           <Txt>Apple</Txt> Banana
         </Txt>
       ) as Txt;
+      yield node; // same effect as await node.toPromise();
 
       yield node.text('Simple', 2, linear);
       yield* waitFor(1);

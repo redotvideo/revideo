@@ -61,7 +61,7 @@ export class TxtLeaf extends Shape {
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
-    await document.fonts.ready;
+    await document.fonts?.ready;
     this.requestFontUpdate();
     this.applyStyle(context);
     this.applyText(context);
@@ -107,7 +107,6 @@ export class TxtLeaf extends Shape {
     text: string,
     box: BBox,
   ) {
-    await new Promise(resolve => document.fonts.ready.then(resolve));
     const y = box.y + box.height / 2;
     context.save();
     context.textBaseline = 'middle';

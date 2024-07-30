@@ -821,6 +821,7 @@ export class Layout extends Node {
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
+    await document.fonts.ready;
     if (this.clip()) {
       const size = this.computedSize();
       if (size.width === 0 || size.height === 0) {

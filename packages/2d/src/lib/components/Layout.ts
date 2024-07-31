@@ -996,8 +996,11 @@ export class Layout extends Node {
       const wrap = this.textWrap();
       if (typeof wrap === 'boolean') {
         this.element.style.whiteSpace = wrap ? 'normal' : 'nowrap';
-      } else {
+      } else if (wrap === 'pre') {
         this.element.style.whiteSpace = wrap;
+      } else if (wrap === 'balance') {
+        this.element.style.whiteSpace = 'normal';
+        this.element.style.textWrap = wrap;
       }
     }
   }

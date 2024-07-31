@@ -25,7 +25,7 @@ export type FlexContent =
 
 export type FlexItems = 'center' | 'start' | 'end' | 'stretch' | 'baseline';
 
-export type TextWrap = boolean | 'pre';
+export type TextWrap = boolean | 'pre' | 'balance';
 
 export type LayoutMode = boolean | null;
 

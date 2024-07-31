@@ -992,16 +992,25 @@ export class Layout extends Node {
 
     if (this.textWrap.isInitial()) {
       this.element.style.whiteSpace = '';
-    } else {
-      const wrap = this.textWrap();
-      if (typeof wrap === 'boolean') {
-        this.element.style.whiteSpace = wrap ? 'normal' : 'nowrap';
-      } else if (wrap === 'pre') {
-        this.element.style.whiteSpace = wrap;
-      } else if (wrap === 'balance') {
-        this.element.style.whiteSpace = 'normal';
-        this.element.style.textWrap = wrap;
-      }
+      return;
+    }
+
+    const wrap = this.textWrap();
+
+    if (typeof wrap === 'boolean') {
+      this.element.style.whiteSpace = wrap ? 'normal' : 'nowrap';
+      return;
+    }
+
+    if (wrap === 'pre') {
+      this.element.style.whiteSpace = wrap;
+      return;
+    }
+
+    if (wrap === 'balance') {
+      this.element.style.whiteSpace = 'normal';
+      this.element.style.textWrap = wrap;
+      return;
     }
   }
 

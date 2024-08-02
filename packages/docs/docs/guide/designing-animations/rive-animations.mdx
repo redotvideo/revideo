@@ -5,26 +5,28 @@ slug: /designing-animatins
 
 # Rive Animations
 
-You can use our `<Rive/>` component to integrate animations built with [Rive](https://rive.app) inside your videos:
+You can use our `<Rive/>` component to integrate animations built with
+[Rive](https://rive.app) inside your videos:
 
 ```tsx
 import {Rive, makeScene2D} from '@revideo/2d';
 import {waitFor} from '@revideo/core';
 
 export default makeScene2D(function* (view) {
-    yield view.add(
-        <Rive
-            src={"https://revideo-example-assets.s3.amazonaws.com/emoji.riv"}
-            animationId={1}
-            size={[600, 600]} 
-        />
-    );
+  yield view.add(
+    <Rive
+      src={'https://revideo-example-assets.s3.amazonaws.com/emoji.riv'}
+      animationId={1}
+      size={[600, 600]}
+    />,
+  );
 
-    yield* waitFor(5);
+  yield* waitFor(5);
 });
 ```
 
-The `<Rive/>` component is a child of `<Rect/>`. Additionally, it has the following props:
+The `<Rive/>` component is a child of `<Rect/>`. Additionally, it has the
+following props:
 
 ### src
 
@@ -36,10 +38,12 @@ Points towards your `.riv` file
 
 _string_ | _number_
 
-The identifier of your animation, either as a string or an index. Will use default animation if not selected
+The identifier of your animation, either as a string or an index. Will use
+default animation if not selected
 
 ### artboardId?
 
 _string_ | _number_
 
-The identifier of your artboard, either as a string or an index. Will use default artboard if not selected
+The identifier of your artboard, either as a string or an index. Will use
+default artboard if not selected

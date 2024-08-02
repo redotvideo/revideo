@@ -289,6 +289,7 @@ export class Renderer {
         let finished = false;
         while (!finished) {
           await this.playback.progress();
+          console.log('exportFrame number', this.playback.frame);
           await this.exportFrame(signal);
           this.estimator.update(
             clampRemap(from, to, 0, 1, this.playback.frame),

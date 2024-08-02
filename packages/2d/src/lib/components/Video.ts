@@ -296,6 +296,7 @@ export class Video extends Media {
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
+    console.log('in video.draw, time', this.time());
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {

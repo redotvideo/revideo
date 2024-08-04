@@ -56,7 +56,7 @@ export class Segment {
       const segmentDurationInSeconds =
         this.edit.segmentDuration /
         this.file.getInfo().videoTracks[0].movie_timescale;
-      const framesToFill = segmentDurationInSeconds * this.edit.fps;
+      const framesToFill = Math.ceil(segmentDurationInSeconds * this.edit.fps);
 
       const height = this.file.getInfo().videoTracks[0].track_height;
       const width = this.file.getInfo().videoTracks[0].track_width;

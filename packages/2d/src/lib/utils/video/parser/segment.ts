@@ -1,6 +1,8 @@
 import {MP4FileSink} from './sink';
 import {Edit} from './utils';
 
+const MAX_DECODE_QUEUE_SIZE = 400;
+
 export class Segment {
   private done: boolean = false;
   private abortController = new AbortController();
@@ -16,6 +18,7 @@ export class Segment {
   private startTime: number;
   private framesDue = 0;
   private frameBuffer: VideoFrame[] = [];
+  private encodedChunkQueue: EncodedVideoChunk[] = [];
 
   private readMore: () => Promise<void> = async () => {};
 
@@ -149,12 +152,24 @@ export class Segment {
         duration: (1e6 * sample.duration) / sample.timescale,
         data: sample.data,
       });
-      this.framesDue++;
-      this.decoder.decode(chunk);
+      this.encodedChunkQueue.push(chunk);
 
       const videoTrack = this.file.getInfo().videoTracks[0];
       const trak = this.file.getTrackById(videoTrack.id);
       this.file.releaseSample(trak, sample.number);
+    }
+  }
+
+  private decodeChunks() {
+    while (
+      this.encodedChunkQueue.length > 0 &&
+      this.decoder.decodeQueueSize < MAX_DECODE_QUEUE_SIZE
+    ) {
+      const chunk = this.encodedChunkQueue.shift();
+      if (chunk) {
+        this.framesDue++;
+        this.decoder.decode(chunk);
+      }
     }
   }
 
@@ -194,6 +209,7 @@ export class Segment {
     // Fetch more frames if we don't have any.
     while (this.frameBuffer.length === 0 && !this.responseFinished) {
       await this.readMore();
+      this.decodeChunks();
       await new Promise(res => setTimeout(res, 0));
     }
 

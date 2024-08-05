@@ -1,7 +1,7 @@
 import {MP4FileSink} from './sink';
 import {Edit} from './utils';
 
-const MAX_DECODE_QUEUE_SIZE = 400;
+const MAX_DECODE_QUEUE_SIZE = 30;
 
 export class Segment {
   private done: boolean = false;
@@ -158,6 +158,8 @@ export class Segment {
       const trak = this.file.getTrackById(videoTrack.id);
       this.file.releaseSample(trak, sample.number);
     }
+
+    this.decodeChunks();
   }
 
   private decodeChunks() {
@@ -209,7 +211,6 @@ export class Segment {
     // Fetch more frames if we don't have any.
     while (this.frameBuffer.length === 0 && !this.responseFinished) {
       await this.readMore();
-      this.decodeChunks();
       await new Promise(res => setTimeout(res, 0));
     }
 

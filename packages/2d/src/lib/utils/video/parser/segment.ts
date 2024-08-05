@@ -5,6 +5,7 @@ const MAX_DECODE_QUEUE_SIZE = 30;
 
 export class Segment {
   private done: boolean = false;
+  private decodingDone: boolean = false;
   private abortController = new AbortController();
   private uri: string;
 
@@ -130,7 +131,6 @@ export class Segment {
             this.responseFinished = true;
             this.abortController.abort();
             sink.close();
-            this.decoder.flush();
             return;
           }
 
@@ -158,11 +158,9 @@ export class Segment {
       const trak = this.file.getTrackById(videoTrack.id);
       this.file.releaseSample(trak, sample.number);
     }
-
-    this.decodeChunks();
   }
 
-  private decodeChunks() {
+  private async decodeChunks() {
     while (
       this.encodedChunkQueue.length > 0 &&
       this.decoder.decodeQueueSize < MAX_DECODE_QUEUE_SIZE
@@ -172,6 +170,10 @@ export class Segment {
         this.framesDue++;
         this.decoder.decode(chunk);
       }
+    }
+    if (this.responseFinished && this.encodedChunkQueue.length === 0) {
+      await this.decoder.flush();
+      this.decodingDone = true;
     }
   }
 
@@ -209,8 +211,11 @@ export class Segment {
 
   private async populateBuffer() {
     // Fetch more frames if we don't have any.
-    while (this.frameBuffer.length === 0 && !this.responseFinished) {
-      await this.readMore();
+    while (this.frameBuffer.length === 0 && !this.decodingDone) {
+      if (!this.responseFinished) {
+        await this.readMore();
+      }
+      await this.decodeChunks();
       await new Promise(res => setTimeout(res, 0));
     }
 

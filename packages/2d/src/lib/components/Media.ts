@@ -39,9 +39,10 @@ export abstract class Media extends Asset {
   @signal()
   protected declare readonly playing: SimpleSignal<boolean, this>;
 
-  @initial(1)
-  @signal()
-  protected declare readonly volume: SimpleSignal<number, this>;
+  protected readonly volume: number = 1;
+  protected audioContext: AudioContext | undefined;
+  protected gainNode: GainNode | undefined;
+  protected source: MediaElementAudioSourceNode | undefined;
 
   protected lastTime = -1;
 
@@ -50,6 +51,7 @@ export abstract class Media extends Asset {
     if (props.play) {
       this.play();
     }
+    this.volume = props.volume || 1;
   }
 
   public isPlaying(): boolean {
@@ -65,7 +67,7 @@ export abstract class Media extends Asset {
   }
 
   public getVolume(): number {
-    return this.mediaElement().volume;
+    return this.volume;
   }
 
   public override dispose() {
@@ -108,13 +110,45 @@ export abstract class Media extends Asset {
     }
   }
 
-  protected setVolume(volume: number) {
-    if (volume < 0 || volume > 1) {
+  @computed()
+  protected adjustVolume(mediaElement: HTMLMediaElement, volume: number) {
+    if (volume < 0 || volume > 10) {
       console.warn(
-        `${volume} is an incorrect value for volume, has to be in range [0,1]. We're clamping to the nearest value`,
+        `${volume} is an incorrect value for volume, has to be in range [0,10] (high values can damage headphones or speakers). We're clamping to the nearest value`,
       );
     }
-    this.mediaElement().volume = Math.min(Math.max(volume, 0), 1);
+    mediaElement.volume = Math.min(Math.max(volume, 0), 1);
+
+    console.log('mediaelement.volume', mediaElement.volume);
+    console.log('this.audiocontext', this.audioContext);
+    console.log('this.source', this.source);
+
+    if (volume > 1) {
+      if (this.audioContext && this.gainNode) {
+        return;
+      }
+
+      console.log('mediaElement.isConnected', mediaElement.isConnected);
+
+      const audioContext = new AudioContext();
+
+      console.log(mediaElement.isConnected);
+
+      const source = audioContext.createMediaElementSource(mediaElement);
+
+      console.log('source', source);
+      const gainNode = audioContext.createGain();
+      gainNode.gain.value = volume;
+      source.connect(gainNode);
+
+      gainNode.connect(audioContext.destination);
+      this.audioContext = audioContext;
+      this.gainNode;
+      this.source = source;
+
+      console.log('after this.audioContext', this.audioContext);
+      console.log('after this.source', this.source);
+    }
   }
 
   protected setPlaybackRate(playbackRate: number) {

@@ -187,7 +187,23 @@ export class Video extends Media {
       this.playing() && time < video.duration && video.playbackRate > 0;
     if (playing) {
       if (video.paused) {
+        console.log(
+          'video connected?',
+          video.isConnected,
+          this.audioContext,
+          this.source,
+          this.gainNode,
+        );
+        //if(!Video.pool[`${this.key}/${viaProxy(this.fullSource())}`] && !this.audioContext){
+        this.adjustVolume(video, this.volume);
+        /*} else {
+          console.log("not adjusting");
+        }*/
         DependencyContext.collectPromise(video.play());
+
+        /*if (!this.audioContext) {
+          this.adjustVolume(video, this.volume);
+        }      */
       }
     } else {
       if (!video.paused) {

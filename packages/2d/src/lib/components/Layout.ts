@@ -1,6 +1,7 @@
 import {
   BBox,
   boolLerp,
+  DependencyContext,
   InterpolationFunction,
   modify,
   Origin,
@@ -961,6 +962,7 @@ export class Layout extends Node {
 
   @computed()
   protected applyFont() {
+    DependencyContext.collectPromise(document.fonts.ready);
     this.element.style.fontFamily = this.fontFamily.isInitial()
       ? ''
       : this.fontFamily();

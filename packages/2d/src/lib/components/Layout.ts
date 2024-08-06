@@ -284,6 +284,8 @@ export class Layout extends Node {
   @signal()
   public declare readonly textAlign: SimpleSignal<CanvasTextAlign, this>;
 
+  protected fontLoaded: boolean = false;
+
   protected getX(): number {
     if (this.isLayoutRoot()) {
       return this.x.context.getter();
@@ -962,7 +964,14 @@ export class Layout extends Node {
 
   @computed()
   protected applyFont() {
-    DependencyContext.collectPromise(document.fonts.ready);
+    if (!this.fontLoaded) {
+      DependencyContext.collectPromise(
+        (async () => {
+          await document.fonts.ready;
+          this.fontLoaded = true;
+        })(),
+      );
+    }
     this.element.style.fontFamily = this.fontFamily.isInitial()
       ? ''
       : this.fontFamily();

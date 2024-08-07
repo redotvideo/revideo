@@ -39,9 +39,7 @@ export abstract class Media extends Asset {
   @signal()
   protected declare readonly playing: SimpleSignal<boolean, this>;
 
-  @initial(1)
-  @signal()
-  protected declare readonly volume: SimpleSignal<number, this>;
+  protected readonly volume: number = 1;
 
   protected lastTime = -1;
 
@@ -50,6 +48,7 @@ export abstract class Media extends Asset {
     if (props.play) {
       this.play();
     }
+    this.volume = props.volume ?? 1;
   }
 
   public isPlaying(): boolean {
@@ -65,7 +64,7 @@ export abstract class Media extends Asset {
   }
 
   public getVolume(): number {
-    return this.mediaElement().volume;
+    return this.volume;
   }
 
   public override dispose() {
@@ -109,9 +108,14 @@ export abstract class Media extends Asset {
   }
 
   protected setVolume(volume: number) {
-    if (volume < 0 || volume > 1) {
+    if (volume < 0) {
       console.warn(
-        `${volume} is an incorrect value for volume, has to be in range [0,1]. We're clamping to the nearest value`,
+        `volumes cannot be negative - the value will be clamped to 0.`,
+      );
+    }
+    if (volume > 1) {
+      console.warn(
+        `the browser does not natively support volumes higher than 1 - your preview will have a volume of 1, but your exported video will have a volume of ${volume}`,
       );
     }
     this.mediaElement().volume = Math.min(Math.max(volume, 0), 1);

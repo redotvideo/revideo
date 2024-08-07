@@ -48,7 +48,7 @@ export abstract class Media extends Asset {
     if (props.play) {
       this.play();
     }
-    this.volume = props.volume || 1;
+    this.volume = props.volume ?? 1;
   }
 
   public isPlaying(): boolean {

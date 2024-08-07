@@ -110,7 +110,6 @@ export class Segment {
    * @returns - A function to read more data from the response.
    */
   private async startStreamingAtOffset(file: any, uri: string, offset: number) {
-    console.log('startstreamingatoffset');
     return fetch(uri, {
       headers: {
         /* eslint-disable-next-line @typescript-eslint/naming-convention */
@@ -130,7 +129,6 @@ export class Segment {
           // Request is done.
           if (done) {
             this.responseFinished = true;
-            console.log('responsefinished');
             this.abortController.abort();
             sink.close();
             return;
@@ -179,7 +177,6 @@ export class Segment {
       return;
     }
     if (this.responseFinished && this.encodedChunkQueue.length === 0) {
-      console.log('flush1');
       await this.decoder.flush();
       this.decodingDone = true;
       return;
@@ -211,7 +208,6 @@ export class Segment {
     if (frameTimeInSec > segmentEndTime) {
       frame.close();
       this.done = true;
-      console.log('flush2');
       await this.decoder.flush();
       return;
     }
@@ -222,12 +218,9 @@ export class Segment {
   private async populateBuffer() {
     // Fetch more frames if we don't have any.
     while (this.frameBuffer.length === 0 && !this.decodingDone) {
-      console.log('response finished?', this.responseFinished);
       if (!this.responseFinished) {
-        console.log('readmore');
         await this.readMore();
       }
-      console.log('decodechunks');
       await this.decodeChunks();
       await new Promise(res => setTimeout(res, 0));
     }
@@ -269,7 +262,6 @@ export class Segment {
     this.frameBuffer.forEach(frame => frame.close());
     try {
       if (this.decoder.state === 'configured') {
-        console.log('flush3');
         await this.decoder.flush();
         this.decoder.close();
       }

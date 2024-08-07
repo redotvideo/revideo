@@ -967,7 +967,7 @@ export class Layout extends Node {
     if (!this.fontLoaded) {
       DependencyContext.collectPromise(
         (async () => {
-          await document.fonts.ready;
+          await document.fonts?.ready;
           this.fontLoaded = true;
         })(),
       );

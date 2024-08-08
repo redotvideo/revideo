@@ -61,9 +61,9 @@ export class TxtLeaf extends Shape {
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
-    await document.fonts?.ready;
     this.requestFontUpdate();
     this.applyStyle(context);
+    await document.fonts?.ready;
     this.applyText(context);
     context.font = this.styles.font;
     if ('letterSpacing' in context) {

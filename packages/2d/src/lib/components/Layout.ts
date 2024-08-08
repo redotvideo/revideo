@@ -1,6 +1,7 @@
 import {
   BBox,
   boolLerp,
+  DependencyContext,
   InterpolationFunction,
   modify,
   Origin,
@@ -282,6 +283,8 @@ export class Layout extends Node {
   @defaultStyle('text-align')
   @signal()
   public declare readonly textAlign: SimpleSignal<CanvasTextAlign, this>;
+
+  protected fontLoaded: boolean = false;
 
   protected getX(): number {
     if (this.isLayoutRoot()) {
@@ -961,6 +964,14 @@ export class Layout extends Node {
 
   @computed()
   protected applyFont() {
+    if (!this.fontLoaded) {
+      DependencyContext.collectPromise(
+        (async () => {
+          await document.fonts?.ready;
+          this.fontLoaded = true;
+        })(),
+      );
+    }
     this.element.style.fontFamily = this.fontFamily.isInitial()
       ? ''
       : this.fontFamily();

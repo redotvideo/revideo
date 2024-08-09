@@ -7,7 +7,11 @@ import {ffmpegSettings} from './settings';
 
 export function resolvePath(output: string, assetPath: string) {
   let resolvedPath: string;
-  if (assetPath.startsWith('http://') || assetPath.startsWith('https://')) {
+  if (
+    assetPath.startsWith('http://') ||
+    assetPath.startsWith('https://') ||
+    assetPath.startsWith('data:')
+  ) {
     resolvedPath = assetPath;
   } else {
     resolvedPath = path.join(output, '../public', assetPath);

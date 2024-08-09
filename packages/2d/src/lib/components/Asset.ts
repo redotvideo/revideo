@@ -31,7 +31,10 @@ export abstract class Asset extends Rect {
     }
 
     let src = this.src();
-    const isUrl = src.startsWith('http://') || src.startsWith('https://');
+    const isUrl =
+      src.startsWith('http://') ||
+      src.startsWith('https://') ||
+      src.startsWith('data:');
 
     if (isUrl) {
       return src;

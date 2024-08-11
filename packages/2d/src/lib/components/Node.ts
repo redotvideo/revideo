@@ -457,7 +457,7 @@ export class Node implements Promisable<Node> {
     let filters = '';
     const matrix = this.compositeToWorld();
     for (const filter of this.filters()) {
-      if (filter.isActive()) {
+      if (filter.isActive() && filter.name !== 'blur') {
         filters += ' ' + filter.serialize(matrix);
       }
     }

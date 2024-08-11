@@ -208,7 +208,19 @@ about working with images.`,
     this.drawShape(context);
     const alpha = this.alpha();
     if (alpha > 0) {
-      const box = BBox.fromSizeCentered(this.computedSize());
+      const blurFilter = this.filters().find(
+        filter => filter.isActive() && filter.name === 'blur',
+      );
+
+      context.filter = blurFilter?.serialize(this.compositeToWorld()) || 'none';
+      const filterValue = blurFilter?.value() || 0;
+      console.log('filtervalue', filterValue);
+      const box = BBox.fromSizeCentered(
+        this.computedSize()
+          .addX(filterValue * 4)
+          .addY(filterValue * 4),
+      );
+
       context.save();
       context.clip(this.getPath());
       if (alpha < 1) {

@@ -5,7 +5,7 @@ const MAX_DECODE_QUEUE_SIZE = 30;
 
 export class Segment {
   private done: boolean = false;
-  private decodingDone: boolean = false;
+  private currentFramePastSegmentEndTime: boolean = false;
   private abortController = new AbortController();
   private uri: string;
 
@@ -171,14 +171,14 @@ export class Segment {
         this.decoder.decode(chunk);
       }
     }
-    // when edit is empty, we cannot call decoder.flush() because decoder was already closed
+    // When edit is empty, we cannot call decoder.flush() because decoder was already closed
     if (this.done) {
-      this.decodingDone = true;
+      this.currentFramePastSegmentEndTime = true;
       return;
     }
     if (this.responseFinished && this.encodedChunkQueue.length === 0) {
       await this.decoder.flush();
-      this.decodingDone = true;
+      this.currentFramePastSegmentEndTime = true;
       return;
     }
   }
@@ -217,7 +217,10 @@ export class Segment {
 
   private async populateBuffer() {
     // Fetch more frames if we don't have any.
-    while (this.frameBuffer.length === 0 && !this.decodingDone) {
+    while (
+      this.frameBuffer.length === 0 &&
+      !this.currentFramePastSegmentEndTime
+    ) {
       if (!this.responseFinished) {
         await this.readMore();
       }

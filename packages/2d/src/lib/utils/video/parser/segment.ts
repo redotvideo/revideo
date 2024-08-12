@@ -1,8 +1,11 @@
 import {MP4FileSink} from './sink';
 import {Edit} from './utils';
 
+const MAX_DECODE_QUEUE_SIZE = 30;
+
 export class Segment {
   private done: boolean = false;
+  private currentFramePastSegmentEndTime: boolean = false;
   private abortController = new AbortController();
   private uri: string;
 
@@ -16,6 +19,7 @@ export class Segment {
   private startTime: number;
   private framesDue = 0;
   private frameBuffer: VideoFrame[] = [];
+  private encodedChunkQueue: EncodedVideoChunk[] = [];
 
   private readMore: () => Promise<void> = async () => {};
 
@@ -127,7 +131,6 @@ export class Segment {
             this.responseFinished = true;
             this.abortController.abort();
             sink.close();
-            this.decoder.flush();
             return;
           }
 
@@ -150,11 +153,33 @@ export class Segment {
         data: sample.data,
       });
       this.framesDue++;
-      this.decoder.decode(chunk);
+      this.encodedChunkQueue.push(chunk);
 
       const videoTrack = this.file.getInfo().videoTracks[0];
       const trak = this.file.getTrackById(videoTrack.id);
       this.file.releaseSample(trak, sample.number);
+    }
+  }
+
+  private async decodeChunks() {
+    while (
+      this.encodedChunkQueue.length > 0 &&
+      this.decoder.decodeQueueSize < MAX_DECODE_QUEUE_SIZE
+    ) {
+      const chunk = this.encodedChunkQueue.shift();
+      if (chunk) {
+        this.decoder.decode(chunk);
+      }
+    }
+    // When edit is empty, we cannot call decoder.flush() because decoder was already closed
+    if (this.done) {
+      this.currentFramePastSegmentEndTime = true;
+      return;
+    }
+    if (this.responseFinished && this.encodedChunkQueue.length === 0) {
+      await this.decoder.flush();
+      this.currentFramePastSegmentEndTime = true;
+      return;
     }
   }
 
@@ -192,8 +217,14 @@ export class Segment {
 
   private async populateBuffer() {
     // Fetch more frames if we don't have any.
-    while (this.frameBuffer.length === 0 && !this.responseFinished) {
-      await this.readMore();
+    while (
+      this.frameBuffer.length === 0 &&
+      !this.currentFramePastSegmentEndTime
+    ) {
+      if (!this.responseFinished) {
+        await this.readMore();
+      }
+      await this.decodeChunks();
       await new Promise(res => setTimeout(res, 0));
     }
 

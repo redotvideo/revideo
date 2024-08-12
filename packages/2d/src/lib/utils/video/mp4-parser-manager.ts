@@ -55,7 +55,7 @@ export async function getFrame(
   }
 
   // If the video has skipped forward we need to create a new extractor
-  if (extractor && time > extractor.getTime() + frameDuration) {
+  if (extractor && time > extractor.getTime() + frameDuration * 1.5) {
     extractor.close();
     videoFrameExtractors.delete(extractorId);
     extractor = undefined;

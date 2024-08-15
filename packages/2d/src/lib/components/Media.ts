@@ -19,6 +19,7 @@ export interface MediaProps extends RectProps {
   volume?: number;
   time?: SignalValue<number>;
   play?: boolean;
+  awaitCanPlay?: SignalValue<boolean>;
 }
 
 @nodeName('Media')
@@ -38,6 +39,10 @@ export abstract class Media extends Asset {
   @initial(false)
   @signal()
   protected declare readonly playing: SimpleSignal<boolean, this>;
+
+  @initial(true) // TODO: we might want to change this loadedmetadata
+  @signal()
+  protected declare readonly awaitCanPlay: SimpleSignal<boolean, this>;
 
   protected readonly volume: number = 1;
 

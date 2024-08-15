@@ -131,22 +131,27 @@ export class Video extends Media {
     }
 
     if (video.readyState < 2) {
-      DependencyContext.collectPromise(
-        new Promise<void>(resolve => {
-          const onCanPlay = () => {
-            resolve();
-            video.removeEventListener('canplay', onCanPlay);
-          };
+      if (
+        this.awaitCanPlay() ||
+        this.view().playbackState() === PlaybackState.Rendering
+      ) {
+        DependencyContext.collectPromise(
+          new Promise<void>(resolve => {
+            const onCanPlay = () => {
+              resolve();
+              video.removeEventListener('canplay', onCanPlay);
+            };
 
-          const onError = () => {
-            const reason = this.getErrorReason(video.error?.code);
-            console.log(`ERROR: Error loading video: ${src}, ${reason}`);
-          };
+            const onError = () => {
+              const reason = this.getErrorReason(video.error?.code);
+              console.log(`ERROR: Error loading video: ${src}, ${reason}`);
+            };
 
-          video.addEventListener('canplay', onCanPlay);
-          video.addEventListener('error', onError);
-        }),
-      );
+            video.addEventListener('canplay', onCanPlay);
+            video.addEventListener('error', onError);
+          }),
+        );
+      }
     }
 
     return video;

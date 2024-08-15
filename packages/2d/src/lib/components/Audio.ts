@@ -34,22 +34,27 @@ export class Audio extends Media {
       Audio.pool[key] = audio;
     }
     if (audio.readyState < 2) {
-      DependencyContext.collectPromise(
-        new Promise<void>(resolve => {
-          const onCanPlay = () => {
-            resolve();
-            audio.removeEventListener('canplay', onCanPlay);
-          };
+      if (
+        this.awaitCanPlay() ||
+        this.view().playbackState() === PlaybackState.Rendering
+      ) {
+        DependencyContext.collectPromise(
+          new Promise<void>(resolve => {
+            const onCanPlay = () => {
+              resolve();
+              audio.removeEventListener('canplay', onCanPlay);
+            };
 
-          const onError = () => {
-            const reason = this.getErrorReason(audio.error?.code);
-            console.log(`ERROR: Error loading audio: ${src}, ${reason}`);
-          };
+            const onError = () => {
+              const reason = this.getErrorReason(audio.error?.code);
+              console.log(`ERROR: Error loading audio: ${src}, ${reason}`);
+            };
 
-          audio.addEventListener('canplay', onCanPlay);
-          audio.addEventListener('error', onError);
-        }),
-      );
+            audio.addEventListener('canplay', onCanPlay);
+            audio.addEventListener('error', onError);
+          }),
+        );
+      }
     }
 
     return audio;

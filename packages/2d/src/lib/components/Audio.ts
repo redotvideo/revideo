@@ -8,6 +8,10 @@ export class Audio extends Media {
 
   public constructor(props: MediaProps) {
     super(props);
+
+    if (!this.awaitCanPlay()) {
+      this.scheduleSeek(this.time());
+    }
   }
 
   protected mediaElement(): HTMLAudioElement {

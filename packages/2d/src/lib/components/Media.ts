@@ -40,7 +40,7 @@ export abstract class Media extends Asset {
   @signal()
   protected declare readonly playing: SimpleSignal<boolean, this>;
 
-  @initial(true) // TODO: we might want to change this loadedmetadata
+  @initial(true)
   @signal()
   protected declare readonly awaitCanPlay: SimpleSignal<boolean, this>;
 
@@ -151,6 +151,25 @@ export abstract class Media extends Asset {
         this.time(() => this.clampTime(offset + (time() - start) * value));
       }
     }
+  }
+
+  protected scheduleSeek(time: number) {
+    const media = this.mediaElement();
+    const onCanPlay = () => {
+      media.removeEventListener('canplay', onCanPlay);
+      media.currentTime = time;
+      const listener = () => {
+        media.removeEventListener('seeked', listener);
+      };
+      media.addEventListener('seeked', listener);
+    };
+    const onError = () => {
+      const reason = this.getErrorReason(media.error?.code);
+      console.log(`ERROR: Error loading video: ${this.src()}, ${reason}`);
+    };
+
+    media.addEventListener('canplay', onCanPlay);
+    media.addEventListener('error', onError);
   }
 
   public play() {

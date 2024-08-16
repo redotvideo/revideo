@@ -83,6 +83,10 @@ export class Video extends Media {
 
   public constructor(props: VideoProps) {
     super(props);
+
+    if (!this.awaitCanPlay()) {
+      this.scheduleSeek(this.time());
+    }
   }
 
   protected override desiredSize(): SerializedVector2<DesiredLength> {

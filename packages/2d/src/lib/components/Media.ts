@@ -1,5 +1,6 @@
 import {
   DependencyContext,
+  PlaybackState,
   SignalValue,
   SimpleSignal,
   clamp,
@@ -50,6 +51,10 @@ export abstract class Media extends Asset {
 
   public constructor(props: MediaProps) {
     super(props);
+    if (!this.awaitCanPlay()) {
+      this.scheduleSeek(this.time());
+    }
+
     if (props.play) {
       this.play();
     }
@@ -154,22 +159,56 @@ export abstract class Media extends Asset {
   }
 
   protected scheduleSeek(time: number) {
-    const media = this.mediaElement();
-    const onCanPlay = () => {
-      media.removeEventListener('canplay', onCanPlay);
+    this.waitForCanPlay(() => {
+      const media = this.mediaElement();
+      // Wait until the media is ready to seek again as
+      // setting the time before the video doesn't work reliably.
       media.currentTime = time;
-      const listener = () => {
-        media.removeEventListener('seeked', listener);
-      };
-      media.addEventListener('seeked', listener);
+    });
+  }
+
+  /**
+   * Waits for the canplay event to be fired before calling onCanPlay.
+   *
+   * If the media is already ready to play, onCanPlay is called immediately.
+   * @param onCanPlay - The function to call when the media is ready to play.
+   * @returns
+   */
+  protected waitForCanPlay(onCanPlay: () => void) {
+    const media = this.mediaElement();
+    if (media.readyState >= 2) {
+      onCanPlay();
+      return;
+    }
+
+    const onCanPlayWrapper = () => {
+      onCanPlay();
+      media.removeEventListener('canplay', onCanPlayWrapper);
     };
+
     const onError = () => {
       const reason = this.getErrorReason(media.error?.code);
       console.log(`ERROR: Error loading video: ${this.src()}, ${reason}`);
+      media.removeEventListener('error', onError);
     };
 
-    media.addEventListener('canplay', onCanPlay);
+    media.addEventListener('canplay', onCanPlayWrapper);
     media.addEventListener('error', onError);
+  }
+
+  /**
+   * Returns true if we should wait for the media to be ready to play.
+   */
+  protected waitForCanPlayNecessary(): boolean {
+    const media = this.mediaElement();
+    if (media.readyState >= 2) {
+      return false;
+    }
+
+    return (
+      this.awaitCanPlay() ||
+      this.view().playbackState() === PlaybackState.Rendering
+    );
   }
 
   public play() {

@@ -34,14 +34,14 @@ export class Audio extends Media {
       Audio.pool[key] = audio;
     }
 
-    const weNeedToWait = this.waitForCanPlayNecessary();
+    const weNeedToWait = this.waitForCanPlayNecessary(audio);
     if (!weNeedToWait) {
       return audio;
     }
 
     DependencyContext.collectPromise(
       new Promise<void>(resolve => {
-        this.waitForCanPlay(resolve);
+        this.waitForCanPlay(audio, resolve);
       }),
     );
 

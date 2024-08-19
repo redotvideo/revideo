@@ -159,7 +159,7 @@ export abstract class Media extends Asset {
   }
 
   protected scheduleSeek(time: number) {
-    this.waitForCanPlay(() => {
+    this.waitForCanPlay(this.mediaElement(), () => {
       const media = this.mediaElement();
       // Wait until the media is ready to seek again as
       // setting the time before the video doesn't work reliably.
@@ -174,8 +174,7 @@ export abstract class Media extends Asset {
    * @param onCanPlay - The function to call when the media is ready to play.
    * @returns
    */
-  protected waitForCanPlay(onCanPlay: () => void) {
-    const media = this.mediaElement();
+  protected waitForCanPlay(media: HTMLMediaElement, onCanPlay: () => void) {
     if (media.readyState >= 2) {
       onCanPlay();
       return;
@@ -199,8 +198,7 @@ export abstract class Media extends Asset {
   /**
    * Returns true if we should wait for the media to be ready to play.
    */
-  protected waitForCanPlayNecessary(): boolean {
-    const media = this.mediaElement();
+  protected waitForCanPlayNecessary(media: HTMLMediaElement): boolean {
     if (media.readyState >= 2) {
       return false;
     }

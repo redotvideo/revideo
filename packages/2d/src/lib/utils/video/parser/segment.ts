@@ -185,7 +185,7 @@ export class Segment {
 
   private async flushDecoderWithRetry(maxRetries = 3, timeoutMs = 2000) {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-      // sometimes decoder.flush does not resolve even though the queue size is zero
+      // Sometimes decoder.flush does not resolve even though the queue size is zero
       if (this.decoder.decodeQueueSize === 0) {
         return;
       }
@@ -196,7 +196,6 @@ export class Segment {
             setTimeout(() => reject(new Error('Flush timeout')), timeoutMs),
           ),
         ]);
-        return;
       } catch (error: any) {
         if (attempt === maxRetries) {
           throw error;

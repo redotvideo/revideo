@@ -45,7 +45,7 @@ export abstract class Media extends Asset {
   @signal()
   protected declare readonly awaitCanPlay: SimpleSignal<boolean, this>;
 
-  protected readonly volume: number = 1;
+  protected declare volume: number;
 
   protected lastTime = -1;
 
@@ -59,6 +59,7 @@ export abstract class Media extends Asset {
       this.play();
     }
     this.volume = props.volume ?? 1;
+    this.setVolume(this.volume);
   }
 
   public isPlaying(): boolean {

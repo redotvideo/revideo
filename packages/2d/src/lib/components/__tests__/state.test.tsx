@@ -12,6 +12,7 @@ describe('state', () => {
     const circle = (
       <Circle lineWidth={8} startAngle={signal} end={0.5} />
     ) as Circle;
+    circle.toPromise();
     circle.save();
 
     circle.lineWidth(16);

@@ -52,6 +52,7 @@ describe('clone', () => {
     const template = (
       <Circle lineWidth={8} startAngle={signal} end={0.5} />
     ) as Circle;
+    template.toPromise();
     const clone = template.snapshotClone({end: 0});
 
     expect(clone.lineWidth()).toBe(8);

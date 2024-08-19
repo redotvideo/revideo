@@ -164,19 +164,19 @@ async function prepareAudio(
 
 async function mergeAudioTracks(
   tempDir: string,
-  audioAssets: [MediaAsset, string][],
+  audioAssets: {asset: MediaAsset; filename: string}[],
   fps: number,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     const command = ffmpeg();
 
-    audioAssets.forEach(([, filename]) => {
-      command.input(filename);
+    audioAssets.forEach(audioAsset => {
+      command.input(audioAsset.filename);
     });
 
-    const delayFilters = audioAssets.map(([asset], i) => {
-      const padStart = (asset.startInVideo / fps) * 1000;
+    const delayFilters = audioAssets.map((audioAsset, i) => {
+      const padStart = (audioAsset.asset.startInVideo / fps) * 1000;
 
       return `[${i}]adelay=${padStart}|${padStart}|${padStart}[a${i}]`;
     });
@@ -223,7 +223,7 @@ export async function generateAudio({
   await makeSureFolderExists(fullTempDir);
 
   const assetPositions = getAssetPlacement(assets);
-  const audioAssets: [MediaAsset, string][] = [];
+  const audioAssets: {asset: MediaAsset; filename: string}[] = [];
 
   for (const asset of assetPositions) {
     let hasAudioStream = true;
@@ -242,7 +242,7 @@ export async function generateAudio({
         endFrame,
         fps,
       );
-      audioAssets.push([asset, filename]);
+      audioAssets.push({asset, filename});
     }
   }
 

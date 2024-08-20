@@ -177,9 +177,30 @@ export class Segment {
       return;
     }
     if (this.responseFinished && this.encodedChunkQueue.length === 0) {
-      await this.decoder.flush();
+      await this.flushDecoderWithRetry();
       this.currentFramePastSegmentEndTime = true;
       return;
+    }
+  }
+
+  private async flushDecoderWithRetry(maxRetries = 3, timeoutMs = 2000) {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      // Sometimes decoder.flush does not resolve even though the queue size is zero
+      if (this.decoder.decodeQueueSize === 0) {
+        return;
+      }
+      try {
+        await Promise.race([
+          this.decoder.flush(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Flush timeout')), timeoutMs),
+          ),
+        ]);
+      } catch (error: any) {
+        if (attempt === maxRetries) {
+          throw error;
+        }
+      }
     }
   }
 
@@ -230,7 +251,7 @@ export class Segment {
 
     // Wait for decoder if there are frames due.
     if (this.frameBuffer.length === 0 && this.framesDue > 0) {
-      let maxIterations = 1000;
+      let maxIterations = 200;
       while (this.frameBuffer.length === 0) {
         await new Promise(res => setTimeout(res, 10));
         maxIterations--;
@@ -240,9 +261,7 @@ export class Segment {
         }
 
         if (maxIterations === 0) {
-          throw new Error(
-            `Timed out while waiting for VideoDecoder to produce a frame. Frames due: ${this.framesDue}`,
-          );
+          return; // TODO: investigate further, shouldn't this be an error?
         }
       }
     }

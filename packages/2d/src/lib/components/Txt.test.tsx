@@ -10,7 +10,6 @@ describe('Txt', () => {
 
   it('Handle plain text', () => {
     const node = (<Txt lineWidth={8}>test</Txt>) as Txt;
-    node.toPromise();
 
     const parseSpy = vi.spyOn(node as any, 'parseChildren');
     const leaf = node.childAs<TxtLeaf>(0);
@@ -39,7 +38,6 @@ describe('Txt', () => {
         Apple <Txt>Banana</Txt> Cherry
       </Txt>
     ) as Txt;
-    node.toPromise();
 
     const first = node.childAs<TxtLeaf>(0);
     const second = node.childAs<Txt>(1);

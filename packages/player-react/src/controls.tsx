@@ -9,7 +9,11 @@ function PlayPause({
   setPlaying: (playing: boolean) => void;
 }) {
   return (
-    <button className="p-p-1" onClick={() => setPlaying(!playing)}>
+    <button
+      type="button"
+      className="p-p-1"
+      onClick={() => setPlaying(!playing)}
+    >
       {playing ? <PauseButton /> : <PlayButton />}
     </button>
   );

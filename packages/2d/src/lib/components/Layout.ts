@@ -1,10 +1,8 @@
 import {
   BBox,
-  boolLerp,
+  DependencyContext,
   InterpolationFunction,
-  modify,
   Origin,
-  originToOffset,
   PossibleSpacing,
   PossibleVector2,
   SerializedVector2,
@@ -13,14 +11,18 @@ import {
   SimpleSignal,
   SimpleVector2Signal,
   SpacingSignal,
-  threadable,
   ThreadGenerator,
   TimingFunction,
-  tween,
   Vector2,
   Vector2Signal,
+  boolLerp,
+  modify,
+  originToOffset,
+  threadable,
+  tween,
 } from '@revideo/core';
 import {
+  Vector2LengthSignal,
   addInitializer,
   cloneable,
   computed,
@@ -30,7 +32,6 @@ import {
   interpolation,
   nodeName,
   signal,
-  Vector2LengthSignal,
   vector2Signal,
 } from '../decorators';
 import {spacingSignal} from '../decorators/spacingSignal';
@@ -282,6 +283,8 @@ export class Layout extends Node {
   @defaultStyle('text-align')
   @signal()
   public declare readonly textAlign: SimpleSignal<CanvasTextAlign, this>;
+
+  protected fontLoaded: boolean = false;
 
   protected getX(): number {
     if (this.isLayoutRoot()) {
@@ -961,6 +964,15 @@ export class Layout extends Node {
 
   @computed()
   protected applyFont() {
+    if (!this.fontLoaded) {
+      DependencyContext.collectPromise(
+        (async () => {
+          await document.fonts?.ready;
+          this.fontLoaded = true;
+        })(),
+      );
+    }
+
     this.element.style.fontFamily = this.fontFamily.isInitial()
       ? ''
       : this.fontFamily();

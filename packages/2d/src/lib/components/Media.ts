@@ -159,29 +159,31 @@ export abstract class Media extends Asset {
   protected amplify(node: HTMLMediaElement, volume: number) {
     const key = `${viaProxy(this.fullSource())}/${this.key}`;
 
-    if (!Media.amplificationPool[key]) {
-      const audioContext = new AudioContext();
-      const sourceNode = audioContext.createMediaElementSource(node);
-      const gainNode = audioContext.createGain();
-
-      gainNode.gain.value = volume;
-      sourceNode.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      Media.amplificationPool[key] = {audioContext, sourceNode, gainNode};
-
-      if (typeof window !== 'undefined' && audioContext.state === 'suspended') {
-        // start audio context after user interation, neccessary due to browser autoplay policies
-        const handleInteraction = () => {
-          Media.amplificationPool[key].audioContext.resume();
-          window.removeEventListener('click', handleInteraction);
-        };
-        window.addEventListener('click', handleInteraction);
-      }
+    if (Media.amplificationPool[key]) {
+      Media.amplificationPool[key].gainNode.gain.value = volume;
       return;
     }
 
-    Media.amplificationPool[key].gainNode.gain.value = volume;
+    const audioContext = new AudioContext();
+    const sourceNode = audioContext.createMediaElementSource(node);
+    const gainNode = audioContext.createGain();
+
+    gainNode.gain.value = volume;
+    sourceNode.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    Media.amplificationPool[key] = {audioContext, sourceNode, gainNode};
+
+    if (typeof window === 'undefined' || audioContext.state !== 'suspended') {
+      return;
+    }
+
+    // Start audio context after user interation, neccessary due to browser autoplay policies
+    const handleInteraction = () => {
+      Media.amplificationPool[key].audioContext.resume();
+      window.removeEventListener('click', handleInteraction);
+    };
+    window.addEventListener('click', handleInteraction);
   }
 
   protected setPlaybackRate(playbackRate: number) {

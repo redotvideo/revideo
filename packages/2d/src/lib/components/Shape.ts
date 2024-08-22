@@ -125,7 +125,6 @@ export abstract class Shape extends Layout {
     y: number,
   ): void {
     super.renderFromSource(context, source, x, y);
-
     if (this.backgroundBlur()) {
       const canvasToDraw = this.getBlurredCanvas(context, source, x, y);
       context.globalAlpha = 1;
@@ -141,7 +140,6 @@ export abstract class Shape extends Layout {
     return (this.parent()?.absoluteOpacity() ?? 1) * this.opacity();
   }
 
-  @computed()
   protected getBlurredCanvas(
     context: CanvasRenderingContext2D,
     source: CanvasImageSource,
@@ -150,11 +148,8 @@ export abstract class Shape extends Layout {
   ): HTMLCanvasElement {
     const sourceCanvas = source as OffscreenCanvas;
 
-    const copiedCanvas = document.createElement('canvas');
-    copiedCanvas.width = context.canvas.width;
-    copiedCanvas.height = context.canvas.height;
+    const copiedCanvas = this.createCanvasWithSameShape(context.canvas);
     const copiedContext = copiedCanvas.getContext('2d');
-
     copiedContext?.drawImage(context.canvas, 0, 0);
 
     StackBlur.canvasRGB(
@@ -165,13 +160,12 @@ export abstract class Shape extends Layout {
       sourceCanvas.height,
       this.backgroundBlur(),
     );
-    const copiedCanvas2 = document.createElement('canvas');
-    copiedCanvas2.width = context.canvas.width;
-    copiedCanvas2.height = context.canvas.height;
-    const copiedContext2 = copiedCanvas2.getContext('2d');
+
+    const blurredElementCanvas = this.createCanvasWithSameShape(context.canvas);
+    const blurredElementContext = blurredElementCanvas.getContext('2d');
 
     const matrix = this.localToWorld();
-    copiedContext2?.transform(
+    blurredElementContext?.transform(
       matrix.a,
       matrix.b,
       matrix.c,
@@ -180,25 +174,20 @@ export abstract class Shape extends Layout {
       matrix.f,
     );
 
-    copiedContext2?.clip(this.getPath());
+    blurredElementContext?.clip(this.getPath());
+    blurredElementContext?.setTransform(1, 0, 0, 1, 0, 0);
+    blurredElementContext?.drawImage(copiedCanvas, 0, 0);
 
-    copiedContext2?.setTransform(1, 0, 0, 1, 0, 0);
-
-    copiedContext2?.drawImage(copiedCanvas, 0, 0);
-
-    return copiedCanvas2;
+    return blurredElementCanvas;
   }
 
-  private createCanvasWithSameShape(canvasToCopy: HTMLCanvasElement): {
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D | null;
-  } {
+  private createCanvasWithSameShape(
+    canvasToCopy: HTMLCanvasElement | OffscreenCanvas,
+  ): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     canvas.width = canvasToCopy.width;
     canvas.height = canvasToCopy.height;
-    const context = canvas.getContext('2d');
-
-    return {canvas, context};
+    return canvas;
   }
 
   protected override getCacheBBox(): BBox {

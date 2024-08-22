@@ -284,8 +284,6 @@ export class Layout extends Node {
   @signal()
   public declare readonly textAlign: SimpleSignal<CanvasTextAlign, this>;
 
-  protected fontLoaded: boolean = false;
-
   protected getX(): number {
     if (this.isLayoutRoot()) {
       return this.x.context.getter();

@@ -7,6 +7,7 @@ import {
   isReactive,
   useLogger,
   useThread,
+  viaProxy,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {Asset} from './Asset';
@@ -21,6 +22,7 @@ export interface MediaProps extends RectProps {
   time?: SignalValue<number>;
   play?: boolean;
   awaitCanPlay?: SignalValue<boolean>;
+  allowVolumeAmplificationInPreview?: SignalValue<boolean>;
 }
 
 @nodeName('Media')
@@ -45,8 +47,23 @@ export abstract class Media extends Asset {
   @signal()
   protected declare readonly awaitCanPlay: SimpleSignal<boolean, this>;
 
+  @initial(false)
+  @signal()
+  protected declare readonly allowVolumeAmplificationInPreview: SimpleSignal<
+    boolean,
+    this
+  >;
+
   protected declare volume: number;
 
+  protected static readonly amplificationPool: Record<
+    string,
+    {
+      audioContext: AudioContext;
+      sourceNode: MediaElementAudioSourceNode;
+      gainNode: GainNode;
+    }
+  > = {};
   protected lastTime = -1;
 
   public constructor(props: MediaProps) {
@@ -124,12 +141,49 @@ export abstract class Media extends Asset {
         `volumes cannot be negative - the value will be clamped to 0.`,
       );
     }
+    const media = this.mediaElement();
+    media.volume = Math.min(Math.max(volume, 0), 1);
+
     if (volume > 1) {
+      if (this.allowVolumeAmplificationInPreview()) {
+        this.amplify(media, volume);
+        return;
+      }
       console.warn(
-        `the browser does not natively support volumes higher than 1 - your preview will have a volume of 1, but your exported video will have a volume of ${volume}`,
+        `you have set the volume of node ${this.key} to ${volume} - your video will be exported with the correct volume, but the browser does not support volumes higher than 1 by default. To enable volume amplification in the preview, set the "allowVolumeAmplificationInPreview" of your <Video/> or <Audio/> tag to true. Note that amplification for previews will not work if you use autoplay within the player due to browser autoplay policies: https://developer.chrome.com/blog/autoplay/#webaudio.`,
       );
     }
-    this.mediaElement().volume = Math.min(Math.max(volume, 0), 1);
+  }
+
+  @computed()
+  protected amplify(node: HTMLMediaElement, volume: number) {
+    const key = `${viaProxy(this.fullSource())}/${this.key}`;
+
+    if (Media.amplificationPool[key]) {
+      Media.amplificationPool[key].gainNode.gain.value = volume;
+      return;
+    }
+
+    const audioContext = new AudioContext();
+    const sourceNode = audioContext.createMediaElementSource(node);
+    const gainNode = audioContext.createGain();
+
+    gainNode.gain.value = volume;
+    sourceNode.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    Media.amplificationPool[key] = {audioContext, sourceNode, gainNode};
+
+    if (typeof window === 'undefined' || audioContext.state !== 'suspended') {
+      return;
+    }
+
+    // Start audio context after user interation, neccessary due to browser autoplay policies
+    const handleInteraction = () => {
+      Media.amplificationPool[key].audioContext.resume();
+      window.removeEventListener('click', handleInteraction);
+    };
+    window.addEventListener('click', handleInteraction);
   }
 
   protected setPlaybackRate(playbackRate: number) {

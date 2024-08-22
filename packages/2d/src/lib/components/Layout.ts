@@ -964,11 +964,13 @@ export class Layout extends Node {
 
   @computed()
   protected applyFont() {
-    if (!this.fontLoaded) {
+    const loadingFonts = Array.from(document.fonts).filter(
+      font => font.status === 'loading',
+    );
+    if (loadingFonts.length > 0) {
       DependencyContext.collectPromise(
         (async () => {
           await document.fonts?.ready;
-          this.fontLoaded = true;
         })(),
       );
     }

@@ -42,6 +42,7 @@
     "@lezer/highlight": "^1.2.0",
     "@revideo/core": "0.5.6",
     "@rive-app/canvas-advanced": "2.7.3",
+    "stackblur-canvas": "2.7.0",
     "code-fns": "^0.8.2",
     "hls.js": "^1.5.11",
     "mathjax-full": "^3.2.2",

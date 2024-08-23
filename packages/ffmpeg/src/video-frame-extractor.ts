@@ -55,6 +55,8 @@ export class VideoFrameExtractor {
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
 
+    console.log("jo constructor")
+
     if (this.startTime >= this.duration) {
       getVideoCodec(this.filePath).then(codec => {
         this.process = this.createFfmpegProcessToExtractFirstFrame(
@@ -126,9 +128,9 @@ export class VideoFrameExtractor {
       outputOptions.push('-vframes', '1');
     }
 
-    outputOptions.push('-f', 'image2pipe');
-    outputOptions.push('-vcodec', 'png');
-
+    outputOptions.push('-f', 'rawvideo');
+    outputOptions.push('-pix_fmt', 'rgb24');
+  
     return {inputOptions, outputOptions};
   }
 
@@ -145,6 +147,8 @@ export class VideoFrameExtractor {
       fps,
     );
 
+    console.log("creating process")
+
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
@@ -155,6 +159,12 @@ export class VideoFrameExtractor {
       .on('error', err => {
         this.handleError(err);
       })
+      .on('progress', (progress) => {
+        console.log("\n\n\n")
+        console.log("ahhhh")
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+        console.log("\n\n\n")
+      })  
       .on('stderr', stderrLine => {
         console.log(stderrLine);
       })
@@ -165,6 +175,12 @@ export class VideoFrameExtractor {
     const ffstream = process.pipe();
     ffstream.on('data', (data: Buffer) => {
       this.processData(data);
+    })
+    .on('progress', (progress) => {
+      console.log("\n\n\n")
+      console.log("ahhhh")
+      console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      console.log("\n\n\n")
     });
 
     return process;
@@ -189,6 +205,8 @@ export class VideoFrameExtractor {
       undefined,
     );
 
+    console.log("first")
+
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
@@ -202,45 +220,55 @@ export class VideoFrameExtractor {
       .on('stderr', stderrLine => {
         console.log(stderrLine);
       })
+      .on('progress', (progress) => {
+        console.log("\n\n\n")
+        console.log("ahhhh")
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+        console.log("\n\n\n")
+      })  
       .on('stdout', stderrLine => {
         console.log(stderrLine);
       });
 
     const ffstream = process.pipe();
     ffstream.on('data', (data: Buffer) => {
+      console.time("processdata")
       this.processData(data);
+      console.timeEnd("processdata")
+    })
+    .on('progress', (progress) => {
+      console.log("\n\n\n")
+      console.log("ahhhh")
+      console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      console.log("\n\n\n")
     });
+
+
+    console.log("return first");
 
     return process;
   }
   private processData(data: Buffer) {
-    this.buffer = Buffer.concat([this.buffer, data]);
-
-    let start = 0;
-    let end;
-
-    const startSignature = VideoFrameExtractor.pngSignature;
-    const endSignature = VideoFrameExtractor.pngEOF;
-
-    while (
-      (start = this.buffer.indexOf(startSignature, start)) !== -1 &&
-      (end = this.buffer.indexOf(endSignature, start)) !== -1
-    ) {
-      end += endSignature.length;
-      const frame = this.buffer.subarray(start, end);
-
+    // Assuming we know the frame size (width * height * 3 for RGB)
+    const frameSize = 1080 * 1920 * 3;
+    
+    while (this.buffer.length >= frameSize) {
+      const frame = this.buffer.subarray(0, frameSize);
       this.imageBuffers.push(frame);
-
+  
       this.hooksWaiting.forEach(hook => hook());
       this.hooksWaiting = [];
-
-      this.buffer = this.buffer.subarray(end);
-      start = 0;
+  
+      this.buffer = this.buffer.subarray(frameSize);
     }
+  
+    this.buffer = Buffer.concat([this.buffer, data]);
   }
-
   public async popImage() {
+    console.log("PPPPOP")
+
     if (this.imageBuffers.length) {
+      console.log("pop in if statement");
       const image = this.imageBuffers.shift()!;
       this.framesProcessed++;
       this.lastImage = image;

@@ -1,3 +1,5 @@
+let ID: number = 0;
+
 export class ImageCommunication {
   public constructor() {
     if (!import.meta.hot) {
@@ -21,44 +23,63 @@ export class ImageCommunication {
     }
   }
 
-  public async getFrame(
-    id: string,
-    src: string,
-    time: number,
-    duration: number,
-    fps: number,
-  ) {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-      if (!import.meta.hot) {
-        reject('FfmpegVideoFrame can only be used with HMR.');
-        return;
-      }
-
-      function handler(event: MessageEvent) {
-        const image = new Image();
-
-        const uint8Array = new Uint8Array(event.data.frame.data);
-        const blob = new Blob([uint8Array], {type: 'image/png'});
-        const url = URL.createObjectURL(blob);
-
-        image.src = url;
-
-        image.onload = () => {
-          resolve(image);
-        };
-      }
-
-      this.nextFrameHandlers.push(handler);
-
-      import.meta.hot.send('revideo:ffmpeg-decoder:video-frame', {
-        data: {
-          id: id,
+public async getFrame(
+  id: string,
+  src: string,
+  time: number,
+  duration: number,
+  fps: number,
+) {
+  return new Promise<ImageBitmap>(async (resolve, reject) => {
+    try {
+      var now = new Date();
+      var seconds = now.getSeconds().toString().padStart(2, '0');
+      var milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+      console.log("calling fetch", `${seconds}.${milliseconds}`);    
+      const response = await fetch('/revideo-ffmpeg-decoder/video-frame', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
           filePath: src,
           startTime: time,
           duration,
           fps,
-        },
+        }),
       });
-    });
-  }
-}
+
+      now = new Date();
+      seconds = now.getSeconds().toString().padStart(2, '0');
+      milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+      console.log("done with calling fetch", `${seconds}.${milliseconds}`);    
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const frameArray = new Uint8Array(arrayBuffer);
+
+      console.log("Received frame data:", { frameLength: frameArray.length });
+
+      // Assuming fixed dimensions for now
+      const width = 1080;  // or whatever your fixed width is
+      const height = 1920; // or whatever your fixed height is
+
+      const imageData = new ImageData(
+        new Uint8ClampedArray(frameArray),
+        width,
+        height
+      );
+
+      const imageBitmap = await createImageBitmap(imageData);
+      console.log("ImageBitmap created successfully");
+      resolve(imageBitmap);
+    } catch (error) {
+      console.error("Failed to fetch or process frame", error);
+      reject(error);
+    }
+  });
+}}

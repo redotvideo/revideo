@@ -7,6 +7,8 @@ import {
 } from '@revideo/ffmpeg';
 import type {Plugin, WebSocketServer} from 'vite';
 
+let ID = 0;
+
 interface BrowserRequest {
   method: string;
   data: unknown;
@@ -21,7 +23,7 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
     name: 'revideo/ffmpeg',
 
     configureServer(server) {
-      new FFmpegBridge(server.ws, {output});
+      const ffmpegBridge = new FFmpegBridge(server.ws, {output});
 
       server.middlewares.use(
         '/audio-processing/generate-audio',
@@ -85,9 +87,38 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
           }
         },
       );
+
+      server.middlewares.use(
+        '/revideo-ffmpeg-decoder/video-frame',
+        async (req, res) => {
+          if (req.method !== 'POST') {
+            res.statusCode = 405;
+            res.end('Method Not Allowed');
+            return;
+          }
+      
+          let body = '';
+          req.on('data', chunk => (body += chunk));
+          req.on('end', async () => {
+            try {
+              const data = JSON.parse(body);
+              const { frame } = await ffmpegBridge.handleDecodeVideoFrame(data) as any;
+      
+              // Send frame data as binary
+              res.setHeader('Content-Type', 'application/octet-stream');
+              res.end(Buffer.from(frame.buffer));
+            } catch (e) {
+              console.error(e);
+              res.statusCode = 500;
+              res.end('Internal Server Error');
+            }
+          });
+        }
+      );
     },
   };
 }
+
 
 /**
  * A simple bridge between the FFmpegExporterServer and FFmpegExporterClient.
@@ -163,7 +194,13 @@ export class FFmpegBridge {
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
-  private handleDecodeVideoFrame = async ({data}: BrowserRequest) => {
+  public async handleDecodeVideoFrame (data: {
+    id: string;
+    filePath: string;
+    startTime: number;
+    duration: number;
+    fps: number;
+  }) {
     const typedData = data as {
       id: string;
       filePath: string;
@@ -186,13 +223,16 @@ export class FFmpegBridge {
     // If time has not changed, return the last frame
     if (isOldFrame) {
       const frame = extractor!.getLastFrame();
-      this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
-        status: 'success',
-        data: {
+      const now = new Date();
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+      console.log("sending frame", ID, `${seconds}.${milliseconds}`);
+      ID++;
+      return {
           frame,
-        },
-      });
-      return;
+          width: 1080,
+          height: 1920,  
+        }
     }
 
     // If the video has skipped back we need to create a new extractor
@@ -226,14 +266,57 @@ export class FFmpegBridge {
     }
 
     // Go to the frame that is closest to the requested time
+    console.time("popimage");
     const frame = await extractor.popImage();
+    console.timeEnd("popimage");
+  
+    const now = new Date();
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const milliseconds = now.getMilliseconds().toString().padStart(3, '0');    
+    console.log("sending frame", ID, `${seconds}.${milliseconds}`);
+    ID++;
+  
+    const width = 1080;
+    const height = 1920;
+    
+    if (!frame || frame.length === 0) {
+      console.warn("Received empty frame, constructing black frame as fallback");
+      const frameSize = width * height * 4;
+      const frameBuffer = new Uint8Array(frameSize);
+      frameBuffer.fill(0);
+      for (let i = 3; i < frameSize; i += 4) {
+        frameBuffer[i] = 255; // Set alpha channel to 255 (fully opaque)
+      }
+      return {
+        frame: Array.from(frameBuffer),
+        width: 1080,
+        height: 1920,  
+      }
+  } else {
+      console.log("frame length", frame.length);
+      // Convert the frame buffer to RGBA if it's in RGB format
 
-    this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
-      status: 'success',
-      data: {
-        frame,
-      },
-    });
+      console.time("rgba");
+      const frameRGBA = new Uint8Array(width * height * 4);
+      for (let i = 0, j = 0; i < frame.length; i += 3, j += 4) {
+        frameRGBA[j] = frame[i];     // R
+        frameRGBA[j + 1] = frame[i + 1]; // G
+        frameRGBA[j + 2] = frame[i + 2]; // B
+        frameRGBA[j + 3] = 255;          // A (fully opaque)
+      }
+      console.timeEnd("rgba");
+
+    const ra = Array.from(frameRGBA);
+
+
+      console.log("ra length", ra.length);
+  
+      return {
+          frame: frameRGBA,
+          width,
+          height,
+        }
+    }
   };
 
   private handleRenderFinished = async () => {

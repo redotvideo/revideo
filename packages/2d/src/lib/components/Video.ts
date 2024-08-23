@@ -197,7 +197,7 @@ export class Video extends Media {
     return video;
   }
 
-  protected lastFrame: HTMLImageElement | null = null;
+  protected lastFrame: any | null = null;
 
   protected async webcodecSeekedVideo(): Promise<CanvasImageSource> {
     const video = this.video();
@@ -213,7 +213,7 @@ export class Video extends Media {
     return getFrame(this.key, video.src, time, fps);
   }
 
-  protected async ffmpegSeekedVideo(): Promise<HTMLImageElement> {
+  protected async ffmpegSeekedVideo(): Promise<ImageBitmap> {
     const video = this.video();
     const time = this.clampTime(this.time());
     const duration = this.getDuration();
@@ -230,6 +230,11 @@ export class Video extends Media {
       throw new Error('ServerSeekedVideo can only be used with HMR.');
     }
 
+    console.time("in video get frame")
+    const now = new Date();
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+    console.log("calling get frame in video.ts", `${seconds}.${milliseconds}`);
     const frame = await Video.imageCommunication.getFrame(
       this.key,
       video.src,
@@ -237,8 +242,14 @@ export class Video extends Media {
       duration,
       fps,
     );
+    const now1 = new Date();
+    const seconds1 = now.getSeconds().toString().padStart(2, '0');
+    const milliseconds1 = now.getMilliseconds().toString().padStart(3, '0');
+    console.log("done with get frame in video.ts", `${seconds1}.${milliseconds1}`);
     this.lastFrame = frame;
     this.lastTime = time;
+
+    console.timeEnd("in video get frame")
 
     return frame;
   }

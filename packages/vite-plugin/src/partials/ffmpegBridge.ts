@@ -296,7 +296,7 @@ export class FFmpegBridge {
       console.log("frame length", frame.length);
       // Convert the frame buffer to RGBA if it's in RGB format
 
-      console.time("rgba");
+      /*console.time("rgba");
       const frameRGBA = new Uint8Array(width * height * 4);
       for (let i = 0, j = 0; i < frame.length; i += 3, j += 4) {
         frameRGBA[j] = frame[i];     // R
@@ -305,11 +305,11 @@ export class FFmpegBridge {
         frameRGBA[j + 3] = 255;          // A (fully opaque)
       }
       console.timeEnd("rgba");
+      */
 
-    const ra = Array.from(frameRGBA);
+    const frameRGBA = frame;
 
-
-      console.log("ra length", ra.length);
+      //console.log("ra length", ra.length);
   
       return {
           frame: frameRGBA,

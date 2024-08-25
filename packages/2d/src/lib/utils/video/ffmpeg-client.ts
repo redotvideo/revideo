@@ -59,8 +59,11 @@ public async getFrame(
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+
+      console.time("timetest1")
       const arrayBuffer = await response.arrayBuffer();
       const frameArray = new Uint8Array(arrayBuffer);
+      console.timeEnd("timetest1")
 
       console.log("Received frame data:", { frameLength: frameArray.length });
 
@@ -68,12 +71,31 @@ public async getFrame(
       const width = 1080;  // or whatever your fixed width is
       const height = 1920; // or whatever your fixed height is
 
-      const imageData = new ImageData(
-        new Uint8ClampedArray(frameArray),
-        width,
-        height
-      );
+      let imageData: ImageData;
 
+      try {
+        console.time("TIMEE");
+        imageData = new ImageData(
+          new Uint8ClampedArray(frameArray),
+          width,
+          height
+        );
+        console.timeEnd("TIMEE");
+      } catch {
+        const width = 1080;  // your desired width
+        const height = 1920; // your desired height
+        
+        // Create a black frame
+        const blackFrame = new Uint8ClampedArray(width * height * 4); // 4 channels: R, G, B, A
+        for (let i = 0; i < blackFrame.length; i += 4) {
+          blackFrame[i] = 0;     // R
+          blackFrame[i + 1] = 0; // G
+          blackFrame[i + 2] = 0; // B
+          blackFrame[i + 3] = 255; // A (fully opaque)
+        }
+        
+        imageData = new ImageData(blackFrame, width, height);
+      }
       const imageBitmap = await createImageBitmap(imageData);
       console.log("ImageBitmap created successfully");
       resolve(imageBitmap);

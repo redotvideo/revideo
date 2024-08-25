@@ -243,8 +243,8 @@ export class Video extends Media {
       fps,
     );
     const now1 = new Date();
-    const seconds1 = now.getSeconds().toString().padStart(2, '0');
-    const milliseconds1 = now.getMilliseconds().toString().padStart(3, '0');
+    const seconds1 = now1.getSeconds().toString().padStart(2, '0');
+    const milliseconds1 = now1.getMilliseconds().toString().padStart(3, '0');
     console.log("done with get frame in video.ts", `${seconds1}.${milliseconds1}`);
     this.lastFrame = frame;
     this.lastTime = time;

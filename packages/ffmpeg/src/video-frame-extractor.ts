@@ -3,8 +3,7 @@ import * as ffmpeg from 'fluent-ffmpeg';
 import {ffmpegSettings} from './settings';
 import {getVideoCodec} from './utils';
 
-let counter = 0;
-const FRAME_SIZE = 1080*1920*4;
+const FRAME_SIZE = 1080 * 1920 * 4;
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
 
 /**
@@ -27,7 +26,7 @@ export class VideoFrameExtractor {
   public state: VideoFrameExtractorState;
   public filePath: string;
 
-  private buffer: Buffer = Buffer.alloc(FRAME_SIZE*240);
+  private buffer: Buffer = Buffer.alloc(FRAME_SIZE * 80);
   private bufferOffset: number = 0;
 
   // Images are buffered in memory until they are requested.
@@ -60,7 +59,7 @@ export class VideoFrameExtractor {
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
 
-    console.log("jo constructor")
+    console.log('jo constructor');
 
     if (this.startTime >= this.duration) {
       getVideoCodec(this.filePath).then(codec => {
@@ -135,7 +134,7 @@ export class VideoFrameExtractor {
 
     outputOptions.push('-f', 'rawvideo');
     outputOptions.push('-pix_fmt', 'rgba');
-  
+
     return {inputOptions, outputOptions};
   }
 
@@ -152,27 +151,27 @@ export class VideoFrameExtractor {
       fps,
     );
 
-    console.log("creating process", this.ffmpegPath);
+    console.log('creating process', this.ffmpegPath);
 
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', (command) => {
+      .on('start', command => {
         console.log('FFmpeg command:', command);
-      })  
-      .on('progress', (progress) => {
+      })
+      .on('progress', progress => {
         console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      })  
+      })
       .on('end', () => {
         this.handleClose(0);
       })
       .on('error', err => {
         this.handleError(err);
       })
-      .on('progress', (progress) => {
+      .on('progress', progress => {
         console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      })  
+      })
       .on('stderr', stderrLine => {
         console.log(stderrLine);
       })
@@ -181,18 +180,23 @@ export class VideoFrameExtractor {
       });
 
     const ffstream = process.pipe();
-    ffstream.on('data', (data: Buffer) => {
-      //this.processData(data);
-      //counter++;
-      //this.allData.push(data);
+    ffstream
+      .on('data', (data: Buffer) => {
+        // buffer overflow
+        if (this.bufferOffset + data.length > FRAME_SIZE * 30) {
+          this.buffer
+            .subarray(this.bufferOffset - FRAME_SIZE, this.bufferOffset)
+            .copy(this.buffer, 0);
+          this.bufferOffset = FRAME_SIZE;
+        }
 
-      data.copy(this.buffer, this.bufferOffset)
-      this.bufferOffset += data.length;
-      //this.buffer = Buffer.concat([this.buffer, data]);
-    })
-    .on('progress', (progress) => {
-      console.log(`FFmpeg Progress: ${progress.percent} frames`);
-    });
+        data.copy(this.buffer, this.bufferOffset);
+        this.bufferOffset += data.length;
+        //this.buffer = Buffer.concat([this.buffer, data]);
+      })
+      .on('progress', progress => {
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      });
 
     return process;
   }
@@ -216,18 +220,18 @@ export class VideoFrameExtractor {
       undefined,
     );
 
-    console.log("first")
+    console.log('first');
 
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', (command) => {
+      .on('start', command => {
         console.log('FFmpeg command:', command);
-      })  
-      .on('progress', (progress) => {
+      })
+      .on('progress', progress => {
         console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      })  
+      })
       .on('end', () => {
         this.handleClose(0);
       })
@@ -242,41 +246,39 @@ export class VideoFrameExtractor {
       });
 
     const ffstream = process.pipe();
-    ffstream.on('data', (data: Buffer) => {
-      console.time("processdata")
-      this.processData(data);
-      console.timeEnd("processdata")
-    })
-    .on('progress', (progress) => {
-      console.log(`FFmpeg Progress: ${progress.percent} frames`);
-    });
+    ffstream
+      .on('data', (data: Buffer) => {
+        console.time('processdata');
+        this.processData(data);
+        console.timeEnd('processdata');
+      })
+      .on('progress', progress => {
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      });
 
-
-    console.log("return first");
+    console.log('return first');
 
     return process;
   }
   private processData(data: Buffer) {
     // Assuming we know the frame size (width * height * 3 for RGB)
     const frameSize = 1080 * 1920 * 3;
-    console.log("this.buffer.length", this.buffer.length);
-    
+    console.log('this.buffer.length', this.buffer.length);
+
     while (this.buffer.length >= frameSize) {
       const frame = this.buffer.subarray(0, frameSize);
       this.imageBuffers.push(frame);
-  
+
       this.hooksWaiting.forEach(hook => hook());
       this.hooksWaiting = [];
-  
+
       this.buffer = this.buffer.subarray(frameSize);
     }
-  
+
     this.buffer = Buffer.concat([this.buffer, data]);
   }
 
   public async popImage() {
-    console.log("ZZZZZ")
-
     //await new Promise(resolve => setTimeout(resolve, 60000));
 
     /*if (this.imageBuffers.length) {
@@ -288,19 +290,16 @@ export class VideoFrameExtractor {
     }*/
 
     if (this.state === 'error') {
-      console.log("fucken error")
       throw new Error('An error occurred while extracting the video frames.');
     }
 
     // If the video is done and there are no more frames to extract, return the last frame.
     if (this.state === 'done' && this.toTime >= this.duration) {
-      console.log("111")
       return this.lastImage;
     }
 
     // If there are more frames to extract, request the next chunk.
     if (this.state === 'done') {
-      console.log("222")
       this.startTime = this.toTime;
       this.toTime = Math.min(
         this.startTime + VideoFrameExtractor.chunkLengthInSeconds,
@@ -313,7 +312,6 @@ export class VideoFrameExtractor {
         );
       }
 
-      console.log("333")
       this.process = this.createFfmpegProcess(
         this.startTime,
         this.toTime,
@@ -325,14 +323,11 @@ export class VideoFrameExtractor {
       this.state = 'processing';
     }
 
-      //console.log("popimage buffer length", this.buffer.length);
-      //if(this.buffer.length >= FRAME_SIZE){
-      //}
+    //console.log("popimage buffer length", this.buffer.length);
+    //if(this.buffer.length >= FRAME_SIZE){
+    //}
 
-    console.log("JOOOOO");
-
-    while(this.bufferOffset < FRAME_SIZE){
-      console.log("waiting, buffer length", this.buffer.length);
+    while (this.bufferOffset < FRAME_SIZE) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
@@ -340,14 +335,11 @@ export class VideoFrameExtractor {
     this.framesProcessed++;
     this.lastImage = image;
     this.buffer.copy(this.buffer, 0, FRAME_SIZE, this.bufferOffset);
-    this.bufferOffset -= FRAME_SIZE;  
-    console.log("returning image");
+    this.bufferOffset -= FRAME_SIZE;
     return image;
+  }
 
-    }
-
-
-    /*return await new Promise<Buffer>(res => {
+  /*return await new Promise<Buffer>(res => {
       this.hooksWaiting.push(() => {
         const image = this.imageBuffers.shift()!;
         this.framesProcessed++;

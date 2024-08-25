@@ -7,8 +7,6 @@ import {
 } from '@revideo/ffmpeg';
 import type {Plugin, WebSocketServer} from 'vite';
 
-let ID = 0;
-
 interface BrowserRequest {
   method: string;
   data: unknown;
@@ -96,14 +94,16 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
             res.end('Method Not Allowed');
             return;
           }
-      
+
           let body = '';
           req.on('data', chunk => (body += chunk));
           req.on('end', async () => {
             try {
               const data = JSON.parse(body);
-              const { frame } = await ffmpegBridge.handleDecodeVideoFrame(data) as any;
-      
+              const {frame} = (await ffmpegBridge.handleDecodeVideoFrame(
+                data,
+              )) as any;
+
               // Send frame data as binary
               res.setHeader('Content-Type', 'application/octet-stream');
               res.end(Buffer.from(frame.buffer));
@@ -113,12 +113,11 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
               res.end('Internal Server Error');
             }
           });
-        }
+        },
       );
     },
   };
 }
-
 
 /**
  * A simple bridge between the FFmpegExporterServer and FFmpegExporterClient.
@@ -194,7 +193,7 @@ export class FFmpegBridge {
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
-  public async handleDecodeVideoFrame (data: {
+  public async handleDecodeVideoFrame(data: {
     id: string;
     filePath: string;
     startTime: number;
@@ -223,16 +222,11 @@ export class FFmpegBridge {
     // If time has not changed, return the last frame
     if (isOldFrame) {
       const frame = extractor!.getLastFrame();
-      const now = new Date();
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
-      console.log("sending frame", ID, `${seconds}.${milliseconds}`);
-      ID++;
       return {
-          frame,
-          width: 1080,
-          height: 1920,  
-        }
+        frame,
+        width: 1080,
+        height: 1920,
+      };
     }
 
     // If the video has skipped back we need to create a new extractor
@@ -266,21 +260,15 @@ export class FFmpegBridge {
     }
 
     // Go to the frame that is closest to the requested time
-    console.time("popimage");
     const frame = await extractor.popImage();
-    console.timeEnd("popimage");
-  
-    const now = new Date();
-    const seconds = now.getSeconds().toString().padStart(2, '0');
-    const milliseconds = now.getMilliseconds().toString().padStart(3, '0');    
-    console.log("sending frame", ID, `${seconds}.${milliseconds}`);
-    ID++;
-  
+
     const width = 1080;
     const height = 1920;
-    
+
     if (!frame || frame.length === 0) {
-      console.warn("Received empty frame, constructing black frame as fallback");
+      console.warn(
+        'Received empty frame, constructing black frame as fallback',
+      );
       const frameSize = width * height * 4;
       const frameBuffer = new Uint8Array(frameSize);
       frameBuffer.fill(0);
@@ -290,10 +278,9 @@ export class FFmpegBridge {
       return {
         frame: Array.from(frameBuffer),
         width: 1080,
-        height: 1920,  
-      }
-  } else {
-      console.log("frame length", frame.length);
+        height: 1920,
+      };
+    } else {
       // Convert the frame buffer to RGBA if it's in RGB format
 
       /*console.time("rgba");
@@ -307,17 +294,17 @@ export class FFmpegBridge {
       console.timeEnd("rgba");
       */
 
-    const frameRGBA = frame;
+      const frameRGBA = frame;
 
       //console.log("ra length", ra.length);
-  
+
       return {
-          frame: frameRGBA,
-          width,
-          height,
-        }
+        frame: frameRGBA,
+        width,
+        height,
+      };
     }
-  };
+  }
 
   private handleRenderFinished = async () => {
     this.videoFrameExtractors.forEach(extractor => extractor.destroy());

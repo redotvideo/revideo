@@ -6,6 +6,7 @@ import * as path from 'path';
 import {ffmpegSettings} from './settings';
 import {
   checkForAudioStream,
+  getSampleRate,
   makeSureFolderExists,
   mergeAudioWithVideo,
   resolvePath,
@@ -129,6 +130,17 @@ async function prepareAudio(
       trimLeft + asset.durationInSeconds,
       trimLeft + (endFrame - startFrame) / fps,
     );
+  const padStart = (asset.startInVideo / fps) * 1000;
+  const assetSampleRate = await getSampleRate(
+    resolvePath(outputDir, asset.src),
+  );
+
+  const padEnd = Math.max(
+    0,
+    (assetSampleRate * (endFrame - startFrame + 1)) / fps -
+      (assetSampleRate * asset.duration) / fps -
+      (assetSampleRate * padStart) / 1000,
+  );
 
   const atempoFilters = calculateAtempoFilters(asset.playbackRate); // atempo filter value must be >=0.5 and <=100. If the value is higher or lower, this function sets multiple atempo filters
   const resolvedPath = resolvePath(outputDir, asset.src);
@@ -137,6 +149,8 @@ async function prepareAudio(
     const audioFilters = [
       ...atempoFilters,
       `atrim=start=${trimLeft}:end=${trimRight}`,
+      `apad=pad_len=${padEnd}`,
+      `adelay=${padStart}|${padStart}|${padStart}`,
       `volume=${asset.volume}`,
     ].join(',');
 
@@ -164,33 +178,20 @@ async function prepareAudio(
 
 async function mergeAudioTracks(
   tempDir: string,
-  audioAssets: {asset: MediaAsset; filename: string}[],
-  fps: number,
+  audioFilenames: string[],
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     const command = ffmpeg();
 
-    audioAssets.forEach(audioAsset => {
-      command.input(audioAsset.filename);
+    audioFilenames.forEach(filename => {
+      command.input(filename);
     });
-
-    const delayFilters = audioAssets.map((audioAsset, i) => {
-      const padStart = (audioAsset.asset.startInVideo / fps) * 1000;
-
-      return `[${i}]adelay=${padStart}|${padStart}|${padStart}[a${i}]`;
-    });
-
-    const audioInputs = audioAssets
-      .map((_, i) => {
-        return `[a${i}]`;
-      })
-      .join('');
-
-    const mixFilter = `${audioInputs}amix=inputs=${audioAssets.length}:duration=longest:normalize=0`;
 
     command
-      .complexFilter([...delayFilters, mixFilter])
+      .complexFilter([
+        `amix=inputs=${audioFilenames.length}:duration=longest,volume=${audioFilenames.length}`,
+      ])
       .outputOptions(['-c:a', 'pcm_s16le'])
       .on('end', () => {
         resolve();
@@ -223,7 +224,7 @@ export async function generateAudio({
   await makeSureFolderExists(fullTempDir);
 
   const assetPositions = getAssetPlacement(assets);
-  const audioAssets: {asset: MediaAsset; filename: string}[] = [];
+  const audioFilenames: string[] = [];
 
   for (const asset of assetPositions) {
     let hasAudioStream = true;
@@ -242,13 +243,15 @@ export async function generateAudio({
         endFrame,
         fps,
       );
-      audioAssets.push({asset, filename});
+      audioFilenames.push(filename);
     }
   }
 
-  if (audioAssets.length > 0) {
-    await mergeAudioTracks(fullTempDir, audioAssets, fps);
+  if (audioFilenames.length > 0) {
+    await mergeAudioTracks(fullTempDir, audioFilenames);
   }
+
+  return audioFilenames;
 }
 
 export async function mergeMedia(

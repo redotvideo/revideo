@@ -17,16 +17,14 @@ export class VideoFrameExtractor {
     0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
   ]);
 
-  private allData: Buffer[] = [];
-
-  private static readonly chunkLengthInSeconds = 45;
+  private static readonly chunkLengthInSeconds = 5;
 
   private readonly ffmpegPath = ffmpegSettings.getFfmpegPath();
 
   public state: VideoFrameExtractorState;
   public filePath: string;
 
-  private buffer: Buffer = Buffer.alloc(FRAME_SIZE * 80);
+  private buffer: Buffer = Buffer.alloc(FRAME_SIZE);
   private bufferOffset: number = 0;
 
   // Images are buffered in memory until they are requested.
@@ -169,9 +167,6 @@ export class VideoFrameExtractor {
       .on('error', err => {
         this.handleError(err);
       })
-      .on('progress', progress => {
-        console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      })
       .on('stderr', stderrLine => {
         console.log(stderrLine);
       })
@@ -182,7 +177,18 @@ export class VideoFrameExtractor {
     const ffstream = process.pipe();
     ffstream
       .on('data', (data: Buffer) => {
-        // buffer overflow
+        this.processData(data);
+        /*data.copy(this.buffer, this.bufferOffset)
+        this.bufferOffset += data.length;
+        if(this.bufferOffset >= FRAME_SIZE){
+          console.log("pushing to image buffer")
+          this.imageBuffers.push(this.buffer.subarray(0, FRAME_SIZE))
+          const temp = this.buffer.subarray(FRAME_SIZE, this.bufferOffset);
+          this.buffer = Buffer.alloc(FRAME_SIZE*2)
+          temp.copy(this.buffer, 0)
+          this.bufferOffset = temp.length;
+        }*/
+        /*// buffer overflow
         if (this.bufferOffset + data.length > FRAME_SIZE * 30) {
           this.buffer
             .subarray(this.bufferOffset - FRAME_SIZE, this.bufferOffset)
@@ -191,8 +197,7 @@ export class VideoFrameExtractor {
         }
 
         data.copy(this.buffer, this.bufferOffset);
-        this.bufferOffset += data.length;
-        //this.buffer = Buffer.concat([this.buffer, data]);
+        this.bufferOffset += data.length;*/
       })
       .on('progress', progress => {
         console.log(`FFmpeg Progress: ${progress.percent} frames`);
@@ -260,34 +265,40 @@ export class VideoFrameExtractor {
 
     return process;
   }
+
   private processData(data: Buffer) {
-    // Assuming we know the frame size (width * height * 3 for RGB)
-    const frameSize = 1080 * 1920 * 3;
-    console.log('this.buffer.length', this.buffer.length);
+    let dataOffset = 0;
 
-    while (this.buffer.length >= frameSize) {
-      const frame = this.buffer.subarray(0, frameSize);
-      this.imageBuffers.push(frame);
+    while (dataOffset < data.length) {
+      const remainingSpace = FRAME_SIZE - this.bufferOffset;
+      const chunkSize = Math.min(remainingSpace, data.length - dataOffset);
 
-      this.hooksWaiting.forEach(hook => hook());
-      this.hooksWaiting = [];
+      data.copy(
+        this.buffer,
+        this.bufferOffset,
+        dataOffset,
+        dataOffset + chunkSize,
+      );
+      this.bufferOffset += chunkSize;
+      dataOffset += chunkSize;
 
-      this.buffer = this.buffer.subarray(frameSize);
+      if (this.bufferOffset === FRAME_SIZE) {
+        // We have a complete frame
+        this.imageBuffers.push(Buffer.from(this.buffer)); // Create a copy
+        this.bufferOffset = 0; // Reset buffer for next frame
+      }
     }
-
-    this.buffer = Buffer.concat([this.buffer, data]);
   }
 
   public async popImage() {
     //await new Promise(resolve => setTimeout(resolve, 60000));
 
-    /*if (this.imageBuffers.length) {
-      console.log("pop in if statement");
+    if (this.imageBuffers.length) {
       const image = this.imageBuffers.shift()!;
       this.framesProcessed++;
       this.lastImage = image;
       return image;
-    }*/
+    }
 
     if (this.state === 'error') {
       throw new Error('An error occurred while extracting the video frames.');
@@ -323,11 +334,20 @@ export class VideoFrameExtractor {
       this.state = 'processing';
     }
 
+    while (this.imageBuffers.length < 1) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    const image = this.imageBuffers.shift()!;
+    this.framesProcessed++;
+    this.lastImage = image;
+    return image;
+
     //console.log("popimage buffer length", this.buffer.length);
     //if(this.buffer.length >= FRAME_SIZE){
     //}
 
-    while (this.bufferOffset < FRAME_SIZE) {
+    /*while (this.bufferOffset < FRAME_SIZE) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
@@ -337,9 +357,9 @@ export class VideoFrameExtractor {
     this.buffer.copy(this.buffer, 0, FRAME_SIZE, this.bufferOffset);
     this.bufferOffset -= FRAME_SIZE;
     return image;
-  }
+  }*/
 
-  /*return await new Promise<Buffer>(res => {
+    /*return await new Promise<Buffer>(res => {
       this.hooksWaiting.push(() => {
         const image = this.imageBuffers.shift()!;
         this.framesProcessed++;
@@ -347,6 +367,7 @@ export class VideoFrameExtractor {
         res(image);
       });
     });*/
+  }
 
   private handleClose(code: number) {
     this.state = code === 0 ? 'done' : 'error';

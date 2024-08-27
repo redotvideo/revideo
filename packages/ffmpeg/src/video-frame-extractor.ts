@@ -1,7 +1,7 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as ffmpeg from 'fluent-ffmpeg';
 import {ffmpegSettings} from './settings';
-import {getVideoCodec} from './utils';
+import {getVideoCodec, getVideoDimensions, getVideoMetadata} from './utils';
 
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
 
@@ -9,25 +9,18 @@ type VideoFrameExtractorState = 'processing' | 'done' | 'error';
  * Walks through a video file and extracts frames.
  */
 export class VideoFrameExtractor {
-  private static readonly pngSignature = Buffer.from([
-    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
-  ]);
-  private static readonly pngEOF = Buffer.from([
-    0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
-  ]);
-
-  private static readonly chunkLengthInSeconds = 45;
+  private static readonly chunkLengthInSeconds = 5;
 
   private readonly ffmpegPath = ffmpegSettings.getFfmpegPath();
 
   public state: VideoFrameExtractorState;
   public filePath: string;
 
-  private buffer: Buffer = Buffer.alloc(0);
+  private buffer: Buffer = Buffer.alloc(8294400);
+  private bufferOffset: number = 0;
 
   // Images are buffered in memory until they are requested.
   private imageBuffers: Buffer[] = [];
-  private hooksWaiting: (() => any)[] = [];
 
   private lastImage: Buffer | null = null;
 
@@ -37,6 +30,9 @@ export class VideoFrameExtractor {
   private fps: number;
   private framesProcessed: number = 0;
 
+  private width: number = 0;
+  private height: number = 0;
+  private frameSize: number = 0;
   private codec: string | null = null;
   private process: ffmpeg.FfmpegCommand | null = null;
   private terminated: boolean = false;
@@ -55,8 +51,15 @@ export class VideoFrameExtractor {
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
 
+    this.width = 1080;
+    this.height = 1920;
+    this.frameSize = 1080*1920*4;
+    this.buffer = Buffer.alloc(1080*1920*4);
+
     if (this.startTime >= this.duration) {
+      //getVideoCodec(this.filePath).then(({width, height, codec}) => {
       getVideoCodec(this.filePath).then(codec => {
+        this.buffer = Buffer.alloc(this.frameSize);    
         this.process = this.createFfmpegProcessToExtractFirstFrame(
           filePath,
           codec,
@@ -65,8 +68,16 @@ export class VideoFrameExtractor {
       return;
     }
 
+    console.log("pppppppppppp")
+
+    //getVideoMetadata(this.filePath).then(({width, height, codec}) => {
     getVideoCodec(this.filePath).then(codec => {
+      console.log("RAAAAAAaaaaa")
       this.codec = codec;
+      /*this.width = width;
+      this.height = height;
+      this.frameSize = 1080*1920*4;
+      this.buffer = Buffer.alloc(this.frameSize);  */
 
       // Create a new ffmpeg process to extract the first 10 seconds of the video.
       this.process = this.createFfmpegProcess(
@@ -91,6 +102,14 @@ export class VideoFrameExtractor {
     return this.lastImage;
   }
 
+  public getWidth() {
+    return this.width;
+  }
+
+  public getHeight() {
+    return this.height;
+  }
+
   private getEndTime(startTime: number) {
     return Math.min(
       startTime + VideoFrameExtractor.chunkLengthInSeconds,
@@ -106,7 +125,7 @@ export class VideoFrameExtractor {
     const inputOptions = [];
     const outputOptions = [];
 
-    inputOptions.push('-loglevel', ffmpegSettings.getLogLevel());
+    //inputOptions.push('-loglevel', "verbose");
 
     if (range) {
       inputOptions.push(
@@ -126,8 +145,8 @@ export class VideoFrameExtractor {
       outputOptions.push('-vframes', '1');
     }
 
-    outputOptions.push('-f', 'image2pipe');
-    outputOptions.push('-vcodec', 'png');
+    outputOptions.push('-f', 'rawvideo');
+    outputOptions.push('-pix_fmt', 'rgba');
 
     return {inputOptions, outputOptions};
   }
@@ -145,11 +164,20 @@ export class VideoFrameExtractor {
       fps,
     );
 
+    console.log('creating process', this.ffmpegPath);
+
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
+      .on('start', command => {
+        console.log('FFmpeg command:', command);
+      })
+      .on('progress', progress => {
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      })
       .on('end', () => {
+        console.log("ENDDDDD")
         this.handleClose(0);
       })
       .on('error', err => {
@@ -163,9 +191,13 @@ export class VideoFrameExtractor {
       });
 
     const ffstream = process.pipe();
-    ffstream.on('data', (data: Buffer) => {
-      this.processData(data);
-    });
+    ffstream
+      .on('data', (data: Buffer) => {
+        this.processData(data);
+      })
+      .on('progress', progress => {
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      });
 
     return process;
   }
@@ -189,10 +221,18 @@ export class VideoFrameExtractor {
       undefined,
     );
 
+    console.log('\nCREATE FIRST\n');
+
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
+      .on('start', command => {
+        console.log('FFmpeg command:', command);
+      })
+      .on('progress', progress => {
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      })
       .on('end', () => {
         this.handleClose(0);
       })
@@ -207,40 +247,54 @@ export class VideoFrameExtractor {
       });
 
     const ffstream = process.pipe();
-    ffstream.on('data', (data: Buffer) => {
-      this.processData(data);
-    });
+    ffstream
+      .on('data', (data: Buffer) => {
+        console.time('processdata');
+        this.processData(data);
+        console.timeEnd('processdata');
+      })
+      .on('progress', progress => {
+        console.log(`FFmpeg Progress: ${progress.percent} frames`);
+      });
+
+    console.log('return first');
 
     return process;
   }
+
   private processData(data: Buffer) {
-    this.buffer = Buffer.concat([this.buffer, data]);
+    let dataOffset = 0;
 
-    let start = 0;
-    let end;
+    if(this.frameSize !== 8294400){
+      console.log("\n###IN PROCESS DATA####\n frameSize", this.frameSize)
+    }
 
-    const startSignature = VideoFrameExtractor.pngSignature;
-    const endSignature = VideoFrameExtractor.pngEOF;
+    while (dataOffset < data.length) {
+      const remainingSpace = this.frameSize - this.bufferOffset;
+      const chunkSize = Math.min(remainingSpace, data.length - dataOffset);
 
-    while (
-      (start = this.buffer.indexOf(startSignature, start)) !== -1 &&
-      (end = this.buffer.indexOf(endSignature, start)) !== -1
-    ) {
-      end += endSignature.length;
-      const frame = this.buffer.subarray(start, end);
+      data.copy(
+        this.buffer,
+        this.bufferOffset,
+        dataOffset,
+        dataOffset + chunkSize,
+      );
+      this.bufferOffset += chunkSize;
+      dataOffset += chunkSize;
 
-      this.imageBuffers.push(frame);
-
-      this.hooksWaiting.forEach(hook => hook());
-      this.hooksWaiting = [];
-
-      this.buffer = this.buffer.subarray(end);
-      start = 0;
+      if (this.bufferOffset === this.frameSize) {
+        // We have a complete frame
+        this.imageBuffers.push(Buffer.from(this.buffer)); // Create a copy
+        this.bufferOffset = 0; // Reset buffer for next frame
+      }
     }
   }
 
   public async popImage() {
+    console.log("popimage");
+    console.log("this.state", this.state);
     if (this.imageBuffers.length) {
+      console.log("shifted image returned");
       const image = this.imageBuffers.shift()!;
       this.framesProcessed++;
       this.lastImage = image;
@@ -281,14 +335,18 @@ export class VideoFrameExtractor {
       this.state = 'processing';
     }
 
-    return await new Promise<Buffer>(res => {
-      this.hooksWaiting.push(() => {
-        const image = this.imageBuffers.shift()!;
-        this.framesProcessed++;
-        this.lastImage = image;
-        res(image);
-      });
-    });
+    while (this.imageBuffers.length < 1) {
+      console.log("waiting");
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    console.log("returning after waiting");
+    console.log("truly");
+    const image = this.imageBuffers.shift()!;
+    this.framesProcessed++;
+    this.lastImage = image;
+    return image;
+
   }
 
   private handleClose(code: number) {
@@ -328,6 +386,7 @@ export class VideoFrameExtractor {
 
   public destroy() {
     this.terminated = true;
+    console.log("DESTROYYYYYAA");
     this.process?.kill('SIGTERM');
   }
 }

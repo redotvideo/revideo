@@ -106,6 +106,28 @@ export async function getVideoDuration(filePath: string): Promise<number> {
   });
 }
 
+export async function getVideoDimensions(filePath: string): Promise<{width: number, height: number}> {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        console.error('Error getting video dimensions:', err);
+        reject(new Error('Failed to get video dimensions'));
+        return;
+      }
+
+      const videoStream = metadata.streams.find(stream => stream.codec_type === 'video');
+      if (videoStream && videoStream.width && videoStream.height) {
+        resolve({
+          width: videoStream.width,
+          height: videoStream.height
+        });
+      } else {
+        reject(new Error('Could not find video dimensions in metadata'));
+      }
+    });
+  });
+}
+
 export async function doesFileExist(filePath: string): Promise<boolean> {
   try {
     await fs.promises.access(filePath, fs.constants.F_OK);
@@ -190,6 +212,34 @@ export async function getVideoCodec(filePath: string) {
         resolve(videoStream.codec_name);
       } else {
         reject(new Error('No video stream found'));
+      }
+    });
+  });
+}
+
+export async function getVideoMetadata(filePath: string): Promise<{ codec: string; width: number; height: number }> {
+  ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
+
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const videoStream = metadata.streams.find(s => s.codec_type === 'video');
+      if (videoStream && videoStream.codec_name && videoStream.width && videoStream.height) {
+        console.log("result of metadata", {
+          codec: videoStream.codec_name,
+          width: videoStream.width,
+          height: videoStream.height
+        })
+        resolve({
+          codec: videoStream.codec_name,
+          width: videoStream.width,
+          height: videoStream.height
+        });
+      } else {
+        reject(new Error('Unable to retrieve complete video information'));
       }
     });
   });

@@ -21,7 +21,7 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
     name: 'revideo/ffmpeg',
 
     configureServer(server) {
-      new FFmpegBridge(server.ws, {output});
+      const ffmpegBridge = new FFmpegBridge(server.ws, {output});
 
       server.middlewares.use(
         '/audio-processing/generate-audio',
@@ -85,6 +85,38 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
           }
         },
       );
+
+      server.middlewares.use(
+        '/revideo-ffmpeg-decoder/video-frame',
+        async (req, res) => {
+          if (req.method !== 'POST') {
+            res.statusCode = 405;
+            res.end('Method Not Allowed');
+            return;
+          }
+      
+          let body = '';
+          req.on('data', chunk => (body += chunk));
+          req.on('end', async () => {
+            console.log("received getframe request", JSON.parse(body));
+            try {
+              const data = JSON.parse(body);
+              const {frame, width, height} = await ffmpegBridge.handleDecodeVideoFrame(data);
+      
+              // Send frame dimensions as headers
+              res.setHeader('X-Frame-Width', width.toString());
+              res.setHeader('X-Frame-Height', height.toString());
+              
+              res.setHeader('Content-Type', 'application/octet-stream');
+              res.end(Buffer.from(frame as Buffer));
+            } catch (e) {
+              console.error(e);
+              res.statusCode = 500;
+              res.end('Internal Server Error');
+            }
+          });
+        },
+      );
     },
   };
 }
@@ -104,8 +136,6 @@ export class FFmpegBridge {
     private readonly config: ExporterPluginConfig,
   ) {
     ws.on('revideo:ffmpeg-exporter', this.handleMessage);
-    ws.on('revideo:ffmpeg-decoder:video-frame', this.handleDecodeVideoFrame);
-    ws.on('revideo:ffmpeg-decoder:finished', this.handleRenderFinished);
   }
 
   private handleMessage = async ({method, data}: BrowserRequest) => {
@@ -163,7 +193,13 @@ export class FFmpegBridge {
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
-  private handleDecodeVideoFrame = async ({data}: BrowserRequest) => {
+  public async handleDecodeVideoFrame(data: {
+    id: string;
+    filePath: string;
+    startTime: number;
+    duration: number;
+    fps: number;
+  }) {
     const typedData = data as {
       id: string;
       filePath: string;
@@ -186,13 +222,11 @@ export class FFmpegBridge {
     // If time has not changed, return the last frame
     if (isOldFrame) {
       const frame = extractor!.getLastFrame();
-      this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
-        status: 'success',
-        data: {
-          frame,
-        },
-      });
-      return;
+      return {
+        frame,
+        width: extractor!.getWidth(),
+        height: extractor!.getHeight()
+      };
     }
 
     // If the video has skipped back we need to create a new extractor
@@ -200,6 +234,8 @@ export class FFmpegBridge {
       extractor &&
       typedData.startTime + frameDuration < extractor.getTime()
     ) {
+      console.log("destroy case UNNNNNNOOOOOO")
+      console.log("reasons", typedData.startTime, frameDuration, extractor.getTime());
       extractor.destroy();
       this.videoFrameExtractors.delete(id);
       extractor = undefined;
@@ -210,12 +246,14 @@ export class FFmpegBridge {
       extractor &&
       typedData.startTime > extractor.getTime() + frameDuration
     ) {
+      console.log("destroy case DOOOOOOOOOOS")
       extractor.destroy();
       this.videoFrameExtractors.delete(id);
       extractor = undefined;
     }
 
     if (!extractor) {
+      console.log("no extractor, creating new");
       extractor = new VideoFrameExtractor(
         typedData.filePath,
         typedData.startTime,
@@ -228,15 +266,15 @@ export class FFmpegBridge {
     // Go to the frame that is closest to the requested time
     const frame = await extractor.popImage();
 
-    this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
-      status: 'success',
-      data: {
-        frame,
-      },
-    });
-  };
+    return {
+      frame: frame,
+      width: extractor!.getWidth(),
+      height: extractor!.getHeight()
+    };
+  }
 
   private handleRenderFinished = async () => {
+    console.log("destroy case TREEEEEES")
     this.videoFrameExtractors.forEach(extractor => extractor.destroy());
     this.videoFrameExtractors.clear();
   };

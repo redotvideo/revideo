@@ -28,37 +28,40 @@ export class ImageCommunication {
     duration: number,
     fps: number,
   ) {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-      if (!import.meta.hot) {
-        reject('FfmpegVideoFrame can only be used with HMR.');
-        return;
-      }
-
-      function handler(event: MessageEvent) {
-        const image = new Image();
-
-        const uint8Array = new Uint8Array(event.data.frame.data);
-        const blob = new Blob([uint8Array], {type: 'image/png'});
-        const url = URL.createObjectURL(blob);
-
-        image.src = url;
-
-        image.onload = () => {
-          resolve(image);
-        };
-      }
-
-      this.nextFrameHandlers.push(handler);
-
-      import.meta.hot.send('revideo:ffmpeg-decoder:video-frame', {
-        data: {
-          id: id,
-          filePath: src,
-          startTime: time,
-          duration,
-          fps,
-        },
-      });
+    console.log("getframe at time", time);
+    const response = await fetch('/revideo-ffmpeg-decoder/video-frame', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+        filePath: src,
+        startTime: time,
+        duration,
+        fps,
+      }),
     });
+
+    if (!response.ok) {
+      console.log("received BAAAAAD response to getframe for ", time)
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    console.log("received ok response to getframe for ", time)
+
+    const width = parseInt(response.headers.get('X-Frame-Width') || '1080', 10);
+    const height = parseInt(response.headers.get('X-Frame-Height') || '1920', 10);
+
+    const arrayBuffer = await response.arrayBuffer();
+
+    const imageData = new ImageData(
+      new Uint8ClampedArray(arrayBuffer),
+      width,
+      height,
+    );
+    
+    const imageBitmap = await createImageBitmap(imageData);
+    return imageBitmap;
   }
 }

@@ -197,7 +197,7 @@ export class Video extends Media {
     return video;
   }
 
-  protected lastFrame: HTMLImageElement | null = null;
+  protected lastFrame: ImageBitmap | null = null;
 
   protected async webcodecSeekedVideo(): Promise<CanvasImageSource> {
     const video = this.video();
@@ -213,7 +213,7 @@ export class Video extends Media {
     return getFrame(this.key, video.src, time, fps);
   }
 
-  protected async ffmpegSeekedVideo(): Promise<HTMLImageElement> {
+  protected async ffmpegSeekedVideo(): Promise<ImageBitmap> {
     const video = this.video();
     const time = this.clampTime(this.time());
     const duration = this.getDuration();
@@ -230,6 +230,7 @@ export class Video extends Media {
       throw new Error('ServerSeekedVideo can only be used with HMR.');
     }
 
+    console.log("in Video.ts, requesting frame at", time);
     const frame = await Video.imageCommunication.getFrame(
       this.key,
       video.src,

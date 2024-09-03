@@ -19,7 +19,6 @@ export function scenesPlugin(): Plugin {
       /* language=typescript */
       return `\
 import description from './${sceneFile}';
-description.name = '${name}';
 export default description;
 `;
     },

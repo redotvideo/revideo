@@ -4,9 +4,11 @@ import {Scene2D} from './Scene2D';
 
 export function makeScene2D(
   runner: ThreadGeneratorFactory<View2D>,
+  name: string,
 ): DescriptionOf<Scene2D> {
   return {
     klass: Scene2D,
+    name,
     config: runner,
     stack: new Error().stack,
     plugins: ['@revideo/2d/editor'],

@@ -20,4 +20,4 @@ export default makeScene2D(function* (view) {
   rect().fill(circleFill);
   yield* all(rect().ripple(1));
   yield* waitFor(0.3);
-});
+}, 'scene 1');

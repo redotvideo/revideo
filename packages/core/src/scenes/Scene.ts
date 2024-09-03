@@ -39,6 +39,10 @@ export interface SceneConstructor<T> {
  */
 export interface SceneDescription<T = unknown> {
   /**
+   * Name of the scene.
+   */
+  name: string;
+  /**
    * The class used to instantiate the scene.
    */
   klass: SceneConstructor<T>;
@@ -62,7 +66,6 @@ export interface SceneDescription<T = unknown> {
  * @typeParam T - The type of the configuration object.
  */
 export interface FullSceneDescription<T = unknown> extends SceneDescription<T> {
-  name: string;
   size: Vector2;
   resolutionScale: number;
   variables: Variables;

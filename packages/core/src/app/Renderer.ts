@@ -1,7 +1,6 @@
 import {EventDispatcher, ValueDispatcher} from '../events';
 import type {Exporter} from '../exporter';
 import type {Scene} from '../scenes';
-import {ReadOnlyTimeEvents} from '../scenes/timeEvents';
 import {clampRemap} from '../tweening';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
@@ -90,12 +89,10 @@ export class Renderer {
     for (const description of project.scenes) {
       const scene = new description.klass({
         ...description,
-        meta: description.meta.clone(),
         logger: this.project.logger,
         playback: this.status,
         size: new Vector2(1920, 1080),
         resolutionScale: 1,
-        timeEventsClass: ReadOnlyTimeEvents,
         sharedWebGLContext: this.sharedWebGLContext,
         experimentalFeatures: project.experimentalFeatures,
       });
@@ -349,7 +346,6 @@ export class Renderer {
         size: settings.size,
         resolutionScale: settings.resolutionScale,
       });
-      scene.meta.set(description.meta.get());
       scene.variables.updateSignals(this.project.variables ?? {});
     }
   }

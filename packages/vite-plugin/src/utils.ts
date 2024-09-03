@@ -8,16 +8,21 @@ export interface Projects {
   lookup: Map<string, ProjectData>;
 }
 
+// TODO: remove
 export async function createMeta(metaPath: string) {
-  if (!process.env.DONT_WRITE_TO_META_FILES) {
-    if (!fs.existsSync(metaPath)) {
-      await fs.promises.writeFile(
-        metaPath,
-        JSON.stringify({version: 0}, undefined, 2),
-        'utf8',
-      );
-    }
+  if (process.env.DONT_WRITE_TO_META_FILES) {
+    return;
   }
+
+  if (fs.existsSync(metaPath)) {
+    return;
+  }
+
+  await fs.promises.writeFile(
+    metaPath,
+    JSON.stringify({version: 0}, undefined, 2),
+    'utf8',
+  );
 }
 
 export function getProjects(project: string | string[]): Projects {

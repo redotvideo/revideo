@@ -13,12 +13,9 @@ import type {Plugin} from '../plugin';
 import type {SignalValue} from '../signals';
 import type {Vector2} from '../types';
 import type {LifecycleEvents} from './LifecycleEvents';
-import type {Random} from './Random';
-import type {SceneMetadata} from './SceneMetadata';
 import type {Shaders} from './Shaders';
 import type {Slides} from './Slides';
 import type {Variables} from './Variables';
-import type {TimeEvents} from './timeEvents';
 
 /**
  * The constructor used when creating new scenes.
@@ -57,7 +54,6 @@ export interface SceneDescription<T = unknown> {
    * A list of plugins to include in the project.
    */
   plugins?: (Plugin | string)[];
-  meta: SceneMetadata;
 }
 
 /**
@@ -73,7 +69,6 @@ export interface FullSceneDescription<T = unknown> extends SceneDescription<T> {
   playback: PlaybackStatus;
   logger: Logger;
   onReplaced: ValueDispatcher<FullSceneDescription<T>>;
-  timeEventsClass: new (scene: Scene) => TimeEvents;
   sharedWebGLContext: SharedWebGLContext;
   experimentalFeatures?: boolean;
 }
@@ -148,7 +143,6 @@ export interface Scene<T = unknown> {
    * Reference to the project.
    */
   readonly playback: PlaybackStatus;
-  readonly timeEvents: TimeEvents;
   /**
    * @experimental
    */
@@ -156,8 +150,6 @@ export interface Scene<T = unknown> {
   readonly slides: Slides;
   readonly logger: Logger;
   readonly variables: Variables;
-  readonly random: Random;
-  readonly meta: SceneMetadata;
 
   creationStack?: string;
 

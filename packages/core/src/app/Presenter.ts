@@ -1,6 +1,5 @@
 import {ValueDispatcher} from '../events';
 import type {Scene, Slide} from '../scenes';
-import {ReadOnlyTimeEvents} from '../scenes/timeEvents';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
 import type {Logger} from './Logger';
@@ -85,12 +84,10 @@ export class Presenter {
     for (const description of project.scenes) {
       const scene = new description.klass({
         ...description,
-        meta: description.meta.clone(),
         logger: this.logger,
         playback: this.status,
         size: new Vector2(1920, 1080),
         resolutionScale: 1,
-        timeEventsClass: ReadOnlyTimeEvents,
         sharedWebGLContext: this.sharedWebGLContext,
         experimentalFeatures: project.experimentalFeatures,
       });
@@ -196,7 +193,6 @@ export class Presenter {
         size: settings.size,
         resolutionScale: settings.resolutionScale,
       });
-      scene.meta.set(description.meta.get());
       scene.variables.updateSignals(this.project.variables ?? {});
     }
   }

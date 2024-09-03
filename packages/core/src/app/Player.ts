@@ -5,7 +5,6 @@ import {
 } from '../events';
 import {AudioManager} from '../media';
 import {Scene} from '../scenes';
-import {EditableTimeEvents} from '../scenes/timeEvents';
 import {clamp} from '../tweening';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
@@ -162,7 +161,6 @@ export class Player {
         logger: this.project.logger,
         size: this.size,
         resolutionScale: this.resolutionScale,
-        timeEventsClass: EditableTimeEvents,
         sharedWebGLContext: this.sharedWebGLContext,
         experimentalFeatures: project.experimentalFeatures,
       });

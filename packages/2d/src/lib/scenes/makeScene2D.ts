@@ -1,8 +1,4 @@
-import {
-  createSceneMetadata,
-  DescriptionOf,
-  ThreadGeneratorFactory,
-} from '@revideo/core';
+import {DescriptionOf, ThreadGeneratorFactory} from '@revideo/core';
 import type {View2D} from '../components';
 import {Scene2D} from './Scene2D';
 
@@ -13,7 +9,6 @@ export function makeScene2D(
     klass: Scene2D,
     config: runner,
     stack: new Error().stack,
-    meta: createSceneMetadata(),
     plugins: ['@revideo/2d/editor'],
   };
 }

@@ -1,6 +1,6 @@
 import type {Logger} from '../app/Logger';
 import type {Project} from '../app/Project';
-import type {RendererSettings} from '../app/Renderer';
+import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {FileTypes} from '../app/presets';
 import {EventDispatcher} from '../events';
 import {
@@ -13,6 +13,7 @@ import {
 import {clamp} from '../tweening';
 import {CanvasOutputMimeType} from '../types';
 import type {Exporter} from './Exporter';
+import {download} from './download-videos';
 
 const EXPORT_FRAME_LIMIT = 256;
 const EXPORT_RETRY_DELAY = 1000;
@@ -119,6 +120,10 @@ export class ImageExporter implements Exporter {
         groupByScene: this.groupByScene,
       });
     }
+  }
+
+  public async downloadVideos(assets: AssetInfo[][]): Promise<void> {
+    await download(assets);
   }
 
   public async stop() {

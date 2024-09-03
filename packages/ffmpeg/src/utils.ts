@@ -106,7 +106,9 @@ export async function getVideoDuration(filePath: string): Promise<number> {
   });
 }
 
-export async function getVideoDimensions(filePath: string): Promise<{width: number, height: number}> {
+export async function getVideoDimensions(
+  filePath: string,
+): Promise<{width: number; height: number}> {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, metadata) => {
       if (err) {
@@ -115,11 +117,13 @@ export async function getVideoDimensions(filePath: string): Promise<{width: numb
         return;
       }
 
-      const videoStream = metadata.streams.find(stream => stream.codec_type === 'video');
+      const videoStream = metadata.streams.find(
+        stream => stream.codec_type === 'video',
+      );
       if (videoStream && videoStream.width && videoStream.height) {
         resolve({
           width: videoStream.width,
-          height: videoStream.height
+          height: videoStream.height,
         });
       } else {
         reject(new Error('Could not find video dimensions in metadata'));
@@ -217,7 +221,9 @@ export async function getVideoCodec(filePath: string) {
   });
 }
 
-export async function getVideoMetadata(filePath: string): Promise<{ codec: string; width: number; height: number }> {
+export async function getVideoMetadata(
+  filePath: string,
+): Promise<{codec: string; width: number; height: number}> {
   ffmpeg.setFfprobePath(ffmpegSettings.getFfprobePath());
 
   return new Promise((resolve, reject) => {
@@ -227,16 +233,16 @@ export async function getVideoMetadata(filePath: string): Promise<{ codec: strin
         return;
       }
       const videoStream = metadata.streams.find(s => s.codec_type === 'video');
-      if (videoStream && videoStream.codec_name && videoStream.width && videoStream.height) {
-        console.log("result of metadata", {
-          codec: videoStream.codec_name,
-          width: videoStream.width,
-          height: videoStream.height
-        })
+      if (
+        videoStream &&
+        videoStream.codec_name &&
+        videoStream.width &&
+        videoStream.height
+      ) {
         resolve({
           codec: videoStream.codec_name,
           width: videoStream.width,
-          height: videoStream.height
+          height: videoStream.height,
         });
       } else {
         reject(new Error('Unable to retrieve complete video information'));

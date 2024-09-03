@@ -31,6 +31,7 @@ export interface AssetInfo {
   volume: number;
   currentTime: number;
   duration: number;
+  decoder?: string | null;
 }
 
 export enum RendererState {
@@ -275,6 +276,10 @@ export class Renderer {
       );
     }
 
+    if (this.exporter && this.exporter.downloadVideos) {
+      await this.exporter.downloadVideos(mediaByFrames);
+    }
+
     // Main rendering loop
     await this.playback.seek(from);
     try {
@@ -313,10 +318,6 @@ export class Renderer {
     }
 
     await this.exporter.stop?.(result);
-
-    if (import.meta.hot) {
-      import.meta.hot.send('revideo:ffmpeg-decoder:finished', {});
-    }
 
     // Only merge media when rendering images was actually successful.
     if (

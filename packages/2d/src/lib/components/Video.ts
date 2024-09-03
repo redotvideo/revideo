@@ -230,7 +230,6 @@ export class Video extends Media {
       throw new Error('ServerSeekedVideo can only be used with HMR.');
     }
 
-    console.log("in Video.ts, requesting frame at", time);
     const frame = await Video.imageCommunication.getFrame(
       this.key,
       video.src,

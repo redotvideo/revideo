@@ -5,6 +5,7 @@ import {
   generateAudio,
   mergeMedia,
 } from '@revideo/ffmpeg';
+import * as fs from 'fs/promises';
 import type {Plugin, WebSocketServer} from 'vite';
 
 interface BrowserRequest {
@@ -94,25 +95,76 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
             res.end('Method Not Allowed');
             return;
           }
-      
+
           let body = '';
           req.on('data', chunk => (body += chunk));
           req.on('end', async () => {
-            console.log("received getframe request", JSON.parse(body));
             try {
               const data = JSON.parse(body);
-              const {frame, width, height} = await ffmpegBridge.handleDecodeVideoFrame(data);
-      
+              const {frame, width, height} =
+                await ffmpegBridge.handleDecodeVideoFrame(data);
+
               // Send frame dimensions as headers
               res.setHeader('X-Frame-Width', width.toString());
               res.setHeader('X-Frame-Height', height.toString());
-              
+
               res.setHeader('Content-Type', 'application/octet-stream');
               res.end(Buffer.from(frame as Buffer));
             } catch (e) {
               console.error(e);
               res.statusCode = 500;
               res.end('Internal Server Error');
+            }
+          });
+        },
+      );
+
+      server.middlewares.use(
+        '/revideo-ffmpeg-decoder/finished',
+        async (req, res) => {
+          if (req.method !== 'POST') {
+            res.statusCode = 405;
+            res.end('Method Not Allowed');
+            return;
+          }
+
+          try {
+            await ffmpegBridge.handleRenderFinished();
+            res.statusCode = 200;
+            res.end('OK');
+          } catch (e) {
+            console.error(e);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          }
+        },
+      );
+
+      server.middlewares.use(
+        '/revideo-ffmpeg-decoder/download-video-chunks',
+        async (req, res) => {
+          if (req.method !== 'POST') {
+            res.statusCode = 405;
+            res.end('Method Not Allowed');
+            return;
+          }
+
+          let body = '';
+          req.on('data', chunk => (body += chunk));
+          req.on('end', async () => {
+            try {
+              const videoDurations = JSON.parse(body);
+              const downloadedPaths =
+                await ffmpegBridge.handleDownloadVideoChunks(videoDurations);
+
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({success: true, paths: downloadedPaths}));
+            } catch (e) {
+              console.error(e);
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({success: false, error: e}));
             }
           });
         },
@@ -193,6 +245,15 @@ export class FFmpegBridge {
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
+  public async handleDownloadVideoChunks(
+    videoDurations: {src: string; startTime: number; endTime: number}[],
+  ) {
+    const downloadPromises = videoDurations.map(({src, startTime, endTime}) =>
+      VideoFrameExtractor.downloadVideoChunk(src, startTime, endTime),
+    );
+    await Promise.all(downloadPromises);
+  }
+
   public async handleDecodeVideoFrame(data: {
     id: string;
     filePath: string;
@@ -225,7 +286,7 @@ export class FFmpegBridge {
       return {
         frame,
         width: extractor!.getWidth(),
-        height: extractor!.getHeight()
+        height: extractor!.getHeight(),
       };
     }
 
@@ -234,8 +295,6 @@ export class FFmpegBridge {
       extractor &&
       typedData.startTime + frameDuration < extractor.getTime()
     ) {
-      console.log("destroy case UNNNNNNOOOOOO")
-      console.log("reasons", typedData.startTime, frameDuration, extractor.getTime());
       extractor.destroy();
       this.videoFrameExtractors.delete(id);
       extractor = undefined;
@@ -246,19 +305,17 @@ export class FFmpegBridge {
       extractor &&
       typedData.startTime > extractor.getTime() + frameDuration
     ) {
-      console.log("destroy case DOOOOOOOOOOS")
       extractor.destroy();
       this.videoFrameExtractors.delete(id);
       extractor = undefined;
     }
 
     if (!extractor) {
-      console.log("no extractor, creating new");
       extractor = new VideoFrameExtractor(
-        typedData.filePath,
-        typedData.startTime,
-        typedData.fps,
-        typedData.duration,
+        data.filePath,
+        data.startTime,
+        data.fps,
+        data.duration,
       );
       this.videoFrameExtractors.set(id, extractor);
     }
@@ -269,13 +326,20 @@ export class FFmpegBridge {
     return {
       frame: frame,
       width: extractor!.getWidth(),
-      height: extractor!.getHeight()
+      height: extractor!.getHeight(),
     };
   }
 
-  private handleRenderFinished = async () => {
-    console.log("destroy case TREEEEEES")
-    this.videoFrameExtractors.forEach(extractor => extractor.destroy());
+  public async handleRenderFinished() {
+    this.videoFrameExtractors.forEach(extractor => {
+      extractor.destroy();
+      const localFile = VideoFrameExtractor.downloadedVideoMap.get(
+        extractor.filePath,
+      )?.localPath;
+      if (localFile) {
+        fs.unlink(localFile);
+      }
+    });
     this.videoFrameExtractors.clear();
-  };
+  }
 }

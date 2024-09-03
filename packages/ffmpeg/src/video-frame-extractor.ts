@@ -1,7 +1,11 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as ffmpeg from 'fluent-ffmpeg';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import {v4 as uuidv4} from 'uuid';
 import {ffmpegSettings} from './settings';
-import {getVideoCodec, getVideoDimensions, getVideoMetadata} from './utils';
+import {getVideoMetadata} from './utils';
 
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
 
@@ -15,16 +19,17 @@ export class VideoFrameExtractor {
 
   public state: VideoFrameExtractorState;
   public filePath: string;
+  private downloadedFilePath: string;
 
-  private buffer: Buffer = Buffer.alloc(8294400);
+  private buffer: Buffer = Buffer.alloc(0);
   private bufferOffset: number = 0;
 
   // Images are buffered in memory until they are requested.
   private imageBuffers: Buffer[] = [];
-
   private lastImage: Buffer | null = null;
 
   private startTime: number;
+  private startTimeOffset: number;
   private duration: number;
   private toTime: number;
   private fps: number;
@@ -37,6 +42,11 @@ export class VideoFrameExtractor {
   private process: ffmpeg.FfmpegCommand | null = null;
   private terminated: boolean = false;
 
+  public static downloadedVideoMap: Map<
+    string,
+    {localPath: string; startTimeOffset: number}
+  > = new Map();
+
   public constructor(
     filePath: string,
     startTime: number,
@@ -45,48 +55,88 @@ export class VideoFrameExtractor {
   ) {
     this.state = 'processing';
     this.filePath = filePath;
+    this.downloadedFilePath = VideoFrameExtractor.downloadedVideoMap.get(
+      filePath,
+    )?.localPath as string;
+    this.startTimeOffset = VideoFrameExtractor.downloadedVideoMap.get(filePath)
+      ?.startTimeOffset as number;
 
     this.startTime = startTime;
     this.duration = duration;
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
 
-    this.width = 1080;
-    this.height = 1920;
-    this.frameSize = 1080*1920*4;
-    this.buffer = Buffer.alloc(1080*1920*4);
-
     if (this.startTime >= this.duration) {
-      //getVideoCodec(this.filePath).then(({width, height, codec}) => {
-      getVideoCodec(this.filePath).then(codec => {
-        this.buffer = Buffer.alloc(this.frameSize);    
+      getVideoMetadata(this.downloadedFilePath).then(metadata => {
+        this.width = metadata.width;
+        this.height = metadata.height;
+        this.frameSize = this.width * this.height * 4;
+        this.buffer = Buffer.alloc(this.frameSize);
+
         this.process = this.createFfmpegProcessToExtractFirstFrame(
-          filePath,
-          codec,
+          this.downloadedFilePath,
+          metadata.codec,
         );
       });
       return;
     }
 
-    console.log("pppppppppppp")
-
-    //getVideoMetadata(this.filePath).then(({width, height, codec}) => {
-    getVideoCodec(this.filePath).then(codec => {
-      console.log("RAAAAAAaaaaa")
-      this.codec = codec;
-      /*this.width = width;
-      this.height = height;
-      this.frameSize = 1080*1920*4;
-      this.buffer = Buffer.alloc(this.frameSize);  */
+    getVideoMetadata(this.downloadedFilePath).then(metadata => {
+      this.codec = metadata.codec;
+      this.width = metadata.width;
+      this.height = metadata.height;
+      this.frameSize = this.width * this.height * 4;
+      this.buffer = Buffer.alloc(this.frameSize);
 
       // Create a new ffmpeg process to extract the first 10 seconds of the video.
       this.process = this.createFfmpegProcess(
-        this.startTime,
+        this.startTime - this.startTimeOffset,
         this.toTime,
-        this.filePath,
+        this.downloadedFilePath,
         this.fps,
         this.codec,
       );
+    });
+  }
+
+  public static downloadVideoChunk(
+    url: string,
+    startTime: number,
+    endTime: number,
+  ) {
+    const outputDir = path.join(os.tmpdir(), `revideo-decoder-chunks`);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, {recursive: true});
+    }
+
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(url, (err, metadata) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        const format = metadata.format.format_name?.split(',')[0] || 'mp4';
+        const outputFileName = `chunk_${uuidv4()}.${format}`;
+        const outputPath = path.join(outputDir, outputFileName);
+
+        const adjustedStartTime = Math.max(startTime - 0.5, 0); // tolerance
+
+        ffmpeg(url)
+          .setFfmpegPath(ffmpegSettings.getFfmpegPath())
+          .inputOptions([`-ss ${adjustedStartTime}`, `-to ${endTime + 0.5}`]) // 0.5 for small tolerance
+          .outputOptions(['-c copy'])
+          .output(outputPath)
+          .on('end', () => {
+            this.downloadedVideoMap.set(url, {
+              localPath: outputPath,
+              startTimeOffset: adjustedStartTime,
+            });
+            resolve(outputPath);
+          })
+          .on('error', err => reject(err))
+          .run();
+      });
     });
   }
 
@@ -125,7 +175,7 @@ export class VideoFrameExtractor {
     const inputOptions = [];
     const outputOptions = [];
 
-    //inputOptions.push('-loglevel', "verbose");
+    inputOptions.push('-loglevel', ffmpegSettings.getLogLevel());
 
     if (range) {
       inputOptions.push(
@@ -164,20 +214,11 @@ export class VideoFrameExtractor {
       fps,
     );
 
-    console.log('creating process', this.ffmpegPath);
-
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', command => {
-        console.log('FFmpeg command:', command);
-      })
-      .on('progress', progress => {
-        console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      })
       .on('end', () => {
-        console.log("ENDDDDD")
         this.handleClose(0);
       })
       .on('error', err => {
@@ -191,13 +232,9 @@ export class VideoFrameExtractor {
       });
 
     const ffstream = process.pipe();
-    ffstream
-      .on('data', (data: Buffer) => {
-        this.processData(data);
-      })
-      .on('progress', progress => {
-        console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      });
+    ffstream.on('data', (data: Buffer) => {
+      this.processData(data);
+    });
 
     return process;
   }
@@ -221,18 +258,10 @@ export class VideoFrameExtractor {
       undefined,
     );
 
-    console.log('\nCREATE FIRST\n');
-
     const process = ffmpeg(filePath)
       .setFfmpegPath(this.ffmpegPath)
       .inputOptions(inputOptions)
       .outputOptions(outputOptions)
-      .on('start', command => {
-        console.log('FFmpeg command:', command);
-      })
-      .on('progress', progress => {
-        console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      })
       .on('end', () => {
         this.handleClose(0);
       })
@@ -247,27 +276,15 @@ export class VideoFrameExtractor {
       });
 
     const ffstream = process.pipe();
-    ffstream
-      .on('data', (data: Buffer) => {
-        console.time('processdata');
-        this.processData(data);
-        console.timeEnd('processdata');
-      })
-      .on('progress', progress => {
-        console.log(`FFmpeg Progress: ${progress.percent} frames`);
-      });
-
-    console.log('return first');
+    ffstream.on('data', (data: Buffer) => {
+      this.processData(data);
+    });
 
     return process;
   }
 
   private processData(data: Buffer) {
     let dataOffset = 0;
-
-    if(this.frameSize !== 8294400){
-      console.log("\n###IN PROCESS DATA####\n frameSize", this.frameSize)
-    }
 
     while (dataOffset < data.length) {
       const remainingSpace = this.frameSize - this.bufferOffset;
@@ -291,10 +308,7 @@ export class VideoFrameExtractor {
   }
 
   public async popImage() {
-    console.log("popimage");
-    console.log("this.state", this.state);
     if (this.imageBuffers.length) {
-      console.log("shifted image returned");
       const image = this.imageBuffers.shift()!;
       this.framesProcessed++;
       this.lastImage = image;
@@ -327,7 +341,7 @@ export class VideoFrameExtractor {
       this.process = this.createFfmpegProcess(
         this.startTime,
         this.toTime,
-        this.filePath,
+        this.downloadedFilePath,
         this.fps,
         this.codec,
       );
@@ -336,17 +350,13 @@ export class VideoFrameExtractor {
     }
 
     while (this.imageBuffers.length < 1) {
-      console.log("waiting");
       await new Promise(resolve => setTimeout(resolve, 50));
     }
 
-    console.log("returning after waiting");
-    console.log("truly");
     const image = this.imageBuffers.shift()!;
     this.framesProcessed++;
     this.lastImage = image;
     return image;
-
   }
 
   private handleClose(code: number) {
@@ -386,7 +396,6 @@ export class VideoFrameExtractor {
 
   public destroy() {
     this.terminated = true;
-    console.log("DESTROYYYYYAA");
     this.process?.kill('SIGTERM');
   }
 }

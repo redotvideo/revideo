@@ -1,5 +1,5 @@
 import type {Plugin} from '../plugin';
-import {FullSceneDescription} from '../scenes';
+import {FullSceneDescription, SceneDescription} from '../scenes';
 import {Logger} from './Logger';
 import type {ProjectMetadata} from './ProjectMetadata';
 import {SettingsMetadata} from './SettingsMetadata';
@@ -26,7 +26,7 @@ export interface ProjectSettings {
    * });
    * ```
    */
-  scenes: FullSceneDescription[];
+  scenes: SceneDescription[];
 
   /**
    * A list of plugins to include in the project.

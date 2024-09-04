@@ -1,0 +1,90 @@
+---
+sidebar_position: 3
+slug: /blurring
+---
+
+# Blurring
+
+You can blur elements of your video using either the blur
+[filter implementation](https://docs.re.video/filters-and-effects#filters) or
+the `backgroundBlur` property of any `Shape` node (such as `<Circle/>` or
+`<Rect/>`).
+
+In most cases, you should use the filter implementation as it is more performant
+than the `backgroundBlur` implementation. However, there are a few cases where
+you might run into limitations of the filter implementation:
+
+- You want to avoid transparent edges, which occur when using the filter
+  implementation.
+- You want to blur only a specific part of the canvas, such as specific
+  coordinates of an `<Img/>` node, instead of the full `<Img/>` node.
+
+Below, you can find examples of both implementations.
+
+## Filter Blur
+
+You can use the blur filter to blur a full element, such as an `<Img/>` node:
+
+```tsx editor
+import {makeScene2D, Img} from '@revideo/2d';
+import {createRef, waitFor} from '@revideo/core';
+
+export default makeScene2D(function* (view) {
+  const img = createRef<Img>();
+
+  yield view.add(
+    <Img
+      src={'https://revideo-example-assets.s3.amazonaws.com/sf.png'}
+      height={'100%'}
+      ref={img}
+    />,
+  );
+
+  yield* waitFor(1);
+  yield* img().filters.blur(20, 1);
+  yield* waitFor(2);
+});
+```
+
+You might notice that the edges of the image become transparent, which is in
+some cases undesirable - also, it is impossible to blur only parts of the image,
+as the filter is applied to the full `<Img/>` node.
+
+## Background Blur
+
+As an alternative to filter blurs, you can also use the `backgroundBlur`
+property for any node that is an instance of
+[`<Shape/>`](/api/2d/components/Shape/). This will blur anything behind the node
+you apply it to, and therefore allows you to blur only parts of images or videos
+instead of the full node. Background blurs also don't cause transparent edges:
+
+```tsx editor
+import {makeScene2D, Img, Rect} from '@revideo/2d';
+import {createRef, waitFor} from '@revideo/core';
+
+export default makeScene2D(function* (view) {
+  const img = createRef<Img>();
+  const blurRect = createRef<Rect>();
+
+  yield view.add(
+    <>
+      <Img
+        src={'https://revideo-example-assets.s3.amazonaws.com/sf.png'}
+        height={'100%'}
+        ref={img}
+      />
+      <Rect
+        opacity={0}
+        backgroundBlur={20}
+        size={img().size()}
+        ref={blurRect}
+      />
+    </>,
+  );
+
+  yield* waitFor(1);
+  yield* blurRect().scale(0.4, 1);
+  yield* blurRect().position.x(50, 1);
+  yield* waitFor(2);
+});
+```

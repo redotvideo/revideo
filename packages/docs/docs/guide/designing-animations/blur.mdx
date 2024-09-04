@@ -10,9 +10,11 @@ You can blur elements of your video using either the blur
 the `backgroundBlur` property of any `Shape` node (such as `<Circle/>` or
 `<Rect/>`).
 
-In most cases, you should use the filter implementation as it is more performant
-than the `backgroundBlur` implementation. However, there are a few cases where
-you might run into limitations of the filter implementation:
+In most cases, you should use the filter implementation as it is much more
+performant than the `backgroundBlur` implementation - particularly when the area
+you want to blur is large, using the background blur property will cause much
+slower rendering speeds. However, there are a few cases where you might run into
+limitations of the filter implementation:
 
 - You want to avoid transparent edges, which occur when using the filter
   implementation.

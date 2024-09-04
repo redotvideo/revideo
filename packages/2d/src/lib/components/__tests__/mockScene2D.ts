@@ -28,7 +28,7 @@ export function mockScene2D() {
   const description = {
     ...makeScene2D(function* () {
       // do nothing
-    }),
+    }, 'scene'),
     name: 'test',
     size: new Vector2(1920, 1080),
     resolutionScale: 1,

@@ -1,10 +1,7 @@
-import path from 'path';
-import {Plugin, ResolvedConfig} from 'vite';
+import {Plugin} from 'vite';
 import {PluginOptions} from '../plugins';
-import {Projects, createMeta} from '../utils';
-import {getVersions} from '../versions';
-
-const PROJECT_QUERY_REGEX = /[?&]project\b/;
+import {Projects} from '../utils';
+// import {getVersions} from '../versions';
 
 interface ProjectPluginConfig {
   buildForEditor?: boolean;
@@ -14,64 +11,12 @@ interface ProjectPluginConfig {
 
 export function projectsPlugin({
   buildForEditor,
-  plugins,
   projects,
 }: ProjectPluginConfig): Plugin {
-  const versions = JSON.stringify(getVersions());
-  let config: ResolvedConfig;
+  // TODO(refactor): use version information
+  // const versions = JSON.stringify(getVersions());
   return {
     name: 'revideo:project',
-
-    configResolved(resolvedConfig) {
-      config = resolvedConfig;
-    },
-
-    async load(id) {
-      if (!PROJECT_QUERY_REGEX.test(id)) {
-        return;
-      }
-
-      const [base] = id.split('?');
-      const {name, dir} = path.posix.parse(base);
-
-      const runsInEditor = buildForEditor || config.command === 'serve';
-      const metaFile = `${name}.meta`;
-      await createMeta(path.join(dir, metaFile));
-
-      const imports: string[] = [];
-      const pluginNames: string[] = [];
-      let index = 0;
-      for (const plugin of plugins) {
-        if (plugin.entryPoint) {
-          const pluginName = `plugin${index}`;
-          let options = (await plugin.runtimeConfig?.()) ?? '';
-          if (typeof options !== 'string') {
-            options = JSON.stringify(options);
-          }
-
-          imports.push(`import ${pluginName} from '${plugin.entryPoint}'`);
-          pluginNames.push(`${pluginName}(${options})`);
-          index++;
-        }
-      }
-
-      /* language=typescript */
-      return `\
-${imports.join('\n')}
-import {${runsInEditor ? 'editorBootstrap' : 'bootstrap'}} from '@revideo/core';
-import {MetaFile} from '@revideo/core';
-        import metaFile from './${metaFile}';
-        import config from './${name}';
-        import settings from 'virtual:settings.meta';
-        export default ${runsInEditor ? 'await editorBootstrap' : 'bootstrap'}(
-          '${name}',
-          ${versions},
-          [${pluginNames.join(', ')}],
-          config,
-          metaFile,
-          settings,
-        );`;
-    },
 
     config(config) {
       return {

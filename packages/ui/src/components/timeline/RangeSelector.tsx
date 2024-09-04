@@ -21,7 +21,7 @@ export interface RangeSelectorProps {
 export function RangeSelector({rangeRef}: RangeSelectorProps) {
   const {pixelsToFrames, framesToPercents, pointerToFrames} =
     useTimelineContext();
-  const {player, meta} = useApplication();
+  const {player} = useApplication();
   const {range} = useSharedSettings();
   const {fps} = usePreviewSettings();
   const duration = useDuration();
@@ -34,7 +34,8 @@ export function RangeSelector({rangeRef}: RangeSelectorProps) {
 
   const onDrop = useCallback(() => {
     labelClipDraggingLeftSignal.value = null;
-    meta.shared.range.update(start, end, duration, fps);
+    // TOOD(refactor): check how much of this can be removed
+    // meta.shared.range.update(start, end, duration, fps);
   }, [start, end, duration, fps]);
 
   useEffect(() => {
@@ -110,7 +111,8 @@ export function RangeSelector({rangeRef}: RangeSelectorProps) {
           }
         }}
         onDblClick={() => {
-          meta.shared.range.update(0, Infinity, duration, fps);
+          // TODO(refactor): check how much of this can be removed
+          // meta.shared.range.update(0, Infinity, duration, fps);
         }}
       >
         <RangeHandle value={start} setValue={setStart} onDrop={onDrop} />

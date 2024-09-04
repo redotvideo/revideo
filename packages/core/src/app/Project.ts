@@ -1,8 +1,7 @@
 import type {Plugin} from '../plugin';
 import {FullSceneDescription, SceneDescription} from '../scenes';
+import {CanvasColorSpace, Color, Vector2} from '../types';
 import {Logger} from './Logger';
-import type {ProjectMetadata} from './ProjectMetadata';
-import {SettingsMetadata} from './SettingsMetadata';
 
 export interface ProjectSettings {
   /**
@@ -80,13 +79,39 @@ export interface Versions {
   vitePlugin: string | null;
 }
 
+// TODO(refactor): figure out naming
+export interface ProjectSettings2 {
+  shared: {
+    background: Color | null;
+    range: [number, number];
+    size: Vector2;
+    audioOffset: number; // TODO: check what this does
+  };
+  rendering: {
+    // TODO: check if we can get rid of options
+    exporter: {
+      name: string;
+      options: unknown;
+    };
+    fps: number;
+    resolutionScale: number; // TODO: check what this does
+    colorSpace: CanvasColorSpace; // TODO: check what this does
+  };
+  preview: {
+    fps: number;
+    resolutionScale: number;
+  };
+}
+
 export interface Project {
   name: string;
   scenes: FullSceneDescription[];
   plugins: Plugin[];
   logger: Logger;
-  meta: ProjectMetadata;
-  settings: SettingsMetadata;
+  // meta: ProjectMetadata;
+  // settings: SettingsMetadata;
+  // TODO(refactor): rename to just "settings"
+  settingsNew: ProjectSettings2;
   audio?: string;
   variables?: Record<string, unknown>;
   versions: Versions;

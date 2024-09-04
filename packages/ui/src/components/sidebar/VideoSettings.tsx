@@ -1,19 +1,13 @@
-import {RendererState} from '@revideo/core';
-import {useApplication} from '../../contexts';
-import {useRendererState, useStorage} from '../../hooks';
-import {openOutputPath} from '../../utils';
-import {Button, ButtonSelect, Group, Label, Separator} from '../controls';
-import {Expandable} from '../fields';
-import {MetaFieldView} from '../meta';
 import {Pane} from '../tabs';
 
 export function VideoSettings() {
-  const {meta} = useApplication();
-  const [processId, setProcess] = useStorage('main-action', 0);
+  // const {meta} = useApplication();
+  // const [processId, setProcess] = useStorage('main-action', 0);
 
   return (
     <Pane title="Video Settings" id="settings-pane">
-      <Expandable title={meta.shared.name} open>
+      // TODO(refactor)
+      {/*<Expandable title={meta.shared.name} open>
         <MetaFieldView field={meta.shared} />
       </Expandable>
       <Expandable title={meta.preview.name} open>
@@ -37,18 +31,18 @@ export function VideoSettings() {
             </Button>
           </Group>
         )}
-      </Expandable>
+      </Expandable>*/}
     </Pane>
   );
 }
 
-interface ProcessButtonProps {
+/*interface ProcessButtonProps {
   processId: number;
   setProcess: (id: number) => void;
 }
 
 function ProcessButton({processId, setProcess}: ProcessButtonProps) {
-  const {renderer, presenter, meta, project} = useApplication();
+  const {renderer, presenter, project} = useApplication();
   const rendererState = useRendererState();
 
   return rendererState === RendererState.Initial ? (
@@ -60,12 +54,12 @@ function ProcessButton({processId, setProcess}: ProcessButtonProps) {
       onClick={() => {
         if (processId === 0) {
           renderer.render({
-            ...meta.getFullRenderingSettings(),
+            ...getFullRenderingSettings(project),
             name: project.name,
           });
         } else {
           presenter.present({
-            ...meta.getFullRenderingSettings(),
+            ...getFullRenderingSettings(project),
             name: project.name,
             slide: null,
           });
@@ -94,3 +88,4 @@ function ProcessButton({processId, setProcess}: ProcessButtonProps) {
     </Button>
   );
 }
+*/

@@ -8,9 +8,10 @@ import {MouseButton} from '../../utils';
 
 const HEIGHT = 48;
 
+// TODO(refactor): we might be able to delete this whole file
 export function AudioTrack() {
   const ref = useRef<HTMLCanvasElement>();
-  const {player, meta} = useApplication();
+  const {player} = useApplication();
   const {audioOffset} = useSharedSettings();
   const shiftHeld = useKeyHold('Shift');
   const [editingOffset, setEditingOffset] = useState(0);
@@ -112,12 +113,6 @@ export function AudioTrack() {
             editingOffset +
               player.status.framesToSeconds(pixelsToFrames(e.movementX)),
           );
-        }
-      }}
-      onPointerUp={e => {
-        if (e.button === MouseButton.Left) {
-          e.currentTarget.releasePointerCapture(e.pointerId);
-          meta.shared.audioOffset.set(fullOffset);
         }
       }}
     />

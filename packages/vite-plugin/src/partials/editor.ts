@@ -30,7 +30,7 @@ export function editorPlugin({editor, projects}: EditorPluginConfig): Plugin {
           /* language=typescript */
           return `\
 import {editor} from '${editor}';
-import project from '${projects.list[0].url}?project';
+import project from '${projects.list[0].url}';
 editor(project);
 `;
         }

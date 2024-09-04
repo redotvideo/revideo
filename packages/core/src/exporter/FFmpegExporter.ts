@@ -77,12 +77,13 @@ export class FFmpegExporterClient implements Exporter {
 
   public async start(): Promise<void> {
     const options = this.settings.exporter.options as FFmpegExporterOptions;
+    // TODO(refactor): audioOffset
     await this.invoke('start', {
       ...this.settings,
       ...options,
       audio: this.project.audio,
-      audioOffset:
-        this.project.meta.shared.audioOffset.get() - this.settings.range[0],
+      // audioOffset:
+      // this.project.meta.shared.audioOffset.get() - this.settings.range[0],
     });
   }
 

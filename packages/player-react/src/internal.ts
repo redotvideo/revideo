@@ -1,5 +1,4 @@
-import type {Project, ProjectMetadata} from '@revideo/core';
-import {Player, Stage} from '@revideo/core';
+import {Player, Project, Stage, getFullPreviewSettings} from '@revideo/core';
 import {v4 as uuidv4} from 'uuid';
 
 import {Vector2} from '@revideo/core';
@@ -89,7 +88,7 @@ class RevideoPlayer extends HTMLElement {
   private project: Project | null = null;
   private player: Player | null = null;
   private defaultSettings:
-    | ReturnType<typeof ProjectMetadata.prototype.getFullPreviewSettings>
+    | ReturnType<typeof getFullPreviewSettings>
     | undefined;
   private abortController: AbortController | null = null;
   private playing = false;
@@ -159,7 +158,7 @@ class RevideoPlayer extends HTMLElement {
 
     project.setAssetBase(source);
 
-    this.defaultSettings = project.meta.getFullPreviewSettings();
+    this.defaultSettings = getFullPreviewSettings(project);
     const player = new Player(project);
     player.setVariables(this.variables);
     player.toggleLoop(this.looping);

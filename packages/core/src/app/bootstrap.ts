@@ -1,11 +1,8 @@
-import {MetaFile} from '../meta';
 import {Plugin} from '../plugin';
 import DefaultPlugin from '../plugin/DefaultPlugin';
 import {setAssetBase} from '../utils';
 import {Logger} from './Logger';
-import {Project, ProjectSettings, Versions} from './Project';
-import {ProjectMetadata} from './ProjectMetadata';
-import {createSettingsMetadata} from './SettingsMetadata';
+import {Project, ProjectSettings, ProjectSettings2, Versions} from './Project';
 
 /**
  * Bootstrap a project.
@@ -25,27 +22,19 @@ export function bootstrap(
   versions: Versions,
   plugins: Plugin[],
   config: ProjectSettings,
-  metaFile: MetaFile<any>,
-  settingsFile: MetaFile<any>,
+  settings: ProjectSettings2,
+
   logger = config.logger ?? new Logger(),
 ): Project {
-  const settings = createSettingsMetadata();
-  settingsFile.attach(settings);
-
   const project = {
     name,
     ...config,
     plugins,
     versions,
-    settings,
     logger,
+    settingsNew: settings,
     setAssetBase: setAssetBase,
   } as Project;
-
-  project.meta = new ProjectMetadata(project);
-  project.meta.shared.set(settings.defaults.get());
-  project.experimentalFeatures ??= false;
-  metaFile.attach(project.meta);
 
   return project;
 }
@@ -63,12 +52,10 @@ export function bootstrap(
  * @internal
  */
 export async function editorBootstrap(
-  name: string,
-  versions: Versions,
+  _name: string,
+  _versions: Versions,
   plugins: (Plugin | string)[],
   config: ProjectSettings,
-  metaFile: MetaFile<any>,
-  settingsFile: MetaFile<any>,
 ): Promise<Project> {
   const logger = config.logger ?? new Logger();
   const promises: Promise<Plugin | null>[] = [Promise.resolve(DefaultPlugin())];
@@ -110,18 +97,13 @@ export async function editorBootstrap(
     };
   }
 
-  const project = bootstrap(
-    name,
-    versions,
-    includedPlugins,
-    resolvedConfig,
-    metaFile,
-    settingsFile,
-  );
+  // TODO(refactor): fix
+  // const project = bootstrap(name, versions, includedPlugins, resolvedConfig);
 
-  includedPlugins.forEach(plugin => plugin.project?.(project));
+  // includedPlugins.forEach(plugin => plugin.project?.(project));
 
-  return project;
+  // return project;
+  return {} as Project;
 }
 
 async function parsePlugin(

@@ -10,7 +10,6 @@ import {
   useSize,
   useStorage,
   useSubscribable,
-  useSubscribableValue,
 } from '../../hooks';
 import {MouseButton} from '../../utils';
 import {highlight} from '../animations';
@@ -18,7 +17,6 @@ import {Button, Select} from '../controls';
 import {ButtonCheckbox} from '../controls/ButtonCheckbox';
 import {Grid as GridIcon, Recenter} from '../icons';
 import {ColorPicker} from './ColorPicker';
-import {Coordinates} from './Coordinates';
 import {Inspector} from './Inspector';
 import {OverlayCanvas} from './OverlayCanvas';
 import {PreviewStage} from './PreviewStage';
@@ -27,10 +25,11 @@ import styles from './Viewport.module.scss';
 const ZOOM_SPEED = 0.1;
 
 export function EditorPreview() {
-  const {plugins, player, settings: appSettings} = useApplication();
-  const coordinateSetting = useSubscribableValue(
+  const {plugins, player} = useApplication();
+  // TODO(refactor): understand what is happening here
+  /*const coordinateSetting = useSubscribableValue(
     appSettings.appearance.coordinates.onChanged,
-  );
+  );*/
   const containerRef = useRef<HTMLDivElement>();
   const overlayRef = useRef<HTMLDivElement>();
   const size = useSize(containerRef);
@@ -241,7 +240,7 @@ export function EditorPreview() {
             <GridIcon />
           </ButtonCheckbox>
           <ColorPicker />
-          {coordinateSetting && <Coordinates />}
+          {/* TODO: {coordinateSetting && <Coordinates />}*/}
         </div>
         {inspector}
       </div>

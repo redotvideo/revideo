@@ -1,5 +1,11 @@
 import {EventDispatcher, ValueDispatcher} from '../events';
-import type {Exporter} from '../exporter';
+import {
+  ExporterClass,
+  FFmpegExporterClient,
+  ImageExporter,
+  WasmExporter,
+  type Exporter,
+} from '../exporter';
 import type {Scene} from '../scenes';
 import {clampRemap} from '../tweening';
 import {Vector2} from '../types';
@@ -87,6 +93,7 @@ export class Renderer {
     const scenes: Scene[] = [];
 
     for (const description of project.scenes) {
+      // this is where it enriches the scene. up to this point, the type definition is inaccurate
       const scene = new description.klass({
         ...description,
         logger: this.project.logger,
@@ -220,9 +227,17 @@ export class Renderer {
     signal: AbortSignal,
   ): Promise<RendererResult> {
     // Select exporter
-    const exporterClass = this.project.meta.rendering.exporter.exporters.find(
+    // TODO(refactor): check if i want to keep it this way
+    const exporters: ExporterClass[] = [
+      FFmpegExporterClient,
+      ImageExporter,
+      WasmExporter,
+    ];
+
+    const exporterClass = exporters.find(
       exporter => exporter.id === settings.exporter.name,
     );
+
     if (!exporterClass) {
       this.project.logger.error(
         `Could not find the "${settings.exporter.name}" exporter.`,

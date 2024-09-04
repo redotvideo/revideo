@@ -1,5 +1,6 @@
 import styles from './Playback.module.scss';
 
+import {getFullRenderingSettings} from '@revideo/core';
 import {useCallback} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {useDocumentEvent, usePlayerState} from '../../hooks';
@@ -19,7 +20,7 @@ import {
 import {Framerate} from './Framerate';
 
 export function PlaybackControls() {
-  const {player, renderer, meta, project} = useApplication();
+  const {player, renderer, project} = useApplication();
   const state = usePlayerState();
 
   useDocumentEvent(
@@ -165,7 +166,7 @@ export function PlaybackControls() {
         onClick={() =>
           renderer.renderFrame(
             {
-              ...meta.getFullRenderingSettings(),
+              ...getFullRenderingSettings(project),
               name: project.name,
             },
             player.status.time,

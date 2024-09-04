@@ -42,6 +42,7 @@ function createProjectMetadata(project: Project) {
   return meta;
 }
 
+// TODO(refactor): delete
 export class ProjectMetadata extends ObjectMetaField<
   ReturnType<typeof createProjectMetadata>
 > {
@@ -81,4 +82,37 @@ export class ProjectMetadata extends ObjectMetaField<
       ...this.rendering.get(),
     };
   }
+}
+
+export function getFullPreviewSettings(project: Project): {
+  fps: number;
+  resolutionScale: number;
+  background: Color | null;
+  range: [number, number];
+  size: Vector2;
+  audioOffset: number; // TODO
+} {
+  return {
+    ...project.settingsNew.shared,
+    ...project.settingsNew.preview,
+  };
+}
+
+export function getFullRenderingSettings(project: Project): {
+  fps: number;
+  resolutionScale: number;
+  colorSpace: CanvasColorSpace;
+  background: Color | null;
+  range: [number, number];
+  size: Vector2;
+  // audioOffset: number; // TODO
+  exporter: {
+    name: string;
+    options: unknown;
+  };
+} {
+  return {
+    ...project.settingsNew.shared,
+    ...project.settingsNew.rendering,
+  };
 }

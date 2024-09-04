@@ -32,7 +32,7 @@ export class WasmExporter implements Exporter {
     this.encoder = mp4.createWebCodecsEncoder({
       width: this.settings.size.x,
       height: this.settings.size.y,
-      fps: this.project.meta.rendering.fps.get(),
+      fps: this.project.settingsNew.rendering.fps,
     });
   }
 

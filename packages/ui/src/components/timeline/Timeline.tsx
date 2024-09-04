@@ -13,7 +13,6 @@ import {
   useDuration,
   usePreviewSettings,
   useReducedMotion,
-  useSharedSettings,
   useSize,
   useStateChange,
   useStorage,
@@ -35,8 +34,7 @@ const MAX_FRAME_SIZE = 128;
 
 export function Timeline() {
   const [hoverRef] = useShortcut<HTMLDivElement>('timeline');
-  const {player, meta} = useApplication();
-  const {range} = useSharedSettings();
+  const {player} = useApplication();
   const containerRef = useRef<HTMLDivElement>();
   const playheadRef = useRef<HTMLDivElement>();
   const rangeRef = useRef<HTMLDivElement>();
@@ -140,16 +138,6 @@ export function Timeline() {
         const newOffset = clamp(0, maxOffset, scrollLeft);
         containerRef.current.scrollLeft = newOffset;
         setOffset(newOffset);
-        break;
-      }
-      case 'b': {
-        const end = player.status.secondsToFrames(range[1]);
-        meta.shared.range.update(frame, end, duration, fps);
-        break;
-      }
-      case 'n': {
-        const start = player.status.secondsToFrames(range[0]);
-        meta.shared.range.update(start, frame, duration, fps);
         break;
       }
     }

@@ -1,17 +1,17 @@
+import {getFullPreviewSettings, getFullRenderingSettings} from '@revideo/core';
 import {useApplication} from '../contexts';
-import {useSubscribableValue} from './useSubscribable';
 
 export function useSharedSettings() {
-  const {meta} = useApplication();
-  return useSubscribableValue(meta.shared.onChanged);
+  const {project} = useApplication();
+  return project.settingsNew.shared;
 }
 
 export function usePreviewSettings() {
-  const {meta} = useApplication();
-  return useSubscribableValue(meta.preview.onChanged);
+  const {project} = useApplication();
+  return getFullPreviewSettings(project);
 }
 
 export function useRenderingSettings() {
-  const {meta} = useApplication();
-  return useSubscribableValue(meta.rendering.onChanged);
+  const {project} = useApplication();
+  return getFullRenderingSettings(project);
 }

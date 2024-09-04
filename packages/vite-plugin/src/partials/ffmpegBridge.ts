@@ -5,6 +5,7 @@ import {
   generateAudio,
   mergeMedia,
 } from '@revideo/ffmpeg';
+import {existsSync} from 'fs';
 import * as fs from 'fs/promises';
 import type {Plugin, WebSocketServer} from 'vite';
 
@@ -336,7 +337,7 @@ export class FFmpegBridge {
       const localFile = VideoFrameExtractor.downloadedVideoMap.get(
         extractor.filePath,
       )?.localPath;
-      if (localFile) {
+      if (localFile && existsSync(localFile)) {
         fs.unlink(localFile);
       }
     });

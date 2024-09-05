@@ -1,7 +1,6 @@
 import loadMp4Module from 'mp4-wasm';
 import {Project} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
-import {MetaField, ObjectMetaField} from '../meta';
 import {Exporter} from './Exporter';
 
 export class WasmExporter implements Exporter {
@@ -16,10 +15,6 @@ export class WasmExporter implements Exporter {
     private readonly project: Project,
     private readonly settings: RendererSettings,
   ) {}
-
-  public static meta(): MetaField<any> {
-    return new ObjectMetaField(this.displayName, {});
-  }
 
   public async start(): Promise<void> {
     const resp = await fetch('/@mp4-wasm');

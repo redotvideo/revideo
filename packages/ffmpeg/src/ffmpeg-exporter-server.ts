@@ -42,7 +42,7 @@ export class FFmpegExporterServer {
       .inputFps(settings.fps);
 
     // Input audio file
-    if (settings.includeAudio && settings.audio) {
+    if (settings.audio) {
       this.command
         .input((settings.audio as string).slice(1))
         // FIXME Offset only works for negative values.
@@ -59,10 +59,8 @@ export class FFmpegExporterServer {
       .outputOptions(['-pix_fmt yuv420p', '-shortest'])
       .outputFps(settings.fps)
       .size(`${size.x}x${size.y}`);
-    if (settings.fastStart) {
-      this.command.outputOptions(['-movflags +faststart']);
-    }
 
+    this.command.outputOptions(['-movflags +faststart']);
     this.promise = new Promise<void>((resolve, reject) => {
       this.command.on('end', resolve).on('error', reject);
     });

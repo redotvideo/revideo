@@ -1,3 +1,4 @@
+import {ImageExporterOptions} from '../exporter';
 import type {Plugin} from '../plugin';
 import {FullSceneDescription, SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
@@ -89,10 +90,19 @@ export interface ProjectSettings2 {
   };
   rendering: {
     // TODO: check if we can get rid of options
-    exporter: {
-      name: string;
-      options: unknown;
-    };
+    exporter:
+      | {
+          name: '@revideo/core/image-sequence';
+          options: ImageExporterOptions;
+        }
+      | {
+          name: '@revideo/core/ffmpeg';
+          options: undefined;
+        }
+      | {
+          name: '@revideo/core/wasm';
+          options: undefined;
+        };
     fps: number;
     resolutionScale: number; // TODO: check what this does
     colorSpace: CanvasColorSpace; // TODO: check what this does

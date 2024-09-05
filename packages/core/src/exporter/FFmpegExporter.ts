@@ -5,7 +5,6 @@ import type {
   RendererSettings,
 } from '../app/Renderer';
 import {EventDispatcher} from '../events';
-import {BoolMetaField, MetaField, ObjectMetaField, ValueOf} from '../meta';
 import {Exporter} from './Exporter';
 
 type ServerResponse =
@@ -19,10 +18,6 @@ type ServerResponse =
       method: string;
       message?: string;
     };
-
-type FFmpegExporterOptions = ValueOf<
-  ReturnType<typeof FFmpegExporterClient.meta>
->;
 
 /**
  * FFmpeg video exporter.
@@ -46,15 +41,6 @@ export class FFmpegExporterClient implements Exporter {
   public static readonly id = '@revideo/core/ffmpeg';
   public static readonly displayName = 'Video (FFmpeg)';
 
-  public static meta(project: Project): MetaField<any> {
-    return new ObjectMetaField(this.displayName, {
-      fastStart: new BoolMetaField('fast start', true),
-      includeAudio: new BoolMetaField('include audio', true).disable(
-        !project.audio,
-      ),
-    });
-  }
-
   public static async create(project: Project, settings: RendererSettings) {
     return new FFmpegExporterClient(project, settings);
   }
@@ -76,11 +62,9 @@ export class FFmpegExporterClient implements Exporter {
   ) {}
 
   public async start(): Promise<void> {
-    const options = this.settings.exporter.options as FFmpegExporterOptions;
     // TODO(refactor): audioOffset
     await this.invoke('start', {
       ...this.settings,
-      ...options,
       audio: this.project.audio,
       // audioOffset:
       // this.project.meta.shared.audioOffset.get() - this.settings.range[0],

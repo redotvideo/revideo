@@ -146,7 +146,6 @@ export * from './components/controls';
 export * from './components/fields';
 export * from './components/icons';
 export * from './components/layout';
-export * from './components/meta';
 export * from './components/tabs';
 export * from './contexts';
 export * from './hooks';

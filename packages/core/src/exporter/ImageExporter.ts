@@ -56,6 +56,12 @@ export class ImageExporter implements Exporter {
     private readonly logger: Logger,
     settings: RendererSettings,
   ) {
+    if (settings.exporter.name !== ImageExporter.id) {
+      throw new Error(
+        `Invalid exporter name: ${settings.exporter.name}. Expected: ${ImageExporter.id}`,
+      );
+    }
+
     const options = settings.exporter.options as ImageExporterOptions;
     this.projectName = settings.name;
     this.quality = clamp(0, 1, options.quality / 100);

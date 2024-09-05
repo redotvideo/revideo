@@ -80,6 +80,18 @@ export interface Versions {
   vitePlugin: string | null;
 }
 
+export type ExporterSettings =
+  | {
+      name: '@revideo/core/image-sequence';
+      options: ImageExporterOptions;
+    }
+  | {
+      name: '@revideo/core/ffmpeg';
+    }
+  | {
+      name: '@revideo/core/wasm';
+    };
+
 // TODO(refactor): figure out naming
 export interface ProjectSettings2 {
   shared: {
@@ -89,20 +101,7 @@ export interface ProjectSettings2 {
     audioOffset: number; // TODO: check what this does
   };
   rendering: {
-    // TODO: check if we can get rid of options
-    exporter:
-      | {
-          name: '@revideo/core/image-sequence';
-          options: ImageExporterOptions;
-        }
-      | {
-          name: '@revideo/core/ffmpeg';
-          options: undefined;
-        }
-      | {
-          name: '@revideo/core/wasm';
-          options: undefined;
-        };
+    exporter: ExporterSettings;
     fps: number;
     resolutionScale: number; // TODO: check what this does
     colorSpace: CanvasColorSpace; // TODO: check what this does

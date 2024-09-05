@@ -12,7 +12,7 @@ import {Vector2} from '../types';
 import {Semaphore} from '../utils';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import type {Project} from './Project';
+import type {ExporterSettings, Project} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 import {Stage, StageSettings} from './Stage';
 import {TimeEstimator} from './TimeEstimator';
@@ -21,10 +21,7 @@ export interface RendererSettings extends StageSettings {
   name: string;
   range: [number, number];
   fps: number;
-  exporter: {
-    name: string;
-    options: unknown;
-  };
+  exporter: ExporterSettings;
   hiddenFolderId?: string;
 }
 

@@ -29,7 +29,6 @@ const final = bootstrap(
     rendering: {
       exporter: {
         name: '@revideo/core/wasm',
-        options: {},
       },
       fps: 60,
       resolutionScale: 1,

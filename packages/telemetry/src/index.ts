@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import {PostHog} from 'posthog-node';
 
@@ -37,7 +38,7 @@ async function getCurrentVersion() {
 async function getDistinctId() {
   try {
     return await fs.promises.readFile(
-      path.resolve(__dirname, '../id.txt'),
+      path.resolve(os.homedir(), '.revideo/id.txt'),
       'utf-8',
     );
   } catch (e) {

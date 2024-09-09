@@ -37,6 +37,7 @@ interface PlayerProps {
   width?: number;
   height?: number;
   quality?: number;
+  timeDisplayFormat?: 'MM:SS' | 'MM:SS.mm' | 'MM:SS.m';
 
   onDurationChange?: (duration: number) => void;
   onTimeUpdate?: (currentTime: number) => void;
@@ -55,6 +56,7 @@ export function Player({
   width = undefined,
   height = undefined,
   quality = undefined,
+  timeDisplayFormat = 'MM:SS',
 
   onDurationChange = () => {},
   onTimeUpdate = () => {},
@@ -79,7 +81,7 @@ export function Player({
    */
   useEffect(() => {
     const diff = Math.abs(currentTime - currentTimeState);
-    if (diff > 0.05) {
+    if (diff > 0.03) {
       setForcedTime(currentTime);
     }
   }, [currentTime]);
@@ -180,6 +182,7 @@ export function Player({
               setPlaying={setPlaying}
               currentTime={currentTimeState}
               setForcedTime={setForcedTime}
+              timeDisplayFormat={timeDisplayFormat}
             />
           </div>
         </div>

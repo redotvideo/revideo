@@ -12,8 +12,6 @@ export function getFormattedTime(
       .toString()
       .padStart(3, '0');
 
-    console.log('timedisplayformat', timeDisplayFormat);
-
     if (timeDisplayFormat === 'MM:SS') {
       return `${minutes}:${seconds}`;
     }

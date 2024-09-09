@@ -7,6 +7,8 @@
  */
 
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const {v4: uuidv4} = require('uuid');
 
 const idPath = path.resolve(os.homedir(), '.revideo/id.txt');

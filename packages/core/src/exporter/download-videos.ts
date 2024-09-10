@@ -8,16 +8,18 @@ export async function download(assets: AssetInfo[][]): Promise<void> {
       if (asset.type !== 'video' || asset.decoder !== 'ffmpeg') {
         return;
       }
-      if (!videoRanges.has(asset.src)) {
-        videoRanges.set(asset.src, {
-          start: asset.currentTime,
-          end: asset.currentTime,
-        });
-      } else {
+
+      if (videoRanges.has(asset.src)) {
         const range = videoRanges.get(asset.src)!;
         range.start = Math.min(range.start, asset.currentTime);
         range.end = Math.max(range.end, asset.currentTime);
+        return;
       }
+
+      videoRanges.set(asset.src, {
+        start: asset.currentTime,
+        end: asset.currentTime,
+      });
     });
   });
 

@@ -45,6 +45,6 @@ export class ImageCommunication {
       height,
     );
 
-    return await createImageBitmap(imageData);
+    return createImageBitmap(imageData);
   }
 }

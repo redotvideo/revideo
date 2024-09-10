@@ -36,53 +36,27 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
           return;
         }
 
-        let body: string;
-        try {
-          body = await new Promise((resolve, reject) => {
-            let data = '';
-            req.on('data', (chunk: string) => (data += chunk));
-            req.on('end', () => resolve(data));
-            req.on('error', reject);
-          });
-        } catch (error) {
-          console.error('Error reading request body:', error);
-          if (!res.writableEnded) {
-            res.statusCode = 400;
-            res.end('Bad Request');
-          }
+        const body: any = await new Promise((resolve, reject) => {
+          let data = '';
+          req.on('data', (chunk: string) => (data += chunk));
+          req.on('end', () => resolve(data));
+          req.on('error', reject);
+        });
+
+        const parsedBody = JSON.parse(body);
+        const result = await handler(parsedBody);
+
+        if (res.writableEnded) {
           return;
         }
 
-        try {
-          let parsedBody;
-          try {
-            parsedBody = JSON.parse(body);
-          } catch (parseError) {
-            console.error('Error parsing JSON:', parseError, 'Raw body:', body);
-            if (!res.writableEnded) {
-              res.statusCode = 400;
-              res.end('Invalid JSON');
-            }
-            return;
-          }
-
-          const result = await handler(parsedBody);
-          if (!res.writableEnded) {
-            res.statusCode = 200;
-            if (result) {
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify(result));
-            } else {
-              res.end('OK');
-            }
-          }
-        } catch (e) {
-          console.error('Error in request handler:', e);
-          if (!res.writableEnded) {
-            res.statusCode = 500;
-            res.end('Internal Server Error');
-          }
+        res.statusCode = 200;
+        if (result) {
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify(result));
+          return;
         }
+        res.end('OK');
       };
 
       server.middlewares.use('/audio-processing/generate-audio', (req, res) =>

@@ -1,7 +1,11 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as ffmpeg from 'fluent-ffmpeg';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import {v4 as uuidv4} from 'uuid';
 import {ffmpegSettings} from './settings';
-import {getVideoCodec} from './utils';
+import {getVideoMetadata} from './utils';
 
 type VideoFrameExtractorState = 'processing' | 'done' | 'error';
 
@@ -9,37 +13,39 @@ type VideoFrameExtractorState = 'processing' | 'done' | 'error';
  * Walks through a video file and extracts frames.
  */
 export class VideoFrameExtractor {
-  private static readonly pngSignature = Buffer.from([
-    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
-  ]);
-  private static readonly pngEOF = Buffer.from([
-    0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
-  ]);
-
-  private static readonly chunkLengthInSeconds = 45;
+  private static readonly chunkLengthInSeconds = 5;
 
   private readonly ffmpegPath = ffmpegSettings.getFfmpegPath();
 
   public state: VideoFrameExtractorState;
   public filePath: string;
+  private downloadedFilePath: string;
 
   private buffer: Buffer = Buffer.alloc(0);
+  private bufferOffset: number = 0;
 
   // Images are buffered in memory until they are requested.
   private imageBuffers: Buffer[] = [];
-  private hooksWaiting: (() => any)[] = [];
-
   private lastImage: Buffer | null = null;
 
   private startTime: number;
+  private startTimeOffset: number;
   private duration: number;
   private toTime: number;
   private fps: number;
   private framesProcessed: number = 0;
 
+  private width: number = 0;
+  private height: number = 0;
+  private frameSize: number = 0;
   private codec: string | null = null;
   private process: ffmpeg.FfmpegCommand | null = null;
   private terminated: boolean = false;
+
+  public static downloadedVideoMap: Map<
+    string,
+    {localPath: string; startTimeOffset: number}
+  > = new Map();
 
   public constructor(
     filePath: string,
@@ -49,33 +55,84 @@ export class VideoFrameExtractor {
   ) {
     this.state = 'processing';
     this.filePath = filePath;
+    this.downloadedFilePath = VideoFrameExtractor.downloadedVideoMap.get(
+      filePath,
+    )?.localPath as string;
+    this.startTimeOffset = VideoFrameExtractor.downloadedVideoMap.get(filePath)
+      ?.startTimeOffset as number;
 
     this.startTime = startTime;
     this.duration = duration;
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
 
-    if (this.startTime >= this.duration) {
-      getVideoCodec(this.filePath).then(codec => {
+    getVideoMetadata(this.downloadedFilePath).then(metadata => {
+      this.width = metadata.width;
+      this.height = metadata.height;
+      this.frameSize = this.width * this.height * 4;
+      this.buffer = Buffer.alloc(this.frameSize);
+      this.codec = metadata.codec;
+
+      if (this.startTime >= this.duration) {
         this.process = this.createFfmpegProcessToExtractFirstFrame(
-          filePath,
-          codec,
+          this.downloadedFilePath,
+          this.codec,
         );
-      });
-      return;
-    }
+        return;
+      }
 
-    getVideoCodec(this.filePath).then(codec => {
-      this.codec = codec;
-
-      // Create a new ffmpeg process to extract the first 10 seconds of the video.
       this.process = this.createFfmpegProcess(
-        this.startTime,
+        this.startTime - this.startTimeOffset,
         this.toTime,
-        this.filePath,
+        this.downloadedFilePath,
         this.fps,
         this.codec,
       );
+    });
+  }
+
+  public static downloadVideoChunk(
+    url: string,
+    startTime: number,
+    endTime: number,
+  ) {
+    const outputDir = path.join(os.tmpdir(), `revideo-decoder-chunks`);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, {recursive: true});
+    }
+
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(url, (err, metadata) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        const format = metadata.format.format_name?.split(',')[0] || 'mp4';
+        const outputFileName = `chunk_${uuidv4()}.${format}`;
+        const outputPath = path.join(outputDir, outputFileName);
+        const toleranceInSeconds = 0.5;
+
+        const adjustedStartTime = Math.max(startTime - toleranceInSeconds, 0);
+
+        ffmpeg(url)
+          .setFfmpegPath(ffmpegSettings.getFfmpegPath())
+          .inputOptions([
+            `-ss ${adjustedStartTime}`,
+            `-to ${endTime + toleranceInSeconds}`,
+          ])
+          .outputOptions(['-c copy'])
+          .output(outputPath)
+          .on('end', () => {
+            this.downloadedVideoMap.set(url, {
+              localPath: outputPath,
+              startTimeOffset: adjustedStartTime,
+            });
+            resolve(outputPath);
+          })
+          .on('error', err => reject(err))
+          .run();
+      });
     });
   }
 
@@ -89,6 +146,14 @@ export class VideoFrameExtractor {
 
   public getLastFrame() {
     return this.lastImage;
+  }
+
+  public getWidth() {
+    return this.width;
+  }
+
+  public getHeight() {
+    return this.height;
   }
 
   private getEndTime(startTime: number) {
@@ -126,8 +191,8 @@ export class VideoFrameExtractor {
       outputOptions.push('-vframes', '1');
     }
 
-    outputOptions.push('-f', 'image2pipe');
-    outputOptions.push('-vcodec', 'png');
+    outputOptions.push('-f', 'rawvideo');
+    outputOptions.push('-pix_fmt', 'rgba');
 
     return {inputOptions, outputOptions};
   }
@@ -213,29 +278,28 @@ export class VideoFrameExtractor {
 
     return process;
   }
+
   private processData(data: Buffer) {
-    this.buffer = Buffer.concat([this.buffer, data]);
+    let dataOffset = 0;
 
-    let start = 0;
-    let end;
+    while (dataOffset < data.length) {
+      const remainingSpace = this.frameSize - this.bufferOffset;
+      const chunkSize = Math.min(remainingSpace, data.length - dataOffset);
 
-    const startSignature = VideoFrameExtractor.pngSignature;
-    const endSignature = VideoFrameExtractor.pngEOF;
+      data.copy(
+        this.buffer,
+        this.bufferOffset,
+        dataOffset,
+        dataOffset + chunkSize,
+      );
+      this.bufferOffset += chunkSize;
+      dataOffset += chunkSize;
 
-    while (
-      (start = this.buffer.indexOf(startSignature, start)) !== -1 &&
-      (end = this.buffer.indexOf(endSignature, start)) !== -1
-    ) {
-      end += endSignature.length;
-      const frame = this.buffer.subarray(start, end);
-
-      this.imageBuffers.push(frame);
-
-      this.hooksWaiting.forEach(hook => hook());
-      this.hooksWaiting = [];
-
-      this.buffer = this.buffer.subarray(end);
-      start = 0;
+      // We have a complete frame
+      if (this.bufferOffset === this.frameSize) {
+        this.imageBuffers.push(Buffer.from(this.buffer)); // Create a copy
+        this.bufferOffset = 0; // Reset buffer for next frame
+      }
     }
   }
 
@@ -273,7 +337,7 @@ export class VideoFrameExtractor {
       this.process = this.createFfmpegProcess(
         this.startTime,
         this.toTime,
-        this.filePath,
+        this.downloadedFilePath,
         this.fps,
         this.codec,
       );
@@ -281,14 +345,14 @@ export class VideoFrameExtractor {
       this.state = 'processing';
     }
 
-    return await new Promise<Buffer>(res => {
-      this.hooksWaiting.push(() => {
-        const image = this.imageBuffers.shift()!;
-        this.framesProcessed++;
-        this.lastImage = image;
-        res(image);
-      });
-    });
+    while (this.imageBuffers.length < 1) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    const image = this.imageBuffers.shift()!;
+    this.framesProcessed++;
+    this.lastImage = image;
+    return image;
   }
 
   private handleClose(code: number) {

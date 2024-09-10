@@ -5,6 +5,8 @@ import {
   generateAudio,
   mergeMedia,
 } from '@revideo/ffmpeg';
+import {existsSync, unlinkSync} from 'fs';
+import type {IncomingMessage, ServerResponse} from 'http';
 import type {Plugin, WebSocketServer} from 'vite';
 
 interface BrowserRequest {
@@ -21,69 +23,97 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
     name: 'revideo/ffmpeg',
 
     configureServer(server) {
-      new FFmpegBridge(server.ws, {output});
+      const ffmpegBridge = new FFmpegBridge(server.ws, {output});
 
-      server.middlewares.use(
-        '/audio-processing/generate-audio',
-        async (req, res) => {
-          if (req.method !== 'POST') {
+      const handlePostRequest = async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        handler: (data: any) => Promise<any>,
+      ) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.end('Method Not Allowed');
+          return;
+        }
+
+        try {
+          const body: any = await new Promise((resolve, reject) => {
+            let data = '';
+            req.on('data', (chunk: string) => (data += chunk));
+            req.on('end', () => resolve(data));
+            req.on('error', reject);
+          });
+
+          const parsedBody = JSON.parse(body);
+          const result = await handler(parsedBody);
+
+          if (res.writableEnded) {
             return;
           }
 
-          const {tempDir, assets, startFrame, endFrame, fps} = JSON.parse(
-            await new Promise((resolve, reject) => {
-              let body = '';
-              req.on('data', chunk => (body += chunk));
-              req.on('end', () => resolve(body));
-              req.on('error', reject);
-            }),
-          );
+          res.statusCode = 200;
+          if (result) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(result));
+            return;
+          }
+          res.end('OK');
+        } catch (error) {
+          console.error('error in request handler', error);
+          res.statusCode = 500;
+          res.end('Internal Server Error');
+        }
+      };
 
-          try {
-            await generateAudio({
+      server.middlewares.use('/audio-processing/generate-audio', (req, res) =>
+        handlePostRequest(
+          req,
+          res,
+          async ({tempDir, assets, startFrame, endFrame, fps}) =>
+            generateAudio({
               outputDir: output,
               tempDir,
               assets,
               startFrame,
               endFrame,
               fps,
-            });
-            res.statusCode = 200;
-          } catch (e) {
-            console.error(e);
-            res.statusCode = 500;
-          } finally {
-            res.end();
-          }
-        },
+            }),
+        ),
+      );
+
+      server.middlewares.use('/audio-processing/merge-media', (req, res) =>
+        handlePostRequest(req, res, async ({outputFilename, tempDir}) =>
+          mergeMedia(outputFilename, output, tempDir),
+        ),
       );
 
       server.middlewares.use(
-        '/audio-processing/merge-media',
-        async (req, res) => {
-          if (req.method !== 'POST') {
-            return;
-          }
+        '/revideo-ffmpeg-decoder/video-frame',
+        (req, res) =>
+          handlePostRequest(req, res, async data => {
+            const {frame, width, height} =
+              await ffmpegBridge.handleDecodeVideoFrame(data);
+            res.setHeader('X-Frame-Width', width.toString());
+            res.setHeader('X-Frame-Height', height.toString());
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.end(Buffer.from(frame as Buffer));
+          }),
+      );
 
-          const {outputFilename, tempDir} = JSON.parse(
-            await new Promise((resolve, reject) => {
-              let body = '';
-              req.on('data', chunk => (body += chunk));
-              req.on('end', () => resolve(body));
-              req.on('error', reject);
-            }),
-          );
+      server.middlewares.use('/revideo-ffmpeg-decoder/finished', (req, res) => {
+        handlePostRequest(req, res, async () => {
+          await ffmpegBridge.handleRenderFinished();
+        });
+      });
 
-          try {
-            await mergeMedia(outputFilename, output, tempDir);
-            res.statusCode = 200;
-          } catch (e) {
-            console.error(e);
-            res.statusCode = 500;
-          } finally {
-            res.end();
-          }
-        },
+      server.middlewares.use(
+        '/revideo-ffmpeg-decoder/download-video-chunks',
+        (req, res) =>
+          handlePostRequest(req, res, async videoDurations => {
+            const downloadedPaths =
+              await ffmpegBridge.handleDownloadVideoChunks(videoDurations);
+            return {success: true, paths: downloadedPaths};
+          }),
       );
     },
   };
@@ -104,8 +134,6 @@ export class FFmpegBridge {
     private readonly config: ExporterPluginConfig,
   ) {
     ws.on('revideo:ffmpeg-exporter', this.handleMessage);
-    ws.on('revideo:ffmpeg-decoder:video-frame', this.handleDecodeVideoFrame);
-    ws.on('revideo:ffmpeg-decoder:finished', this.handleRenderFinished);
   }
 
   private handleMessage = async ({method, data}: BrowserRequest) => {
@@ -163,7 +191,22 @@ export class FFmpegBridge {
   // List of VideoFrameExtractors
   private videoFrameExtractors = new Map<string, VideoFrameExtractor>();
 
-  private handleDecodeVideoFrame = async ({data}: BrowserRequest) => {
+  public async handleDownloadVideoChunks(
+    videoDurations: {src: string; startTime: number; endTime: number}[],
+  ) {
+    const downloadPromises = videoDurations.map(({src, startTime, endTime}) =>
+      VideoFrameExtractor.downloadVideoChunk(src, startTime, endTime),
+    );
+    await Promise.all(downloadPromises);
+  }
+
+  public async handleDecodeVideoFrame(data: {
+    id: string;
+    filePath: string;
+    startTime: number;
+    duration: number;
+    fps: number;
+  }) {
     const typedData = data as {
       id: string;
       filePath: string;
@@ -186,13 +229,11 @@ export class FFmpegBridge {
     // If time has not changed, return the last frame
     if (isOldFrame) {
       const frame = extractor!.getLastFrame();
-      this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
-        status: 'success',
-        data: {
-          frame,
-        },
-      });
-      return;
+      return {
+        frame,
+        width: extractor!.getWidth(),
+        height: extractor!.getHeight(),
+      };
     }
 
     // If the video has skipped back we need to create a new extractor
@@ -217,10 +258,10 @@ export class FFmpegBridge {
 
     if (!extractor) {
       extractor = new VideoFrameExtractor(
-        typedData.filePath,
-        typedData.startTime,
-        typedData.fps,
-        typedData.duration,
+        data.filePath,
+        data.startTime,
+        data.fps,
+        data.duration,
       );
       this.videoFrameExtractors.set(id, extractor);
     }
@@ -228,16 +269,23 @@ export class FFmpegBridge {
     // Go to the frame that is closest to the requested time
     const frame = await extractor.popImage();
 
-    this.ws.send('revideo:ffmpeg-decoder:video-frame-res', {
-      status: 'success',
-      data: {
-        frame,
-      },
-    });
-  };
+    return {
+      frame: frame,
+      width: extractor!.getWidth(),
+      height: extractor!.getHeight(),
+    };
+  }
 
-  private handleRenderFinished = async () => {
-    this.videoFrameExtractors.forEach(extractor => extractor.destroy());
+  public async handleRenderFinished() {
+    this.videoFrameExtractors.forEach(extractor => {
+      extractor.destroy();
+      const localFile = VideoFrameExtractor.downloadedVideoMap.get(
+        extractor.filePath,
+      )?.localPath;
+      if (localFile && existsSync(localFile)) {
+        unlinkSync(localFile);
+      }
+    });
     this.videoFrameExtractors.clear();
-  };
+  }
 }

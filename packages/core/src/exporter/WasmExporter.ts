@@ -3,6 +3,7 @@ import {Project} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {MetaField, ObjectMetaField} from '../meta';
 import {Exporter} from './Exporter';
+import {download} from './download-videos';
 
 export class WasmExporter implements Exporter {
   public static readonly id = '@revideo/core/wasm';
@@ -54,6 +55,15 @@ export class WasmExporter implements Exporter {
       `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
     );
 
+    await fetch('/revideo-ffmpeg-decoder/finished', {
+      method: 'POST',
+      headers: {
+        // eslint-disable-next-line
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+
     await fetch('/uploadVideoFile', {
       method: 'POST',
       body: formData,
@@ -88,5 +98,9 @@ export class WasmExporter implements Exporter {
         tempDir,
       }),
     });
+  }
+
+  public async downloadVideos(assets: AssetInfo[][]): Promise<void> {
+    await download(assets);
   }
 }

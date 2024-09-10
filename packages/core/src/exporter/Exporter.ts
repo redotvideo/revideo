@@ -105,6 +105,11 @@ export interface Exporter {
   ): Promise<void>;
 
   /**
+   * Download all assets necessary for the export process
+   */
+  downloadVideos?(assetsInfo: AssetInfo[][]): Promise<void>;
+
+  /**
    * Finish the rendering process.
    *
    * @remarks

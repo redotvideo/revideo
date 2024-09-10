@@ -170,7 +170,8 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
       ...playingVideos.map(vid => ({
         key: vid.key,
         type: 'video' as const,
-        src: vid.fullSource(),
+        src: vid.getUrl(),
+        decoder: vid.decoder(),
         playbackRate:
           typeof vid.playbackRate === 'function'
             ? vid.playbackRate()

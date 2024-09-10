@@ -61,6 +61,7 @@ export class WasmExporter implements Exporter {
         // eslint-disable-next-line
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({}),
     });
 
     await fetch('/uploadVideoFile', {

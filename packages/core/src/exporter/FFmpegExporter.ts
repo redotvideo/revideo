@@ -112,6 +112,7 @@ export class FFmpegExporterClient implements Exporter {
   }
 
   public async stop(result: RendererResult): Promise<void> {
+    console.log('calling stop');
     await this.invoke('end', result);
     await fetch('/revideo-ffmpeg-decoder/finished', {
       method: 'POST',
@@ -119,6 +120,7 @@ export class FFmpegExporterClient implements Exporter {
         // eslint-disable-next-line
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({}),
     });
   }
 

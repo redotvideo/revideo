@@ -125,9 +125,8 @@ export async function getVideoDimensions(
           width: videoStream.width,
           height: videoStream.height,
         });
-      } else {
-        reject(new Error('Could not find video dimensions in metadata'));
       }
+      reject(new Error('Could not find video dimensions in metadata'));
     });
   });
 }

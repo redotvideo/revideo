@@ -6,6 +6,7 @@ import {
   mergeMedia,
 } from '@revideo/ffmpeg';
 import {existsSync, unlinkSync} from 'fs';
+import type {IncomingMessage, ServerResponse} from 'http';
 import type {Plugin, WebSocketServer} from 'vite';
 
 interface BrowserRequest {
@@ -24,150 +25,115 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
     configureServer(server) {
       const ffmpegBridge = new FFmpegBridge(server.ws, {output});
 
-      server.middlewares.use(
-        '/audio-processing/generate-audio',
-        async (req, res) => {
-          if (req.method !== 'POST') {
+      const handlePostRequest = async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        handler: (data: any) => Promise<any>,
+      ) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.end('Method Not Allowed');
+          return;
+        }
+
+        let body: string;
+        try {
+          body = await new Promise((resolve, reject) => {
+            let data = '';
+            req.on('data', (chunk: string) => (data += chunk));
+            req.on('end', () => resolve(data));
+            req.on('error', reject);
+          });
+        } catch (error) {
+          console.error('Error reading request body:', error);
+          if (!res.writableEnded) {
+            res.statusCode = 400;
+            res.end('Bad Request');
+          }
+          return;
+        }
+
+        try {
+          let parsedBody;
+          try {
+            parsedBody = JSON.parse(body);
+          } catch (parseError) {
+            console.error('Error parsing JSON:', parseError, 'Raw body:', body);
+            if (!res.writableEnded) {
+              res.statusCode = 400;
+              res.end('Invalid JSON');
+            }
             return;
           }
 
-          const {tempDir, assets, startFrame, endFrame, fps} = JSON.parse(
-            await new Promise((resolve, reject) => {
-              let body = '';
-              req.on('data', chunk => (body += chunk));
-              req.on('end', () => resolve(body));
-              req.on('error', reject);
-            }),
-          );
+          const result = await handler(parsedBody);
+          if (!res.writableEnded) {
+            res.statusCode = 200;
+            if (result) {
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(result));
+            } else {
+              res.end('OK');
+            }
+          }
+        } catch (e) {
+          console.error('Error in request handler:', e);
+          if (!res.writableEnded) {
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          }
+        }
+      };
 
-          try {
-            await generateAudio({
+      server.middlewares.use('/audio-processing/generate-audio', (req, res) =>
+        handlePostRequest(
+          req,
+          res,
+          async ({tempDir, assets, startFrame, endFrame, fps}) =>
+            generateAudio({
               outputDir: output,
               tempDir,
               assets,
               startFrame,
               endFrame,
               fps,
-            });
-            res.statusCode = 200;
-          } catch (e) {
-            console.error(e);
-            res.statusCode = 500;
-          } finally {
-            res.end();
-          }
-        },
+            }),
+        ),
       );
 
-      server.middlewares.use(
-        '/audio-processing/merge-media',
-        async (req, res) => {
-          if (req.method !== 'POST') {
-            return;
-          }
-
-          const {outputFilename, tempDir} = JSON.parse(
-            await new Promise((resolve, reject) => {
-              let body = '';
-              req.on('data', chunk => (body += chunk));
-              req.on('end', () => resolve(body));
-              req.on('error', reject);
-            }),
-          );
-
-          try {
-            await mergeMedia(outputFilename, output, tempDir);
-            res.statusCode = 200;
-          } catch (e) {
-            console.error(e);
-            res.statusCode = 500;
-          } finally {
-            res.end();
-          }
-        },
+      server.middlewares.use('/audio-processing/merge-media', (req, res) =>
+        handlePostRequest(req, res, async ({outputFilename, tempDir}) =>
+          mergeMedia(outputFilename, output, tempDir),
+        ),
       );
 
       server.middlewares.use(
         '/revideo-ffmpeg-decoder/video-frame',
-        async (req, res) => {
-          if (req.method !== 'POST') {
-            res.statusCode = 405;
-            res.end('Method Not Allowed');
-            return;
-          }
-
-          let body = '';
-          req.on('data', chunk => (body += chunk));
-          req.on('end', async () => {
-            try {
-              const data = JSON.parse(body);
-              const {frame, width, height} =
-                await ffmpegBridge.handleDecodeVideoFrame(data);
-
-              // Send frame dimensions as headers
-              res.setHeader('X-Frame-Width', width.toString());
-              res.setHeader('X-Frame-Height', height.toString());
-
-              res.setHeader('Content-Type', 'application/octet-stream');
-              res.end(Buffer.from(frame as Buffer));
-            } catch (e) {
-              console.error(e);
-              res.statusCode = 500;
-              res.end('Internal Server Error');
-            }
-          });
-        },
+        (req, res) =>
+          handlePostRequest(req, res, async data => {
+            const {frame, width, height} =
+              await ffmpegBridge.handleDecodeVideoFrame(data);
+            res.setHeader('X-Frame-Width', width.toString());
+            res.setHeader('X-Frame-Height', height.toString());
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.end(Buffer.from(frame as Buffer));
+          }),
       );
 
-      server.middlewares.use(
-        '/revideo-ffmpeg-decoder/finished',
-        async (req, res) => {
-          if (req.method !== 'POST') {
-            res.statusCode = 405;
-            res.end('Method Not Allowed');
-            return;
-          }
-
-          try {
-            await ffmpegBridge.handleRenderFinished();
-            res.statusCode = 200;
-            res.end('OK');
-          } catch (e) {
-            console.error(e);
-            res.statusCode = 500;
-            res.end('Internal Server Error');
-          }
-        },
-      );
+      server.middlewares.use('/revideo-ffmpeg-decoder/finished', (req, res) => {
+        handlePostRequest(req, res, async () => {
+          await ffmpegBridge.handleRenderFinished();
+        });
+      });
 
       server.middlewares.use(
         '/revideo-ffmpeg-decoder/download-video-chunks',
-        async (req, res) => {
-          if (req.method !== 'POST') {
-            res.statusCode = 405;
-            res.end('Method Not Allowed');
-            return;
-          }
-
-          let body = '';
-          req.on('data', chunk => (body += chunk));
-          req.on('end', async () => {
-            try {
-              const videoDurations = JSON.parse(body);
-              const downloadedPaths =
-                await ffmpegBridge.handleDownloadVideoChunks(videoDurations);
-
-              res.statusCode = 200;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({success: true, paths: downloadedPaths}));
-            } catch (e) {
-              console.error(e);
-              res.statusCode = 500;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({success: false, error: e}));
-            }
-          });
-        },
+        (req, res) =>
+          handlePostRequest(req, res, async videoDurations => {
+            const downloadedPaths =
+              await ffmpegBridge.handleDownloadVideoChunks(videoDurations);
+            return {success: true, paths: downloadedPaths};
+          }),
       );
     },
   };

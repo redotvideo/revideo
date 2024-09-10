@@ -5,17 +5,18 @@ export async function download(assets: AssetInfo[][]): Promise<void> {
 
   assets.forEach(frameAssets => {
     frameAssets.forEach(asset => {
-      if (asset.type === 'video' && asset.decoder === 'ffmpeg') {
-        if (!videoRanges.has(asset.src)) {
-          videoRanges.set(asset.src, {
-            start: asset.currentTime,
-            end: asset.currentTime,
-          });
-        } else {
-          const range = videoRanges.get(asset.src)!;
-          range.start = Math.min(range.start, asset.currentTime);
-          range.end = Math.max(range.end, asset.currentTime);
-        }
+      if (asset.type !== 'video' || asset.decoder !== 'ffmpeg') {
+        return;
+      }
+      if (!videoRanges.has(asset.src)) {
+        videoRanges.set(asset.src, {
+          start: asset.currentTime,
+          end: asset.currentTime,
+        });
+      } else {
+        const range = videoRanges.get(asset.src)!;
+        range.start = Math.min(range.start, asset.currentTime);
+        range.end = Math.max(range.end, asset.currentTime);
       }
     });
   });

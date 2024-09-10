@@ -66,29 +66,21 @@ export class VideoFrameExtractor {
     this.toTime = this.getEndTime(this.startTime);
     this.fps = fps;
 
-    if (this.startTime >= this.duration) {
-      getVideoMetadata(this.downloadedFilePath).then(metadata => {
-        this.width = metadata.width;
-        this.height = metadata.height;
-        this.frameSize = this.width * this.height * 4;
-        this.buffer = Buffer.alloc(this.frameSize);
-
-        this.process = this.createFfmpegProcessToExtractFirstFrame(
-          this.downloadedFilePath,
-          metadata.codec,
-        );
-      });
-      return;
-    }
-
     getVideoMetadata(this.downloadedFilePath).then(metadata => {
-      this.codec = metadata.codec;
       this.width = metadata.width;
       this.height = metadata.height;
       this.frameSize = this.width * this.height * 4;
       this.buffer = Buffer.alloc(this.frameSize);
+      this.codec = metadata.codec;
 
-      // Create a new ffmpeg process to extract the first 10 seconds of the video.
+      if (this.startTime >= this.duration) {
+        this.process = this.createFfmpegProcessToExtractFirstFrame(
+          this.downloadedFilePath,
+          this.codec,
+        );
+        return;
+      }
+
       this.process = this.createFfmpegProcess(
         this.startTime - this.startTimeOffset,
         this.toTime,
@@ -119,12 +111,16 @@ export class VideoFrameExtractor {
         const format = metadata.format.format_name?.split(',')[0] || 'mp4';
         const outputFileName = `chunk_${uuidv4()}.${format}`;
         const outputPath = path.join(outputDir, outputFileName);
+        const toleranceInSeconds = 0.5;
 
-        const adjustedStartTime = Math.max(startTime - 0.5, 0); // tolerance
+        const adjustedStartTime = Math.max(startTime - toleranceInSeconds, 0);
 
         ffmpeg(url)
           .setFfmpegPath(ffmpegSettings.getFfmpegPath())
-          .inputOptions([`-ss ${adjustedStartTime}`, `-to ${endTime + 0.5}`]) // 0.5 for small tolerance
+          .inputOptions([
+            `-ss ${adjustedStartTime}`,
+            `-to ${endTime + toleranceInSeconds}`,
+          ])
           .outputOptions(['-c copy'])
           .output(outputPath)
           .on('end', () => {
@@ -299,8 +295,8 @@ export class VideoFrameExtractor {
       this.bufferOffset += chunkSize;
       dataOffset += chunkSize;
 
+      // We have a complete frame
       if (this.bufferOffset === this.frameSize) {
-        // We have a complete frame
         this.imageBuffers.push(Buffer.from(this.buffer)); // Create a copy
         this.bufferOffset = 0; // Reset buffer for next frame
       }

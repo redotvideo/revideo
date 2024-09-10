@@ -55,18 +55,22 @@ export function Controls({
   setPlaying,
   currentTime,
   setForcedTime,
+  timeDisplayFormat,
 }: {
   duration: number;
   playing: boolean;
   setPlaying: (playing: boolean) => void;
   currentTime: number;
   setForcedTime: (currentTime: number) => void;
+  timeDisplayFormat: 'MM:SS' | 'MM:SS.m' | 'MM:SS.mm';
 }) {
   return (
     <div className="p-text-white p-p-4 p-flex-col p-space-y-2 p-bg-gradient-to-t p-from-gray-500 p-to-transparent">
       <div className="p-flex p-space-x-3 p-items-center">
         <PlayPause playing={playing} setPlaying={setPlaying} />
-        <span>{getFormattedTime(currentTime, duration)}</span>
+        <span>
+          {getFormattedTime(currentTime, duration, timeDisplayFormat)}
+        </span>
       </div>
       <Timeline
         currentTime={currentTime}

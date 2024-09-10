@@ -36,27 +36,33 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
           return;
         }
 
-        const body: any = await new Promise((resolve, reject) => {
-          let data = '';
-          req.on('data', (chunk: string) => (data += chunk));
-          req.on('end', () => resolve(data));
-          req.on('error', reject);
-        });
+        try {
+          const body: any = await new Promise((resolve, reject) => {
+            let data = '';
+            req.on('data', (chunk: string) => (data += chunk));
+            req.on('end', () => resolve(data));
+            req.on('error', reject);
+          });
 
-        const parsedBody = JSON.parse(body);
-        const result = await handler(parsedBody);
+          const parsedBody = JSON.parse(body);
+          const result = await handler(parsedBody);
 
-        if (res.writableEnded) {
-          return;
+          if (res.writableEnded) {
+            return;
+          }
+
+          res.statusCode = 200;
+          if (result) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(result));
+            return;
+          }
+          res.end('OK');
+        } catch (error) {
+          console.error('error in request handler', error);
+          res.statusCode = 500;
+          res.end('Internal Server Error');
         }
-
-        res.statusCode = 200;
-        if (result) {
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(result));
-          return;
-        }
-        res.end('OK');
       };
 
       server.middlewares.use('/audio-processing/generate-audio', (req, res) =>

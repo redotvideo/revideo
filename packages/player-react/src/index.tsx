@@ -1,5 +1,13 @@
 'use client';
-import {ComponentProps, useEffect, useRef, useState} from 'react';
+import {Player as CorePlayer} from '@revideo/core';
+import {
+  ComponentProps,
+  LegacyRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {Controls} from './controls';
 import './styles.css';
 import {shouldShowControls} from './utils';
@@ -41,6 +49,8 @@ interface PlayerProps {
 
   onDurationChange?: (duration: number) => void;
   onTimeUpdate?: (currentTime: number) => void;
+  onPlayerReady?: (player: CorePlayer) => void;
+  onPlayerResize?: (rect: DOMRectReadOnly) => void;
 }
 
 export function Player({
@@ -60,6 +70,8 @@ export function Player({
 
   onDurationChange = () => {},
   onTimeUpdate = () => {},
+  onPlayerReady = () => {},
+  onPlayerResize = () => {},
 }: PlayerProps) {
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
@@ -67,7 +79,10 @@ export function Player({
   const [duration, setDuration] = useState(-1);
 
   const focus = useRef(false);
-  const playerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  const onClickHandler = controls ? () => setPlaying(prev => !prev) : undefined;
 
   /**
    * Sync the playing prop with the player's own state when it changes.
@@ -114,6 +129,35 @@ export function Player({
     }
   };
 
+  const handlePlayerReady = (event: Event) => {
+    const player = (event as CustomEvent).detail;
+    if (player) {
+      onPlayerReady(player);
+    }
+  };
+
+  const handlePlayerResize = useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry && wrapperRef.current) {
+        const boundingRect = wrapperRef.current.getBoundingClientRect();
+        onPlayerResize?.(boundingRect);
+      }
+    },
+    [onPlayerResize],
+  );
+
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+
+    const resizeObserver = new ResizeObserver(handlePlayerResize);
+    resizeObserver.observe(wrapperRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [handlePlayerResize]);
+
   /**
    * Import the player and add all event listeners.
    */
@@ -122,11 +166,13 @@ export function Player({
 
     playerRef.current?.addEventListener('timeupdate', handleTimeUpdate);
     playerRef.current?.addEventListener('duration', handleDurationUpdate);
+    playerRef.current?.addEventListener('playerready', handlePlayerReady);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       playerRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
       playerRef.current?.removeEventListener('duration', handleDurationUpdate);
+      playerRef.current?.removeEventListener('playerready', handlePlayerReady);
       document.removeEventListener('keydown', handleKeyDown);
       const frameElement = document.getElementById('revideo-2d-frame');
       if (frameElement) {
@@ -149,6 +195,7 @@ export function Player({
   return (
     <div data-player="true" style={{display: 'contents'}}>
       <div
+        ref={wrapperRef}
         className="p-relative p-cursor-default p-focus:outline-none"
         onFocus={() => (focus.current = true)}
         onBlur={() => (focus.current = false)}
@@ -158,10 +205,10 @@ export function Player({
       >
         <div className="p-relative">
           <revideo-player
-            ref={playerRef}
+            ref={playerRef as LegacyRef<HTMLDivElement>}
             src={src}
             playing={String(playingState)}
-            onClick={() => setPlaying(prev => !prev)}
+            onClick={onClickHandler}
             variables={JSON.stringify(variables)}
             looping={looping ? 'true' : 'false'}
             width={width}

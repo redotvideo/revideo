@@ -21,7 +21,6 @@ import {useShortcut} from '../../hooks/useShortcut';
 import {labelClipDraggingLeftSignal} from '../../signals';
 import {MouseButton, MouseMask, clamp} from '../../utils';
 import {borderHighlight} from '../animations';
-import {AudioTrack} from './AudioTrack';
 import {Playhead} from './Playhead';
 import {RangeSelector} from './RangeSelector';
 import {SceneTrack} from './SceneTrack';
@@ -287,7 +286,6 @@ export function Timeline() {
               <Timestamps />
               <div className={styles.trackContainer}>
                 <SceneTrack />
-                <AudioTrack />
               </div>
               <Playhead seeking={seeking} />
             </div>

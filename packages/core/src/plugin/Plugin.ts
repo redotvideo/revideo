@@ -2,7 +2,7 @@ import type {
   Player,
   Presenter,
   Project,
-  ProjectSettings,
+  ProjectDescription,
   Renderer,
 } from '../app';
 import type {ExporterClass} from '../exporter';
@@ -32,7 +32,7 @@ export interface Plugin {
    *
    * @param settings - The project settings.
    */
-  settings?(settings: ProjectSettings): ProjectSettings | void;
+  settings?(settings: ProjectDescription): ProjectDescription | void;
 
   /**
    * Receive the project instance right after it is initialized.

@@ -7,8 +7,6 @@ import {ImageStream} from './image-stream';
 import {ffmpegSettings} from './settings';
 
 export interface FFmpegExporterSettings extends RendererSettings {
-  audio?: string;
-  audioOffset?: number;
   fastStart: boolean;
   includeAudio: boolean;
   output: string;
@@ -40,14 +38,6 @@ export class FFmpegExporterServer {
       .input(this.stream)
       .inputFormat('image2pipe')
       .inputFps(settings.fps);
-
-    // Input audio file
-    if (settings.audio) {
-      this.command
-        .input((settings.audio as string).slice(1))
-        // FIXME Offset only works for negative values.
-        .inputOptions([`-itsoffset ${settings.audioOffset ?? 0}`]);
-    }
 
     // Output settings
     const size = {

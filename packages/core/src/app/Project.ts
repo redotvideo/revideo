@@ -4,7 +4,7 @@ import {FullSceneDescription, SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
 import {Logger} from './Logger';
 
-export interface ProjectSettings {
+export interface ProjectDescription {
   /**
    * The name of the project.
    */
@@ -45,18 +45,6 @@ export interface ProjectSettings {
   logger?: Logger;
 
   /**
-   * An url for the audio track to play alongside the animation.
-   *
-   * @see https://motioncanvas.io/docs/media#audio
-   */
-  audio?: string;
-
-  /**
-   * @deprecated Configure the offset in the Video Settings tab of th editor.
-   */
-  audioOffset?: number;
-
-  /**
    * Default values for project variables.
    *
    * @see https://motioncanvas.io/docs/project-variables
@@ -93,12 +81,11 @@ export type ExporterSettings =
     };
 
 // TODO(refactor): figure out naming
-export interface ProjectSettings2 {
+export interface UserSettings {
   shared: {
     background: Color | null;
     range: [number, number];
     size: Vector2;
-    audioOffset: number; // TODO: check what this does
   };
   rendering: {
     exporter: ExporterSettings;
@@ -117,11 +104,7 @@ export interface Project {
   scenes: FullSceneDescription[];
   plugins: Plugin[];
   logger: Logger;
-  // meta: ProjectMetadata;
-  // settings: SettingsMetadata;
-  // TODO(refactor): rename to just "settings"
-  settingsNew: ProjectSettings2;
-  audio?: string;
+  settings: UserSettings;
   variables?: Record<string, unknown>;
   versions: Versions;
   experimentalFeatures: boolean;
@@ -137,6 +120,6 @@ export interface Project {
   setAssetBase: (base: `${string}/`) => void;
 }
 
-export function makeProject(settings: ProjectSettings) {
+export function makeProject(settings: ProjectDescription) {
   return settings;
 }

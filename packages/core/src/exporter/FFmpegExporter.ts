@@ -62,13 +62,7 @@ export class FFmpegExporterClient implements Exporter {
   ) {}
 
   public async start(): Promise<void> {
-    // TODO(refactor): audioOffset
-    await this.invoke('start', {
-      ...this.settings,
-      audio: this.project.audio,
-      // audioOffset:
-      // this.project.meta.shared.audioOffset.get() - this.settings.range[0],
-    });
+    await this.invoke('start', this.settings);
   }
 
   public async handleFrame(canvas: HTMLCanvasElement): Promise<void> {

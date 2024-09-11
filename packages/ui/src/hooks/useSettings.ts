@@ -3,7 +3,7 @@ import {useApplication} from '../contexts';
 
 export function useSharedSettings() {
   const {project} = useApplication();
-  return project.settingsNew.shared;
+  return project.settings.shared;
 }
 
 export function usePreviewSettings() {

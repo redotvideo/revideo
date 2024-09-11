@@ -68,6 +68,6 @@ export async function sendEvent(
       },
     });
   } catch (e) {
-    console.error(e);
+    // No-op
   }
 }

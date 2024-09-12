@@ -7,15 +7,22 @@
  */
 
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const {v4: uuidv4} = require('uuid');
 
+const idPath = path.resolve(os.homedir(), '.revideo/id.txt');
+const outputDirectory = path.dirname(idPath);
+
 function Run() {
-  if (fs.existsSync('./id.txt')) {
+  if (fs.existsSync(idPath)) {
     return;
   }
 
   const uuid = uuidv4();
-  fs.writeFileSync('./id.txt', uuid);
+
+  fs.mkdirSync(outputDirectory, {recursive: true});
+  fs.writeFileSync(idPath, uuid);
 }
 
 try {

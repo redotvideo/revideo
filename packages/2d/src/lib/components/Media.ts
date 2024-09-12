@@ -96,6 +96,10 @@ export abstract class Media extends Rect {
     return this.volume;
   }
 
+  public getUrl(): string {
+    return this.mediaElement().src;
+  }
+
   public override dispose() {
     this.pause();
     this.remove();

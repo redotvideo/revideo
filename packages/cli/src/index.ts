@@ -9,7 +9,7 @@ const program = new Command();
 program
   .name('revideo')
   .description('CLI to interact with the revideo service')
-  .version('0.5.7');
+  .version('0.5.9');
 
 program
   .command('serve')

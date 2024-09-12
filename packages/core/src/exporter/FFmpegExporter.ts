@@ -6,6 +6,7 @@ import type {
 } from '../app/Renderer';
 import {EventDispatcher} from '../events';
 import {Exporter} from './Exporter';
+import {download} from './download-videos';
 
 type ServerResponse =
   | {
@@ -91,10 +92,22 @@ export class FFmpegExporterClient implements Exporter {
 
   public async stop(result: RendererResult): Promise<void> {
     await this.invoke('end', result);
+    await fetch('/revideo-ffmpeg-decoder/finished', {
+      method: 'POST',
+      headers: {
+        // eslint-disable-next-line
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
   }
 
   public async kill(): Promise<void> {
     await this.invoke('kill', {});
+  }
+
+  public async downloadVideos(assets: AssetInfo[][]): Promise<void> {
+    await download(assets);
   }
 
   public async generateAudio(

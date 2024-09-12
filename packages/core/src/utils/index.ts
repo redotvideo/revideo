@@ -19,7 +19,6 @@ export * from './experimentalLog';
 export * from './getContext';
 export * from './math';
 export * from './range';
-export * from './useAssetBase';
 export * from './useContext';
 export * from './usePlayback';
 export * from './useScene';

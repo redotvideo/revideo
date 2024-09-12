@@ -1,6 +1,5 @@
 import {Plugin} from '../plugin';
 import DefaultPlugin from '../plugin/DefaultPlugin';
-import {setAssetBase} from '../utils';
 import {Logger} from './Logger';
 import {Project, ProjectDescription, UserSettings, Versions} from './Project';
 
@@ -37,7 +36,6 @@ export function bootstrap(
     versions,
     logger,
     settings,
-    setAssetBase: setAssetBase,
   } as Project;
 
   return project;

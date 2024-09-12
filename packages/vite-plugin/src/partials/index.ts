@@ -1,5 +1,4 @@
 export * from './assets';
-export * from './corsProxy';
 export * from './editor';
 export * from './ffmpegBridge';
 export * from './imageExporter';

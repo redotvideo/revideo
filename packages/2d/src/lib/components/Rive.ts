@@ -1,10 +1,4 @@
-import {
-  BBox,
-  SignalValue,
-  SimpleSignal,
-  useThread,
-  viaProxy,
-} from '@revideo/core';
+import {BBox, SignalValue, SimpleSignal, useThread} from '@revideo/core';
 import RiveInitializer, {
   Artboard,
   File,
@@ -13,8 +7,7 @@ import RiveInitializer, {
   RiveCanvas,
 } from '@rive-app/canvas-advanced';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {Asset} from './Asset';
-import {RectProps} from './Rect';
+import {Rect, RectProps} from './Rect';
 
 export interface RiveProps extends RectProps {
   src?: SignalValue<string>;
@@ -31,7 +24,10 @@ interface RiveInstance {
 }
 
 @nodeName('Rive')
-export class Rive extends Asset {
+export class Rive extends Rect {
+  @signal()
+  public declare readonly src: SimpleSignal<string, this>;
+
   @initial(0)
   @signal()
   public declare readonly artboardId: SimpleSignal<number | string, this>;
@@ -57,7 +53,7 @@ export class Rive extends Asset {
 
   @computed()
   private async rive(): Promise<RiveInstance> {
-    const src = viaProxy(this.fullSource());
+    const src = this.src();
     const rive = await RiveInitializer({
       locateFile: () => {
         return '/@rive-wasm';

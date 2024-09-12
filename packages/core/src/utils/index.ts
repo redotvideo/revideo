@@ -18,7 +18,6 @@ export * from './errorToLog';
 export * from './experimentalLog';
 export * from './getContext';
 export * from './math';
-export * from './proxyUtils';
 export * from './range';
 export * from './useAssetBase';
 export * from './useContext';

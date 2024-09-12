@@ -26,7 +26,7 @@ export interface ProjectDescription {
    * });
    * ```
    */
-  scenes: SceneDescription[];
+  scenes: SceneDescription<any>[];
 
   /**
    * A list of plugins to include in the project.

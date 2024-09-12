@@ -1,9 +1,7 @@
 import path from 'path';
 import type {Plugin} from 'vite';
 import {
-  CorsProxyPluginConfig,
   assetsPlugin,
-  corsProxyPlugin,
   editorPlugin,
   exporterPlugin,
   ffmpegBridgePlugin,
@@ -81,16 +79,6 @@ export interface MotionCanvasPluginConfig {
    * @defaultValue '\@revideo/ui'
    */
   editor?: string;
-  /**
-   * Configuration of the Proxy used for remote sources
-   *
-   * @remarks
-   * This passes configuration to Motion Canvas' proxy.
-   * Note that the proxy is disabled by default.
-   * You can either pass `true` and a config object
-   * to enable it.
-   **/
-  proxy?: boolean | CorsProxyPluginConfig;
 
   /**
    * Build the project to run in the editor.
@@ -103,7 +91,6 @@ export default ({
   output = './output',
   bufferedAssets = /^$/,
   editor = '@revideo/ui',
-  proxy,
   buildForEditor,
 }: MotionCanvasPluginConfig = {}): Plugin[] => {
   const plugins: PluginOptions[] = [];
@@ -139,7 +126,6 @@ export default ({
     wasmExporterPlugin(),
     rivePlugin(),
     webglPlugin(),
-    corsProxyPlugin(proxy),
     metricsPlugin(),
   ];
 };

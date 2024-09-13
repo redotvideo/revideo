@@ -140,12 +140,22 @@ export function Player({
     (entries: ResizeObserverEntry[]) => {
       const [entry] = entries;
       if (entry && wrapperRef.current) {
-        const boundingRect = wrapperRef.current.getBoundingClientRect();
-        onPlayerResize?.(boundingRect);
+        const newRect = entry.contentRect;
+        if (
+          !lastRect.current ||
+          newRect.width !== lastRect.current.width ||
+          newRect.height !== lastRect.current.height
+        ) {
+          console.log('jo resize');
+          lastRect.current = newRect;
+          onPlayerResize?.(newRect);
+        }
       }
     },
     [onPlayerResize],
   );
+
+  const lastRect = useRef<DOMRectReadOnly | null>(null);
 
   useEffect(() => {
     if (!wrapperRef.current) return;

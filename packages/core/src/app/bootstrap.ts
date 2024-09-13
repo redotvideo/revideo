@@ -1,16 +1,20 @@
 import {Plugin} from '../plugin';
 import DefaultPlugin from '../plugin/DefaultPlugin';
 import {Logger} from './Logger';
-import {Project, ProjectDescription, UserSettings, Versions} from './Project';
+import {
+  BaseProject,
+  createVersionObject,
+  FullProject,
+  UserSettings,
+} from './Project';
 
 /**
+ * // TODO(refactor): delete
  * Bootstrap a project.
  *
  * @param name - The name of the project.
  * @param versions - Package versions.
- * @param plugins - Loaded plugins.
  * @param config - Project settings.
- * @param metaFile - The project meta file.
  * @param settingsFile - The settings meta file.
  * @param logger - An optional logger instance.
  *
@@ -18,25 +22,34 @@ import {Project, ProjectDescription, UserSettings, Versions} from './Project';
  */
 export function bootstrap(
   name: string,
-  versions: Versions,
-  plugins: Plugin[],
-  config: ProjectDescription,
+  config: BaseProject,
   settings: UserSettings,
-
-  logger = config.logger ?? new Logger(),
-): Project {
+): FullProject {
   // Don't delete, has side effects
   // TODO(konsti): Figure out how to get rid of this
   void DefaultPlugin;
 
+  const version = '0.5.9';
+
   const project = {
     name,
     ...config,
-    plugins,
-    versions,
-    logger,
+    plugins: [] as Plugin[], // TODO(refactor): get rid of this
+    versions: createVersionObject(version),
+    logger: new Logger(),
     settings,
-  } as Project;
+  } as FullProject;
 
   return project;
+}
+
+// TODO(refactor): naming
+export function bootstrapNew(project: BaseProject): FullProject {
+  return {
+    ...project,
+    name: project.name ?? 'project',
+    plugins: [] as Plugin[], // TODO: get rid of this
+    logger: new Logger(),
+    versions: createVersionObject('0.5.9'),
+  };
 }

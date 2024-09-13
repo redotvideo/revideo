@@ -10,7 +10,7 @@ import {Semaphore} from '../utils';
 import {Logger} from './Logger';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import {Project} from './Project';
+import {FullProject} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 
 export interface PlayerState extends Record<string, unknown> {
@@ -117,7 +117,7 @@ export class Player {
   }
 
   public constructor(
-    private project: Project,
+    private project: FullProject,
     private settings: Partial<PlayerSettings> = {},
     private initialState: Partial<PlayerState> = {},
     private initialFrame = -1,
@@ -153,9 +153,6 @@ export class Player {
         sharedWebGLContext: this.sharedWebGLContext,
         experimentalFeatures: project.experimentalFeatures,
       });
-      description.onReplaced?.subscribe(description => {
-        scene.reload(description);
-      }, false);
       scene.onReloaded.subscribe(() => this.requestRecalculation());
       scene.variables.updateSignals(project.variables ?? {});
       scenes.push(scene);

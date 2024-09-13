@@ -20,7 +20,6 @@ const final = bootstrap(
       background: new Color('#FFFFFF'),
       range: [0, Infinity],
       size: new Vector2(1920, 1080),
-      audioOffset: 0,
     },
     preview: {
       fps: 60,

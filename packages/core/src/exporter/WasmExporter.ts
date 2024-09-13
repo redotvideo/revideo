@@ -1,5 +1,5 @@
 import loadMp4Module from 'mp4-wasm';
-import {Project} from '../app/Project';
+import {FullProject} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {Exporter} from './Exporter';
 import {download} from './download-videos';
@@ -8,12 +8,12 @@ export class WasmExporter implements Exporter {
   public static readonly id = '@revideo/core/wasm';
   public static readonly displayName = 'Video (Wasm)';
 
-  public static async create(project: Project, settings: RendererSettings) {
+  public static async create(project: FullProject, settings: RendererSettings) {
     return new WasmExporter(project, settings);
   }
 
   public constructor(
-    private readonly project: Project,
+    private readonly project: FullProject,
     private readonly settings: RendererSettings,
   ) {}
 

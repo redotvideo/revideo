@@ -4,11 +4,7 @@ import type {
   PlaybackStatus,
   SharedWebGLContext,
 } from '../app';
-import type {
-  SubscribableEvent,
-  SubscribableValueEvent,
-  ValueDispatcher,
-} from '../events';
+import type {SubscribableEvent, SubscribableValueEvent} from '../events';
 import type {Plugin} from '../plugin';
 import type {SignalValue} from '../signals';
 import type {Vector2} from '../types';
@@ -68,10 +64,8 @@ export interface SceneDescription<T = unknown> {
 export interface FullSceneDescription<T = unknown> extends SceneDescription<T> {
   size: Vector2;
   resolutionScale: number;
-  variables: Variables;
   playback: PlaybackStatus;
   logger: Logger;
-  onReplaced: ValueDispatcher<FullSceneDescription<T>>;
   sharedWebGLContext: SharedWebGLContext;
   experimentalFeatures?: boolean;
 }

@@ -1,21 +1,17 @@
-import {PresenterState} from '@revideo/core';
 import styles from './Editor.module.scss';
 import {Console} from './components/console';
 import {Footer} from './components/footer';
 import {ElementSwitch, Navigation, ResizeableLayout} from './components/layout';
-import {PresentationMode} from './components/presentation';
 import {Settings, Threads, VideoSettings} from './components/sidebar';
 import {Timeline} from './components/timeline';
 import {Viewport} from './components/viewport';
 import {usePanels} from './contexts';
-import {usePresenterState} from './hooks';
 import {EditorPanel} from './signals';
 
 export function Editor() {
-  const state = usePresenterState();
   const {sidebar, bottom} = usePanels();
 
-  return state === PresenterState.Initial ? (
+  return (
     <div className={styles.root}>
       <Navigation />
       <ResizeableLayout
@@ -49,7 +45,5 @@ export function Editor() {
       </ResizeableLayout>
       <Footer />
     </div>
-  ) : (
-    <PresentationMode />
   );
 }

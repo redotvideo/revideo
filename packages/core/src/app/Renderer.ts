@@ -12,7 +12,7 @@ import {Vector2} from '../types';
 import {Semaphore} from '../utils';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import type {ExporterSettings, Project} from './Project';
+import type {ExporterSettings, FullProject} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 import {Stage, StageSettings} from './Stage';
 import {TimeEstimator} from './TimeEstimator';
@@ -84,7 +84,7 @@ export class Renderer {
   private exporter: Exporter | null = null;
   private abortController: AbortController | null = null;
 
-  public constructor(private project: Project) {
+  public constructor(private project: FullProject) {
     this.playback = new PlaybackManager();
     this.status = new PlaybackStatus(this.playback);
     this.sharedWebGLContext = new SharedWebGLContext(this.project.logger);
@@ -94,8 +94,8 @@ export class Renderer {
       // this is where it enriches the scene. up to this point, the type definition is inaccurate
       const scene = new description.klass({
         ...description,
-        logger: this.project.logger,
         playback: this.status,
+        logger: this.project.logger,
         size: new Vector2(1920, 1080),
         resolutionScale: 1,
         sharedWebGLContext: this.sharedWebGLContext,
@@ -352,10 +352,8 @@ export class Renderer {
 
   private async reloadScenes(settings: RendererSettings) {
     for (let i = 0; i < this.project.scenes.length; i++) {
-      const description = this.project.scenes[i];
       const scene = this.playback.onScenesRecalculated.current[i];
       scene.reload({
-        config: description.onReplaced.current.config,
         size: settings.size,
         resolutionScale: settings.resolutionScale,
       });

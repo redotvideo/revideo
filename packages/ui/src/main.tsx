@@ -2,11 +2,10 @@ import './index.scss';
 
 import {
   Player,
-  Presenter,
   Renderer,
   experimentalLog,
   getFullPreviewSettings,
-  type Project,
+  type FullProject,
 } from '@revideo/core';
 import {ComponentChild, render} from 'preact';
 import {Editor} from './Editor';
@@ -30,7 +29,7 @@ function renderRoot(vnode: ComponentChild) {
   render(vnode, root);
 }
 
-export function editor(project: Project) {
+export function editor(project: FullProject) {
   Error.stackTraceLimit = Infinity;
   projectNameSignal.value = project.name;
 
@@ -64,9 +63,6 @@ export function editor(project: Project) {
 
   const renderer = new Renderer(project);
   project.plugins.forEach(plugin => plugin.renderer?.(renderer));
-
-  const presenter = new Presenter(project);
-  project.plugins.forEach(plugin => plugin.presenter?.(presenter));
 
   // TODO(refactor)
   // const settings = project.settingsNew;
@@ -123,7 +119,6 @@ export function editor(project: Project) {
       application={{
         player,
         renderer,
-        presenter,
         project,
         plugins,
       }}

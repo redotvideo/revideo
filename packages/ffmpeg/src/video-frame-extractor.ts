@@ -108,7 +108,7 @@ export class VideoFrameExtractor {
           return;
         }
 
-        const format = metadata.format.format_name?.split(',')[0] || 'mp4';
+        const format = metadata.format.format_name?.split(',')[-1] || 'mp4';
         const outputFileName = `chunk_${uuidv4()}.${format}`;
         const outputPath = path.join(outputDir, outputFileName);
         const toleranceInSeconds = 0.5;

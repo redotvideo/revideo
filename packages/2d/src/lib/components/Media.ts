@@ -139,7 +139,7 @@ export abstract class Media extends Asset {
     }
   }
 
-  protected setVolume(volume: number) {
+  public setVolume(volume: number) {
     if (volume < 0) {
       console.warn(
         `volumes cannot be negative - the value will be clamped to 0.`,

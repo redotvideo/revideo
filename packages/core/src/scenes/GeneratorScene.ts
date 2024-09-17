@@ -117,6 +117,8 @@ export abstract class GeneratorScene<T>
 
   public stopAllMedia(): void {}
 
+  public abstract adjustVolume(volumeScale: number): void;
+
   public readonly experimentalFeatures: boolean;
 
   protected resolutionScale: number;

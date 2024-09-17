@@ -1,11 +1,11 @@
 'use client';
+import {FullProject} from '@revideo/core';
 import {ComponentProps, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
-import './styles.css';
+import './index.css';
 import {shouldShowControls} from './utils';
 
 interface RevideoPlayerProps {
-  src: `${string}/`;
   playing?: string;
   variables?: string;
   looping?: string;
@@ -25,8 +25,7 @@ declare global {
 }
 
 interface PlayerProps {
-  src: `${string}/`;
-
+  project: FullProject;
   controls?: boolean;
   variables?: Record<string, any>;
   playing?: boolean;
@@ -44,8 +43,7 @@ interface PlayerProps {
 }
 
 export function Player({
-  src,
-
+  project,
   controls = true,
   variables = {},
   playing = false,
@@ -81,7 +79,7 @@ export function Player({
    */
   useEffect(() => {
     const diff = Math.abs(currentTime - currentTimeState);
-    if (diff > 0.03) {
+    if (diff > 0.05) {
       setForcedTime(currentTime);
     }
   }, [currentTime]);
@@ -118,7 +116,11 @@ export function Player({
    * Import the player and add all event listeners.
    */
   useEffect(() => {
-    import('./internal');
+    import('./internal').then(() => {
+      if (playerRef.current) {
+        (playerRef.current as any).setProject(project);
+      }
+    });
 
     playerRef.current?.addEventListener('timeupdate', handleTimeUpdate);
     playerRef.current?.addEventListener('duration', handleDurationUpdate);
@@ -128,12 +130,8 @@ export function Player({
       playerRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
       playerRef.current?.removeEventListener('duration', handleDurationUpdate);
       document.removeEventListener('keydown', handleKeyDown);
-      const frameElement = document.getElementById('revideo-2d-frame');
-      if (frameElement) {
-        frameElement.remove();
-      }
     };
-  }, []);
+  }, [project]);
 
   /**
    * When the forced time changes, seek to that time.
@@ -147,19 +145,18 @@ export function Player({
   }
 
   return (
-    <div data-player="true" style={{display: 'contents'}}>
+    <div className="revideo-player-root" style={{display: 'contents'}}>
       <div
-        className="p-relative p-cursor-default p-focus:outline-none"
+        className="relative cursor-default focus:outline-none"
         onFocus={() => (focus.current = true)}
         onBlur={() => (focus.current = false)}
         tabIndex={0}
         onMouseEnter={() => setIsMouseOver(true)}
         onMouseLeave={() => setIsMouseOver(false)}
       >
-        <div className="p-relative">
+        <div className="relative">
           <revideo-player
             ref={playerRef}
-            src={src}
             playing={String(playingState)}
             onClick={() => setPlaying(prev => !prev)}
             variables={JSON.stringify(variables)}
@@ -170,10 +167,10 @@ export function Player({
             fps={fps}
           />
           <div
-            className={`p-absolute p-bottom-0 p-w-full p-transition-opacity p-duration-200 ${
+            className={`absolute bottom-0 w-full transition-opacity duration-200 ${
               shouldShowControls(playingState, isMouseOver, !controls)
-                ? 'p-opacity-100'
-                : 'p-opacity-0'
+                ? 'opacity-100'
+                : 'opacity-0'
             }`}
           >
             <Controls

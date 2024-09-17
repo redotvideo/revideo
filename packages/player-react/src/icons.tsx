@@ -4,7 +4,7 @@ export function PlayButton() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="p-w-6 p-h-6"
+      className="w-6 h-6"
     >
       <path
         fillRule="evenodd"
@@ -21,7 +21,7 @@ export function PauseButton() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="p-w-6 p-h-6"
+      className="w-6 h-6"
     >
       <path
         fillRule="evenodd"

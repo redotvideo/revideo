@@ -1,8 +1,8 @@
 import {
-  getFullRenderingSettings,
-  Project,
+  FullProject,
   Renderer,
   Vector2,
+  getFullRenderingSettings,
 } from '@revideo/core';
 
 declare global {
@@ -18,7 +18,7 @@ declare global {
  * @param range - The range of frames to render.
  */
 export const render = async (
-  project: Project,
+  project: FullProject,
   workerId: number,
   totalNumOfWorkers: number,
   startInSeconds: number,
@@ -70,7 +70,7 @@ export const render = async (
  * Calculate the first and last "global" frame, i.e. frame independent of worker
  */
 async function getGlobalFirstAndLastFrame(
-  project: Project,
+  project: FullProject,
   renderer: Renderer,
   startSecondFromUser: number,
   endSecondFromUser: number,

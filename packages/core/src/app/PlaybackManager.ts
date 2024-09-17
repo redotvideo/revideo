@@ -128,6 +128,7 @@ export class PlaybackManager {
     await this.seekSlide(this.slides.find(slide => slide.id === slideId));
   }
 
+  // TODO(refactor): we might be able to remove this method
   private async seekSlide(slide: Slide | null = null) {
     if (!slide) return;
     const {id, scene} = slide;

@@ -443,6 +443,9 @@ export class Player {
   private request() {
     if (!this.active) return;
 
+    // TODO(refactor): make this loop not run when player is paused, like wtf
+    // console.log('running player loop', Date.now());
+
     this.requestId ??= requestAnimationFrame(async time => {
       this.requestId = null;
       if (time - this.renderTime >= 1000 / (this.status.fps + 5)) {

@@ -43,7 +43,6 @@ export abstract class GeneratorScene<T>
   public readonly shaders: Shaders;
   public readonly slides: Slides;
   public readonly variables: Variables;
-  public assetRoot: `${string}/` = '/';
   public creationStack?: string;
   public previousOnTop: SignalValue<boolean>;
 
@@ -119,6 +118,7 @@ export abstract class GeneratorScene<T>
   private runner: ThreadGenerator | null = null;
   private state: SceneState = SceneState.Initial;
   private cached = false;
+  // TODO(refactor): seems to be unused
   private counters: Record<string, number> = {};
   private size: Vector2;
 
@@ -163,7 +163,7 @@ export abstract class GeneratorScene<T>
       await DependencyContext.consumePromises();
       context.save();
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      await this.executeAsync(() => this.draw(context));
+      await this.draw(context);
       context.restore();
     } while (DependencyContext.hasPromises() && iterations < 10);
 
@@ -363,20 +363,6 @@ export abstract class GeneratorScene<T>
     startPlayback(this.playback);
     try {
       result = callback();
-    } finally {
-      endPlayback(this.playback);
-      endScene(this);
-    }
-
-    return result;
-  }
-
-  protected async executeAsync<T>(callback: () => Promise<T>): Promise<T> {
-    let result: T;
-    startScene(this);
-    startPlayback(this.playback);
-    try {
-      result = await callback();
     } finally {
       endPlayback(this.playback);
       endScene(this);

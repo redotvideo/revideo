@@ -91,7 +91,6 @@ export class Renderer {
     const scenes: Scene[] = [];
 
     for (const description of project.scenes) {
-      // this is where it enriches the scene. up to this point, the type definition is inaccurate
       const scene = new description.klass({
         ...description,
         playback: this.status,

@@ -11,6 +11,7 @@ export interface View2DProps extends RectProps {
 
 @nodeName('View2D')
 export class View2D extends Rect {
+  // TODO: scope this to individual player
   @lazy(() => {
     const frameID = 'revideo-2d-frame';
     let frame = document.querySelector<HTMLDivElement>(`#${frameID}`);

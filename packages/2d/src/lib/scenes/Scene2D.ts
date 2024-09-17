@@ -210,17 +210,6 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
     }
   }
 
-  public override adjustVolume(volumeScale: number) {
-    const mediaNodes = Array.from(this.registeredNodes.values()).filter(
-      (node): node is Media => node instanceof Media,
-    );
-
-    for (const media of mediaNodes) {
-      media.setVolume(media.getVolume() * volumeScale);
-      console.log(media.key);
-    }
-  }
-
   protected recreateView() {
     this.execute(() => {
       const size = this.getSize();

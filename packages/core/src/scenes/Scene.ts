@@ -343,8 +343,6 @@ export interface Scene<T = unknown> {
 
   stopAllMedia(): void;
 
-  adjustVolume(volumeScale: number): void;
-
   /**
    * Should this scene be rendered below the previous scene during a transition?
    */

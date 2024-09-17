@@ -31,7 +31,6 @@ interface PlayerProps {
   variables?: Record<string, any>;
   playing?: boolean;
   currentTime?: number;
-  volume?: number;
   looping?: boolean;
   fps?: number;
 
@@ -51,7 +50,6 @@ export function Player({
   variables = {},
   playing = false,
   currentTime = 0,
-  volume = 1,
   looping = true,
   fps = 30,
 
@@ -66,7 +64,6 @@ export function Player({
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [currentTimeState, setCurrentTime] = useState(currentTime);
-  const [volumeState, setVolumeState] = useState(volume); // Add this line
   const [duration, setDuration] = useState(-1);
 
   const focus = useRef(false);
@@ -88,10 +85,6 @@ export function Player({
       setForcedTime(currentTime);
     }
   }, [currentTime]);
-
-  useEffect(() => {
-    setForcedVolume(volume);
-  }, [volume]);
 
   /**
    * Receives the current time of the video from the player.
@@ -153,15 +146,6 @@ export function Player({
     }
   }
 
-  function setForcedVolume(volume: number) {
-    setVolumeState(volume);
-    if (playerRef.current) {
-      playerRef.current.dispatchEvent(
-        new CustomEvent('volumechange', {detail: volume}),
-      );
-    }
-  }
-
   return (
     <div data-player="true" style={{display: 'contents'}}>
       <div
@@ -199,8 +183,6 @@ export function Player({
               currentTime={currentTimeState}
               setForcedTime={setForcedTime}
               timeDisplayFormat={timeDisplayFormat}
-              volume={volumeState}
-              setVolume={setForcedVolume}
             />
           </div>
         </div>

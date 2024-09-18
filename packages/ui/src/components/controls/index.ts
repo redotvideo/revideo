@@ -14,5 +14,4 @@ export * from './Pill';
 export * from './ReadOnlyInput';
 export * from './Select';
 export * from './Separator';
-export * from './Slider';
 export * from './Toggle';

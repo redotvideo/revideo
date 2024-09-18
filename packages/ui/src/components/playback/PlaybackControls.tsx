@@ -4,7 +4,7 @@ import {getFullRenderingSettings} from '@revideo/core';
 import {useCallback} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {useDocumentEvent, usePlayerState} from '../../hooks';
-import {IconButton, IconCheckbox, Input, Select, Slider} from '../controls';
+import {IconButton, IconCheckbox, Input, Select} from '../controls';
 import {
   FastForward,
   FastRewind,
@@ -14,8 +14,6 @@ import {
   Repeat,
   SkipNext,
   SkipPrevious,
-  VolumeOff,
-  VolumeOn,
 } from '../icons';
 import {Framerate} from './Framerate';
 
@@ -85,32 +83,6 @@ export function PlaybackControls() {
         value={state.speed}
         onChange={speed => player.setSpeed(speed)}
       />
-      <div className={styles.volumeTrigger}>
-        <IconCheckbox
-          titleOn="Mute audio [M]"
-          titleOff="Unmute audio [M]"
-          checked={!state.muted}
-          onChange={value => player.toggleAudio(value)}
-        >
-          {state.muted ? <VolumeOff /> : <VolumeOn />}
-        </IconCheckbox>
-
-        {!state.muted && (
-          <div className={styles.volumeMargin}>
-            <div className={styles.volume}>
-              <Slider
-                value={state.volume}
-                onChange={volume => {
-                  if (isNaN(volume)) {
-                    volume = 0;
-                  }
-                  player.setAudioVolume(volume);
-                }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
       <IconButton
         title="Start [Shift + Left arrow]"
         onClick={() => player.requestReset()}

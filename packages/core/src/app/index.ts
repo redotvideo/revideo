@@ -12,5 +12,5 @@ export * from './Project';
 export * from './Renderer';
 export * from './SharedWebGLContext';
 export * from './Stage';
-export * from './bootstrap';
+export * from './makeProject';
 export * from './project-settings';

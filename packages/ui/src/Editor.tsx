@@ -2,7 +2,7 @@ import styles from './Editor.module.scss';
 import {Console} from './components/console';
 import {Footer} from './components/footer';
 import {ElementSwitch, Navigation, ResizeableLayout} from './components/layout';
-import {Settings, Threads, VideoSettings} from './components/sidebar';
+import {Threads} from './components/sidebar';
 import {Timeline} from './components/timeline';
 import {Viewport} from './components/viewport';
 import {usePanels} from './contexts';
@@ -28,10 +28,8 @@ export function Editor() {
           <ElementSwitch
             value={sidebar.current.value}
             cases={{
-              [EditorPanel.VideoSettings]: VideoSettings,
               [EditorPanel.Threads]: Threads,
               [EditorPanel.Console]: Console,
-              [EditorPanel.Settings]: Settings,
             }}
           />
           <Viewport />

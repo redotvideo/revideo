@@ -11,8 +11,6 @@ import {
   Movie,
   School,
   Science,
-  Settings,
-  Videocam,
 } from '../icons';
 import {Badge, Space, Tab, TabGroup, TabLink, Tabs} from '../tabs';
 import styles from './Navigation.module.scss';
@@ -47,13 +45,6 @@ export function Navigation() {
         <MotionCanvas />
       </TabLink>
       <TabGroup tab={sidebar.current.value} setTab={tab => sidebar.set(tab)}>
-        <Tab
-          title="Video Settings"
-          id="rendering-tab"
-          tab={EditorPanel.VideoSettings}
-        >
-          <Videocam />
-        </Tab>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         {tabs.map(({name, tabComponent: Component}) => (
           <Component tab={name} />
@@ -72,9 +63,6 @@ export function Navigation() {
               {errorCount > 999 ? `999+` : errorCount}
             </Badge>
           )}
-        </Tab>
-        <Tab title="Settings" id="settings-tab" tab={EditorPanel.Settings}>
-          <Settings />
         </Tab>
       </TabGroup>
       <Space />

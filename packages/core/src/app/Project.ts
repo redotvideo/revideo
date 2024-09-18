@@ -108,7 +108,7 @@ export interface Project extends UserProject {
    * @deprecated Not exposed in the public API. We set the exporters as plugins
    * which is why we can't delete this yet.
    *
-   * // TODO(refactor): get rid of this
+   * // TODO(konsti): get rid of plugins
    *
    * A list of plugins to include in the project.
    *

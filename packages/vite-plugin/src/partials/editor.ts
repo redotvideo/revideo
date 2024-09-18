@@ -31,7 +31,8 @@ export function editorPlugin({editor, projects}: EditorPluginConfig): Plugin {
           return `\
 import {editor} from '${editor}';
 import project from '${projects.list[0].url}';
-editor(project);
+import {addEditorToProject} from '@revideo/core';
+editor(await addEditorToProject(project));
 `;
         }
 
@@ -43,7 +44,8 @@ editor(project);
             return `\
 import {editor} from '${editor}';
 import project from '${projects.lookup.get(name)!.url}?project';
-editor(project);
+import {addEditorToProject} from '@revideo/core';
+editor(await addEditorToProject(project));
 `;
           }
         }

@@ -1,21 +1,16 @@
-import {bootstrap, Color, Vector2} from '@revideo/core';
+import {Color, makeProject, Vector2} from '@revideo/core';
 
-import example from './scenes/example';
+import example from './example';
 
-const project = {
-  experimentalFeatures: true,
+import './global.css';
+
+export const project = makeProject({
+  name: 'project',
   scenes: [example],
   variables: {
     fill: 'green',
   },
-};
-
-const final = bootstrap(
-  'project',
-  {core: '0.1.0', two: null, ui: null, vitePlugin: null},
-  [],
-  project,
-  {
+  settings: {
     shared: {
       background: new Color('#FFFFFF'),
       range: [0, Infinity],
@@ -34,8 +29,6 @@ const final = bootstrap(
       colorSpace: 'srgb',
     },
   },
-);
+});
 
-console.log(final);
-
-export default final;
+export default project;

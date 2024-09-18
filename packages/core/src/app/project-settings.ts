@@ -1,11 +1,11 @@
-import type {FullProject} from './Project';
+import type {Project} from './Project';
 
-type SharedSettings = FullProject['settings']['shared'];
-type PreviewSettings = FullProject['settings']['preview'];
-type RenderingSettings = FullProject['settings']['rendering'];
+type SharedSettings = Project['settings']['shared'];
+type PreviewSettings = Project['settings']['preview'];
+type RenderingSettings = Project['settings']['rendering'];
 
 export function getFullPreviewSettings(
-  project: FullProject,
+  project: Project,
 ): SharedSettings & PreviewSettings {
   return {
     ...project.settings.shared,
@@ -14,7 +14,7 @@ export function getFullPreviewSettings(
 }
 
 export function getFullRenderingSettings(
-  project: FullProject,
+  project: Project,
 ): SharedSettings & RenderingSettings {
   return {
     ...project.settings.shared,

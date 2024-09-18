@@ -1,4 +1,4 @@
-import type {FullProject} from '../app/Project';
+import type {Project} from '../app/Project';
 import type {
   AssetInfo,
   RendererResult,
@@ -36,7 +36,7 @@ export interface ExporterClass {
    * @param project - The current project.
    * @param settings - The rendering settings.
    */
-  create(project: FullProject, settings: RendererSettings): Promise<Exporter>;
+  create(project: Project, settings: RendererSettings): Promise<Exporter>;
 }
 
 /**

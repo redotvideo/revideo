@@ -33,8 +33,7 @@ export type ExporterSettings =
       name: '@revideo/core/wasm';
     };
 
-// TODO(refactor): figure out naming
-export interface UserSettings {
+export interface ProjectSettings {
   shared: {
     background: Color | null;
     range: [number, number];
@@ -52,8 +51,7 @@ export interface UserSettings {
   };
 }
 
-// TODO(refactor): naming
-export interface BaseProject {
+export interface UserProject {
   /**
    * The name of the project.
    */
@@ -100,11 +98,10 @@ export interface BaseProject {
    * Includes things like the background color, the resolution, the frame rate,
    * and the exporter to use.
    */
-  settings: UserSettings;
+  settings: ProjectSettings;
 }
 
-// TODO(refactor): naming
-export interface FullProject extends BaseProject {
+export interface Project extends UserProject {
   name: string;
 
   /**

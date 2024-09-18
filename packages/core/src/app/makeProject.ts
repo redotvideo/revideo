@@ -1,8 +1,8 @@
 import DefaultPlugin from '../plugin/DefaultPlugin';
 import {Logger} from './Logger';
-import {BaseProject, createVersionObject, FullProject} from './Project';
+import {Project, UserProject, createVersionObject} from './Project';
 
-export function makeProject(project: BaseProject): FullProject {
+export function makeProject(project: UserProject): Project {
   // Don't delete, has side effects
   // TODO(konsti): Figure out how to get rid of this
   void DefaultPlugin;
@@ -16,7 +16,7 @@ export function makeProject(project: BaseProject): FullProject {
   };
 }
 
-export async function addEditorToProject(project: FullProject) {
+export async function addEditorToProject(project: Project) {
   const url = '/@id/@revideo/2d/editor';
   const imported = await import(
     /* webpackIgnore: true */ /* @vite-ignore */ url

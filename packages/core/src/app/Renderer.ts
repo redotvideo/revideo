@@ -12,7 +12,7 @@ import {Vector2} from '../types';
 import {Semaphore} from '../utils';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import type {ExporterSettings, FullProject} from './Project';
+import type {ExporterSettings, Project} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 import {Stage, StageSettings} from './Stage';
 import {TimeEstimator} from './TimeEstimator';
@@ -84,7 +84,7 @@ export class Renderer {
   private exporter: Exporter | null = null;
   private abortController: AbortController | null = null;
 
-  public constructor(private project: FullProject) {
+  public constructor(private project: Project) {
     this.playback = new PlaybackManager();
     this.status = new PlaybackStatus(this.playback);
     this.sharedWebGLContext = new SharedWebGLContext(this.project.logger);

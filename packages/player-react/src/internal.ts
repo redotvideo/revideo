@@ -1,9 +1,4 @@
-import {
-  FullProject,
-  Player,
-  Stage,
-  getFullPreviewSettings,
-} from '@revideo/core';
+import {Player, Project, Stage, getFullPreviewSettings} from '@revideo/core';
 
 import {Vector2} from '@revideo/core';
 
@@ -87,7 +82,7 @@ class RevideoPlayer extends HTMLElement {
   private readonly overlay: HTMLCanvasElement;
 
   private state = State.Initial;
-  private project: FullProject | null = null;
+  private project: Project | null = null;
   private player: Player | null = null;
   private defaultSettings:
     | ReturnType<typeof getFullPreviewSettings>
@@ -113,7 +108,7 @@ class RevideoPlayer extends HTMLElement {
     this.setState(State.Initial);
   }
 
-  public setProject(project: FullProject) {
+  public setProject(project: Project) {
     this.updateProject(project);
   }
 
@@ -132,7 +127,7 @@ class RevideoPlayer extends HTMLElement {
     }
   }
 
-  private async updateProject(project: FullProject) {
+  private async updateProject(project: Project) {
     const playing = this.playing;
     this.setState(State.Initial);
 

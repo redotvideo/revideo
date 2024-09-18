@@ -1,5 +1,5 @@
 import type {Logger} from '../app/Logger';
-import type {FullProject} from '../app/Project';
+import type {Project} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {EventDispatcher} from '../events';
 import {clamp} from '../tweening';
@@ -31,7 +31,7 @@ export class ImageExporter implements Exporter {
   public static readonly displayName = 'Image sequence';
 
   public static async create(
-    project: FullProject,
+    project: Project,
     settings: RendererSettings,
   ): Promise<ImageExporter> {
     return new ImageExporter(project.logger, settings);

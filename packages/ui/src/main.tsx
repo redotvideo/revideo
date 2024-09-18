@@ -5,7 +5,7 @@ import {
   Renderer,
   experimentalLog,
   getFullPreviewSettings,
-  type FullProject,
+  type Project,
 } from '@revideo/core';
 import {ComponentChild, render} from 'preact';
 import {Editor} from './Editor';
@@ -29,7 +29,7 @@ function renderRoot(vnode: ComponentChild) {
   render(vnode, root);
 }
 
-export function editor(project: FullProject) {
+export function editor(project: Project) {
   Error.stackTraceLimit = Infinity;
   projectNameSignal.value = project.name;
 

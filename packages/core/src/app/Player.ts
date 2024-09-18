@@ -10,7 +10,7 @@ import {Semaphore} from '../utils';
 import {Logger} from './Logger';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import {FullProject} from './Project';
+import {Project} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 
 export interface PlayerState extends Record<string, unknown> {
@@ -117,7 +117,7 @@ export class Player {
   }
 
   public constructor(
-    private project: FullProject,
+    private project: Project,
     private settings: Partial<PlayerSettings> = {},
     private initialState: Partial<PlayerState> = {},
     private initialFrame = -1,
@@ -443,8 +443,7 @@ export class Player {
   private request() {
     if (!this.active) return;
 
-    // TODO(refactor): make this loop not run when player is paused, like wtf
-    // console.log('running player loop', Date.now());
+    // TODO(konsti): make this loop not run when player is paused
 
     this.requestId ??= requestAnimationFrame(async time => {
       this.requestId = null;

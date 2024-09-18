@@ -1,5 +1,5 @@
 'use client';
-import {FullProject} from '@revideo/core';
+import {Project} from '@revideo/core';
 import {ComponentProps, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
 import './index.css';
@@ -25,7 +25,7 @@ declare global {
 }
 
 interface PlayerProps {
-  project: FullProject;
+  project: Project;
   controls?: boolean;
   variables?: Record<string, any>;
   playing?: boolean;

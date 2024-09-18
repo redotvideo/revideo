@@ -1,4 +1,4 @@
-import {FullProject} from '../app/Project';
+import {Project} from '../app/Project';
 import type {
   AssetInfo,
   RendererResult,
@@ -42,7 +42,7 @@ export class FFmpegExporterClient implements Exporter {
   public static readonly id = '@revideo/core/ffmpeg';
   public static readonly displayName = 'Video (FFmpeg)';
 
-  public static async create(project: FullProject, settings: RendererSettings) {
+  public static async create(project: Project, settings: RendererSettings) {
     return new FFmpegExporterClient(project, settings);
   }
 
@@ -58,7 +58,7 @@ export class FFmpegExporterClient implements Exporter {
   }
 
   public constructor(
-    private readonly project: FullProject,
+    private readonly project: Project,
     private readonly settings: RendererSettings,
   ) {}
 

@@ -1,5 +1,5 @@
 import {Signal, useSignal} from '@preact/signals';
-import type {FullProject, Player, Renderer} from '@revideo/core';
+import type {Player, Project, Renderer} from '@revideo/core';
 import {ComponentChildren, createContext} from 'preact';
 import {useContext, useRef} from 'preact/hooks';
 import {useSubscribable} from '../hooks';
@@ -12,7 +12,7 @@ export interface Inspection {
 }
 
 interface Application {
-  project: FullProject;
+  project: Project;
   player: Player;
   renderer: Renderer;
   plugins: EditorPlugin[];

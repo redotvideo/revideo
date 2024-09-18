@@ -168,7 +168,7 @@ export class Img extends Rect {
         new Promise((resolve, reject) => {
           image.addEventListener('load', resolve);
           image.addEventListener('error', () =>
-            // TODO(refactor): error handling inside DependencyContext
+            // TODO: example for error handling inside DependencyContext (this shouldn't be UI specific)
             reject(
               new DetailedError({
                 message: `Failed to load an image`,

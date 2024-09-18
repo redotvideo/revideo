@@ -1,5 +1,5 @@
 import {
-  FullProject,
+  Project,
   Renderer,
   Vector2,
   getFullRenderingSettings,
@@ -18,7 +18,7 @@ declare global {
  * @param range - The range of frames to render.
  */
 export const render = async (
-  project: FullProject,
+  project: Project,
   workerId: number,
   totalNumOfWorkers: number,
   startInSeconds: number,
@@ -70,7 +70,7 @@ export const render = async (
  * Calculate the first and last "global" frame, i.e. frame independent of worker
  */
 async function getGlobalFirstAndLastFrame(
-  project: FullProject,
+  project: Project,
   renderer: Renderer,
   startSecondFromUser: number,
   endSecondFromUser: number,

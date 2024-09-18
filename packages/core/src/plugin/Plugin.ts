@@ -1,4 +1,4 @@
-import type {BaseProject, FullProject, Player, Renderer} from '../app';
+import type {Player, Project, Renderer, UserProject} from '../app';
 import type {ExporterClass} from '../exporter';
 
 /**
@@ -26,14 +26,14 @@ export interface Plugin {
    *
    * @param settings - The project settings.
    */
-  settings?(settings: BaseProject): BaseProject | void;
+  settings?(settings: UserProject): UserProject | void;
 
   /**
    * Receive the project instance right after it is initialized.
    *
    * @param project - The project instance.
    */
-  project?(project: FullProject): void;
+  project?(project: Project): void;
 
   /**
    * Receive the player instance right after it is initialized.
@@ -54,5 +54,5 @@ export interface Plugin {
    *
    * @param project - The project instance.
    */
-  exporters?(project: FullProject): ExporterClass[];
+  exporters?(project: Project): ExporterClass[];
 }

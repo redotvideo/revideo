@@ -11,7 +11,6 @@ const EXPORT_FRAME_LIMIT = 256;
 const EXPORT_RETRY_DELAY = 1000;
 
 export interface ImageExporterOptions {
-  name: string;
   quality: number;
   fileType: CanvasOutputMimeType;
   groupByScene: boolean;

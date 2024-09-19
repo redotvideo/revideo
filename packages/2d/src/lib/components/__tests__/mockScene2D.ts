@@ -24,9 +24,9 @@ export function mockScene2D() {
   const playback = new PlaybackManager();
   const status = new PlaybackStatus(playback);
   const description = {
-    ...makeScene2D(function* () {
+    ...makeScene2D('scene 1', function* () {
       // do nothing
-    }, 'scene'),
+    }),
     name: 'test',
     size: new Vector2(1920, 1080),
     resolutionScale: 1,

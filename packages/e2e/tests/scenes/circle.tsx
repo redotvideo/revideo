@@ -1,6 +1,6 @@
 import {Circle, makeScene2D} from '@revideo/2d';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('circle', function* (view) {
   view.add(
     <Circle
       size={200}

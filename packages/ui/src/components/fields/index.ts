@@ -1,5 +1,4 @@
 export * from './AutoField';
-export * from './ColorField';
 export * from './Expandable';
 export * from './Layout';
 export * from './NumberField';

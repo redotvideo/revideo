@@ -1,7 +1,6 @@
-import {Color, Spacing, Vector2, isType} from '@revideo/core';
+import {Spacing, Vector2, isType} from '@revideo/core';
 import {FunctionComponent} from 'preact';
 import {ArrayField} from './ArrayField';
-import {ColorField} from './ColorField';
 import {NumberField} from './NumberField';
 import {SpacingField} from './SpacingField';
 import {UnknownField} from './UnknownField';
@@ -13,7 +12,6 @@ export interface AutoFieldProps {
 
 const TYPE_MAP: Record<symbol, FunctionComponent<{value: any}>> = {
   [Vector2.symbol]: Vector2Field,
-  [Color.symbol]: ColorField,
   [Spacing.symbol]: SpacingField,
 };
 

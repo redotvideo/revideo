@@ -1,7 +1,6 @@
 export * from './Button';
 export * from './ButtonSelect';
 export * from './Checkbox';
-export * from './ColorInput';
 export * from './Group';
 export * from './IconButton';
 export * from './IconCheckbox';

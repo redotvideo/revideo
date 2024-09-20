@@ -3,7 +3,7 @@ import {all, createRef} from '@revideo/core';
 
 const RED = '#ff6470';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('layout', function* (view) {
   const colA = createRef<Layout>();
   const colB = createRef<Layout>();
   const rowA = createRef<Layout>();

@@ -1,7 +1,7 @@
 import {Circle, Line, Txt, makeScene2D} from '@revideo/2d';
 import {Vector2, createSignal, waitFor} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('node-signal', function* (view) {
   // highlight-start
   const radius = createSignal(3);
   const area = createSignal(() => Math.PI * radius() * radius());

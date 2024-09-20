@@ -1,7 +1,7 @@
 import {Circle, makeScene2D} from '@revideo/2d';
 import {all, createRef} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('quickstart', function* (view) {
   const myCircle = createRef<Circle>();
 
   view.add(

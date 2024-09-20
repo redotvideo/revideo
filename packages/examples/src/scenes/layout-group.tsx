@@ -1,7 +1,7 @@
 import {Layout, Node, Rect, makeScene2D} from '@revideo/2d';
 import {createRef} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('layout-group', function* (view) {
   const group = createRef<Node>();
 
   view.add(

@@ -51,6 +51,12 @@ export interface ProjectSettings {
   };
 }
 
+export type PartialProjectSettings = {
+  shared?: Partial<ProjectSettings['shared']>;
+  rendering?: Partial<ProjectSettings['rendering']>;
+  preview?: Partial<ProjectSettings['preview']>;
+};
+
 export interface UserProject {
   /**
    * The name of the project.
@@ -58,20 +64,7 @@ export interface UserProject {
   name?: string;
 
   /**
-   * a list of scene descriptions that make up the project.
-   *
-   * @remarks
-   * a full scene description can be obtained by loading a scene module with a
-   * `?scene` query parameter.
-   *
-   * @example
-   * ```ts
-   * import examplescene from './example?scene';
-   *
-   * export default makeproject({
-   *   scenes: [examplescene],
-   * });
-   * ```
+   * A list of scene descriptions that make up the project.
    */
   scenes: SceneDescription<any>[];
 
@@ -98,11 +91,12 @@ export interface UserProject {
    * Includes things like the background color, the resolution, the frame rate,
    * and the exporter to use.
    */
-  settings: ProjectSettings;
+  settings?: PartialProjectSettings;
 }
 
 export interface Project extends UserProject {
   name: string;
+  settings: ProjectSettings;
 
   /**
    * @deprecated Not exposed in the public API. We set the exporters as plugins

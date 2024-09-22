@@ -51,7 +51,7 @@ export function rendererPlugin(
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
             import {render} from '@revideo/renderer/lib/client/render';
-            import project from '${projectFile}?project';
+            import project from '${projectFile}';
 
             // Read video variables
             project.variables = ${variables ? `JSON.parse(\`${JSON.stringify(variables, escapeSpecialChars)}\`)` : 'project.variables'};

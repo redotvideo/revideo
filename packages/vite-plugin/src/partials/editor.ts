@@ -43,7 +43,7 @@ editor(await addEditorToProject(project));
             /* language=typescript */
             return `\
 import {editor} from '${editor}';
-import project from '${projects.lookup.get(name)!.url}?project';
+import project from '${projects.lookup.get(name)!.url}';
 import {addEditorToProject} from '@revideo/core';
 editor(await addEditorToProject(project));
 `;

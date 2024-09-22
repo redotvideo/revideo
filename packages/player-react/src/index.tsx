@@ -66,7 +66,7 @@ export function Player({
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [currentTimeState, setCurrentTime] = useState(currentTime);
-  const [volumeState, setVolumeState] = useState(volume); // Add this line
+  const [volumeState, setVolumeState] = useState(volume);
   const [duration, setDuration] = useState(-1);
 
   const focus = useRef(false);

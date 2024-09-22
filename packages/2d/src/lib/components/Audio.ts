@@ -105,7 +105,7 @@ export class Audio extends Media {
         audio.pause();
       }
     }
-    if (Math.abs(audio.currentTime - time) > 0.3) {
+    if (Math.abs(audio.currentTime - time) > 1) {
       this.setCurrentTime(time);
     } else if (!playing) {
       audio.currentTime = time;

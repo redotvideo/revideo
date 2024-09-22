@@ -16,7 +16,7 @@ import {
   waitFor,
 } from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('tweening-visualizer', function* (view) {
   // Signals
   const time = createSignal(0);
   const value = createSignal(0);

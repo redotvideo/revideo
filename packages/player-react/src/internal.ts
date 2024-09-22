@@ -1,6 +1,4 @@
-import type {Project, ProjectMetadata} from '@revideo/core';
-import {Player, Stage} from '@revideo/core';
-import {v4 as uuidv4} from 'uuid';
+import {Player, Project, Stage, getFullPreviewSettings} from '@revideo/core';
 
 import {Vector2} from '@revideo/core';
 
@@ -39,11 +37,9 @@ enum State {
 class RevideoPlayer extends HTMLElement {
   public static get observedAttributes() {
     return [
-      'src',
       'playing',
       'variables',
       'looping',
-
       'fps',
       'quality',
       'width',
@@ -89,7 +85,7 @@ class RevideoPlayer extends HTMLElement {
   private project: Project | null = null;
   private player: Player | null = null;
   private defaultSettings:
-    | ReturnType<typeof ProjectMetadata.prototype.getFullPreviewSettings>
+    | ReturnType<typeof getFullPreviewSettings>
     | undefined;
   private abortController: AbortController | null = null;
   private playing = false;
@@ -114,6 +110,10 @@ class RevideoPlayer extends HTMLElement {
     this.setState(State.Initial);
   }
 
+  public setProject(project: Project) {
+    this.updateProject(project);
+  }
+
   private setState(state: State) {
     this.state = state;
     this.setPlaying(this.playing);
@@ -129,40 +129,18 @@ class RevideoPlayer extends HTMLElement {
     }
   }
 
-  private async updateSource(source: `${string}/`) {
+  private async updateProject(project: Project) {
+    const playing = this.playing;
     this.setState(State.Initial);
 
     this.abortController?.abort();
     this.abortController = new AbortController();
 
-    let project: Project;
-    try {
-      const promise = import(
-        /* webpackIgnore: true */ source + `project.js?instance=${uuidv4()}`
-      );
-      const delay = new Promise(resolve => setTimeout(resolve, 200));
-      await Promise.any([delay, promise]);
-      this.setState(State.Loading);
-      project = (await promise).default;
-    } catch (e) {
-      console.error(e);
-      this.setState(State.Error);
-      return;
-    }
+    this.project = project;
+    console.log(project);
+    this.defaultSettings = getFullPreviewSettings(this.project);
 
-    try {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = source + 'project.css';
-      document.head.appendChild(link);
-    } catch (e) {
-      console.error(e);
-    }
-
-    project.setAssetBase(source);
-
-    this.defaultSettings = project.meta.getFullPreviewSettings();
-    const player = new Player(project);
+    const player = new Player(this.project);
     player.setVariables(this.variables);
     player.toggleLoop(this.looping);
 
@@ -170,23 +148,21 @@ class RevideoPlayer extends HTMLElement {
     this.player?.onFrameChanged.unsubscribe(this.handleFrameChanged);
     this.player?.togglePlayback(false);
     this.player?.deactivate();
-    this.project = project;
-    this.player = player;
 
+    this.player = player;
     this.updateSettings();
-    this.player.onRender.subscribe(this.render);
-    this.player.onFrameChanged.subscribe(this.handleFrameChanged);
-    this.player.togglePlayback(this.playing);
 
     this.setState(State.Ready);
     this.dispatchEvent(new CustomEvent('playerready', {detail: this.player}));
+
+    // Restore previous state
+    this.setPlaying(playing);
+    this.player.onRender.subscribe(this.render);
+    this.player.onFrameChanged.subscribe(this.handleFrameChanged);
   }
 
   public attributeChangedCallback(name: string, _: any, newValue: any) {
     switch (name) {
-      case 'src':
-        this.updateSource(newValue);
-        break;
       case 'playing':
         this.setPlaying(newValue === 'true');
         break;
@@ -259,7 +235,7 @@ class RevideoPlayer extends HTMLElement {
    * Triggered by the player.
    */
   private handleFrameChanged = (frame: number) => {
-    if (!this.project) {
+    if (!this.project || !this.player) {
       return;
     }
     this.time = frame / this.player.playback.fps;

@@ -1,6 +1,6 @@
 import {makeScene2D, Rect} from '@revideo/2d';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('rect', function* (view) {
   view.add(
     <Rect
       width={300}

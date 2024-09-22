@@ -1,6 +1,6 @@
 import {makeProject} from '@revideo/core';
 
-import scene from './scenes/logging?scene';
+import scene from './scenes/logging';
 
 export default makeProject({
   scenes: [scene],

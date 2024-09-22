@@ -12,7 +12,6 @@ import {
 import {Vector2} from '../types';
 import {endPlayback, endScene, startPlayback, startScene} from '../utils';
 import {LifecycleEvents} from './LifecycleEvents';
-import {Random} from './Random';
 import {
   CachedSceneData,
   FullSceneDescription,
@@ -20,13 +19,11 @@ import {
   SceneDescriptionReload,
   SceneRenderEvent,
 } from './Scene';
-import {SceneMetadata} from './SceneMetadata';
 import {SceneState} from './SceneState';
 import {Shaders} from './Shaders';
 import {Slides} from './Slides';
 import {Threadable} from './Threadable';
 import {Variables} from './Variables';
-import {TimeEvents} from './timeEvents';
 
 export interface ThreadGeneratorFactory<T> {
   (view: T): ThreadGenerator;
@@ -43,13 +40,9 @@ export abstract class GeneratorScene<T>
   public readonly name: string;
   public readonly playback: PlaybackStatus;
   public readonly logger: Logger;
-  public readonly meta: SceneMetadata;
-  public readonly timeEvents: TimeEvents;
   public readonly shaders: Shaders;
   public readonly slides: Slides;
   public readonly variables: Variables;
-  public random: Random;
-  public assetRoot: `${string}/` = '/';
   public creationStack?: string;
   public previousOnTop: SignalValue<boolean>;
 
@@ -127,6 +120,7 @@ export abstract class GeneratorScene<T>
   private runner: ThreadGenerator | null = null;
   private state: SceneState = SceneState.Initial;
   private cached = false;
+  // TODO(refactor): seems to be unused
   private counters: Record<string, number> = {};
   private size: Vector2;
 
@@ -138,18 +132,15 @@ export abstract class GeneratorScene<T>
     this.resolutionScale = description.resolutionScale;
     this.logger = description.logger;
     this.playback = description.playback;
-    this.meta = description.meta;
     this.runnerFactory = description.config;
     this.creationStack = description.stack;
     this.experimentalFeatures = description.experimentalFeatures ?? false;
 
     decorate(this.runnerFactory, threadable(this.name));
-    this.timeEvents = new description.timeEventsClass(this);
     this.variables = new Variables(this);
     this.shaders = new Shaders(this, description.sharedWebGLContext);
     this.slides = new Slides(this);
 
-    this.random = new Random(this.meta.seed.get());
     this.previousOnTop = false;
   }
 
@@ -174,7 +165,7 @@ export abstract class GeneratorScene<T>
       await DependencyContext.consumePromises();
       context.save();
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      await this.executeAsync(() => this.draw(context));
+      await this.draw(context);
       context.restore();
     } while (DependencyContext.hasPromises() && iterations < 10);
 
@@ -288,7 +279,6 @@ export abstract class GeneratorScene<T>
     this.counters = {};
     this.previousScene = previousScene;
     this.previousOnTop = false;
-    this.random = new Random(this.meta.seed.get());
     this.runner = threads(
       () => this.runnerFactory(this.getView()),
       thread => {
@@ -375,20 +365,6 @@ export abstract class GeneratorScene<T>
     startPlayback(this.playback);
     try {
       result = callback();
-    } finally {
-      endPlayback(this.playback);
-      endScene(this);
-    }
-
-    return result;
-  }
-
-  protected async executeAsync<T>(callback: () => Promise<T>): Promise<T> {
-    let result: T;
-    startScene(this);
-    startPlayback(this.playback);
-    try {
-      result = await callback();
     } finally {
       endPlayback(this.playback);
       endScene(this);

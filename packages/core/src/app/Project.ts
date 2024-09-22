@@ -1,10 +1,63 @@
+import {ImageExporterOptions} from '../exporter';
 import type {Plugin} from '../plugin';
-import {FullSceneDescription} from '../scenes';
+import {SceneDescription} from '../scenes';
+import {CanvasColorSpace, Color, Vector2} from '../types';
 import {Logger} from './Logger';
-import type {ProjectMetadata} from './ProjectMetadata';
-import {SettingsMetadata} from './SettingsMetadata';
+
+export interface Versions {
+  core: string;
+  two: string | null;
+  ui: string | null;
+  vitePlugin: string | null;
+}
+
+// TODO(refactor): check if we can get rid of this
+export function createVersionObject(version: string) {
+  return {
+    core: version,
+    two: version,
+    ui: version,
+    vitePlugin: version,
+  };
+}
+
+export type ExporterSettings =
+  | {
+      name: '@revideo/core/image-sequence';
+      options: ImageExporterOptions;
+    }
+  | {
+      name: '@revideo/core/ffmpeg';
+    }
+  | {
+      name: '@revideo/core/wasm';
+    };
 
 export interface ProjectSettings {
+  shared: {
+    background: Color | null;
+    range: [number, number];
+    size: Vector2;
+  };
+  rendering: {
+    exporter: ExporterSettings;
+    fps: number;
+    resolutionScale: number;
+    colorSpace: CanvasColorSpace;
+  };
+  preview: {
+    fps: number;
+    resolutionScale: number;
+  };
+}
+
+export type PartialProjectSettings = {
+  shared?: Partial<ProjectSettings['shared']>;
+  rendering?: Partial<ProjectSettings['rendering']>;
+  preview?: Partial<ProjectSettings['preview']>;
+};
+
+export interface UserProject {
   /**
    * The name of the project.
    */
@@ -12,49 +65,8 @@ export interface ProjectSettings {
 
   /**
    * A list of scene descriptions that make up the project.
-   *
-   * @remarks
-   * A full scene description can be obtained by loading a scene module with a
-   * `?scene` query parameter.
-   *
-   * @example
-   * ```ts
-   * import exampleScene from './example?scene';
-   *
-   * export default makeProject({
-   *   scenes: [exampleScene],
-   * });
-   * ```
    */
-  scenes: FullSceneDescription[];
-
-  /**
-   * A list of plugins to include in the project.
-   *
-   * @remarks
-   * When a string is provided, the plugin will be imported dynamically using
-   * the string as the module specifier. This is the preferred way to include
-   * editor plugins because it makes sure that the plugin's source code gets
-   * excluded from the production build.
-   */
-  plugins?: (Plugin | string)[];
-
-  /**
-   * A custom logger instance to use.
-   */
-  logger?: Logger;
-
-  /**
-   * An url for the audio track to play alongside the animation.
-   *
-   * @see https://motioncanvas.io/docs/media#audio
-   */
-  audio?: string;
-
-  /**
-   * @deprecated Configure the offset in the Video Settings tab of th editor.
-   */
-  audioOffset?: number;
+  scenes: SceneDescription<any>[];
 
   /**
    * Default values for project variables.
@@ -71,38 +83,45 @@ export interface ProjectSettings {
    * @experimental
    */
   experimentalFeatures?: boolean;
-}
-
-export interface Versions {
-  core: string;
-  two: string | null;
-  ui: string | null;
-  vitePlugin: string | null;
-}
-
-export interface Project {
-  name: string;
-  scenes: FullSceneDescription[];
-  plugins: Plugin[];
-  logger: Logger;
-  meta: ProjectMetadata;
-  settings: SettingsMetadata;
-  audio?: string;
-  variables?: Record<string, unknown>;
-  versions: Versions;
-  experimentalFeatures: boolean;
 
   /**
-   * TODO(konsti): When moving away from `.meta` files,
-   * all settings will be passed to the project through
-   * an object instead of the file.
+   * Settings for the project. This includes shared settings, rendering settings
+   * and preview settings.
    *
-   * When we do that, we can remove this method and
-   * provide this as a property on the settings object.
+   * Includes things like the background color, the resolution, the frame rate,
+   * and the exporter to use.
    */
-  setAssetBase: (base: `${string}/`) => void;
+  settings?: PartialProjectSettings;
 }
 
-export function makeProject(settings: ProjectSettings) {
-  return settings;
+export interface Project extends UserProject {
+  name: string;
+  settings: ProjectSettings;
+
+  /**
+   * @deprecated Not exposed in the public API. We set the exporters as plugins
+   * which is why we can't delete this yet.
+   *
+   * // TODO(konsti): get rid of plugins
+   *
+   * A list of plugins to include in the project.
+   *
+   * @remarks
+   * When a string is provided, the plugin will be imported dynamically using
+   * the string as the module specifier. This is the preferred way to include
+   * editor plugins because it makes sure that the plugin's source code gets
+   * excluded from the production build.
+   */
+  plugins: Plugin[];
+
+  /**
+   * Not exposed in the public API.
+   */
+  logger: Logger;
+
+  /**
+   * Manually set via a constant. This should be automated by reading the
+   * package.json files of the packages.
+   */
+  versions: Versions;
 }

@@ -2,7 +2,10 @@
 const config = {
   plugins: {
     tailwindcss: {},
-    cssnano: {},
+    autoprefixer: {},
+    cssnano: {
+      preset: 'default',
+    },
   },
 };
 

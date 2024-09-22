@@ -5,6 +5,8 @@ import {makePlugin} from './makePlugin';
 /**
  * The default plugin included in every Motion Canvas project.
  *
+ * TODO(refactor): I don't think these are plugins anymore.
+ *
  * @internal
  */
 export default makePlugin({

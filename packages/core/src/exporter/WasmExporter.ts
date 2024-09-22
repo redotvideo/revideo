@@ -1,7 +1,6 @@
 import loadMp4Module from 'mp4-wasm';
 import {Project} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
-import {MetaField, ObjectMetaField} from '../meta';
 import {Exporter} from './Exporter';
 import {download} from './download-videos';
 
@@ -18,10 +17,6 @@ export class WasmExporter implements Exporter {
     private readonly settings: RendererSettings,
   ) {}
 
-  public static meta(): MetaField<any> {
-    return new ObjectMetaField(this.displayName, {});
-  }
-
   public async start(): Promise<void> {
     const resp = await fetch('/@mp4-wasm');
     const buffer = await resp.arrayBuffer();
@@ -33,7 +28,7 @@ export class WasmExporter implements Exporter {
     this.encoder = mp4.createWebCodecsEncoder({
       width: this.settings.size.x,
       height: this.settings.size.y,
-      fps: this.project.meta.rendering.fps.get(),
+      fps: this.project.settings.rendering.fps,
     });
   }
 

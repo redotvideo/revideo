@@ -4,7 +4,7 @@ import {Switch} from '@revideo/examples/src/components/Switch';
 // see this import for the component ^
 
 // usage of the component:
-export default makeScene2D(function* (view) {
+export default makeScene2D('components', function* (view) {
   const switchRef = createRef<Switch>();
 
   view.add(<Switch ref={switchRef} initialState={true} />);

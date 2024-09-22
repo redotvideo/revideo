@@ -9,7 +9,6 @@ export type CanvasRepetition =
   | 'repeat-y'
   | 'no-repeat';
 
-// TODO Support custom transformation matrices
 export interface PatternProps {
   image: CanvasImageSource;
   repetition?: CanvasRepetition;

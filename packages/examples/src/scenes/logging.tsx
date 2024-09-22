@@ -1,20 +1,15 @@
 import {Circle, makeScene2D} from '@revideo/2d';
-import {useLogger, waitFor, waitUntil} from '@revideo/core';
+import {useLogger, waitFor} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('logging', function* (view) {
   const logger = useLogger();
 
   view.add(<Circle key="circle" />);
 
-  // Basic Logging
-  yield* waitUntil('basic logging');
   logger.debug('Just here to debug some code.');
   logger.info('All fine, just a little info.');
   logger.warn('Be careful, something has gone wrong.');
   logger.error('Oops. An error occured.');
-
-  // Logging Payloads
-  yield* waitUntil('logging payloads');
 
   logger.debug({
     message: 'Some more advanced logging',
@@ -26,9 +21,6 @@ export default makeScene2D(function* (view) {
     remarks: 'Some remarks about this log. Can also contain <b>HTML</b> tags.',
     stack: new Error('').stack,
   });
-
-  // Profiling
-  yield* waitUntil('profiling');
 
   logger.profile('id');
   yield* waitFor(2);

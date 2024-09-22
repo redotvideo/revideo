@@ -1,10 +1,11 @@
-import {RendererState} from '@revideo/core';
+import {getFullRenderingSettings, RendererState} from '@revideo/core';
 import clsx from 'clsx';
 import {useEffect, useState} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {useDuration, useRendererState} from '../../hooks';
 import {useShortcut} from '../../hooks/useShortcut';
 import {formatDuration} from '../../utils';
+import {Button} from '../controls';
 import {
   PlaybackControls,
   PlaybackProgress,
@@ -28,22 +29,39 @@ export function Viewport() {
 function EditorViewport() {
   const [hoverRef] = useShortcut<HTMLDivElement>('viewport');
   const duration = useDuration();
+  const {renderer, project} = useApplication();
 
   return (
     <div ref={hoverRef} className={styles.root}>
       <EditorPreview />
       <PlaybackProgress />
       <div className={styles.playback}>
-        <CurrentTime
-          render={time => (
-            <Timestamp
-              className={styles.time}
-              title="Current time"
-              frameTitle="Current frame"
-              frame={time}
-            />
-          )}
-        />
+        <div style={{flexShrink: 1, display: 'flex', columnGap: '12px'}}>
+          <Button
+            main
+            value="Render"
+            id="render"
+            onClick={() => {
+              renderer.render({
+                ...getFullRenderingSettings(project),
+                name: project.name,
+              });
+            }}
+            class={styles.renderButton}
+          >
+            Render video
+          </Button>
+          <CurrentTime
+            render={time => (
+              <Timestamp
+                className={styles.time}
+                title="Current time"
+                frameTitle="Current frame"
+                frame={time}
+              />
+            )}
+          />
+        </div>
         <PlaybackControls />
         <Timestamp
           reverse
@@ -76,14 +94,24 @@ function RenderingViewport() {
       />
       <RenderingProgress />
       <div className={styles.playback}>
-        <code
-          className={styles.time}
-          title="Time elapsed since the rendering started"
-        >
-          {formatDuration(estimate.elapsed / 1000)}
-          <span className={styles.frames}>Elapsed</span>
-        </code>
-        <div />
+        <div style={{flexShrink: 1, display: 'flex', columnGap: '12px'}}>
+          <Button
+            value="Abort"
+            id="render"
+            data-rendering={true}
+            onClick={() => renderer.abort()}
+            class={styles.renderButton}
+          >
+            Abort
+          </Button>
+          <code
+            className={styles.time}
+            title="Time elapsed since the rendering started"
+          >
+            {formatDuration(estimate.elapsed / 1000)}
+            <span className={styles.frames}>Elapsed</span>
+          </code>
+        </div>
         <code
           className={styles.duration}
           title="Estimated time remaining until the rendering is complete"

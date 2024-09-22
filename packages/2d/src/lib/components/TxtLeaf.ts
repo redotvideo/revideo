@@ -15,7 +15,6 @@ import {
 } from '../decorators';
 import {Shape, ShapeProps} from './Shape';
 import {Txt} from './Txt';
-import {View2D} from './View2D';
 
 export interface TxtLeafProps extends ShapeProps {
   children?: string;
@@ -24,13 +23,6 @@ export interface TxtLeafProps extends ShapeProps {
 
 @nodeName('TxtLeaf')
 export class TxtLeaf extends Shape {
-  @lazy(() => {
-    const formatter = document.createElement('span');
-    View2D.shadowRoot.append(formatter);
-    return formatter;
-  })
-  protected static formatter: HTMLDivElement;
-
   @lazy(() => {
     try {
       return new (Intl as any).Segmenter(undefined, {

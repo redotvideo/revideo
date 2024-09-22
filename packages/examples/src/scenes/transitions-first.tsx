@@ -1,7 +1,7 @@
 import {Rect, Txt, makeScene2D} from '@revideo/2d';
 import {waitFor} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('transitions-first', function* (view) {
   view.add(
     <Rect
       width={'100%'}

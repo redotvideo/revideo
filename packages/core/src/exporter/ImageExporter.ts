@@ -1,15 +1,7 @@
 import type {Logger} from '../app/Logger';
 import type {Project} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
-import {FileTypes} from '../app/presets';
 import {EventDispatcher} from '../events';
-import {
-  BoolMetaField,
-  EnumMetaField,
-  NumberMetaField,
-  ObjectMetaField,
-  ValueOf,
-} from '../meta';
 import {clamp} from '../tweening';
 import {CanvasOutputMimeType} from '../types';
 import type {Exporter} from './Exporter';
@@ -18,7 +10,11 @@ import {download} from './download-videos';
 const EXPORT_FRAME_LIMIT = 256;
 const EXPORT_RETRY_DELAY = 1000;
 
-type ImageExporterOptions = ValueOf<ReturnType<typeof ImageExporter.meta>>;
+export interface ImageExporterOptions {
+  quality: number;
+  fileType: CanvasOutputMimeType;
+  groupByScene: boolean;
+}
 
 interface ServerResponse {
   frame: number;
@@ -32,24 +28,6 @@ interface ServerResponse {
 export class ImageExporter implements Exporter {
   public static readonly id = '@revideo/core/image-sequence';
   public static readonly displayName = 'Image sequence';
-
-  public static meta() {
-    const meta = new ObjectMetaField(this.name, {
-      fileType: new EnumMetaField('file type', FileTypes),
-      quality: new NumberMetaField('quality', 100)
-        .setRange(0, 100)
-        .describe('A number between 0 and 100 indicating the image quality.'),
-      groupByScene: new BoolMetaField('group by scene', false).describe(
-        'Group exported images by scene. When checked, separates the sequence into subdirectories for each scene in the project.',
-      ),
-    });
-
-    meta.fileType.onChanged.subscribe(value => {
-      meta.quality.disable(value === 'image/png');
-    });
-
-    return meta;
-  }
 
   public static async create(
     project: Project,
@@ -76,8 +54,14 @@ export class ImageExporter implements Exporter {
 
   public constructor(
     private readonly logger: Logger,
-    private readonly settings: RendererSettings,
+    settings: RendererSettings,
   ) {
+    if (settings.exporter.name !== ImageExporter.id) {
+      throw new Error(
+        `Invalid exporter name: ${settings.exporter.name}. Expected: ${ImageExporter.id}`,
+      );
+    }
+
     const options = settings.exporter.options as ImageExporterOptions;
     this.projectName = settings.name;
     this.quality = clamp(0, 1, options.quality / 100);

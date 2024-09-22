@@ -2,9 +2,9 @@ import './index.scss';
 
 import {
   Player,
-  Presenter,
   Renderer,
   experimentalLog,
+  getFullPreviewSettings,
   type Project,
 } from '@revideo/core';
 import {ComponentChild, render} from 'preact';
@@ -64,42 +64,12 @@ export function editor(project: Project) {
   const renderer = new Renderer(project);
   project.plugins.forEach(plugin => plugin.renderer?.(renderer));
 
-  const presenter = new Presenter(project);
-  project.plugins.forEach(plugin => plugin.presenter?.(presenter));
-
-  const settings = project.settings;
-  settings.appearance.color.onChanged.subscribe(() => {
-    const color = settings.appearance.color.get();
-    if (color) {
-      document.body.style.setProperty('--theme', color.css());
-      document.body.style.setProperty(
-        '--theme-light',
-        color.brighten(0.54).css(),
-      );
-      document.body.style.setProperty(
-        '--theme-overlay',
-        color.alpha(0.16).css(),
-      );
-    } else {
-      document.body.style.removeProperty('--theme');
-      document.body.style.removeProperty('--theme-light');
-      document.body.style.removeProperty('--theme-overlay');
-    }
-  });
-  settings.appearance.font.onChanged.subscribe(() => {
-    if (settings.appearance.font.get()) {
-      document.body.style.setProperty('--font-family', 'JetBrains Mono');
-    } else {
-      document.body.style.removeProperty('--font-family');
-    }
-  });
-
-  const meta = project.meta;
+  // const meta = project.meta;
   const playerKey = `${project.name}/player`;
   const frameKey = `${project.name}/frame`;
   const player = new Player(
     project,
-    meta.getFullPreviewSettings(),
+    getFullPreviewSettings(project),
     getItem(playerKey, {}),
     getItem(frameKey, -1),
   );
@@ -112,13 +82,7 @@ export function editor(project: Project) {
     setItem(frameKey, frame);
   });
 
-  const updatePlayer = () => {
-    player.configure(meta.getFullPreviewSettings());
-  };
-  meta.shared.onChanged.subscribe(updatePlayer);
-  meta.preview.onChanged.subscribe(updatePlayer);
-
-  document.title = `${project.name} | Motion Canvas`;
+  document.title = `${project.name} | Revideo`;
 
   const plugins = [GridPlugin(), ...project.plugins];
 
@@ -127,10 +91,7 @@ export function editor(project: Project) {
       application={{
         player,
         renderer,
-        presenter,
         project,
-        meta,
-        settings,
         plugins,
       }}
     >
@@ -152,7 +113,6 @@ export * from './components/controls';
 export * from './components/fields';
 export * from './components/icons';
 export * from './components/layout';
-export * from './components/meta';
 export * from './components/tabs';
 export * from './contexts';
 export * from './hooks';

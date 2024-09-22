@@ -1,4 +1,9 @@
-import {Project, Renderer, Vector2} from '@revideo/core';
+import {
+  Project,
+  Renderer,
+  Vector2,
+  getFullRenderingSettings,
+} from '@revideo/core';
 
 declare global {
   interface Window {
@@ -41,7 +46,7 @@ export const render = async (
       );
 
     const renderSettings = {
-      ...project.meta.getFullRenderingSettings(),
+      ...getFullRenderingSettings(project),
       name: project.name,
       hiddenFolderId: hiddenFolderId,
       range: [
@@ -79,7 +84,7 @@ async function getGlobalFirstAndLastFrame(
   } else {
     // Otherwise, endSecondFromUser is infinity, so lastGlobalFrame is the duration of the video.
     const settings = {
-      ...project.meta.getFullRenderingSettings(),
+      ...getFullRenderingSettings(project),
       name: project.name,
     };
     lastGlobalFrame = await renderer.getNumberOfFrames(settings);

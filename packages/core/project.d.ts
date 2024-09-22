@@ -21,9 +21,4 @@ declare module '*.glsl' {
   export = value;
 }
 
-declare module '*?scene' {
-  const value: import('./lib/scenes/Scene').FullSceneDescription;
-  export = value;
-}
-
 declare type Callback = (...args: any[]) => void;

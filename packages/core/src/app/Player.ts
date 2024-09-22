@@ -3,9 +3,7 @@ import {
   EventDispatcher,
   ValueDispatcher,
 } from '../events';
-import {AudioManager} from '../media';
 import {Scene} from '../scenes';
-import {EditableTimeEvents} from '../scenes/timeEvents';
 import {clamp} from '../tweening';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
@@ -27,11 +25,8 @@ export interface PlayerSettings {
   range: [number, number];
   fps: number;
   size: Vector2;
-  audioOffset: number;
   resolutionScale: number;
 }
-
-const MAX_AUDIO_DESYNC = 1 / 50;
 
 /**
  * The player logic used by the editor and embeddable player.
@@ -39,7 +34,7 @@ const MAX_AUDIO_DESYNC = 1 / 50;
  * @remarks
  * This class builds on top of the `PlaybackManager` to provide a simple
  * interface similar to other media players. It plays through the animation
- * using a real-time update loop and optionally synchronises it with audio.
+ * using a real-time update loop.
  */
 export class Player {
   /**
@@ -88,7 +83,6 @@ export class Player {
 
   public readonly playback: PlaybackManager;
   public readonly status: PlaybackStatus;
-  public readonly audio: AudioManager;
   public readonly logger: Logger;
   private readonly sharedWebGLContext: SharedWebGLContext;
 
@@ -142,17 +136,11 @@ export class Player {
     this.logger = this.project.logger;
     this.playback = new PlaybackManager();
     this.status = new PlaybackStatus(this.playback);
-    this.audio = new AudioManager(this.logger);
     this.size = settings.size ?? new Vector2(1920, 1080);
     this.resolutionScale = settings.resolutionScale ?? 1;
     this.startTime = settings.range?.[0] ?? 0;
     this.endTime = settings.range?.[1] ?? Infinity;
     this.playback.fps = settings.fps ?? 60;
-    this.audio.setOffset(settings.audioOffset ?? 0);
-
-    if (project.audio) {
-      this.audio.setSource(project.audio);
-    }
 
     const scenes: Scene[] = [];
     for (const description of project.scenes) {
@@ -162,13 +150,9 @@ export class Player {
         logger: this.project.logger,
         size: this.size,
         resolutionScale: this.resolutionScale,
-        timeEventsClass: EditableTimeEvents,
         sharedWebGLContext: this.sharedWebGLContext,
         experimentalFeatures: project.experimentalFeatures,
       });
-      description.onReplaced?.subscribe(description => {
-        scene.reload(description);
-      }, false);
       scene.onReloaded.subscribe(() => this.requestRecalculation());
       scene.variables.updateSignals(project.variables ?? {});
       scenes.push(scene);
@@ -200,9 +184,6 @@ export class Player {
         size: this.size,
         resolutionScale: this.resolutionScale,
       });
-    }
-    if (settings.audioOffset !== undefined) {
-      this.audio.setOffset(settings.audioOffset);
     }
 
     this.lock.release();
@@ -409,15 +390,6 @@ export class Player {
       state.seek = this.startFrame;
     }
 
-    // Pause / play audio.
-    const audioPaused =
-      state.paused || this.finished || !this.audio.isInRange(this.status.time);
-    if (await this.audio.setPaused(audioPaused)) {
-      this.syncAudio(-3);
-    }
-    this.audio.setMuted(state.muted);
-    this.audio.setVolume(state.volume);
-
     return state;
   }
 
@@ -435,52 +407,24 @@ export class Player {
       this.logger.profile('seek time');
       await this.playback.seek(clampedFrame);
       this.logger.profile('seek time');
-      this.syncAudio(-3);
     }
-    // Do nothing if paused or is ahead of the audio.
-    else if (
-      state.paused ||
-      (state.speed === 1 &&
-        this.audio.isReady() &&
-        this.audio.isInRange(this.status.time) &&
-        this.audio.getTime() < this.status.time)
-    ) {
+    // Do nothing if paused
+    else if (state.paused) {
       if (
         state.render ||
         (state.paused && previousState !== PlaybackState.Paused)
       ) {
+        // Tells the stage to render the current frame
         await this.render.dispatch();
-      }
-
-      // Sync the audio if the animation is too far ahead.
-      if (
-        !state.paused &&
-        this.status.time > this.audio.getTime() + MAX_AUDIO_DESYNC
-      ) {
-        this.syncAudio();
       }
 
       this.request();
       return;
     }
-    // Seek to synchronize animation with audio.
-    else if (
-      this.audio.isReady() &&
-      state.speed === 1 &&
-      this.audio.isInRange(this.status.time) &&
-      this.status.framesToSeconds(this.playback.frame + 1) <
-        this.audio.getTime() - MAX_AUDIO_DESYNC
-    ) {
-      const seekFrame = this.status.secondsToFrames(this.audio.getTime());
-      await this.playback.seek(seekFrame);
-    }
+
     // Simply move forward one frame
     else if (this.status.frame < this.endFrame) {
       await this.playback.progress();
-
-      if (state.speed !== 1) {
-        this.syncAudio();
-      }
     }
 
     // Pause if a new slide has just started.
@@ -498,6 +442,8 @@ export class Player {
 
   private request() {
     if (!this.active) return;
+
+    // TODO(konsti): make this loop not run when player is paused
 
     this.requestId ??= requestAnimationFrame(async time => {
       this.requestId = null;
@@ -518,11 +464,5 @@ export class Player {
 
   public clampRange(frame: number): number {
     return clamp(this.startFrame, this.endFrame, frame);
-  }
-
-  private syncAudio(frameOffset = 0) {
-    this.audio.setTime(
-      this.status.framesToSeconds(this.playback.frame + frameOffset),
-    );
   }
 }

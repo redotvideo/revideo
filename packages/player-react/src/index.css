@@ -1,4 +1,4 @@
-[data-player='true'] {
+.revideo-player-root {
   @tailwind base;
 }
 

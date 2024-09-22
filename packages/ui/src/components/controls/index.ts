@@ -1,7 +1,6 @@
 export * from './Button';
 export * from './ButtonSelect';
 export * from './Checkbox';
-export * from './ColorInput';
 export * from './Group';
 export * from './IconButton';
 export * from './IconCheckbox';
@@ -14,5 +13,4 @@ export * from './Pill';
 export * from './ReadOnlyInput';
 export * from './Select';
 export * from './Separator';
-export * from './Slider';
 export * from './Toggle';

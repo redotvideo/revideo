@@ -2,6 +2,8 @@ import {map} from '../tweening';
 import {range} from '../utils';
 
 /**
+ * // TODO(refactor): maybe we can delete this
+ *
  * A random number generator based on
  * {@link https://gist.github.com/tommyettinger/46a874533244883189143505d203312c | Mulberry32}.
  */

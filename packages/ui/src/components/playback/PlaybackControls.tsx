@@ -1,9 +1,10 @@
 import styles from './Playback.module.scss';
 
+import {getFullRenderingSettings} from '@revideo/core';
 import {useCallback} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {useDocumentEvent, usePlayerState} from '../../hooks';
-import {IconButton, IconCheckbox, Input, Select, Slider} from '../controls';
+import {IconButton, IconCheckbox, Input, Select} from '../controls';
 import {
   FastForward,
   FastRewind,
@@ -13,13 +14,11 @@ import {
   Repeat,
   SkipNext,
   SkipPrevious,
-  VolumeOff,
-  VolumeOn,
 } from '../icons';
 import {Framerate} from './Framerate';
 
 export function PlaybackControls() {
-  const {player, renderer, meta, project} = useApplication();
+  const {player, renderer, project} = useApplication();
   const state = usePlayerState();
 
   useDocumentEvent(
@@ -84,32 +83,6 @@ export function PlaybackControls() {
         value={state.speed}
         onChange={speed => player.setSpeed(speed)}
       />
-      <div className={styles.volumeTrigger}>
-        <IconCheckbox
-          titleOn="Mute audio [M]"
-          titleOff="Unmute audio [M]"
-          checked={!state.muted}
-          onChange={value => player.toggleAudio(value)}
-        >
-          {state.muted ? <VolumeOff /> : <VolumeOn />}
-        </IconCheckbox>
-
-        {!state.muted && (
-          <div className={styles.volumeMargin}>
-            <div className={styles.volume}>
-              <Slider
-                value={state.volume}
-                onChange={volume => {
-                  if (isNaN(volume)) {
-                    volume = 0;
-                  }
-                  player.setAudioVolume(volume);
-                }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
       <IconButton
         title="Start [Shift + Left arrow]"
         onClick={() => player.requestReset()}
@@ -165,7 +138,7 @@ export function PlaybackControls() {
         onClick={() =>
           renderer.renderFrame(
             {
-              ...meta.getFullRenderingSettings(),
+              ...getFullRenderingSettings(project),
               name: project.name,
             },
             player.status.time,

@@ -5,10 +5,10 @@
     "inlineSourceMap": true,
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
-    "module": "CommonJS",
-    "target": "es2020",
+    "module": "es2022",
+    "target": "es2022",
     "declaration": true,
     "declarationMap": true,
     "incremental": true

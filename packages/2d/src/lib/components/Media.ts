@@ -7,11 +7,9 @@ import {
   isReactive,
   useLogger,
   useThread,
-  viaProxy,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {Asset} from './Asset';
-import {RectProps} from './Rect';
+import {Rect, RectProps} from './Rect';
 import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
 
 export interface MediaProps extends RectProps {
@@ -26,7 +24,10 @@ export interface MediaProps extends RectProps {
 }
 
 @nodeName('Media')
-export abstract class Media extends Asset {
+export abstract class Media extends Rect {
+  @signal()
+  public declare readonly src: SimpleSignal<string, this>;
+
   @initial(false)
   @signal()
   public declare readonly loop: SimpleSignal<boolean, this>;
@@ -161,7 +162,7 @@ export abstract class Media extends Asset {
 
   @computed()
   protected amplify(node: HTMLMediaElement, volume: number) {
-    const key = `${viaProxy(this.fullSource())}/${this.key}`;
+    const key = `${this.src()}/${this.key}`;
 
     if (Media.amplificationPool[key]) {
       Media.amplificationPool[key].gainNode.gain.value = volume;

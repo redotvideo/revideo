@@ -1,12 +1,5 @@
 import {Signal, useSignal} from '@preact/signals';
-import type {
-  Player,
-  Presenter,
-  Project,
-  ProjectMetadata,
-  Renderer,
-  SettingsMetadata,
-} from '@revideo/core';
+import type {Player, Project, Renderer} from '@revideo/core';
 import {ComponentChildren, createContext} from 'preact';
 import {useContext, useRef} from 'preact/hooks';
 import {useSubscribable} from '../hooks';
@@ -22,9 +15,6 @@ interface Application {
   project: Project;
   player: Player;
   renderer: Renderer;
-  presenter: Presenter;
-  meta: ProjectMetadata;
-  settings: SettingsMetadata;
   plugins: EditorPlugin[];
   logger: LoggerManager;
   inspection: Signal<Inspection>;

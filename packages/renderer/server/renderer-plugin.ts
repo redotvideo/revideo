@@ -49,8 +49,6 @@ export function rendererPlugin(
     ? JSON.stringify(projectRenderSettings)
     : JSON.stringify({});
 
-  console.log('projectRenderSettingsString', projectRenderSettingsString);
-
   return {
     name: 'revideo-renderer-plugin',
 

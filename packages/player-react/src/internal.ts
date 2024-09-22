@@ -155,7 +155,6 @@ class RevideoPlayer extends HTMLElement {
     this.setState(State.Ready);
     this.dispatchEvent(new CustomEvent('playerready', {detail: this.player}));
 
-
     // Restore previous state
     this.setPlaying(playing);
     this.player.onRender.subscribe(this.render);

@@ -1,13 +1,6 @@
 'use client';
 import {Player as CorePlayer} from '@revideo/core';
-import {
-  ComponentProps,
-  LegacyRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import {ComponentProps, useCallback, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
 import './styles.css';
 import {shouldShowControls} from './utils';
@@ -81,6 +74,7 @@ export function Player({
   const focus = useRef(false);
   const playerRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const lastRect = useRef<DOMRectReadOnly | null>(null);
 
   const onClickHandler = controls ? () => setPlaying(prev => !prev) : undefined;
 
@@ -138,24 +132,23 @@ export function Player({
 
   const handlePlayerResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry && wrapperRef.current) {
-        const newRect = entry.contentRect;
-        if (
-          !lastRect.current ||
-          newRect.width !== lastRect.current.width ||
-          newRect.height !== lastRect.current.height
-        ) {
-          console.log('jo resize');
-          lastRect.current = newRect;
-          onPlayerResize?.(newRect);
-        }
+      const [firstEntry] = entries;
+      if (!firstEntry || !wrapperRef.current) {
+        return;
       }
+
+      const newRect = firstEntry.contentRect;
+      const sameWidth = newRect.width === lastRect.current.width;
+      const sameHeight = newRect.height === lastRect.current.height;
+      if (lastRect.current && sameWidth && sameHeight) {
+        return;
+      }
+
+      lastRect.current = newRect;
+      onPlayerResize(newRect);
     },
     [onPlayerResize],
   );
-
-  const lastRect = useRef<DOMRectReadOnly | null>(null);
 
   useEffect(() => {
     if (!wrapperRef.current) return;
@@ -215,7 +208,7 @@ export function Player({
       >
         <div className="p-relative">
           <revideo-player
-            ref={playerRef as LegacyRef<HTMLDivElement>}
+            ref={playerRef}
             src={src}
             playing={String(playingState)}
             onClick={onClickHandler}

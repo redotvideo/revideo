@@ -10,22 +10,89 @@ import prompts from 'prompts';
 
 const templates = [
   {
-    value: 'saas-template',
-    title: 'Revideo with Next.js (recommended)',
-    description: 'An example project to get started with Revideo and Next.js.',
+    value: 'default',
+    title: 'Minimal, standalone Revideo project',
+    description: 'A minimal example to get started with Revideo.',
+    recommended: true,
+    startcommands: 'default',
   },
   {
-    value: 'default',
-    title: 'Minial, standalone Revideo project',
-    description: 'A minimal example to get started with Revideo.',
+    value: 'saas-template',
+    title: 'Revideo with Next.js',
+    description: 'A minimal web app built with Revideo and Next.js.',
+    recommended: true,
+    startCommands: 'next',
+  },
+  {
+    value: 'avatar-with-background',
+    title: 'Avatar with Background',
+    description: 'Create an avatar with a custom background.',
+    startcommands: 'default',
+  },
+  {
+    value: 'github-stars-celebration',
+    title: 'GitHub Stars Celebration',
+    description: 'Animate a celebration of GitHub repository stars.',
+    startcommands: 'default',
+  },
+  {
+    value: 'google-cloud-run-parallelized',
+    title: 'Google Cloud Run Parallelized',
+    description: 'Example of parallelized rendering using Google Cloud Run.',
+    startcommands: 'readme',
+  },
+  {
+    value: 'marketing-templates',
+    title: 'Marketing Templates',
+    description: 'A collection of templates for marketing videos.',
+    startcommands: 'readme',
+  },
+  {
+    value: 'parallelized-aws-lambda',
+    title: 'Parallelized AWS Lambda',
+    description: 'Example of parallelized rendering using AWS Lambda.',
+    startcommands: 'readme',
+  },
+  {
+    value: 'reddit-post-video',
+    title: 'Reddit Post Video',
+    description: 'Generate a video from a Reddit post.',
+    startcommands: 'default',
+  },
+  {
+    value: 'rive-explanation-video',
+    title: 'Rive Explanation Video',
+    description: 'Create a code explanation video along with Rive animations.',
+    startcommands: 'default',
+  },
+  {
+    value: 'stitching-videos',
+    title: 'Stitching Videos',
+    description: 'Example of how to concatenate multiple videos together.',
+    startcommands: 'default',
+  },
+  {
+    value: 'three-js-example',
+    title: 'Three.js Example',
+    description: 'Integrate Three.js with Revideo for 3D animations.',
+    startcommands: 'default',
+  },
+  {
+    value: 'youtube-shorts',
+    title: 'YouTube Shorts',
+    description: 'Template for creating YouTube Shorts videos.',
+    startcommands: 'default',
   },
 ];
 
 async function run() {
   const options = minimist(process.argv.slice(2));
 
-  prompts.override(options);
-  const response = await prompts([
+  const templateFlag = Object.keys(options).find(key =>
+    templates.some(template => template.value === key),
+  );
+
+  const pathResponse = await prompts([
     // Prompt for project name
     {
       type: 'text',
@@ -64,20 +131,40 @@ async function run() {
       },
       format: value => path.resolve(value),
     },
-    // Prompt for which example to scaffold
-    {
-      type: 'select',
-      name: 'starter',
-      message: 'Choose a starter template',
-      choices: templates,
-    },
   ]);
+
+  console.log(); // linebreak for better readability
+
+  let templateResponse;
+  if (templateFlag) {
+    templateResponse = {starter: templateFlag};
+  } else {
+    // Prompt for which example to scaffold
+    templateResponse = await prompts([
+      {
+        type: 'select',
+        name: 'starter',
+        message: 'Choose a starter template',
+        choices: templates.map(template => ({
+          title: template.recommended
+            ? template.title + kleur.bold(' (Recommended)')
+            : template.title,
+          value: template.value,
+          description: template.description,
+        })),
+      },
+    ]);
+  }
+
+  const response = {...pathResponse, ...templateResponse};
 
   // Abort if the user didn't provide a project name
   if (!response.path) {
     console.log(kleur.red('× Scaffolding aborted by the user.\n'));
     return;
   }
+
+  console.log('Scaffolding, this can take a few seconds...');
 
   // Clone files
   const templateDir = path.resolve(
@@ -123,10 +210,16 @@ async function run() {
   const installCommand =
     manager === 'yarn' ? `  ${boldManager}` : `  ${boldManager} install`;
 
-  if (response.starter == 'default') {
+  const selectedTemplate = getTemplate(response.starter);
+
+  if (!selectedTemplate) {
+    throw Error(`Template ${response.starter.name} does not exist`);
+  }
+
+  if (selectedTemplate.startcommands === 'default') {
     console.log(installCommand);
     console.log(`  ${boldManager} start`);
-  } else {
+  } else if (selectedTemplate.startCommands === 'next') {
     console.log(kleur.blue('\n√ Start the NextJS server:'));
     console.log(`  ${kleur.bold('cd')} next`);
     console.log(installCommand);
@@ -138,6 +231,8 @@ async function run() {
     console.log(`  ${kleur.bold('cd')} revideo`);
     console.log(installCommand);
     console.log(`  ${kleur.bold('npx')} revideo serve`);
+  } else {
+    console.log(kleur.blue('\nNow find the setup instructions in README.md'));
   }
   console.log();
 }
@@ -169,6 +264,10 @@ function copy(src, dest) {
 function getPackageManager() {
   const ua = process.env.npm_config_user_agent;
   return ua?.split(' ')[0].split('/')[0] ?? 'npm';
+}
+
+function getTemplate(value) {
+  return templates.find(template => template.value === value);
 }
 
 void run().catch(e => {

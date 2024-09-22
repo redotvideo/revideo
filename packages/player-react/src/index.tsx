@@ -1,6 +1,6 @@
 'use client';
-import {Project} from '@revideo/core';
-import {ComponentProps, useEffect, useRef, useState} from 'react';
+import {Player as CorePlayer} from '@revideo/core';
+import {ComponentProps, useCallback, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
 import './index.css';
 import {shouldShowControls} from './utils';
@@ -30,6 +30,7 @@ interface PlayerProps {
   variables?: Record<string, any>;
   playing?: boolean;
   currentTime?: number;
+  volume?: number;
   looping?: boolean;
   fps?: number;
 
@@ -40,6 +41,8 @@ interface PlayerProps {
 
   onDurationChange?: (duration: number) => void;
   onTimeUpdate?: (currentTime: number) => void;
+  onPlayerReady?: (player: CorePlayer) => void;
+  onPlayerResize?: (rect: DOMRectReadOnly) => void;
 }
 
 export function Player({
@@ -48,6 +51,7 @@ export function Player({
   variables = {},
   playing = false,
   currentTime = 0,
+  volume = 1,
   looping = true,
   fps = 30,
 
@@ -58,14 +62,21 @@ export function Player({
 
   onDurationChange = () => {},
   onTimeUpdate = () => {},
+  onPlayerReady = () => {},
+  onPlayerResize = () => {},
 }: PlayerProps) {
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [currentTimeState, setCurrentTime] = useState(currentTime);
+  const [volumeState, setVolumeState] = useState(volume);
   const [duration, setDuration] = useState(-1);
 
   const focus = useRef(false);
-  const playerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const lastRect = useRef<DOMRectReadOnly | null>(null);
+
+  const onClickHandler = controls ? () => setPlaying(prev => !prev) : undefined;
 
   /**
    * Sync the playing prop with the player's own state when it changes.
@@ -83,6 +94,10 @@ export function Player({
       setForcedTime(currentTime);
     }
   }, [currentTime]);
+
+  useEffect(() => {
+    setForcedVolume(volume);
+  }, [volume]);
 
   /**
    * Receives the current time of the video from the player.
@@ -112,6 +127,44 @@ export function Player({
     }
   };
 
+  const handlePlayerReady = (event: Event) => {
+    const player = (event as CustomEvent).detail;
+    if (player) {
+      onPlayerReady(player);
+    }
+  };
+
+  const handlePlayerResize = useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      const [firstEntry] = entries;
+      if (!firstEntry || !wrapperRef.current) {
+        return;
+      }
+
+      const newRect = firstEntry.contentRect;
+      const sameWidth = newRect.width === lastRect.current.width;
+      const sameHeight = newRect.height === lastRect.current.height;
+      if (lastRect.current && sameWidth && sameHeight) {
+        return;
+      }
+
+      lastRect.current = newRect;
+      onPlayerResize(newRect);
+    },
+    [onPlayerResize],
+  );
+
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+
+    const resizeObserver = new ResizeObserver(handlePlayerResize);
+    resizeObserver.observe(wrapperRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [handlePlayerResize]);
+
   /**
    * Import the player and add all event listeners.
    */
@@ -124,11 +177,13 @@ export function Player({
 
     playerRef.current?.addEventListener('timeupdate', handleTimeUpdate);
     playerRef.current?.addEventListener('duration', handleDurationUpdate);
+    playerRef.current?.addEventListener('playerready', handlePlayerReady);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       playerRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
       playerRef.current?.removeEventListener('duration', handleDurationUpdate);
+      playerRef.current?.removeEventListener('playerready', handlePlayerReady);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [project]);
@@ -144,9 +199,19 @@ export function Player({
     }
   }
 
+  function setForcedVolume(volume: number) {
+    setVolumeState(volume);
+    if (playerRef.current) {
+      playerRef.current.dispatchEvent(
+        new CustomEvent('volumechange', {detail: volume}),
+      );
+    }
+  }
+
   return (
     <div className="revideo-player-root" style={{display: 'contents'}}>
       <div
+        ref={wrapperRef}
         className="relative cursor-default focus:outline-none"
         onFocus={() => (focus.current = true)}
         onBlur={() => (focus.current = false)}
@@ -158,7 +223,7 @@ export function Player({
           <revideo-player
             ref={playerRef}
             playing={String(playingState)}
-            onClick={() => setPlaying(prev => !prev)}
+            onClick={onClickHandler}
             variables={JSON.stringify(variables)}
             looping={looping ? 'true' : 'false'}
             width={width}
@@ -180,6 +245,8 @@ export function Player({
               currentTime={currentTimeState}
               setForcedTime={setForcedTime}
               timeDisplayFormat={timeDisplayFormat}
+              volume={volumeState}
+              setVolume={setForcedVolume}
             />
           </div>
         </div>

@@ -94,6 +94,8 @@ class RevideoPlayer extends HTMLElement {
   private time: number = 0;
   private duration: number = 0; // in frames
   private looping = true;
+  private volume = 1;
+  private volumeChangeRequested = false;
 
   public constructor() {
     super();
@@ -151,6 +153,8 @@ class RevideoPlayer extends HTMLElement {
     this.updateSettings();
 
     this.setState(State.Ready);
+    this.dispatchEvent(new CustomEvent('playerready', {detail: this.player}));
+
 
     // Restore previous state
     this.setPlaying(playing);
@@ -189,6 +193,7 @@ class RevideoPlayer extends HTMLElement {
     this.player?.onRender.unsubscribe(this.render);
 
     this.removeEventListener('seekto', this.handleSeekTo);
+    this.removeEventListener('volumechange', this.handleVolumeChange);
   }
 
   /**
@@ -199,6 +204,7 @@ class RevideoPlayer extends HTMLElement {
     this.player?.onRender.subscribe(this.render);
 
     this.addEventListener('seekto', this.handleSeekTo);
+    this.addEventListener('volumechange', this.handleVolumeChange);
   }
 
   /**
@@ -212,6 +218,18 @@ class RevideoPlayer extends HTMLElement {
     const e = event as CustomEvent;
     this.time = e.detail;
     this.player?.requestSeek(e.detail * this.player.playback.fps);
+    this.volumeChangeRequested = true;
+  };
+
+  private handleVolumeChange = (event: Event) => {
+    if (!this.project) {
+      return;
+    }
+
+    const e = event as CustomEvent;
+    this.volume = e.detail;
+
+    this.player?.playback.currentScene.adjustVolume(this.volume);
   };
 
   /**
@@ -222,6 +240,11 @@ class RevideoPlayer extends HTMLElement {
       return;
     }
     this.time = frame / this.player.playback.fps;
+
+    if (this.volumeChangeRequested || frame === 0) {
+      this.player?.playback.currentScene.adjustVolume(this.volume);
+      this.volumeChangeRequested = false;
+    }
   };
 
   /**

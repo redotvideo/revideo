@@ -5,7 +5,7 @@ const RED = '#ff6470';
 const GREEN = '#99C47A';
 const BLUE = '#68ABDF';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('positioning', function* (view) {
   const group = createRef<Node>();
   const scale = createSignal(1);
 

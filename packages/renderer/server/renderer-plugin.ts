@@ -57,7 +57,7 @@ export function rendererPlugin(
         return `\
             import {render} from '@revideo/renderer/lib/client/render';
             import {Vector2} from '@revideo/core';
-            import project from '${projectFile}?project';
+            import project from '${projectFile}';
 
             // Read video variables
             project.variables = ${variables ? `JSON.parse(\`${JSON.stringify(variables, escapeSpecialChars)}\`)` : 'project.variables'};

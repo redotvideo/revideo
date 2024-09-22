@@ -26,10 +26,7 @@ export function projectsPlugin({
           rollupOptions: {
             preserveEntrySignatures: 'strict',
             input: Object.fromEntries(
-              projects.list.map(project => [
-                project.name,
-                project.url + '?project',
-              ]),
+              projects.list.map(project => [project.name, project.url]),
             ),
           },
         },

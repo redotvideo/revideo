@@ -15,7 +15,7 @@ const RED = '#FF6470';
 const GREEN = '#99C47A';
 const BLUE = '#68ABDF';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('presentation', function* (view) {
   view.fontFamily(`'JetBrains Mono', monospace`).fontWeight(700).fontSize(256);
   const backdrop = createRef<Rect>();
   const title = createRef<Txt>();

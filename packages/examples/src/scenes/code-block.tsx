@@ -8,7 +8,7 @@ import {
 } from '@revideo/2d/lib/components/CodeBlock';
 import {all, createRef, waitFor} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('code-block', function* (view) {
   const codeRef = createRef<CodeBlock>();
 
   yield view.add(<CodeBlock ref={codeRef} code={`var myBool;`} />);

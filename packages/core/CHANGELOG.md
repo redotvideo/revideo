@@ -244,9 +244,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -532,9 +532,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -819,9 +819,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -1106,9 +1106,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -1393,9 +1393,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -1680,9 +1680,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -1967,9 +1967,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -2253,9 +2253,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -2539,9 +2539,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -2823,9 +2823,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -3104,9 +3104,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -3383,9 +3383,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -3662,9 +3662,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -3941,9 +3941,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -4219,9 +4219,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -4497,9 +4497,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -4774,9 +4774,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -5050,9 +5050,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -5325,9 +5325,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -5600,9 +5600,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -5875,9 +5875,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -6150,9 +6150,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -6424,9 +6424,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -6698,9 +6698,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -6972,9 +6972,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -7250,9 +7250,9 @@ See [the migration guide](https://motion-canvas.github.io/guides/migration/12.0.
 * change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`.
-When importing scenes in the project file, a dedicated `?scene` query param should be used:
+When importing scenes in the project file, a dedicated `` query param should be used:
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',
@@ -7847,11 +7847,11 @@ for more info.
 - change the way scenes are imported
 
 Scene files no longer need to follow the pattern: `[name].scene.tsx`. When
-importing scenes in the project file, a dedicated `?scene` query param should be
+importing scenes in the project file, a dedicated `` query param should be
 used:
 
 ```ts
-import example from './scenes/example?scene';
+import example from './scenes/example';
 
 export default new Project({
   name: 'project',

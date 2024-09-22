@@ -205,7 +205,6 @@ export class Code extends Shape {
 
   protected setDrawHooks(value: DrawHooks) {
     if (
-      // TODO(refactor): potential bug here if this is called as part of draw
       !useScene().experimentalFeatures &&
       value !== this.drawHooks.context.getInitial()
     ) {

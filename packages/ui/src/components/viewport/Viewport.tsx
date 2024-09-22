@@ -39,7 +39,8 @@ function EditorViewport() {
         <div style={{flexShrink: 1, display: 'flex', columnGap: '12px'}}>
           <Button
             main
-            value={'Render'}
+            value="Render"
+            id="render"
             onClick={() => {
               renderer.render({
                 ...getFullRenderingSettings(project),
@@ -95,7 +96,9 @@ function RenderingViewport() {
       <div className={styles.playback}>
         <div style={{flexShrink: 1, display: 'flex', columnGap: '12px'}}>
           <Button
-            value={'Abort'}
+            value="Abort"
+            id="render"
+            data-rendering={true}
             onClick={() => renderer.abort()}
             class={styles.renderButton}
           >

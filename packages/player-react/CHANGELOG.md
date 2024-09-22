@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.5.10 (2024-09-22)
+
+
+### Bug Fixes
+
+* audio keeps playing when navigating to other route ([#207](https://github.com/redotvideo/revideo/issues/207)) ([f982098](https://github.com/redotvideo/revideo/commit/f98209862f8e8b3d572c42aa51377aeefbd1d7ba))
+* **cli, player:** asset base also applies to images ([#194](https://github.com/redotvideo/revideo/issues/194)) ([a6d5c55](https://github.com/redotvideo/revideo/commit/a6d5c55a21eed31d6cffb0927ef4c5f27d2d6d6b))
+* css leak from react player component ([#184](https://github.com/redotvideo/revideo/issues/184)) ([3e24139](https://github.com/redotvideo/revideo/commit/3e24139c75cf746db1233de5c7cf75a91af6018d))
+* multiple players on same page ([#186](https://github.com/redotvideo/revideo/issues/186)) ([35b39ee](https://github.com/redotvideo/revideo/commit/35b39eea36f477f3044a65302c46018fe4f14dbc))
+* play button on same level as remaining player ([#232](https://github.com/redotvideo/revideo/issues/232)) ([3cbaa3b](https://github.com/redotvideo/revideo/commit/3cbaa3b5819e197d48d25673e92535a50240f467))
+* player button type to prevent submits ([#255](https://github.com/redotvideo/revideo/issues/255)) ([5a7a588](https://github.com/redotvideo/revideo/commit/5a7a5883ff63a20e31bfa435563842da02c157de))
+* update current time from outside player ([#203](https://github.com/redotvideo/revideo/issues/203)) ([ab90558](https://github.com/redotvideo/revideo/commit/ab905584a819bde6e410bd181a8d1e303cd5a4f4))
+
+
+### Features
+
+* let player use css served from cli ([#155](https://github.com/redotvideo/revideo/issues/155)) ([0f5c600](https://github.com/redotvideo/revideo/commit/0f5c600b43a0ef57f632c8e306bc7be361792351))
+* let user interact with core player from react player ([#276](https://github.com/redotvideo/revideo/issues/276)) ([656efc5](https://github.com/redotvideo/revideo/commit/656efc584b9caa88c0aa2d76ec5282cb6a360ff2))
+* make it possible to choose time display format in player ([#270](https://github.com/redotvideo/revideo/issues/270)) ([7381c9d](https://github.com/redotvideo/revideo/commit/7381c9dcb773b766f6627db580c197ad5e010ee4))
+* modify volume in player ([#289](https://github.com/redotvideo/revideo/issues/289)) ([c83cc72](https://github.com/redotvideo/revideo/commit/c83cc7293fca9304cb23592601e716382d4e3869))
+* react player component ([#101](https://github.com/redotvideo/revideo/issues/101)) ([e59b197](https://github.com/redotvideo/revideo/commit/e59b197be1d1d1b1940d2bdedbb3e3fb743125fc))
+* serve assets through cli ([#124](https://github.com/redotvideo/revideo/issues/124)) ([fdccde1](https://github.com/redotvideo/revideo/commit/fdccde12f058811382e7e2084ebe4b9e05af1b80))
+
+
+
+
+
 ## 0.5.9 (2024-09-10)
 
 

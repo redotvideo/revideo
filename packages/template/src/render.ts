@@ -5,8 +5,19 @@ async function render() {
 
   const file = await renderVideo({
     projectFile: './src/project.ts',
-    variables: {fill: 'orange'},
-    settings: {logProgress: true},
+    settings: {
+      logProgress: true,
+      renderSettings: {
+        size: {x: 1080, y: 1920},
+        background: '#FFFFFF00',
+        exporter: {
+          name: '@revideo/core/ffmpeg',
+          options: {
+            format: 'proRes',
+          },
+        },
+      },
+    },
   });
 
   console.log(`Rendered video to ${file}`);

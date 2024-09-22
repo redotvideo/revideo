@@ -1,4 +1,8 @@
-import {ImageExporterOptions} from '../exporter';
+import {
+  FfmpegExporterOptions,
+  ImageExporterOptions,
+  WasmExporterOptions,
+} from '../exporter';
 import type {Plugin} from '../plugin';
 import {SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
@@ -28,9 +32,11 @@ export type ExporterSettings =
     }
   | {
       name: '@revideo/core/ffmpeg';
+      options: FfmpegExporterOptions;
     }
   | {
       name: '@revideo/core/wasm';
+      options: WasmExporterOptions;
     };
 
 export interface ProjectSettings {
@@ -38,6 +44,24 @@ export interface ProjectSettings {
     background: Color | null;
     range: [number, number];
     size: Vector2;
+  };
+  rendering: {
+    exporter: ExporterSettings;
+    fps: number;
+    resolutionScale: number;
+    colorSpace: CanvasColorSpace;
+  };
+  preview: {
+    fps: number;
+    resolutionScale: number;
+  };
+}
+
+export interface UserProjectSettings {
+  shared: {
+    range: [number, number];
+    background: string | null;
+    size: {x: number; y: number};
   };
   rendering: {
     exporter: ExporterSettings;
@@ -98,11 +122,12 @@ export interface UserProject {
    * Includes things like the background color, the resolution, the frame rate,
    * and the exporter to use.
    */
-  settings: ProjectSettings;
+  settings: UserProjectSettings;
 }
 
-export interface Project extends UserProject {
+export interface Project extends Omit<UserProject, 'settings'> {
   name: string;
+  settings: ProjectSettings;
 
   /**
    * @deprecated Not exposed in the public API. We set the exporters as plugins
@@ -111,12 +136,6 @@ export interface Project extends UserProject {
    * // TODO(refactor): get rid of this
    *
    * A list of plugins to include in the project.
-   *
-   * @remarks
-   * When a string is provided, the plugin will be imported dynamically using
-   * the string as the module specifier. This is the preferred way to include
-   * editor plugins because it makes sure that the plugin's source code gets
-   * excluded from the production build.
    */
   plugins: Plugin[];
 

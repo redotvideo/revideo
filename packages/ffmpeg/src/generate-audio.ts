@@ -1,16 +1,25 @@
-import {AssetInfo} from '@revideo/core';
+import {AssetInfo, FfmpegExporterOptions} from '@revideo/core';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import {extensions} from './ffmpeg-exporter-server';
 import {ffmpegSettings} from './settings';
 import {
+  AudioCodec,
   checkForAudioStream,
   getSampleRate,
   makeSureFolderExists,
   mergeAudioWithVideo,
   resolvePath,
 } from './utils';
+
+export const audioCodecs: Record<FfmpegExporterOptions['format'], AudioCodec> =
+  {
+    mp4: 'aac',
+    webm: 'libopus',
+    proRes: 'aac',
+  };
 
 interface MediaAsset {
   key: string;
@@ -258,6 +267,7 @@ export async function mergeMedia(
   outputFilename: string,
   outputDir: string,
   tempDir: string,
+  format: FfmpegExporterOptions['format'],
 ) {
   const fullTempDir = path.join(os.tmpdir(), tempDir);
   await makeSureFolderExists(outputDir);
@@ -267,13 +277,17 @@ export async function mergeMedia(
   if (audioWavExists) {
     await mergeAudioWithVideo(
       path.join(fullTempDir, `audio.wav`),
-      path.join(fullTempDir, `visuals.mp4`),
-      path.join(outputDir, `${outputFilename}.mp4`),
+      path.join(fullTempDir, `visuals.${extensions[format]}`),
+      path.join(outputDir, `${outputFilename}.${extensions[format]}`),
+      audioCodecs[format],
     );
   } else {
-    const destination = path.join(outputDir, `${outputFilename}.mp4`);
+    const destination = path.join(
+      outputDir,
+      `${outputFilename}.${extensions[format]}`,
+    );
     await fs.promises.copyFile(
-      path.join(fullTempDir, `visuals.mp4`),
+      path.join(fullTempDir, `visuals.${extensions[format]}`),
       destination,
     );
   }

@@ -33,6 +33,7 @@ export function rendererPlugin(
   variables?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
   projectFile?: string,
+  projectRenderSettings?: any,
 ): Plugin {
   if (customFfmpegSettings?.ffmpegPath) {
     ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);
@@ -44,6 +45,12 @@ export function rendererPlugin(
     ffmpegSettings.setLogLevel(customFfmpegSettings.ffmpegLogLevel);
   }
 
+  const projectRenderSettingsString = projectRenderSettings
+    ? JSON.stringify(projectRenderSettings)
+    : JSON.stringify({});
+
+  console.log('projectRenderSettingsString', projectRenderSettingsString);
+
   return {
     name: 'revideo-renderer-plugin',
 
@@ -51,6 +58,7 @@ export function rendererPlugin(
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
             import {render} from '@revideo/renderer/lib/client/render';
+            import {Vector2} from '@revideo/core';
             import project from '${projectFile}?project';
 
             // Read video variables
@@ -62,11 +70,7 @@ export function rendererPlugin(
             const fileNameEscaped = url.searchParams.get('fileName');
             const workerId = parseInt(url.searchParams.get('workerId'));
             const totalNumOfWorkers = parseInt(url.searchParams.get('totalNumOfWorkers'));
-            const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
-            const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
             const hiddenFolderIdEscaped = url.searchParams.get('hiddenFolderId');
-            const videoWidth = parseInt(url.searchParams.get('videoWidth'));
-            const videoHeight = parseInt(url.searchParams.get('videoHeight'));
 
             const fileName = decodeURIComponent(fileNameEscaped);
             const hiddenFolderId = decodeURIComponent(hiddenFolderIdEscaped);
@@ -74,7 +78,7 @@ export function rendererPlugin(
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;
 
-            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds, hiddenFolderId, videoWidth, videoHeight);
+            render(project, workerId, totalNumOfWorkers, hiddenFolderId, JSON.parse(\`${projectRenderSettingsString}\`));
             `;
       }
     },

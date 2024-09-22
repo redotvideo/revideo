@@ -5,6 +5,8 @@ import * as path from 'path';
 import {v4 as uuidv4} from 'uuid';
 import {ffmpegSettings} from './settings';
 
+export type AudioCodec = 'aac' | 'libopus';
+
 export function resolvePath(output: string, assetPath: string) {
   let resolvedPath: string;
   if (
@@ -144,6 +146,7 @@ export async function mergeAudioWithVideo(
   audioPath: string,
   videoPath: string,
   outputPath: string,
+  audioCodec: AudioCodec = 'aac',
 ): Promise<void> {
   ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
 
@@ -151,7 +154,14 @@ export async function mergeAudioWithVideo(
     ffmpeg()
       .input(videoPath)
       .input(audioPath)
-      .outputOptions(['-c:v', 'copy', '-c:a', 'aac', '-strict', 'experimental'])
+      .outputOptions([
+        '-c:v',
+        'copy', // Copy video codec without re-encoding
+        '-c:a',
+        audioCodec, // Use Opus for audio (compatible with WebM)
+        '-strict',
+        'experimental',
+      ])
       .on('end', () => {
         resolve();
       })

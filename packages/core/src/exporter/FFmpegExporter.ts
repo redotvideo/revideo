@@ -20,6 +20,10 @@ type ServerResponse =
       message?: string;
     };
 
+export interface FfmpegExporterOptions {
+  format: 'mp4' | 'webm' | 'proRes';
+}
+
 /**
  * FFmpeg video exporter.
  *
@@ -67,8 +71,13 @@ export class FFmpegExporterClient implements Exporter {
   }
 
   public async handleFrame(canvas: HTMLCanvasElement): Promise<void> {
+    const format = (this.settings.exporter.options as FfmpegExporterOptions)
+      .format;
     const blob = await new Promise<Blob | null>(resolve =>
-      canvas.toBlob(resolve, 'image/jpeg'),
+      canvas.toBlob(
+        resolve,
+        ['proRes', 'webm'].includes(format) ? 'image/png' : 'image/jpeg',
+      ),
     );
 
     if (!blob) {
@@ -130,12 +139,15 @@ export class FFmpegExporterClient implements Exporter {
   public async mergeMedia(): Promise<void> {
     const outputFilename = this.settings.name;
     const tempDir = `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`;
+    const format = (this.settings.exporter.options as FfmpegExporterOptions)
+      .format;
 
     await fetch('/audio-processing/merge-media', {
       method: 'POST',
       body: JSON.stringify({
         outputFilename,
         tempDir,
+        format,
       }),
     });
   }

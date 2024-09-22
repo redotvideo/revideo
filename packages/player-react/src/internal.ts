@@ -179,6 +179,7 @@ class RevideoPlayer extends HTMLElement {
     this.player.togglePlayback(this.playing);
 
     this.setState(State.Ready);
+    this.dispatchEvent(new CustomEvent('playerready', {detail: this.player}));
   }
 
   public attributeChangedCallback(name: string, _: any, newValue: any) {

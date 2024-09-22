@@ -52,8 +52,6 @@ export class FFmpegExporterServer {
     ffmpeg.setFfmpegPath(ffmpegSettings.getFfmpegPath());
     this.command = ffmpeg();
 
-    console.log('jobfolder', this.jobFolder);
-
     // Input image sequence
     this.command
       .input(this.stream)

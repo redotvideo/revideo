@@ -48,6 +48,13 @@ const templates = [
     startcommands: 'readme',
   },
   {
+    value: 'minimal-drag-drop',
+    title: 'Drag and Drop Example',
+    description:
+      'A minimal example of an editor with drag-and-drop editing functionality.',
+    startcommands: 'next',
+  },
+  {
     value: 'parallelized-aws-lambda',
     title: 'Parallelized AWS Lambda',
     description: 'Example of parallelized rendering using AWS Lambda.',
@@ -219,7 +226,7 @@ async function run() {
   if (selectedTemplate.startcommands === 'default') {
     console.log(installCommand);
     console.log(`  ${boldManager} start`);
-  } else if (selectedTemplate.startCommands === 'next') {
+  } else if (selectedTemplate.startcommands === 'next') {
     console.log(kleur.blue('\n√ Start the NextJS server:'));
     console.log(`  ${kleur.bold('cd')} next`);
     console.log(installCommand);

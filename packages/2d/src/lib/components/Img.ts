@@ -2,7 +2,6 @@ import {
   BBox,
   Color,
   DependencyContext,
-  DetailedError,
   PossibleVector2,
   SerializedVector2,
   SignalValue,
@@ -159,18 +158,9 @@ export class Img extends Asset {
           image.addEventListener('load', resolve);
           image.addEventListener('error', () =>
             reject(
-              new DetailedError({
-                message: `Failed to load an image`,
-                remarks: `\
-The <code>src</code> property was set to:
-<pre><code>${rawSrc}</code></pre>
-...which resolved to the following url:
-<pre><code>${src}</code></pre>
-Make sure that source is correct and that the image exists.<br/>
-<a target='_blank' href='https://motioncanvas.io/docs/media#images'>Learn more</a>
-about working with images.`,
-                inspect: this.key,
-              }),
+              new Error(
+                `Failed to load the image: ${src} for node ${this.key}. If you are sure that the url is correct, this might be a CORS error.`,
+              ),
             ),
           );
         }),

@@ -136,8 +136,8 @@ export class Video extends Media {
     }
 
     DependencyContext.collectPromise(
-      new Promise<void>(resolve => {
-        this.waitForCanPlay(video, resolve);
+      new Promise<void>((resolve, reject) => {
+        this.waitForCanPlay(video, resolve, reject);
       }),
     );
 

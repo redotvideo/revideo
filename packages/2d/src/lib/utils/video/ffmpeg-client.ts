@@ -1,3 +1,5 @@
+import {verifyFetchResponse} from '@revideo/core';
+
 export class ImageCommunication {
   public constructor() {
     if (!import.meta.hot) {
@@ -27,9 +29,10 @@ export class ImageCommunication {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    await verifyFetchResponse(
+      response,
+      "Didn't get frame from /revideo-ffmpeg-decoder/video-frame",
+    );
 
     const width = parseInt(response.headers.get('X-Frame-Width') || '1080', 10);
     const height = parseInt(

@@ -218,12 +218,18 @@ export abstract class Media extends Asset {
   }
 
   protected scheduleSeek(time: number) {
-    this.waitForCanPlay(this.mediaElement(), () => {
-      const media = this.mediaElement();
-      // Wait until the media is ready to seek again as
-      // setting the time before the video doesn't work reliably.
-      media.currentTime = time;
-    });
+    this.waitForCanPlay(
+      this.mediaElement(),
+      () => {
+        const media = this.mediaElement();
+        // Wait until the media is ready to seek again as
+        // setting the time before the video doesn't work reliably.
+        media.currentTime = time;
+      },
+      (error: string) => {
+        throw new Error(error);
+      },
+    );
   }
 
   /**
@@ -233,7 +239,11 @@ export abstract class Media extends Asset {
    * @param onCanPlay - The function to call when the media is ready to play.
    * @returns
    */
-  protected waitForCanPlay(media: HTMLMediaElement, onCanPlay: () => void) {
+  protected waitForCanPlay(
+    media: HTMLMediaElement,
+    onCanPlay: () => void,
+    onErrorMessage: (message: string) => void,
+  ) {
     if (media.readyState >= 2) {
       onCanPlay();
       return;
@@ -246,8 +256,9 @@ export abstract class Media extends Asset {
 
     const onError = () => {
       const reason = this.getErrorReason(media.error?.code);
-      console.log(`ERROR: Error loading video: ${this.src()}, ${reason}`);
-      media.removeEventListener('error', onError);
+      onErrorMessage(
+        `Failed to load media: ${this.src()} for node ${this.key}: ${reason}. If you are sure that the url is correct, this might be a CORS error.`,
+      );
     };
 
     media.addEventListener('canplay', onCanPlayWrapper);

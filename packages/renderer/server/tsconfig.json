@@ -10,7 +10,8 @@
     "target": "es2022",
     "declaration": true,
     "declarationMap": true,
-    "incremental": true
+    "incremental": true,
+    "skipLibCheck": true
   },
   "include": ["."]
 }

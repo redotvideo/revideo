@@ -8,8 +8,8 @@
   "bugs": "https://github.com/havenhq/revideo/issues",
   "license": "MIT",
   "scripts": {
-    "dev": "tspc -p tsconfig.build.json -w",
-    "build": "tspc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json -w",
+    "build": "tsc -p tsconfig.build.json",
     "bundle": "rollup -c rollup.config.mjs",
     "test": "vitest"
   },

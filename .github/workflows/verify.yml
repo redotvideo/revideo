@@ -21,7 +21,7 @@ jobs:
       - run: rm -rf node_modules
       - run: rm -rf packages/*/node_modules
       - run: rm -rf /home/runner/work/revideo/revideo/node_modules/
-      - run: npm install
+      - run: npm ci
       - run: cat package-lock.json
       - run: npx lerna run build
       - run: npm run examples:build

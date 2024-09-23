@@ -14,6 +14,7 @@ interface RevideoPlayerProps {
   height?: number;
   quality?: number;
   fps?: number;
+  volume?: number;
 }
 
 declare global {
@@ -140,19 +141,18 @@ export function Player({
   const handlePlayerResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
       const [firstEntry] = entries;
-      if (!firstEntry || !wrapperRef.current) {
+      if (!firstEntry || !wrapperRef.current || !lastRect.current) {
         return;
       }
 
       const newRect = firstEntry.contentRect;
-      const sameWidth = newRect.width === lastRect.current.width;
-      const sameHeight = newRect.height === lastRect.current.height;
-      if (lastRect.current && sameWidth && sameHeight) {
-        return;
+      if (
+        newRect.width !== lastRect.current.width ||
+        newRect.height !== lastRect.current.height
+      ) {
+        lastRect.current = newRect;
+        onPlayerResize(newRect);
       }
-
-      lastRect.current = newRect;
-      onPlayerResize(newRect);
     },
     [onPlayerResize],
   );
@@ -234,6 +234,7 @@ export function Player({
             height={height}
             quality={quality}
             fps={fps}
+            volume={volumeState}
           />
           <div
             className={`p-absolute p-bottom-0 p-w-full p-transition-opacity p-duration-200 ${

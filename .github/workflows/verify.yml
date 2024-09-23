@@ -52,7 +52,11 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm cache clean --force
+      - name: Clear npm cache and node_modules
+        run: |
+          npm cache clean --force
+          rm -rf node_modules
+          rm -rf packages/*/node_modules
       - run: npm ci
       - run: npx lerna run build
       - run: npm run examples:build

@@ -52,13 +52,9 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - name: Clear npm cache
-        run: npm cache clean --force
+      - run: node --version
+      - run: npm --version
       - run: npm ci
-      - name: Update Vite and TypeScript
-        run: npm update vite typescript
-      - name: Debug Vite config
-        run: npx vite --debug
       - run: npx lerna run build
       - run: npm run examples:build
 #   tests:

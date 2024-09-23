@@ -7,6 +7,9 @@
   "message": "ci(release): %v [skip ci]",
   "conventionalCommits": true,
   "command": {
+    "version": {
+      "changelog": false
+    },
     "run": {
       "ignore": "@revideo/docs"
     }

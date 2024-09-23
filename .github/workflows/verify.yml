@@ -43,7 +43,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run prettier
-  build:
+    build:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -57,9 +57,26 @@ jobs:
           npm cache clean --force
           rm -rf node_modules
           rm -rf packages/*/node_modules
-      - run: npm ci
-      - run: npx lerna run build
-      - run: npm run examples:build
+      - name: Remove problematic directories
+        run: |
+          rm -rf node_modules/esbuild
+          rm -rf node_modules/nx
+      - name: Install dependencies
+        run: |
+          npm install -g npm@latest
+          npm install --no-optional
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+      - name: Reinstall esbuild and nx
+        run: |
+          npm install esbuild
+          npm install nx
+      - name: List installed packages
+        run: npm list --depth=0
+      - name: Build packages
+        run: npx lerna run build
+      - name: Build examples
+        run: npm run examples:build
   tests:
     name: Unit tests
     runs-on: ubuntu-latest

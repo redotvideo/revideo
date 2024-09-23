@@ -52,6 +52,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - run: npm cache clean --force
       - run: npm ci
       - run: npx lerna run build
       - run: npm run examples:build

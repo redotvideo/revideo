@@ -43,7 +43,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run prettier
-    build:
+  build:
     name: Build
     runs-on: ubuntu-latest
     steps:

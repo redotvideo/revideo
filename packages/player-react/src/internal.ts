@@ -49,22 +49,24 @@ class RevideoPlayer extends HTMLElement {
 
   private get fps() {
     const attr = this.getAttribute('fps');
-    return attr ? parseFloat(attr) : this.defaultSettings?.fps ?? 60;
+    return attr ? parseFloat(attr) : (this.defaultSettings?.fps ?? 60);
   }
 
   private get quality() {
     const attr = this.getAttribute('quality');
-    return attr ? parseFloat(attr) : this.defaultSettings?.resolutionScale ?? 1;
+    return attr
+      ? parseFloat(attr)
+      : (this.defaultSettings?.resolutionScale ?? 1);
   }
 
   private get width() {
     const attr = this.getAttribute('width');
-    return attr ? parseFloat(attr) : this.defaultSettings?.size.width ?? 0;
+    return attr ? parseFloat(attr) : (this.defaultSettings?.size.width ?? 0);
   }
 
   private get height() {
     const attr = this.getAttribute('height');
-    return attr ? parseFloat(attr) : this.defaultSettings?.size.height ?? 0;
+    return attr ? parseFloat(attr) : (this.defaultSettings?.size.height ?? 0);
   }
 
   private get variables() {

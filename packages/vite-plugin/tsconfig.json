@@ -10,12 +10,7 @@
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "incremental": true,
-    "plugins": [
-      {
-        "transform": "@revideo/internal/transformers/markdown-literals.js"
-      }
-    ]
+    "incremental": true
   },
   "include": ["src"]
 }

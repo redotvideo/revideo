@@ -10,7 +10,6 @@ import {
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {Rect, RectProps} from './Rect';
-import reactivePlaybackRate from './__logs__/reactive-playback-rate.md';
 
 export interface MediaProps extends RectProps {
   src?: SignalValue<string>;
@@ -22,6 +21,30 @@ export interface MediaProps extends RectProps {
   awaitCanPlay?: SignalValue<boolean>;
   allowVolumeAmplificationInPreview?: SignalValue<boolean>;
 }
+
+const reactivePlaybackRate = `
+The \`playbackRate\` of a \`Video\` cannot be reactive.
+
+Make sure to use a concrete value and not a function:
+
+\`\`\`ts wrong
+video.playbackRate(() => 7);
+\`\`\`
+
+\`\`\`ts correct
+video.playbackRate(7);
+\`\`\`
+
+If you're using a signal, extract its value before passing it to the property:
+
+\`\`\`ts wrong
+video.playbackRate(mySignal);
+\`\`\`
+
+\`\`\`ts correct
+video.playbackRate(mySignal());
+\`\`\`
+`;
 
 @nodeName('Media')
 export abstract class Media extends Rect {

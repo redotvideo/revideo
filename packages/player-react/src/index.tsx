@@ -1,5 +1,5 @@
 'use client';
-import {Player as CorePlayer} from '@revideo/core';
+import {Player as CorePlayer, Project} from '@revideo/core';
 import {ComponentProps, useCallback, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
 import './index.css';

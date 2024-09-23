@@ -1,6 +1,20 @@
 import type {LogPayload} from '../app';
 import {DetailedError} from './DetailedError';
-import experimentalFeatures from './__logs__/experimental-features.md';
+
+export const experimentalFeatures = `
+This feature requires enabling the \`experimentalFeatures\` flag in your project
+configuration:
+
+\`\`\`ts
+export default makeProject({
+  experimentalFeatures: true,
+  // ...
+});
+\`\`\`
+
+[Learn more](https://motioncanvas.io/docs/experimental) about experimental
+features.
+`;
 
 type ExperimentalErrorProps = Pick<
   LogPayload,

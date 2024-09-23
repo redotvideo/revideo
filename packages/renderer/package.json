@@ -2,7 +2,9 @@
   "name": "@revideo/renderer",
   "version": "0.5.9",
   "description": "A headless renderer for revideo",
-  "main": "lib/server/index.js",
+  "main": "lib/server/index.cjs.js",
+  "module": "lib/server/index.mjs",
+  "types": "lib/server/index.d.ts",
   "author": "revideo",
   "homepage": "https://re.video/",
   "bugs": "https://github.com/havenhq/revideo/issues",
@@ -12,7 +14,7 @@
     "postbuild": "ncp renderer.html lib/renderer.html",
     "client:build": "tsc --project client/tsconfig.json",
     "client:dev": "tsc -w --project client/tsconfig.json",
-    "server:build": "tsc --project server/tsconfig.json",
+    "server:build": "rollup -c rollup.config.mjs",
     "server:dev": "tsc -w --project server/tsconfig.json"
   },
   "files": [
@@ -22,10 +24,13 @@
   "dependencies": {
     "@revideo/ffmpeg": "0.5.9",
     "puppeteer": "^23.4.0",
-    "vite": "4.5.2"
+    "vite": "5.4.7"
   },
   "devDependencies": {
     "@revideo/core": "0.5.9",
-    "ncp": "^2.0.0"
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "ncp": "^2.0.0",
+    "rollup-plugin-dts": "^6.1.1"
   }
 }

@@ -86,18 +86,3 @@ jobs:
         with:
           name: image-diffs
           path: packages/e2e/src/__image_snapshots__/__diff_output__
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx lerna run build
-      - run: npx lerna run bundle
-      - run: npm run docs:build
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"

@@ -17,28 +17,11 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - name: Clear npm cache and node_modules
-        run: |
-          npm cache clean --force
-          rm -rf node_modules
-          rm -rf packages/*/node_modules
-      - name: Remove problematic directories
-        run: |
-          rm -rf node_modules/esbuild
-          rm -rf node_modules/nx
-      - name: Install dependencies
-        run: |
-          npm install -g npm@latest
-          npm install --no-optional
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-      - name: Reinstall esbuild and nx
-        run: |
-          npm install esbuild
-          npm install nx
-      - name: List installed packages
-        run: npm list --depth=0
-      - name: Build packages
-        run: npx lerna run build
-      - name: Build examples
-        run: npm run examples:build
+      - run: npm cache clean --force
+      - run: rm -rf node_modules
+      - run: rm -rf packages/*/node_modules
+      - run: rm -rf /home/runner/work/revideo/revideo/node_modules/
+      - run: npm ci
+      - run: npx lerna run build
+      - run: npm run examples:build
+ 

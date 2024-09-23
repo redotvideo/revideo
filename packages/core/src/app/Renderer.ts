@@ -167,6 +167,8 @@ export class Renderer {
     this.finished.dispatch(result);
     this.sharedWebGLContext.dispose();
     this.lock.release();
+
+    return result;
   }
 
   /**

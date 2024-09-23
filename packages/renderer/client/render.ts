@@ -1,4 +1,4 @@
-import {Project, Renderer, Vector2} from '@revideo/core';
+import {Project, Renderer, RendererResult, Vector2} from '@revideo/core';
 
 declare global {
   interface Window {
@@ -54,10 +54,15 @@ export const render = async (
       renderSettings.size = new Vector2({x: videoWidth, y: videoHeight});
     }
 
-    await renderer.render(renderSettings);
-    window.onRenderComplete();
+    const result = await renderer.render(renderSettings);
+    if (result === RendererResult.Success) {
+      window.onRenderComplete();
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 3000)); // wait for two seconds for error to be handled
+      window.onRenderFailed('Render process failed');
+    }
   } catch (e: any) {
-    window.onRenderFailed(e.message);
+    window.onRenderFailed(e.message ?? e);
   }
 };
 

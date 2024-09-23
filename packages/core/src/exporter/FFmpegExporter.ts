@@ -8,6 +8,7 @@ import {EventDispatcher} from '../events';
 import {BoolMetaField, MetaField, ObjectMetaField, ValueOf} from '../meta';
 import {Exporter} from './Exporter';
 import {download} from './download-videos';
+import {verifyFetchResponse} from './utils';
 
 type ServerResponse =
   | {
@@ -113,7 +114,7 @@ export class FFmpegExporterClient implements Exporter {
 
   public async stop(result: RendererResult): Promise<void> {
     await this.invoke('end', result);
-    await fetch('/revideo-ffmpeg-decoder/finished', {
+    const response = await fetch('/revideo-ffmpeg-decoder/finished', {
       method: 'POST',
       headers: {
         // eslint-disable-next-line
@@ -121,6 +122,8 @@ export class FFmpegExporterClient implements Exporter {
       },
       body: JSON.stringify({}),
     });
+
+    await verifyFetchResponse(response, '/revideo-ffmpeg-decoder/finished');
   }
 
   public async kill(): Promise<void> {
@@ -136,7 +139,7 @@ export class FFmpegExporterClient implements Exporter {
     startFrame: number,
     endFrame: number,
   ): Promise<void> {
-    await fetch('/audio-processing/generate-audio', {
+    const response = await fetch('/audio-processing/generate-audio', {
       method: 'POST',
       body: JSON.stringify({
         tempDir: `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
@@ -146,19 +149,23 @@ export class FFmpegExporterClient implements Exporter {
         fps: this.settings.fps,
       }),
     });
+
+    await verifyFetchResponse(response, '/audio-processing/generate-audio');
   }
 
   public async mergeMedia(): Promise<void> {
     const outputFilename = this.settings.name;
     const tempDir = `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`;
 
-    await fetch('/audio-processing/merge-media', {
+    const response = await fetch('/audio-processing/merge-media', {
       method: 'POST',
       body: JSON.stringify({
         outputFilename,
         tempDir,
       }),
     });
+
+    await verifyFetchResponse(response, '/audio-processing/merge-media');
   }
 
   /**

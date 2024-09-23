@@ -40,8 +40,8 @@ export class Audio extends Media {
     }
 
     DependencyContext.collectPromise(
-      new Promise<void>(resolve => {
-        this.waitForCanPlay(audio, resolve);
+      new Promise<void>((resolve, reject) => {
+        this.waitForCanPlay(audio, resolve, reject);
       }),
     );
 

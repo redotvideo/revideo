@@ -4,6 +4,7 @@ import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {MetaField, ObjectMetaField} from '../meta';
 import {Exporter} from './Exporter';
 import {download} from './download-videos';
+import {verifyFetchResponse} from './utils';
 
 export class WasmExporter implements Exporter {
   public static readonly id = '@revideo/core/wasm';
@@ -42,6 +43,7 @@ export class WasmExporter implements Exporter {
   public async handleFrame(canvas: HTMLCanvasElement): Promise<void> {
     const frame = new VideoFrame(canvas, {timestamp: 0});
     await this.encoder.addFrame(frame);
+
     frame.close();
   }
 
@@ -55,7 +57,7 @@ export class WasmExporter implements Exporter {
       `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
     );
 
-    await fetch('/revideo-ffmpeg-decoder/finished', {
+    const finishResponse = await fetch('/revideo-ffmpeg-decoder/finished', {
       method: 'POST',
       headers: {
         // eslint-disable-next-line
@@ -64,10 +66,17 @@ export class WasmExporter implements Exporter {
       body: JSON.stringify({}),
     });
 
-    await fetch('/uploadVideoFile', {
+    await verifyFetchResponse(
+      finishResponse,
+      '/revideo-ffmpeg-decoder/finished',
+    );
+
+    const uploadResponse = await fetch('/uploadVideoFile', {
       method: 'POST',
       body: formData,
     });
+
+    await verifyFetchResponse(uploadResponse, '/uploadVideoFile');
   }
 
   public async generateAudio(
@@ -75,7 +84,7 @@ export class WasmExporter implements Exporter {
     startFrame: number,
     endFrame: number,
   ): Promise<void> {
-    await fetch('/audio-processing/generate-audio', {
+    const response = await fetch('/audio-processing/generate-audio', {
       method: 'POST',
       body: JSON.stringify({
         tempDir: `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
@@ -85,19 +94,25 @@ export class WasmExporter implements Exporter {
         fps: this.settings.fps,
       }),
     });
+
+    console.log('generate audio response aahhh OK????', response.ok);
+
+    await verifyFetchResponse(response, '/audio-processing/generate-audio');
   }
 
   public async mergeMedia(): Promise<void> {
     const outputFilename = this.settings.name;
     const tempDir = `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`;
 
-    await fetch('/audio-processing/merge-media', {
+    const response = await fetch('/audio-processing/merge-media', {
       method: 'POST',
       body: JSON.stringify({
         outputFilename,
         tempDir,
       }),
     });
+
+    await verifyFetchResponse(response, '/audio-processing/merge-media');
   }
 
   public async downloadVideos(assets: AssetInfo[][]): Promise<void> {

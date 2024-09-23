@@ -1,4 +1,5 @@
 import {AssetInfo} from '../app';
+import {verifyFetchResponse} from './utils';
 
 export async function download(assets: AssetInfo[][]): Promise<void> {
   const videoRanges: Map<string, {start: number; end: number}> = new Map();
@@ -47,9 +48,10 @@ export async function download(assets: AssetInfo[][]): Promise<void> {
     },
   );
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+  await verifyFetchResponse(
+    response,
+    '/revideo-ffmpeg-decoder/download-video-chunks',
+  );
 
   const result = await response.json();
 

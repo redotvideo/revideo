@@ -55,7 +55,7 @@ jobs:
       - run: node --version
       - run: npm --version
       - run: npm ci
-      - run: sed -i '12849i\console.error("hello", options);' /node_modules/vite/dist/node/chunks/dep-52909643.js
+      - run: sed -i '12849i\console.error("hello", options);' /home/runner/work/revideo/revideo/node_modules/vite/dist/node/chunks/dep-52909643.js
       - run: npm list
       - run: npx lerna run build
       - run: npm run examples:build

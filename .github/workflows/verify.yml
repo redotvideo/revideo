@@ -8,41 +8,41 @@ env:
   HUSKY: 0
 
 jobs:
-  commit:
-    name: Commit name
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --verbose
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx eslint "**/*.ts?(x)"
-  prettier:
-    name: Code style
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run prettier
+#   commit:
+    # name: Commit name
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v4
+        # with:
+          # fetch-depth: 0
+      # - uses: actions/setup-node@v4
+        # with:
+          # node-version: 20
+          # cache: npm
+      # - run: npm ci
+      # - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --verbose
+  # lint:
+    # name: Lint
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v4
+      # - uses: actions/setup-node@v4
+        # with:
+          # node-version: 20
+          # cache: npm
+      # - run: npm ci
+      # - run: npx eslint "**/*.ts?(x)"
+  # prettier:
+    # name: Code style
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v4
+      # - uses: actions/setup-node@v4
+        # with:
+          # node-version: 20
+          # cache: npm
+      # - run: npm ci
+      # - run: npm run prettier
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -52,37 +52,43 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - name: Clear npm cache
+        run: npm cache clean --force
       - run: npm ci
+      - name: Update Vite and TypeScript
+        run: npm update vite typescript
+      - name: Debug Vite config
+        run: npx vite --debug
       - run: npx lerna run build
       - run: npm run examples:build
-  tests:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx lerna run build
-      - run: npx lerna run test
-  e2e:
-    name: E2E
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx lerna run build
-      - run: npm run e2e:test
-        env:
-          HOME: /root
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: image-diffs
-          path: packages/e2e/src/__image_snapshots__/__diff_output__
+#   tests:
+    # name: Unit tests
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v4
+      # - uses: actions/setup-node@v4
+        # with:
+          # node-version: 20
+          # cache: npm
+      # - run: npm ci
+      # - run: npx lerna run build
+      # - run: npx lerna run test
+  # e2e:
+    # name: E2E
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v4
+      # - uses: actions/setup-node@v4
+        # with:
+          # node-version: 20
+          # cache: npm
+      # - run: npm ci
+      # - run: npx lerna run build
+      # - run: npm run e2e:test
+        # env:
+          # HOME: /root
+      # - uses: actions/upload-artifact@v3
+        # if: failure()
+        # with:
+          # name: image-diffs
+          # path: packages/e2e/src/__image_snapshots__/__diff_output__

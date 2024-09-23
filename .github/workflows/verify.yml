@@ -55,6 +55,7 @@ jobs:
       - run: node --version
       - run: npm --version
       - run: npm ci
+      - run: npm list
       - run: npx lerna run build
       - run: npm run examples:build
 #   tests:

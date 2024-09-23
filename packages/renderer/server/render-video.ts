@@ -143,9 +143,9 @@ async function renderVideoOnPage(
 ) {
   function printProgress() {
     let line = '';
-    Array.from(progressTracker).forEach(([key, value]) => {
+    for (const [key, value] of progressTracker.entries()) {
       line += `Render progress, worker ${key}: ${(value * 100).toFixed(0)}% `;
-    });
+    }
 
     if (line === '') {
       return;

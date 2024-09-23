@@ -4,7 +4,7 @@
     "types": ["node"],
     "noEmit": false,
     "outDir": "dist",
-    "skipLibCheck": true
+    "module": "CommonJS"
   },
   "include": ["src"]
 }

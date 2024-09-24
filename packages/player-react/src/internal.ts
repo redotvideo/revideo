@@ -44,6 +44,7 @@ class RevideoPlayer extends HTMLElement {
       'quality',
       'width',
       'height',
+      'volume',
     ];
   }
 
@@ -97,7 +98,7 @@ class RevideoPlayer extends HTMLElement {
   private duration: number = 0; // in frames
   private looping = true;
   private volume = 1;
-  private volumeChangeRequested = false;
+  private volumeChangeRequested = true;
 
   public constructor() {
     super();
@@ -108,7 +109,6 @@ class RevideoPlayer extends HTMLElement {
     this.canvas = this.stage.finalBuffer;
     this.canvas.classList.add('canvas');
     this.root.prepend(this.canvas);
-
     this.setState(State.Initial);
   }
 
@@ -183,6 +183,9 @@ class RevideoPlayer extends HTMLElement {
       case 'height':
         this.updateSettings();
         break;
+      case 'volume':
+        this.volume = newValue;
+        this.volumeChangeRequested = true;
     }
   }
 

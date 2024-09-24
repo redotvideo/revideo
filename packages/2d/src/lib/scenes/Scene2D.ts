@@ -220,7 +220,6 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
 
     for (const media of mediaNodes) {
       media.setVolume(media.getVolume() * volumeScale);
-      console.log(media.key);
     }
   }
 

@@ -5,13 +5,13 @@
     "inlineSourceMap": true,
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "bundler",
     "strict": true,
-    "module": "es2022",
+    "module": "commonjs",
     "target": "es2022",
     "declaration": true,
     "declarationMap": true,
-    "incremental": true
+    "incremental": true,
+    "skipLibCheck": true
   },
   "include": ["."]
 }

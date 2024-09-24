@@ -1,9 +1,34 @@
 import {Logger} from './Logger';
-import includeWithoutPreprocessor from './__logs__/include-without-preprocessor.md';
 
 const SOURCE_URL_REGEX = /^\/\/# sourceURL=(.*)$/gm;
 const INFO_LOG_REGEX = /ERROR: \d+:(\d+): (.*)/g;
 const INFO_TOKEN_REGEX = /^'([^']+)'/;
+
+const includeWithoutPreprocessor = `
+The \`#include\` directive requires the use of a preprocessor.
+
+Make sure to import the shader from a file:
+
+\`\`\`ts
+import shader from './shader.glsl';
+\`\`\`
+
+Do **NOT** use the raw loader:
+
+\`\`\`ts
+import shader from './shader.glsl?raw';
+\`\`\`
+
+Do **NOT** use \`#include\` in an inline string:
+
+\`\`\`ts
+const shader = \`\\
+#include "example.glsl"
+\`;
+\`\`\`
+
+[Learn more](https://motioncanvas.io/docs/shaders) about working with shaders.
+`;
 
 /**
  * @internal

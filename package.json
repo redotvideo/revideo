@@ -1,6 +1,9 @@
 {
   "name": "revideo",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -28,7 +31,6 @@
     "player:build": "npm run build -w packages/player",
     "docs:dev": "npm run dev -w packages/docs",
     "docs:build": "npm run build -w packages/docs",
-    "docs:blog": "npm run blog -w packages/docs",
     "vite-plugin:dev": "npm run dev -w packages/vite-plugin",
     "vite-plugin:build": "npm run build -w packages/vite-plugin",
     "e2e:test": "npm run test -w packages/e2e",
@@ -38,33 +40,23 @@
     "prettier:fix": "prettier --write ."
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.4.2",
-    "@commitlint/config-conventional": "^18.4.2",
-    "@types/uuid": "^9.0.8",
+    "@commitlint/cli": "^19.4.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "eslint": "^8.54.0",
     "eslint-plugin-tsdoc": "^0.2.17",
-    "husky": "^8.0.3",
-    "lerna": "^7.4.2",
-    "lint-staged": "^15.1.0",
-    "prettier": "^3.1.0",
-    "prettier-plugin-organize-imports": "^3.2.4",
+    "husky": "^9.1.5",
+    "lerna": "^8.1.8",
+    "lint-staged": "^15.2.9",
+    "prettier": "^3.3.3",
+    "prettier-plugin-organize-imports": "^4.0.0",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.6"
+    "vitest": "^0.34.6",
+    "vite": "4.5.2"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",
     "*.{js,jsx,ts,tsx,md,scss}": "prettier --write"
-  },
-  "dependencies": {
-    "@preact/preset-vite": "2.5.0",
-    "@wooorm/starry-night": "^3.3.0",
-    "lunr": "^2.3.9",
-    "marked": "^12.0.1",
-    "shiki": "^1.1.7",
-    "uuid": "^9.0.1",
-    "@types/node": "18.14.0",
-    "vite": "4.5.2"
   }
 }

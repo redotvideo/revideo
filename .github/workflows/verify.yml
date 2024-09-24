@@ -82,7 +82,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      - run: PUPPETEER_PRODUCT=chrome npm ci
       # TODO: FFmpeg and ffprobe installer don't automatically install the binaries
       - run: npm install @ffmpeg-installer/ffmpeg
       - run: npm install @ffprobe-installer/ffprobe

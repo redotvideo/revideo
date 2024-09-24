@@ -82,15 +82,13 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npx puppeteer browsers install chrome
       - run: npm ci
+      - run: npx puppeteer browsers install chrome
       # TODO: FFmpeg and ffprobe installer don't automatically install the binaries
       - run: npm install @ffmpeg-installer/ffmpeg
       - run: npm install @ffprobe-installer/ffprobe
       - run: npx lerna run build
       - run: npm run e2e:test
-        env:
-          HOME: /root
       - uses: actions/upload-artifact@v3
         if: failure()
         with:

@@ -8,41 +8,41 @@ env:
   HUSKY: 0
 
 jobs:
-#   commit:
-    # name: Commit name
-    # runs-on: ubuntu-latest
-    # steps:
-      # - uses: actions/checkout@v4
-        # with:
-          # fetch-depth: 0
-      # - uses: actions/setup-node@v4
-        # with:
-          # node-version: 20
-          # cache: npm
-      # - run: npm ci
-      # - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --verbose
-  # lint:
-    # name: Lint
-    # runs-on: ubuntu-latest
-    # steps:
-      # - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-        # with:
-          # node-version: 20
-          # cache: npm
-      # - run: npm ci
-      # - run: npx eslint "**/*.ts?(x)"
-  # prettier:
-    # name: Code style
-    # runs-on: ubuntu-latest
-    # steps:
-      # - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-        # with:
-          # node-version: 20
-          # cache: npm
-      # - run: npm ci
-      # - run: npm run prettier
+  commit:
+    name: Commit name
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --verbose
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx eslint "**/*.ts?(x)"
+  prettier:
+    name: Code style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run prettier
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -58,40 +58,40 @@ jobs:
       # TODO: FFmpeg and ffprobe installer don't automatically install the binaries
       - run: npm install @ffmpeg-installer/ffmpeg
       - run: npm install @ffprobe-installer/ffprobe
-      # - run: ls -la /home/runner/work/revideo/revideo/node_modules/@ffmpeg-installer/
-      # - run: ls -la /home/runner/work/revideo/revideo/node_modules/@ffmpeg-installer/linux-x64
-      - run: awk 'NR==12849{print; print "console.error(\"hello\", options);"; next}1' /home/runner/work/revideo/revideo/node_modules/vite/dist/node/chunks/dep-52909643.js > temp && mv temp /home/runner/work/revideo/revideo/node_modules/vite/dist/node/chunks/dep-52909643.js
       - run: npm list
       - run: npx lerna run build
       - run: npm run examples:build
-#   tests:
-    # name: Unit tests
-    # runs-on: ubuntu-latest
-    # steps:
-      # - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-        # with:
-          # node-version: 20
-          # cache: npm
-      # - run: npm ci
-      # - run: npx lerna run build
-      # - run: npx lerna run test
-  # e2e:
-    # name: E2E
-    # runs-on: ubuntu-latest
-    # steps:
-      # - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-        # with:
-          # node-version: 20
-          # cache: npm
-      # - run: npm ci
-      # - run: npx lerna run build
-      # - run: npm run e2e:test
-        # env:
-          # HOME: /root
-      # - uses: actions/upload-artifact@v3
-        # if: failure()
-        # with:
-          # name: image-diffs
-          # path: packages/e2e/src/__image_snapshots__/__diff_output__
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx lerna run build
+      - run: npx lerna run test
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # TODO: FFmpeg and ffprobe installer don't automatically install the binaries
+      - run: npm install @ffmpeg-installer/ffmpeg
+      - run: npm install @ffprobe-installer/ffprobe
+      - run: npx lerna run build
+      - run: npm run e2e:test
+        env:
+          HOME: /root
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: image-diffs
+          path: packages/e2e/src/__image_snapshots__/__diff_output__

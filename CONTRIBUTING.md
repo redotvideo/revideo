@@ -50,7 +50,6 @@ Revideo consists of the following packages, which you can find in the
 - `cli`: The command line interface for Revideo
 - `core`: All logic related to running and rendering animations.
 - `create`: A package for bootstrapping new projects.
-- `docs`: Our documentation website.
 - `e2e`: End-to-end tests.
 - `examples`: Animation examples used in documentation.
 - `ffmpeg`: Utilities for ffmpeg and, contains logic for exporting videos

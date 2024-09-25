@@ -9,9 +9,6 @@
   "command": {
     "version": {
       "changelog": false
-    },
-    "run": {
-      "ignore": "@revideo/docs"
     }
   }
 }

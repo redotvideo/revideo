@@ -8,7 +8,6 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky install",
     "core:dev": "npm run dev -w packages/core",
     "core:build": "npm run build -w packages/core",
     "core:bundle": "npm run bundle -w packages/core",
@@ -29,8 +28,6 @@
     "renderer:build": "npm run build -w packages/renderer",
     "player:dev": "npm run dev -w packages/player",
     "player:build": "npm run build -w packages/player",
-    "docs:dev": "npm run dev -w packages/docs",
-    "docs:build": "npm run build -w packages/docs",
     "vite-plugin:dev": "npm run dev -w packages/vite-plugin",
     "vite-plugin:build": "npm run build -w packages/vite-plugin",
     "e2e:test": "npm run test -w packages/e2e",

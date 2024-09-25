@@ -1,6 +1,8 @@
 import {
+  Color,
   Project,
   Renderer,
+  UserProjectSettings,
   Vector2,
   getFullRenderingSettings,
 } from '@revideo/core';
@@ -21,11 +23,10 @@ export const render = async (
   project: Project,
   workerId: number,
   totalNumOfWorkers: number,
-  startInSeconds: number,
-  endInSeconds: number,
   hiddenFolderId: string,
-  videoWidth: number,
-  videoHeight: number,
+  projectRenderSettings: Partial<
+    UserProjectSettings['shared'] & UserProjectSettings['rendering']
+  >,
 ) => {
   try {
     const renderer = new Renderer(project);
@@ -34,8 +35,8 @@ export const render = async (
       await getGlobalFirstAndLastFrame(
         project,
         renderer,
-        startInSeconds,
-        endInSeconds,
+        projectRenderSettings.range?.[0] ?? 0,
+        projectRenderSettings.range?.[1] ?? Infinity,
       );
     const {firstWorkerFrame, lastWorkerFrame} =
       await getWorkerFirstAndLastFrame(
@@ -44,20 +45,28 @@ export const render = async (
         workerId,
         totalNumOfWorkers,
       );
+    
+    const fullRenderingSettings = getFullRenderingSettings(project);
 
     const renderSettings = {
-      ...getFullRenderingSettings(project),
+      ...fullRenderingSettings,
       name: project.name,
       hiddenFolderId: hiddenFolderId,
+      ...projectRenderSettings,
       range: [
         renderer.frameToTime(firstWorkerFrame),
         renderer.frameToTime(lastWorkerFrame),
       ] as [number, number],
+      size: projectRenderSettings.size
+        ? new Vector2(
+            projectRenderSettings.size.x,
+            projectRenderSettings.size.y,
+          )
+        : fullRenderingSettings.size,
+      background: projectRenderSettings.background
+        ? new Color(projectRenderSettings.background)
+        : fullRenderingSettings.background,
     };
-
-    if (videoWidth && videoHeight) {
-      renderSettings.size = new Vector2({x: videoWidth, y: videoHeight});
-    }
 
     await renderer.render(renderSettings);
     window.onRenderComplete();

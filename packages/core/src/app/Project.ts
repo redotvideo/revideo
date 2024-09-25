@@ -1,4 +1,8 @@
-import {ImageExporterOptions} from '../exporter';
+import {
+  FfmpegExporterOptions,
+  ImageExporterOptions,
+  WasmExporterOptions,
+} from '../exporter';
 import type {Plugin} from '../plugin';
 import {SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
@@ -28,14 +32,16 @@ export type ExporterSettings =
     }
   | {
       name: '@revideo/core/ffmpeg';
+      options: FfmpegExporterOptions;
     }
   | {
       name: '@revideo/core/wasm';
+      options: WasmExporterOptions;
     };
 
 export interface ProjectSettings {
   shared: {
-    background: Color | null;
+    background: Color;
     range: [number, number];
     size: Vector2;
   };
@@ -51,10 +57,28 @@ export interface ProjectSettings {
   };
 }
 
-export type PartialProjectSettings = {
-  shared?: Partial<ProjectSettings['shared']>;
-  rendering?: Partial<ProjectSettings['rendering']>;
-  preview?: Partial<ProjectSettings['preview']>;
+export interface UserProjectSettings {
+  shared: {
+    range: [number, number];
+    background: string | null;
+    size: {x: number; y: number};
+  };
+  rendering: {
+    exporter: ExporterSettings;
+    fps: number;
+    resolutionScale: number;
+    colorSpace: CanvasColorSpace;
+  };
+  preview: {
+    fps: number;
+    resolutionScale: number;
+  };
+}
+
+export type PartialUserProjectSettings = {
+  shared?: Partial<UserProjectSettings['shared']>;
+  rendering?: Partial<UserProjectSettings['rendering']>;
+  preview?: Partial<UserProjectSettings['preview']>;
 };
 
 export interface UserProject {
@@ -91,10 +115,10 @@ export interface UserProject {
    * Includes things like the background color, the resolution, the frame rate,
    * and the exporter to use.
    */
-  settings?: PartialProjectSettings;
+  settings?: PartialUserProjectSettings;
 }
 
-export interface Project extends UserProject {
+export interface Project extends Omit<UserProject, 'settings'> {
   name: string;
   settings: ProjectSettings;
 

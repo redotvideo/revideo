@@ -82,8 +82,8 @@ export function ffmpegBridgePlugin({output}: ExporterPluginConfig): Plugin {
       );
 
       server.middlewares.use('/audio-processing/merge-media', (req, res) =>
-        handlePostRequest(req, res, async ({outputFilename, tempDir}) =>
-          mergeMedia(outputFilename, output, tempDir),
+        handlePostRequest(req, res, async ({outputFilename, tempDir, format}) =>
+          mergeMedia(outputFilename, output, tempDir, format),
         ),
       );
 

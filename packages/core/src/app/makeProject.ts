@@ -3,8 +3,8 @@ import {Color, Vector2} from '../types';
 import {Logger} from './Logger';
 import {
   Project,
-  UserProjectSettings,
   UserProject,
+  UserProjectSettings,
   createVersionObject,
 } from './Project';
 

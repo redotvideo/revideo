@@ -45,7 +45,7 @@ export const render = async (
         workerId,
         totalNumOfWorkers,
       );
-    
+
     const fullRenderingSettings = getFullRenderingSettings(project);
 
     const renderSettings = {

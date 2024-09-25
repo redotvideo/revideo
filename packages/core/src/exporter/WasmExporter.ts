@@ -97,7 +97,7 @@ export class WasmExporter implements Exporter {
       body: JSON.stringify({
         outputFilename,
         tempDir,
-        format
+        format,
       }),
     });
   }

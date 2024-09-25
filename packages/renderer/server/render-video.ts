@@ -54,7 +54,12 @@ export interface RenderSettings {
   workers?: number;
   logProgress?: boolean;
 
-  renderSettings: Partial<UserProjectSettings['shared']> & Partial<Omit<UserProjectSettings['rendering'], 'exporter'>> & Omit<UserProjectSettings['rendering'], 'fps' | 'resolutionScale' | 'colorSpace'>;
+  renderSettings: Partial<UserProjectSettings['shared']> &
+    Partial<Omit<UserProjectSettings['rendering'], 'exporter'>> &
+    Omit<
+      UserProjectSettings['rendering'],
+      'fps' | 'resolutionScale' | 'colorSpace'
+    >;
 
   /**
    * When using multiple workers, this is the port of the first worker.
@@ -391,7 +396,8 @@ function getPropDefaults(settings: RenderSettings) {
     throw new Error('outFile must end with ".mp4"');
   }
 
-  const outFile = settings.outFile?.split('.').slice(0, -1).join('.') ?? 'video';
+  const outFile =
+    settings.outFile?.split('.').slice(0, -1).join('.') ?? 'video';
 
   return {
     outputFileName: outFile,
@@ -421,12 +427,12 @@ export const renderVideo = async ({
   settings = {
     renderSettings: {
       exporter: {
-        name: "@revideo/core/wasm",
+        name: '@revideo/core/wasm',
         options: {
-          format: "mp4"
-        }
-      }
-    }
+          format: 'mp4',
+        },
+      },
+    },
   },
 }: RenderVideoProps) => {
   checkForIncompatibleSettings(settings);
@@ -460,16 +466,22 @@ export const renderVideo = async ({
     numOfWorkers,
     outputFileName,
     hiddenFolderId,
-    settings
+    settings,
   );
   await concatenateAudioAndVideoFiles(
     outputFileName,
     outputFolderName,
     audioFiles,
     videoFiles,
-    settings
+    settings,
   );
-  await cleanup(outputFileName, outputFolderName, numOfWorkers, hiddenFolderId, settings);
+  await cleanup(
+    outputFileName,
+    outputFolderName,
+    numOfWorkers,
+    hiddenFolderId,
+    settings,
+  );
 
   return path.join(
     outputFolderName,
@@ -489,12 +501,12 @@ export const renderPartialVideo = async ({
   settings = {
     renderSettings: {
       exporter: {
-        name: "@revideo/core/wasm",
+        name: '@revideo/core/wasm',
         options: {
-          format: "mp4"
-        }
-      }
-    }
+          format: 'mp4',
+        },
+      },
+    },
   },
   numWorkers,
   workerId,

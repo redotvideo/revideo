@@ -10,12 +10,12 @@ async function render() {
       logProgress: true,
       renderSettings: {
         exporter: {
-          name: "@revideo/core/wasm",
+          name: '@revideo/core/wasm',
           options: {
-            format: "mp4"
-          }
-        }
-      }
+            format: 'mp4',
+          },
+        },
+      },
     },
   });
 

@@ -32,6 +32,10 @@ jobs:
           fetch-depth: 0
           token: ${{secrets.PUBLISH_TOKEN}}
           submodules: true
+      - name: Initialize and update submodules
+        run: |
+          git submodule init
+          git submodule update --recursive
       - uses: actions/setup-node@v4
         with:
           node-version: 20

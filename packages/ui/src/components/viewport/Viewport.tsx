@@ -4,7 +4,7 @@ import {useEffect, useState} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {useDuration, useRendererState} from '../../hooks';
 import {useShortcut} from '../../hooks/useShortcut';
-import {formatDuration} from '../../utils';
+import {formatDuration, openOutputPath} from '../../utils';
 import {Button} from '../controls';
 import {
   PlaybackControls,
@@ -41,11 +41,12 @@ function EditorViewport() {
             main
             value="Render"
             id="render"
-            onClick={() => {
-              renderer.render({
+            onClick={async () => {
+              await renderer.render({
                 ...getFullRenderingSettings(project),
                 name: project.name,
               });
+              await openOutputPath();
             }}
             class={styles.renderButton}
           >

@@ -8,6 +8,7 @@ import {
   map,
   threadable,
 } from '@revideo/core';
+import * as StackBlur from 'stackblur-canvas';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {
   CanvasStyleSignal,
@@ -27,6 +28,7 @@ export interface ShapeProps extends LayoutProps {
   lineDash?: SignalValue<number[]>;
   lineDashOffset?: SignalValue<number>;
   antialiased?: SignalValue<boolean>;
+  backgroundBlur?: SignalValue<number>;
 }
 
 @nodeName('Shape')
@@ -56,6 +58,9 @@ export abstract class Shape extends Layout {
   @initial(true)
   @signal()
   public declare readonly antialiased: SimpleSignal<boolean, this>;
+  @initial(0)
+  @signal()
+  public declare readonly backgroundBlur: SimpleSignal<number, this>;
 
   protected readonly rippleStrength = createSignal<number, this>(0);
 
@@ -111,6 +116,78 @@ export abstract class Shape extends Layout {
       hasStroke && context.stroke(path);
     }
     context.restore();
+  }
+
+  protected override renderFromSource(
+    context: CanvasRenderingContext2D,
+    source: CanvasImageSource,
+    x: number,
+    y: number,
+  ): void {
+    super.renderFromSource(context, source, x, y);
+    if (this.backgroundBlur()) {
+      const canvasToDraw = this.getBlurredCanvas(context, source, x, y);
+      context.globalAlpha = 1;
+      context.drawImage(canvasToDraw, 0, 0);
+    }
+  }
+
+  @computed()
+  public override absoluteOpacity(): number {
+    if (this.backgroundBlur()) {
+      return 1;
+    }
+    return (this.parent()?.absoluteOpacity() ?? 1) * this.opacity();
+  }
+
+  protected getBlurredCanvas(
+    context: CanvasRenderingContext2D,
+    source: CanvasImageSource,
+    x: number,
+    y: number,
+  ): HTMLCanvasElement {
+    const sourceCanvas = source as OffscreenCanvas;
+
+    const copiedCanvas = this.createCanvasWithSameShape(context.canvas);
+    const copiedContext = copiedCanvas.getContext('2d');
+    copiedContext?.drawImage(context.canvas, 0, 0);
+
+    StackBlur.canvasRGB(
+      copiedCanvas,
+      x,
+      y,
+      sourceCanvas.width,
+      sourceCanvas.height,
+      this.backgroundBlur(),
+    );
+
+    const blurredElementCanvas = this.createCanvasWithSameShape(context.canvas);
+    const blurredElementContext = blurredElementCanvas.getContext('2d');
+
+    const matrix = this.localToWorld();
+    blurredElementContext?.transform(
+      matrix.a,
+      matrix.b,
+      matrix.c,
+      matrix.d,
+      matrix.e,
+      matrix.f,
+    );
+
+    blurredElementContext?.clip(this.getPath());
+    blurredElementContext?.setTransform(1, 0, 0, 1, 0, 0);
+    blurredElementContext?.drawImage(copiedCanvas, 0, 0);
+
+    return blurredElementCanvas;
+  }
+
+  private createCanvasWithSameShape(
+    canvasToCopy: HTMLCanvasElement | OffscreenCanvas,
+  ): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasToCopy.width;
+    canvas.height = canvasToCopy.height;
+    return canvas;
   }
 
   protected override getCacheBBox(): BBox {

@@ -1,4 +1,4 @@
-import {map, remap} from './interpolationFunctions';
+import {map, remap} from './helpers';
 
 export interface TimingFunction {
   (value: number, from?: number, to?: number): number;

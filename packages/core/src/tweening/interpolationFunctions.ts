@@ -1,5 +1,6 @@
 import {Vector2} from '../types';
 import {useLogger} from '../utils';
+import {clamp, map} from './helpers';
 
 export interface InterpolationFunction<T, TRest extends any[] = any[]> {
   (from: T, to: T, value: number, ...args: TRest): T;
@@ -141,37 +142,6 @@ export function deepLerp(
 
 export function boolLerp<T>(from: T, to: T, value: number): T {
   return value < 0.5 ? from : to;
-}
-
-export function map(from: number, to: number, value: number) {
-  return from + (to - from) * value;
-}
-
-export function remap(
-  fromIn: number,
-  toIn: number,
-  fromOut: number,
-  toOut: number,
-  value: number,
-) {
-  return fromOut + ((value - fromIn) * (toOut - fromOut)) / (toIn - fromIn);
-}
-
-export function clamp(min: number, max: number, value: number) {
-  return value < min ? min : value > max ? max : value;
-}
-
-export function clampRemap(
-  fromIn: number,
-  toIn: number,
-  fromOut: number,
-  toOut: number,
-  value: number,
-) {
-  const remappedValue = remap(fromIn, toIn, fromOut, toOut, value);
-  if (fromOut > toOut) [fromOut, toOut] = [toOut, fromOut];
-
-  return clamp(fromOut, toOut, remappedValue);
 }
 
 export function arcLerp(

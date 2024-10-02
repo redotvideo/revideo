@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+export * from './helpers';
 export * from './interpolationFunctions';
 export * from './spring';
 export * from './timingFunctions';

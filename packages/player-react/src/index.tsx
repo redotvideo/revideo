@@ -141,7 +141,7 @@ export function Player({
       if (!firstEntry || !wrapperRef.current) {
         return;
       }
-  
+
       const newRect = wrapperRef.current.getBoundingClientRect();
       if (
         !lastRect.current ||

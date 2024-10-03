@@ -79,7 +79,8 @@ export function Player({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const lastRect = useRef<DOMRectReadOnly | null>(null);
 
-  const onClickHandler = onClick || (controls ? () => setPlaying(prev => !prev) : undefined);
+  const onClickHandler =
+    onClick || (controls ? () => setPlaying(prev => !prev) : undefined);
 
   /**
    * Sync the playing prop with the player's own state when it changes.

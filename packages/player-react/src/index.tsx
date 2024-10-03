@@ -44,6 +44,7 @@ interface PlayerProps {
   onTimeUpdate?: (currentTime: number) => void;
   onPlayerReady?: (player: CorePlayer) => void;
   onPlayerResize?: (rect: DOMRectReadOnly) => void;
+  onClick?: () => void;
 }
 
 export function Player({
@@ -65,6 +66,7 @@ export function Player({
   onTimeUpdate = () => {},
   onPlayerReady = () => {},
   onPlayerResize = () => {},
+  onClick,
 }: PlayerProps) {
   const [playingState, setPlaying] = useState(playing);
   const [isMouseOver, setIsMouseOver] = useState(false);
@@ -77,7 +79,7 @@ export function Player({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const lastRect = useRef<DOMRectReadOnly | null>(null);
 
-  const onClickHandler = controls ? () => setPlaying(prev => !prev) : undefined;
+  const onClickHandler = onClick || (controls ? () => setPlaying(prev => !prev) : undefined);
 
   /**
    * Sync the playing prop with the player's own state when it changes.

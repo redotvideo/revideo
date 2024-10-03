@@ -138,14 +138,17 @@ export function Player({
   const handlePlayerResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
       const [firstEntry] = entries;
-      if (!firstEntry || !wrapperRef.current || !lastRect.current) {
+      if (!firstEntry || !wrapperRef.current) {
         return;
       }
-
-      const newRect = firstEntry.contentRect;
+  
+      const newRect = wrapperRef.current.getBoundingClientRect();
       if (
+        !lastRect.current ||
         newRect.width !== lastRect.current.width ||
-        newRect.height !== lastRect.current.height
+        newRect.height !== lastRect.current.height ||
+        newRect.x !== lastRect.current.x ||
+        newRect.y !== lastRect.current.y
       ) {
         lastRect.current = newRect;
         onPlayerResize(newRect);

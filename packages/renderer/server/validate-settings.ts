@@ -1,8 +1,4 @@
-import {
-  defaultUserProjectSettings,
-  FfmpegExporterOptions,
-  RenderVideoUserProjectSettings,
-} from '@revideo/core';
+import {FfmpegExporterOptions} from '@revideo/core';
 import type {RenderSettings} from 'render-video';
 import {v4 as uuidv4} from 'uuid';
 
@@ -100,17 +96,5 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
     ...defaultReturn,
     outputFileName: outFileWithoutExtension,
     format: settings.projectSettings?.exporter?.options.format ?? 'mp4',
-  };
-}
-
-export function getRenderVideoUserProjectSettingsDefault(
-  settings?: RenderVideoUserProjectSettings,
-): Required<RenderVideoUserProjectSettings> {
-  return {
-    range: defaultUserProjectSettings.shared.range,
-    background: defaultUserProjectSettings.shared.background,
-    size: defaultUserProjectSettings.shared.size,
-    exporter: defaultUserProjectSettings.rendering.exporter,
-    ...settings,
   };
 }

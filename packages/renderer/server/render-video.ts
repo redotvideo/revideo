@@ -18,10 +18,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
-import {
-  getParamDefaultsAndCheckValidity,
-  getRenderVideoUserProjectSettingsDefault,
-} from 'validate-settings';
+import {getParamDefaultsAndCheckValidity} from 'validate-settings';
 import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 
@@ -96,7 +93,7 @@ async function initBrowserAndServer(
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
         rendererPlugin(
-          getRenderVideoUserProjectSettingsDefault(settings.projectSettings),
+          settings.projectSettings,
           variables,
           settings.ffmpeg,
           projectFile,

@@ -31,7 +31,7 @@ function escapeSpecialChars(_: string, value: string) {
 }
 
 export function rendererPlugin(
-  projectSettings: Required<RenderVideoUserProjectSettings>,
+  projectSettings?: RenderVideoUserProjectSettings,
   variables?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
   projectFile?: string,

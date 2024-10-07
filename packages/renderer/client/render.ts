@@ -22,18 +22,18 @@ export const render = async (
   workerId: number,
   totalNumOfWorkers: number,
   hiddenFolderId: string,
-  projectRenderSettings: Required<RenderVideoUserProjectSettings>,
+  overwriteRenderSettings: RenderVideoUserProjectSettings,
 ) => {
   try {
     const renderer = new Renderer(project);
 
+    // Range calculation
+    const range =
+      overwriteRenderSettings.range ?? project.settings.shared.range;
+
     const {firstGlobalFrame, lastGlobalFrame} =
-      await getGlobalFirstAndLastFrame(
-        project,
-        renderer,
-        projectRenderSettings.range[0],
-        projectRenderSettings.range[1],
-      );
+      await getGlobalFirstAndLastFrame(project, renderer, range[0], range[1]);
+
     const {firstWorkerFrame, lastWorkerFrame} =
       await getWorkerFirstAndLastFrame(
         firstGlobalFrame,
@@ -42,29 +42,37 @@ export const render = async (
         totalNumOfWorkers,
       );
 
-    const fullRenderingSettings = getFullRenderingSettings(project);
+    const renderSettingsFromProject = getFullRenderingSettings(project);
 
-    const renderSettings = {
-      ...fullRenderingSettings,
+    // Overwrite settings with user provided settings
+    let background = renderSettingsFromProject.background;
+    if (overwriteRenderSettings.background) {
+      background = new Color(overwriteRenderSettings.background);
+    }
+
+    let size = renderSettingsFromProject.size;
+    if (overwriteRenderSettings.size) {
+      size = new Vector2(
+        overwriteRenderSettings.size.x,
+        overwriteRenderSettings.size.y,
+      );
+    }
+
+    // Combine settings
+    const combinedSettings = {
+      ...renderSettingsFromProject,
       name: project.name,
       hiddenFolderId: hiddenFolderId,
-      ...projectRenderSettings,
+      ...overwriteRenderSettings,
+      background,
+      size,
       range: [
         renderer.frameToTime(firstWorkerFrame),
         renderer.frameToTime(lastWorkerFrame),
       ] as [number, number],
-      size: projectRenderSettings.size
-        ? new Vector2(
-            projectRenderSettings.size.x,
-            projectRenderSettings.size.y,
-          )
-        : fullRenderingSettings.size,
-      background: projectRenderSettings.background
-        ? new Color(projectRenderSettings.background)
-        : fullRenderingSettings.background,
     };
 
-    await renderer.render(renderSettings);
+    await renderer.render(combinedSettings);
     window.onRenderComplete();
   } catch (e: any) {
     window.onRenderFailed(e.message);

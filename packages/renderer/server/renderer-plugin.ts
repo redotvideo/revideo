@@ -1,6 +1,7 @@
 import {FfmpegSettings, ffmpegSettings} from '@revideo/ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
+import {RenderSettings} from 'render-video';
 import {Plugin} from 'vite';
 
 const RendererPath = path.resolve(__dirname, '../renderer.html');
@@ -33,7 +34,7 @@ export function rendererPlugin(
   variables?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
   projectFile?: string,
-  projectRenderSettings?: any,
+  projectRenderSettings?: RenderSettings['renderSettings'],
 ): Plugin {
   if (customFfmpegSettings?.ffmpegPath) {
     ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);

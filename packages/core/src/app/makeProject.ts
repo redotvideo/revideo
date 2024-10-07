@@ -22,9 +22,6 @@ export function makeProject(project: UserProject): Project {
     rendering: {
       exporter: {
         name: '@revideo/core/wasm',
-        options: {
-          format: 'mp4',
-        },
       },
       fps: 30,
       resolutionScale: 1,
@@ -36,7 +33,7 @@ export function makeProject(project: UserProject): Project {
     },
   };
 
-  const settings: UserProjectSettings = {
+  const settings = {
     ...defaultSettings,
     ...project.settings,
     shared: {
@@ -53,11 +50,12 @@ export function makeProject(project: UserProject): Project {
     },
   };
 
-  const modifiedSettings = {
+  // Convert background and size to correct types
+  const convertedSettings = {
     ...settings,
     shared: {
       ...settings.shared,
-      background: new Color(settings.shared.background ?? 'FFFFFF00'),
+      background: new Color(settings.shared.background!),
       size: new Vector2(settings.shared.size),
     },
   };
@@ -65,7 +63,7 @@ export function makeProject(project: UserProject): Project {
   return {
     ...project,
     name: project.name ?? 'project',
-    settings: modifiedSettings,
+    settings: convertedSettings,
     plugins: [],
     logger: new Logger(),
     versions: createVersionObject('0.5.9'),

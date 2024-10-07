@@ -16,8 +16,6 @@ declare global {
 
 /**
  * Render the project.
- * @param project - The project to render.
- * @param range - The range of frames to render.
  */
 export const render = async (
   project: Project,

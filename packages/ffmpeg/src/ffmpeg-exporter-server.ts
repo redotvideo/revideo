@@ -1,7 +1,8 @@
-import type {
-  FfmpegExporterOptions,
-  RendererResult,
-  RendererSettings,
+import {
+  FFmpegExporterClient,
+  type FfmpegExporterOptions,
+  type RendererResult,
+  type RendererSettings,
 } from '@revideo/core';
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as ffmpeg from 'fluent-ffmpeg';
@@ -40,8 +41,12 @@ export class FFmpegExporterServer {
   private readonly format: FfmpegExporterOptions['format'];
 
   public constructor(settings: FFmpegExporterSettings) {
+    if (settings.exporter.name !== FFmpegExporterClient.id) {
+      throw new Error('Invalid exporter');
+    }
+
     this.settings = settings;
-    this.format = (settings.exporter.options as FfmpegExporterOptions).format;
+    this.format = settings.exporter.options.format;
 
     this.jobFolder = path.join(
       os.tmpdir(),

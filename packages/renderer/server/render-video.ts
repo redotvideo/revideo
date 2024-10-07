@@ -1,8 +1,4 @@
-import {
-  FfmpegExporterOptions,
-  UserProjectSettings,
-  WasmExporterOptions,
-} from '@revideo/core';
+import {FfmpegExporterOptions, UserProjectSettings} from '@revideo/core';
 import {
   FfmpegSettings,
   audioCodecs,
@@ -19,7 +15,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
-import {v4 as uuidv4} from 'uuid';
+import {getParamDefaultsAndCheckValidity} from 'validate-settings';
 import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 
@@ -279,15 +275,12 @@ async function collectAudioAndVideoFiles(
   numOfWorkers: number,
   outputFileName: string,
   hiddenFolderId: string,
-  settings: RenderSettings,
+  format: FfmpegExporterOptions['format'],
 ) {
-  const exporterOptions = settings.renderSettings?.exporter?.options as
-    | FfmpegExporterOptions
-    | WasmExporterOptions;
   const audioFiles = [];
   const videoFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/visuals.${extensions[exporterOptions.format]}`;
+    const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/visuals.${extensions[format]}`;
     const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/audio.wav`;
 
     if (!(await doesFileExist(audioFilePath))) {
@@ -309,18 +302,11 @@ async function concatenateAudioAndVideoFiles(
   outputFolder: string,
   audioFiles: string[],
   videoFiles: string[],
-  settings: RenderSettings,
+  format: FfmpegExporterOptions['format'],
 ) {
-  const exporterOptions = settings.renderSettings?.exporter?.options as
-    | FfmpegExporterOptions
-    | WasmExporterOptions;
-
   await concatenateMedia(
     videoFiles,
-    path.join(
-      outputFolder,
-      `${outputFileName}-visuals.${extensions[exporterOptions.format]}`,
-    ),
+    path.join(outputFolder, `${outputFileName}-visuals.${extensions[format]}`),
   );
   await concatenateMedia(
     audioFiles,
@@ -328,15 +314,9 @@ async function concatenateAudioAndVideoFiles(
   );
   await mergeAudioWithVideo(
     path.join(outputFolder, `${outputFileName}-audio.wav`),
-    path.join(
-      outputFolder,
-      `${outputFileName}-visuals.${extensions[exporterOptions.format]}`,
-    ),
-    path.join(
-      outputFolder,
-      `${outputFileName}.${extensions[exporterOptions.format]}`,
-    ),
-    audioCodecs[exporterOptions.format],
+    path.join(outputFolder, `${outputFileName}-visuals.${extensions[format]}`),
+    path.join(outputFolder, `${outputFileName}.${extensions[format]}`),
+    audioCodecs[format],
   );
 }
 
@@ -348,12 +328,8 @@ async function cleanup(
   outputFolderName: string,
   numOfWorkers: number,
   hiddenFolderId: string,
-  settings: RenderSettings,
+  format: FfmpegExporterOptions['format'],
 ) {
-  const exporterOptions = settings.renderSettings?.exporter?.options as
-    | FfmpegExporterOptions
-    | WasmExporterOptions;
-
   const cleanupFolders = [];
   const cleanupFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
@@ -364,7 +340,7 @@ async function cleanup(
       path.join(
         process.cwd(),
         outputFolderName,
-        `${outputFileName}-${i}.${extensions[exporterOptions.format]}`,
+        `${outputFileName}-${i}.${extensions[format]}`,
       ),
     );
   }
@@ -376,7 +352,7 @@ async function cleanup(
     path.join(
       process.cwd(),
       outputFolderName,
-      `${outputFileName}-visuals.${extensions[exporterOptions.format]}`,
+      `${outputFileName}-visuals.${extensions[format]}`,
     ),
   );
 
@@ -391,27 +367,19 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
-function getPropDefaults(settings: RenderSettings) {
-  if (settings.outFile && !settings.outFile.endsWith('.mp4')) {
-    throw new Error('outFile must end with ".mp4"');
-  }
-
-  const outFile =
-    settings.outFile?.split('.').slice(0, -1).join('.') ?? 'video';
-
-  return {
-    outputFileName: outFile,
-    outputFolderName: settings.outDir ?? './output',
-    numOfWorkers: settings.workers ?? 1,
-    hiddenFolderId: uuidv4(),
-  };
-}
-
-interface RenderVideoProps {
+interface RenderVideoParams {
   projectFile: string;
   variables?: Record<string, unknown>;
   settings?: RenderSettings;
 }
+
+const defaultSettings: RenderSettings = {
+  renderSettings: {
+    exporter: {
+      name: '@revideo/core/wasm',
+    },
+  },
+};
 
 /**
  * Renders a video to a file.
@@ -421,24 +389,18 @@ interface RenderVideoProps {
  * @param settings - Settings for the rendering process.
  * @returns - Path to the rendered video file.
  */
-export const renderVideo = async ({
+export async function renderVideo({
   projectFile,
   variables,
-  settings = {
-    renderSettings: {
-      exporter: {
-        name: '@revideo/core/wasm',
-        options: {
-          format: 'mp4',
-        },
-      },
-    },
-  },
-}: RenderVideoProps) => {
-  checkForIncompatibleSettings(settings);
-
-  const {outputFileName, outputFolderName, numOfWorkers, hiddenFolderId} =
-    getPropDefaults(settings);
+  settings = defaultSettings,
+}: RenderVideoParams): Promise<string> {
+  const {
+    outputFileName,
+    outputFolderName,
+    numOfWorkers,
+    hiddenFolderId,
+    format,
+  } = getParamDefaultsAndCheckValidity(settings);
 
   // Start rendering
   const renderPromises = [];
@@ -466,30 +428,27 @@ export const renderVideo = async ({
     numOfWorkers,
     outputFileName,
     hiddenFolderId,
-    settings,
+    format,
   );
   await concatenateAudioAndVideoFiles(
     outputFileName,
     outputFolderName,
     audioFiles,
     videoFiles,
-    settings,
+    format,
   );
   await cleanup(
     outputFileName,
     outputFolderName,
     numOfWorkers,
     hiddenFolderId,
-    settings,
+    format,
   );
 
-  return path.join(
-    outputFolderName,
-    `${outputFileName}.${extensions[(settings.renderSettings?.exporter?.options as FfmpegExporterOptions | WasmExporterOptions).format]}`,
-  );
-};
+  return path.join(outputFolderName, `${outputFileName}.${extensions[format]}`);
+}
 
-interface RenderPartialVideoProps extends RenderVideoProps {
+interface RenderPartialVideoProps extends RenderVideoParams {
   workerId: number;
   numWorkers: number;
   settings?: Omit<RenderSettings, 'workers'>;
@@ -498,25 +457,12 @@ interface RenderPartialVideoProps extends RenderVideoProps {
 export const renderPartialVideo = async ({
   projectFile,
   variables,
-  settings = {
-    renderSettings: {
-      exporter: {
-        name: '@revideo/core/wasm',
-        options: {
-          format: 'mp4',
-        },
-      },
-    },
-  },
+  settings = defaultSettings,
   numWorkers,
   workerId,
 }: RenderPartialVideoProps) => {
-  const exporterOptions = settings.renderSettings?.exporter?.options as
-    | FfmpegExporterOptions
-    | WasmExporterOptions;
-
-  const {outputFileName, outputFolderName, hiddenFolderId} =
-    getPropDefaults(settings);
+  const {outputFileName, outputFolderName, hiddenFolderId, format} =
+    getParamDefaultsAndCheckValidity(settings);
 
   await initializeBrowserAndStartRendering(
     projectFile,
@@ -530,7 +476,7 @@ export const renderPartialVideo = async ({
     settings.progressCallback,
   );
 
-  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.${extensions[exporterOptions.format]}`;
+  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.${extensions[format]}`;
   const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/audio.wav`;
 
   if (!(await doesFileExist(audioFilePath))) {
@@ -540,59 +486,3 @@ export const renderPartialVideo = async ({
 
   return {audioFile: audioFilePath, videoFile: videoFilePath};
 };
-
-function checkForIncompatibleSettings(settings: RenderSettings) {
-  if (
-    settings.renderSettings?.exporter?.name === '@revideo/core/image-sequence'
-  ) {
-    throw Error(
-      'You cannot use the image sequence exporter with renderVideo or renderPartialVideo. Please use the editor to export images',
-    );
-  }
-
-  if (!settings.outFile) {
-    return;
-  }
-
-  const extension = settings.outFile?.split('.').pop();
-
-  if (
-    settings.renderSettings?.exporter?.name === '@revideo/core/wasm' &&
-    extension !== 'mp4'
-  ) {
-    throw Error(
-      'The Wasm Exporter only supports exporting to mp4. Please adjust the extension of your output file name',
-    );
-  }
-
-  if (settings.renderSettings?.exporter?.name === '@revideo/core/wasm') {
-    return;
-  }
-
-  if (
-    settings.renderSettings?.exporter?.options.format === 'mp4' &&
-    extension !== 'mp4'
-  ) {
-    throw Error(
-      "You've chosen mp4 as your file format in the exporter options, but your outFile does not have a mp4 extension. Please use an mp4 extension",
-    );
-  }
-
-  if (
-    settings.renderSettings?.exporter?.options.format === 'webm' &&
-    extension !== 'webm'
-  ) {
-    throw Error(
-      "You've chosen webm as your file format in the exporter options, but your outFile does not have a webm extension. Please use a webm extension",
-    );
-  }
-
-  if (
-    settings.renderSettings?.exporter?.options.format === 'proRes' &&
-    extension !== 'mov'
-  ) {
-    throw Error(
-      "You've chosen proRes as your file format in the exporter options, but your outFile does not have a mov extension. Please use a mov extension",
-    );
-  }
-}

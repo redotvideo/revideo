@@ -1,8 +1,4 @@
-import {
-  FfmpegExporterOptions,
-  ImageExporterOptions,
-  WasmExporterOptions,
-} from '../exporter';
+import {FfmpegExporterOptions, ImageExporterOptions} from '../exporter';
 import type {Plugin} from '../plugin';
 import {SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
@@ -36,7 +32,6 @@ export type ExporterSettings =
     }
   | {
       name: '@revideo/core/wasm';
-      options: WasmExporterOptions;
     };
 
 export interface ProjectSettings {

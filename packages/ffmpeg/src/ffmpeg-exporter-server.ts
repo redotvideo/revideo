@@ -40,8 +40,12 @@ export class FFmpegExporterServer {
   private readonly format: FfmpegExporterOptions['format'];
 
   public constructor(settings: FFmpegExporterSettings) {
+    if (settings.exporter.name !== '@revideo/core/ffmpeg') {
+      throw new Error('Invalid exporter');
+    }
+
     this.settings = settings;
-    this.format = (settings.exporter.options as FfmpegExporterOptions).format;
+    this.format = settings.exporter.options.format;
 
     this.jobFolder = path.join(
       os.tmpdir(),

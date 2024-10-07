@@ -1,13 +1,10 @@
-import {
-  FfmpegExporterOptions,
-  ImageExporterOptions,
-  WasmExporterOptions,
-} from '../exporter';
+import {FfmpegExporterOptions, ImageExporterOptions} from '../exporter';
 import type {Plugin} from '../plugin';
 import {SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
 import {Logger} from './Logger';
 
+// TODO(refactor): check if we can get rid of this
 export interface Versions {
   core: string;
   two: string | null;
@@ -36,9 +33,9 @@ export type ExporterSettings =
     }
   | {
       name: '@revideo/core/wasm';
-      options: WasmExporterOptions;
     };
 
+// Project settings that are used internally
 export interface ProjectSettings {
   shared: {
     background: Color;
@@ -57,11 +54,12 @@ export interface ProjectSettings {
   };
 }
 
+// Project settings as they are provided by the user (can be serialized)
 export interface UserProjectSettings {
   shared: {
     range: [number, number];
-    background: string | null;
-    size: {x: number; y: number};
+    background: string | null; // changed from Color to string
+    size: {x: number; y: number}; // changed from Vector2 to object
   };
   rendering: {
     exporter: ExporterSettings;
@@ -74,6 +72,22 @@ export interface UserProjectSettings {
     resolutionScale: number;
   };
 }
+
+/**
+ * Settings that can be passed to the renderVideo / renderPartialVideo functions
+ */
+
+export type RenderVideoUserProjectSettings = {
+  range?: UserProjectSettings['shared']['range'];
+  background?: UserProjectSettings['shared']['background'];
+  size?: UserProjectSettings['shared']['size'];
+
+  exporter?: UserProjectSettings['rendering']['exporter'];
+};
+
+/**
+ * Settings that can be passed to the createProject function
+ */
 
 export type PartialUserProjectSettings = {
   shared?: Partial<UserProjectSettings['shared']>;
@@ -118,6 +132,10 @@ export interface UserProject {
   settings?: PartialUserProjectSettings;
 }
 
+/**
+ * Internal project that includes legacy properties that can't be changed by the user
+ * as well as defaulted properties in case the user didn't provide them.
+ */
 export interface Project extends Omit<UserProject, 'settings'> {
   name: string;
   settings: ProjectSettings;

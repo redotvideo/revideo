@@ -4,10 +4,6 @@ import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {Exporter} from './Exporter';
 import {download} from './download-videos';
 
-export interface WasmExporterOptions {
-  format: 'mp4';
-}
-
 export class WasmExporter implements Exporter {
   public static readonly id = '@revideo/core/wasm';
   public static readonly displayName = 'Video (Wasm)';
@@ -76,6 +72,7 @@ export class WasmExporter implements Exporter {
   ): Promise<void> {
     await fetch('/audio-processing/generate-audio', {
       method: 'POST',
+      // TODO: add type and validate on the other side
       body: JSON.stringify({
         tempDir: `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
         assets,
@@ -89,15 +86,14 @@ export class WasmExporter implements Exporter {
   public async mergeMedia(): Promise<void> {
     const outputFilename = this.settings.name;
     const tempDir = `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`;
-    const format = (this.settings.exporter.options as WasmExporterOptions)
-      .format;
 
     await fetch('/audio-processing/merge-media', {
       method: 'POST',
+      // TODO: add type and validate on the other side
       body: JSON.stringify({
         outputFilename,
         tempDir,
-        format,
+        format: 'mp4',
       }),
     });
   }

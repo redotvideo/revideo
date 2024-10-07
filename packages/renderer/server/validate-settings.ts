@@ -1,4 +1,8 @@
-import {FfmpegExporterOptions} from '@revideo/core';
+import {
+  defaultUserProjectSettings,
+  FfmpegExporterOptions,
+  RenderVideoUserProjectSettings,
+} from '@revideo/core';
 import type {RenderSettings} from 'render-video';
 import {v4 as uuidv4} from 'uuid';
 
@@ -23,7 +27,7 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
 
   // Image sequence exporter is not supported in renderVideo or renderPartialVideo
   if (
-    settings.renderSettings?.exporter?.name === '@revideo/core/image-sequence'
+    settings.projectSettings?.exporter?.name === '@revideo/core/image-sequence'
   ) {
     throw Error(
       'You cannot use the image sequence exporter with renderVideo or renderPartialVideo. Please use the editor to export images',
@@ -47,7 +51,7 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
 
   // Wasm exporter only supports exporting to mp4
   if (
-    settings.renderSettings?.exporter?.name === '@revideo/core/wasm' &&
+    settings.projectSettings?.exporter?.name === '@revideo/core/wasm' &&
     extension !== 'mp4'
   ) {
     throw Error(
@@ -56,7 +60,7 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
   }
 
   // If we are using the wasm exporter, we don't need to validate further
-  if (settings.renderSettings?.exporter?.name === '@revideo/core/wasm') {
+  if (settings.projectSettings?.exporter?.name === '@revideo/core/wasm') {
     return {
       ...defaultReturn,
       outputFileName: outFileWithoutExtension,
@@ -66,7 +70,7 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
 
   // If we are using the ffmpeg exporter, we need to check the extension matches the format
   if (
-    settings.renderSettings?.exporter?.options.format === 'mp4' &&
+    settings.projectSettings?.exporter?.options.format === 'mp4' &&
     extension !== 'mp4'
   ) {
     throw Error(
@@ -75,7 +79,7 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
   }
 
   if (
-    settings.renderSettings?.exporter?.options.format === 'webm' &&
+    settings.projectSettings?.exporter?.options.format === 'webm' &&
     extension !== 'webm'
   ) {
     throw Error(
@@ -84,7 +88,7 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
   }
 
   if (
-    settings.renderSettings?.exporter?.options.format === 'proRes' &&
+    settings.projectSettings?.exporter?.options.format === 'proRes' &&
     extension !== 'mov'
   ) {
     throw Error(
@@ -95,6 +99,18 @@ export function getParamDefaultsAndCheckValidity(settings: RenderSettings): {
   return {
     ...defaultReturn,
     outputFileName: outFileWithoutExtension,
-    format: settings.renderSettings?.exporter?.options.format,
+    format: settings.projectSettings?.exporter?.options.format ?? 'mp4',
+  };
+}
+
+export function getRenderVideoUserProjectSettingsDefault(
+  settings?: RenderVideoUserProjectSettings,
+): Required<RenderVideoUserProjectSettings> {
+  return {
+    range: defaultUserProjectSettings.shared.range,
+    background: defaultUserProjectSettings.shared.background,
+    size: defaultUserProjectSettings.shared.size,
+    exporter: defaultUserProjectSettings.rendering.exporter,
+    ...settings,
   };
 }

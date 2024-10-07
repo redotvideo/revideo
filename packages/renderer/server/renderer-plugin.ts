@@ -1,7 +1,7 @@
+import {RenderVideoUserProjectSettings} from '@revideo/core';
 import {FfmpegSettings, ffmpegSettings} from '@revideo/ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
-import {RenderSettings} from 'render-video';
 import {Plugin} from 'vite';
 
 const RendererPath = path.resolve(__dirname, '../renderer.html');
@@ -31,10 +31,10 @@ function escapeSpecialChars(_: string, value: string) {
 }
 
 export function rendererPlugin(
+  projectSettings: Required<RenderVideoUserProjectSettings>,
   variables?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
   projectFile?: string,
-  projectRenderSettings?: RenderSettings['renderSettings'],
 ): Plugin {
   if (customFfmpegSettings?.ffmpegPath) {
     ffmpegSettings.setFfmpegPath(customFfmpegSettings.ffmpegPath);
@@ -46,8 +46,8 @@ export function rendererPlugin(
     ffmpegSettings.setLogLevel(customFfmpegSettings.ffmpegLogLevel);
   }
 
-  const projectRenderSettingsString = projectRenderSettings
-    ? JSON.stringify(projectRenderSettings)
+  const projectSettingsString = projectSettings
+    ? JSON.stringify(projectSettings)
     : JSON.stringify({});
 
   return {
@@ -77,7 +77,7 @@ export function rendererPlugin(
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;
 
-            render(project, workerId, totalNumOfWorkers, hiddenFolderId, JSON.parse(\`${projectRenderSettingsString}\`));
+            render(project, workerId, totalNumOfWorkers, hiddenFolderId, JSON.parse(\`${projectSettingsString}\`));
             `;
       }
     },

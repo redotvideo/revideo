@@ -1,4 +1,7 @@
-import {FfmpegExporterOptions, UserProjectSettings} from '@revideo/core';
+import {
+  FfmpegExporterOptions,
+  RenderVideoUserProjectSettings,
+} from '@revideo/core';
 import {
   FfmpegSettings,
   audioCodecs,
@@ -15,26 +18,12 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
-import {getParamDefaultsAndCheckValidity} from 'validate-settings';
+import {
+  getParamDefaultsAndCheckValidity,
+  getRenderVideoUserProjectSettingsDefault,
+} from 'validate-settings';
 import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
-
-/**
- * We pass a lot of render settings to the client side of the renderer
- * via the URL. This function builds the URL with the necessary parameters.
- */
-function buildUrl(
-  port: number,
-  fileName: string,
-  workerId: number,
-  totalNumOfWorkers: number,
-  hiddenFolderId: string,
-) {
-  const fileNameEscaped = encodeURIComponent(fileName);
-  const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
-
-  return `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&hiddenFolderId=${hiddenFolderIdEscaped}`;
-}
 
 export interface RenderSettings {
   // Name of the video file (default is 'video.mp4')
@@ -50,12 +39,7 @@ export interface RenderSettings {
   workers?: number;
   logProgress?: boolean;
 
-  renderSettings: Partial<UserProjectSettings['shared']> &
-    Partial<Omit<UserProjectSettings['rendering'], 'exporter'>> &
-    Omit<
-      UserProjectSettings['rendering'],
-      'fps' | 'resolutionScale' | 'colorSpace'
-    >;
+  projectSettings?: RenderVideoUserProjectSettings;
 
   /**
    * When using multiple workers, this is the port of the first worker.
@@ -72,6 +56,23 @@ export interface RenderSettings {
   viteServerOptions?: Omit<ServerOptions, 'port'>;
   viteConfig?: InlineConfig;
   progressCallback?: (worker: number, progress: number) => void;
+}
+
+/**
+ * We pass a lot of render settings to the client side of the renderer
+ * via the URL. This function builds the URL with the necessary parameters.
+ */
+function buildUrl(
+  port: number,
+  fileName: string,
+  workerId: number,
+  totalNumOfWorkers: number,
+  hiddenFolderId: string,
+) {
+  const fileNameEscaped = encodeURIComponent(fileName);
+  const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
+
+  return `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&hiddenFolderId=${hiddenFolderIdEscaped}`;
 }
 
 /**
@@ -95,10 +96,10 @@ async function initBrowserAndServer(
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
         rendererPlugin(
+          getRenderVideoUserProjectSettingsDefault(settings.projectSettings),
           variables,
           settings.ffmpeg,
           projectFile,
-          settings.renderSettings,
         ),
       ],
       ...settings.viteConfig,
@@ -367,19 +368,19 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
-interface RenderVideoParams {
-  projectFile: string;
-  variables?: Record<string, unknown>;
-  settings?: RenderSettings;
-}
-
 const defaultSettings: RenderSettings = {
-  renderSettings: {
+  projectSettings: {
     exporter: {
       name: '@revideo/core/wasm',
     },
   },
 };
+
+interface RenderVideoParams {
+  projectFile: string;
+  variables?: Record<string, unknown>;
+  settings?: RenderSettings;
+}
 
 /**
  * Renders a video to a file.

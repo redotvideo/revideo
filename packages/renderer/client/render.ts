@@ -1,8 +1,8 @@
 import {
   Color,
   Project,
+  RenderVideoUserProjectSettings,
   Renderer,
-  UserProjectSettings,
   Vector2,
   getFullRenderingSettings,
 } from '@revideo/core';
@@ -22,9 +22,7 @@ export const render = async (
   workerId: number,
   totalNumOfWorkers: number,
   hiddenFolderId: string,
-  projectRenderSettings: Partial<
-    UserProjectSettings['shared'] & UserProjectSettings['rendering']
-  >,
+  projectRenderSettings: Required<RenderVideoUserProjectSettings>,
 ) => {
   try {
     const renderer = new Renderer(project);
@@ -33,8 +31,8 @@ export const render = async (
       await getGlobalFirstAndLastFrame(
         project,
         renderer,
-        projectRenderSettings.range?.[0] ?? 0,
-        projectRenderSettings.range?.[1] ?? Infinity,
+        projectRenderSettings.range[0],
+        projectRenderSettings.range[1],
       );
     const {firstWorkerFrame, lastWorkerFrame} =
       await getWorkerFirstAndLastFrame(

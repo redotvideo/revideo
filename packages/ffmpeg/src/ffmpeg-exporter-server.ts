@@ -1,4 +1,8 @@
-import type {RendererResult, RendererSettings} from '@revideo/core';
+import type {
+  FfmpegExporterOptions,
+  RendererResult,
+  RendererSettings,
+} from '@revideo/core';
 import {EventName, sendEvent} from '@revideo/telemetry';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as os from 'os';
@@ -12,6 +16,18 @@ export interface FFmpegExporterSettings extends RendererSettings {
   output: string;
 }
 
+const pixelFormats: Record<FfmpegExporterOptions['format'], string> = {
+  mp4: 'yuv420p',
+  webm: 'yuva420p',
+  proRes: 'yuva444p10le',
+};
+
+export const extensions: Record<FfmpegExporterOptions['format'], string> = {
+  mp4: 'mp4',
+  webm: 'webm',
+  proRes: 'mov',
+};
+
 /**
  * The server-side implementation of the FFmpeg video exporter.
  */
@@ -21,9 +37,16 @@ export class FFmpegExporterServer {
   private readonly promise: Promise<void>;
   private readonly settings: FFmpegExporterSettings;
   private readonly jobFolder: string;
+  private readonly format: FfmpegExporterOptions['format'];
 
   public constructor(settings: FFmpegExporterSettings) {
+    if (settings.exporter.name !== '@revideo/core/ffmpeg') {
+      throw new Error('Invalid exporter');
+    }
+
     this.settings = settings;
+    this.format = settings.exporter.options.format;
+
     this.jobFolder = path.join(
       os.tmpdir(),
       `revideo-${this.settings.name}-${settings.hiddenFolderId}`,
@@ -45,10 +68,14 @@ export class FFmpegExporterServer {
       y: Math.round(settings.size.y * settings.resolutionScale),
     };
     this.command
-      .output(path.join(this.jobFolder, `visuals.mp4`))
-      .outputOptions(['-pix_fmt yuv420p', '-shortest'])
+      .output(path.join(this.jobFolder, `visuals.${extensions[this.format]}`))
+      .outputOptions([`-pix_fmt ${pixelFormats[this.format]}`, '-shortest'])
       .outputFps(settings.fps)
       .size(`${size.x}x${size.y}`);
+
+    if (this.format === 'proRes') {
+      this.command.outputOptions(['-c:v prores_ks', '-profile:v 4444']);
+    }
 
     this.command.outputOptions(['-movflags +faststart']);
     this.promise = new Promise<void>((resolve, reject) => {

@@ -1,9 +1,10 @@
-import {ImageExporterOptions} from '../exporter';
+import {FfmpegExporterOptions, ImageExporterOptions} from '../exporter';
 import type {Plugin} from '../plugin';
 import {SceneDescription} from '../scenes';
 import {CanvasColorSpace, Color, Vector2} from '../types';
 import {Logger} from './Logger';
 
+// TODO(refactor): check if we can get rid of this
 export interface Versions {
   core: string;
   two: string | null;
@@ -28,14 +29,16 @@ export type ExporterSettings =
     }
   | {
       name: '@revideo/core/ffmpeg';
+      options: FfmpegExporterOptions;
     }
   | {
       name: '@revideo/core/wasm';
     };
 
+// Project settings that are used internally
 export interface ProjectSettings {
   shared: {
-    background: Color | null;
+    background: Color;
     range: [number, number];
     size: Vector2;
   };
@@ -51,10 +54,45 @@ export interface ProjectSettings {
   };
 }
 
-export type PartialProjectSettings = {
-  shared?: Partial<ProjectSettings['shared']>;
-  rendering?: Partial<ProjectSettings['rendering']>;
-  preview?: Partial<ProjectSettings['preview']>;
+// Project settings as they are provided by the user (can be serialized)
+export interface UserProjectSettings {
+  shared: {
+    range: [number, number];
+    background: string | null; // changed from Color to string
+    size: {x: number; y: number}; // changed from Vector2 to object
+  };
+  rendering: {
+    exporter: ExporterSettings;
+    fps: number;
+    resolutionScale: number;
+    colorSpace: CanvasColorSpace;
+  };
+  preview: {
+    fps: number;
+    resolutionScale: number;
+  };
+}
+
+/**
+ * Settings that can be passed to the renderVideo / renderPartialVideo functions
+ */
+
+export type RenderVideoUserProjectSettings = {
+  range?: UserProjectSettings['shared']['range'];
+  background?: UserProjectSettings['shared']['background'];
+  size?: UserProjectSettings['shared']['size'];
+
+  exporter?: UserProjectSettings['rendering']['exporter'];
+};
+
+/**
+ * Settings that can be passed to the createProject function
+ */
+
+export type PartialUserProjectSettings = {
+  shared?: Partial<UserProjectSettings['shared']>;
+  rendering?: Partial<UserProjectSettings['rendering']>;
+  preview?: Partial<UserProjectSettings['preview']>;
 };
 
 export interface UserProject {
@@ -91,10 +129,14 @@ export interface UserProject {
    * Includes things like the background color, the resolution, the frame rate,
    * and the exporter to use.
    */
-  settings?: PartialProjectSettings;
+  settings?: PartialUserProjectSettings;
 }
 
-export interface Project extends UserProject {
+/**
+ * Internal project that includes legacy properties that can't be changed by the user
+ * as well as defaulted properties in case the user didn't provide them.
+ */
+export interface Project extends Omit<UserProject, 'settings'> {
   name: string;
   settings: ProjectSettings;
 

@@ -72,6 +72,7 @@ export class WasmExporter implements Exporter {
   ): Promise<void> {
     await fetch('/audio-processing/generate-audio', {
       method: 'POST',
+      // TODO: add type and validate on the other side
       body: JSON.stringify({
         tempDir: `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`,
         assets,
@@ -88,9 +89,11 @@ export class WasmExporter implements Exporter {
 
     await fetch('/audio-processing/merge-media', {
       method: 'POST',
+      // TODO: add type and validate on the other side
       body: JSON.stringify({
         outputFilename,
         tempDir,
+        format: 'mp4',
       }),
     });
   }

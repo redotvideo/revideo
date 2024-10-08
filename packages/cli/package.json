@@ -1,6 +1,6 @@
 {
   "name": "@revideo/cli",
-  "version": "0.5.10",
+  "version": "0.10.0",
   "description": "A CLI for revideo",
   "main": "dist/index.js",
   "author": "revideo",
@@ -25,9 +25,9 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
-    "@revideo/renderer": "0.5.10",
-    "@revideo/vite-plugin": "0.5.10",
-    "@revideo/telemetry": "0.5.10",
+    "@revideo/renderer": "0.10.0",
+    "@revideo/telemetry": "0.10.0",
+    "@revideo/vite-plugin": "0.10.0",
     "chokidar": "^3.5.3",
     "commander": "^12.0.0",
     "cors": "^2.8.5",

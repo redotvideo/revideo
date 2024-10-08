@@ -10,5 +10,3 @@ CHANGELOG.md
 /packages/*/lib
 /packages/*/static
 /packages/*/build
-
-/packages/docs/src/generated

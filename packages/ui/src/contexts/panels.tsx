@@ -57,7 +57,7 @@ export function PanelsProvider({children}: {children: ComponentChildren}) {
     return options;
   }, [tabs]);
 
-  const sidebar = panelSignal(EditorPanel.VideoSettings, 'sidebar', options);
+  const sidebar = panelSignal(EditorPanel.SceneGraph, 'sidebar', options);
   const bottom = panelSignal(EditorPanel.Timeline, 'bottom-panel', options);
 
   return (

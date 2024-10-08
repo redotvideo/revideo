@@ -7,19 +7,19 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify"
+    "build": "tsc && postcss src/**/*.css --dir dist"
   },
   "keywords": [],
   "author": "revideo",
   "license": "MIT",
   "devDependencies": {
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.0",
-    "tailwindcss": "^3.4.3"
-  },
-  "peerDependencies": {
-    "react": ">=17",
-    "react-dom": ">=17"
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.20",
+    "cssnano": "^7.0.6",
+    "postcss": "^8.4.47",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.12"
   },
   "dependencies": {
     "@revideo/core": "0.5.10",

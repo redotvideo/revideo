@@ -962,9 +962,9 @@ export class Layout extends Node {
 
   @computed()
   protected applyFont() {
-    const loadingFonts = Array.from(document.fonts).filter(
-      font => font.status === 'loading',
-    );
+    const loadingFonts = document.fonts
+      ? Array.from(document.fonts).filter(font => font.status === 'loading')
+      : [];
     if (loadingFonts.length > 0) {
       DependencyContext.collectPromise(
         (async () => {

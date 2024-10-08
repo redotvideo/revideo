@@ -5,7 +5,6 @@ import type {
   RendererSettings,
 } from '../app/Renderer';
 import {EventDispatcher} from '../events';
-import {BoolMetaField, MetaField, ObjectMetaField, ValueOf} from '../meta';
 import {Exporter} from './Exporter';
 import {download} from './download-videos';
 
@@ -21,9 +20,9 @@ type ServerResponse =
       message?: string;
     };
 
-type FFmpegExporterOptions = ValueOf<
-  ReturnType<typeof FFmpegExporterClient.meta>
->;
+export interface FfmpegExporterOptions {
+  format: 'mp4' | 'webm' | 'proRes';
+}
 
 /**
  * FFmpeg video exporter.
@@ -47,17 +46,11 @@ export class FFmpegExporterClient implements Exporter {
   public static readonly id = '@revideo/core/ffmpeg';
   public static readonly displayName = 'Video (FFmpeg)';
 
-  public static meta(project: Project): MetaField<any> {
-    return new ObjectMetaField(this.displayName, {
-      fastStart: new BoolMetaField('fast start', true),
-      includeAudio: new BoolMetaField('include audio', true).disable(
-        !project.audio,
-      ),
-    });
-  }
+  private readonly settings: RendererSettings;
+  private readonly exporterOptions: FfmpegExporterOptions;
 
-  public static async create(project: Project, settings: RendererSettings) {
-    return new FFmpegExporterClient(project, settings);
+  public static async create(_: Project, settings: RendererSettings) {
+    return new FFmpegExporterClient(settings);
   }
 
   private static readonly response = new EventDispatcher<ServerResponse>();
@@ -71,25 +64,21 @@ export class FFmpegExporterClient implements Exporter {
     }
   }
 
-  public constructor(
-    private readonly project: Project,
-    private readonly settings: RendererSettings,
-  ) {}
+  public constructor(settings: RendererSettings) {
+    if (settings.exporter.name !== FFmpegExporterClient.id) {
+      throw new Error('Invalid exporter');
+    }
+    this.settings = settings;
+    this.exporterOptions = settings.exporter.options;
+  }
 
   public async start(): Promise<void> {
-    const options = this.settings.exporter.options as FFmpegExporterOptions;
-    await this.invoke('start', {
-      ...this.settings,
-      ...options,
-      audio: this.project.audio,
-      audioOffset:
-        this.project.meta.shared.audioOffset.get() - this.settings.range[0],
-    });
+    await this.invoke('start', this.settings);
   }
 
   public async handleFrame(canvas: HTMLCanvasElement): Promise<void> {
     const blob = await new Promise<Blob | null>(resolve =>
-      canvas.toBlob(resolve, 'image/jpeg'),
+      canvas.toBlob(resolve, 'image/png'),
     );
 
     if (!blob) {
@@ -151,12 +140,14 @@ export class FFmpegExporterClient implements Exporter {
   public async mergeMedia(): Promise<void> {
     const outputFilename = this.settings.name;
     const tempDir = `revideo-${this.settings.name}-${this.settings.hiddenFolderId}`;
+    const format = this.exporterOptions.format;
 
     await fetch('/audio-processing/merge-media', {
       method: 'POST',
       body: JSON.stringify({
         outputFilename,
         tempDir,
+        format,
       }),
     });
   }

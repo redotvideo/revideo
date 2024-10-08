@@ -18,10 +18,6 @@
   "files": [
     "lib"
   ],
-  "peerDependencies": {
-    "@types/node": "18.14.0",
-    "vite": "^4.5"
-  },
   "devDependencies": {
     "@revideo/telemetry": "0.5.10",
     "@types/follow-redirects": "^1.14.1",

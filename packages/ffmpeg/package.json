@@ -19,10 +19,12 @@
     "@ffprobe-installer/ffprobe": "^2.0.0",
     "@revideo/core": "0.5.10",
     "@revideo/telemetry": "0.5.10",
-    "fluent-ffmpeg": "^2.1.2"
+    "fluent-ffmpeg": "^2.1.2",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/ffprobe-static": "^2.0.3",
-    "@types/fluent-ffmpeg": "^2.1.21"
+    "@types/fluent-ffmpeg": "^2.1.21",
+    "@types/uuid": "^10.0.0"
   }
 }

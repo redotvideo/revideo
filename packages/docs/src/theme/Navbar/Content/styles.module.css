@@ -1,9 +1,0 @@
-@media (max-width: 996px) {
-  .colorModeToggle {
-    display: none;
-  }
-}
-
-.colorModeToggle {
-  margin-right: var(--ifm-button-padding-vertical);
-}

@@ -1,4 +1,11 @@
-import {Project, Renderer, Vector2} from '@revideo/core';
+import {
+  Color,
+  Project,
+  RenderVideoUserProjectSettings,
+  Renderer,
+  Vector2,
+  getFullRenderingSettings,
+} from '@revideo/core';
 
 declare global {
   interface Window {
@@ -9,29 +16,24 @@ declare global {
 
 /**
  * Render the project.
- * @param project - The project to render.
- * @param range - The range of frames to render.
  */
 export const render = async (
   project: Project,
   workerId: number,
   totalNumOfWorkers: number,
-  startInSeconds: number,
-  endInSeconds: number,
   hiddenFolderId: string,
-  videoWidth: number,
-  videoHeight: number,
+  overwriteRenderSettings: RenderVideoUserProjectSettings,
 ) => {
   try {
     const renderer = new Renderer(project);
 
+    // Range calculation
+    const range =
+      overwriteRenderSettings.range ?? project.settings.shared.range;
+
     const {firstGlobalFrame, lastGlobalFrame} =
-      await getGlobalFirstAndLastFrame(
-        project,
-        renderer,
-        startInSeconds,
-        endInSeconds,
-      );
+      await getGlobalFirstAndLastFrame(project, renderer, range[0], range[1]);
+
     const {firstWorkerFrame, lastWorkerFrame} =
       await getWorkerFirstAndLastFrame(
         firstGlobalFrame,
@@ -40,21 +42,37 @@ export const render = async (
         totalNumOfWorkers,
       );
 
-    const renderSettings = {
-      ...project.meta.getFullRenderingSettings(),
+    const renderSettingsFromProject = getFullRenderingSettings(project);
+
+    // Overwrite settings with user provided settings
+    let background = renderSettingsFromProject.background;
+    if (overwriteRenderSettings.background) {
+      background = new Color(overwriteRenderSettings.background);
+    }
+
+    let size = renderSettingsFromProject.size;
+    if (overwriteRenderSettings.size) {
+      size = new Vector2(
+        overwriteRenderSettings.size.x,
+        overwriteRenderSettings.size.y,
+      );
+    }
+
+    // Combine settings
+    const combinedSettings = {
+      ...renderSettingsFromProject,
       name: project.name,
       hiddenFolderId: hiddenFolderId,
+      ...overwriteRenderSettings,
+      background,
+      size,
       range: [
         renderer.frameToTime(firstWorkerFrame),
         renderer.frameToTime(lastWorkerFrame),
       ] as [number, number],
     };
 
-    if (videoWidth && videoHeight) {
-      renderSettings.size = new Vector2({x: videoWidth, y: videoHeight});
-    }
-
-    await renderer.render(renderSettings);
+    await renderer.render(combinedSettings);
     window.onRenderComplete();
   } catch (e: any) {
     window.onRenderFailed(e.message);
@@ -79,7 +97,7 @@ async function getGlobalFirstAndLastFrame(
   } else {
     // Otherwise, endSecondFromUser is infinity, so lastGlobalFrame is the duration of the video.
     const settings = {
-      ...project.meta.getFullRenderingSettings(),
+      ...getFullRenderingSettings(project),
       name: project.name,
     };
     lastGlobalFrame = await renderer.getNumberOfFrames(settings);

@@ -3,7 +3,7 @@ import {all, createRef} from '@revideo/core';
 
 import logoSvg from '@revideo/examples/assets/logo.svg';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('media-image', function* (view) {
   const imageRef = createRef<Img>();
 
   yield view.add(<Img ref={imageRef} src={logoSvg} scale={2} />);

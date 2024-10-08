@@ -1,7 +1,7 @@
 import {Plugin as VitePlugin} from 'vite';
 
 /**
- * Represents a Motion Canvas project configured in the Vite plugin.
+ * Represents a Revideo project configured in the Vite plugin.
  */
 export interface ProjectData {
   /**
@@ -19,7 +19,7 @@ export interface ProjectData {
 }
 
 /**
- * The Motion Canvas configuration passed to each plugin.
+ * The Revideo configuration passed to each plugin.
  */
 export interface PluginConfig {
   /**
@@ -52,7 +52,7 @@ export interface PluginOptions {
    * The configuration hook of the plugin.
    *
    * @remarks
-   * Invoked during `configResolved` hook of Vite, contains the Motion Canvas
+   * Invoked during `configResolved` hook of Vite, contains the Revideo
    * specific configuration.
    *
    * @param config - The configuration passed to the plugin.
@@ -91,15 +91,15 @@ export interface PluginOptions {
 }
 
 /**
- * Represents a Motion Canvas plugin.
+ * Represents a Revideo plugin.
  *
  * @remarks
  * It's a normal Vite plugin that can provide additional configuration specific
- * to Motion Canvas.
+ * to Revideo.
  */
 export type Plugin = VitePlugin & {
   /**
-   * The configuration specific to Motion Canvas.
+   * The configuration specific to Revideo.
    */
   [PLUGIN_OPTIONS]: PluginOptions;
 };

@@ -3,12 +3,8 @@
   "compilerOptions": {
     "types": ["node"],
     "jsx": "react-jsx",
-    "jsxImportSource": "@revideo/2d/src/lib",
-    "plugins": [
-      {
-        "transform": "@revideo/internal/transformers/markdown-literals.js"
-      }
-    ]
+    "jsxImportSource": "@revideo/2d/src/lib"
   },
-  "include": ["**/*"]
+  "include": ["**/*"],
+  "exclude": []
 }

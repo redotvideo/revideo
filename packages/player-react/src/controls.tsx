@@ -10,11 +10,7 @@ function PlayPause({
   setPlaying: (playing: boolean) => void;
 }) {
   return (
-    <button
-      type="button"
-      className="p-p-1"
-      onClick={() => setPlaying(!playing)}
-    >
+    <button type="button" className="p-1" onClick={() => setPlaying(!playing)}>
       {playing ? <PauseButton /> : <PlayButton />}
     </button>
   );
@@ -42,7 +38,7 @@ function VolumeSlider({
 
   return (
     <div
-      className="p-flex p-items-center p-space-x-2 p-relative"
+      className="flex items-center space-x-2 relative"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
         if (!isInteracting) {
@@ -51,16 +47,16 @@ function VolumeSlider({
       }}
     >
       <div
-        className="p-w-6 p-h-6 p-flex p-items-center p-justify-center p-cursor-pointer"
+        className="w-6 h-6 flex items-center justify-center cursor-pointer"
         onClick={handleIconClick}
       >
         {volume === 0 ? <MutedSoundIcon /> : <SoundIcon />}
       </div>
       {(isHovering || isInteracting) && (
-        <div className="p-flex p-items-center p-h-1.5 p-whitespace-nowrap">
-          <div className="p-relative p-w-20 p-h-1.5 p-bg-gray-300 p-rounded-full">
+        <div className="flex items-center h-1.5 whitespace-nowrap">
+          <div className="relative w-20 h-1.5 bg-gray-300 rounded-full">
             <div
-              className="p-absolute p-top-0 p-left-0 p-h-full p-bg-gray-100 p-rounded-full"
+              className="absolute top-0 left-0 h-full bg-gray-100 rounded-full"
               style={{width: `${volume * 100}%`}}
             />
             <input
@@ -79,7 +75,7 @@ function VolumeSlider({
               onMouseDown={() => setIsInteracting(true)}
               onMouseUp={() => setIsInteracting(false)}
               onMouseLeave={() => setIsInteracting(false)}
-              className="p-absolute p-top-0 p-left-0 p-w-full p-h-full p-opacity-0 p-cursor-pointer"
+              className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
             />
           </div>
         </div>
@@ -100,9 +96,9 @@ function Timeline({
   const progressPercentage = (currentTime / duration) * 100;
 
   return (
-    <div className="p-relative p-flex-1 p-w-full p-h-1.5 p-bg-gray-300 p-rounded-full p-overflow-hidden">
+    <div className="relative flex-1 w-full h-1.5 bg-gray-300 rounded-full overflow-hidden">
       <div
-        className="p-absolute p-top-0 p-left-0 p-h-full p-bg-gray-100"
+        className="absolute top-0 left-0 h-full bg-gray-100"
         style={{width: `${progressPercentage}%`}}
       />
       <input
@@ -111,7 +107,7 @@ function Timeline({
         min={0}
         max={duration}
         step={0.01}
-        className="p-absolute p-top-0 p-left-0 p-w-full p-h-full p-opacity-0 p-cursor-pointer"
+        className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
         onChange={event => setCurrentTime(Number(event.target.value))}
       />
     </div>
@@ -138,10 +134,10 @@ export function Controls({
   setVolume: (volume: number) => void;
 }) {
   return (
-    <div className="p-text-white p-p-4 p-flex-col p-space-y-2 p-bg-gradient-to-t p-from-gray-500 p-to-transparent">
-      <div className="p-flex p-items-center p-space-x-2">
+    <div className="text-white p-4 flex-col space-y-2 bg-gradient-to-t from-gray-500 to-transparent">
+      <div className="flex items-center space-x-2">
         <PlayPause playing={playing} setPlaying={setPlaying} />
-        <div className="p-flex p-items-center p-space-x-2">
+        <div className="flex items-center space-x-2">
           <VolumeSlider volume={volume} setVolume={setVolume} />
           <div>
             <span>
@@ -149,7 +145,7 @@ export function Controls({
             </span>
           </div>
         </div>
-        <div className="p-flex-grow" />
+        <div className="flex-grow" />
       </div>
       <Timeline
         currentTime={currentTime}

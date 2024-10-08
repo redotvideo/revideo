@@ -1,8 +1,14 @@
 import {
+  FfmpegExporterOptions,
+  RenderVideoUserProjectSettings,
+} from '@revideo/core';
+import {
   FfmpegSettings,
+  audioCodecs,
   concatenateMedia,
   createSilentAudioFile,
   doesFileExist,
+  extensions,
   getVideoDuration,
   mergeAudioWithVideo,
 } from '@revideo/ffmpeg';
@@ -12,52 +18,25 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
-import {v4 as uuidv4} from 'uuid';
+import {getParamDefaultsAndCheckValidity} from 'validate-settings';
 import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 
-/**
- * We pass a lot of render settings to the client side of the renderer
- * via the URL. This function builds the URL with the necessary parameters.
- */
-function buildUrl(
-  port: number,
-  fileName: string,
-  workerId: number,
-  totalNumOfWorkers: number,
-  range: [number, number] = [0, Infinity],
-  hiddenFolderId: string,
-  dimensions?: [number, number],
-) {
-  const fileNameEscaped = encodeURIComponent(fileName);
-  const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
-  const dimensionsString = dimensions
-    ? `&videoWidth=${dimensions[0]}&videoHeight=${dimensions[1]}`
-    : '';
-
-  return (
-    `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&startInSeconds=${range[0]}&endInSeconds=${range[1]}&hiddenFolderId=${hiddenFolderIdEscaped}` +
-    dimensionsString
-  );
-}
-
 export interface RenderSettings {
   // Name of the video file (default is 'video.mp4')
-  outFile?: `${string}.mp4`;
+  outFile?: `${string}.mp4` | `${string}.webm` | `${string}.mov`;
 
   // Folder where the video will be saved (default is './out')
   outDir?: string;
-
-  // Start and end in seconds
-  range?: [number, number];
 
   ffmpeg?: FfmpegSettings;
 
   puppeteer?: PuppeteerLaunchOptions;
 
   workers?: number;
-  dimensions?: [number, number];
   logProgress?: boolean;
+
+  projectSettings?: RenderVideoUserProjectSettings;
 
   /**
    * When using multiple workers, this is the port of the first worker.
@@ -74,6 +53,23 @@ export interface RenderSettings {
   viteServerOptions?: Omit<ServerOptions, 'port'>;
   viteConfig?: InlineConfig;
   progressCallback?: (worker: number, progress: number) => void;
+}
+
+/**
+ * We pass a lot of render settings to the client side of the renderer
+ * via the URL. This function builds the URL with the necessary parameters.
+ */
+function buildUrl(
+  port: number,
+  fileName: string,
+  workerId: number,
+  totalNumOfWorkers: number,
+  hiddenFolderId: string,
+) {
+  const fileNameEscaped = encodeURIComponent(fileName);
+  const hiddenFolderIdEscaped = encodeURIComponent(hiddenFolderId);
+
+  return `http://localhost:${port}/render?fileName=${fileNameEscaped}&workerId=${workerId}&totalNumOfWorkers=${totalNumOfWorkers}&hiddenFolderId=${hiddenFolderIdEscaped}`;
 }
 
 /**
@@ -96,7 +92,12 @@ async function initBrowserAndServer(
       configFile: false,
       plugins: [
         motionCanvas({project: resolvedProjectPath, output: outputFolderName}),
-        rendererPlugin(variables, settings.ffmpeg, projectFile),
+        rendererPlugin(
+          settings.projectSettings,
+          variables,
+          settings.ffmpeg,
+          projectFile,
+        ),
       ],
       ...settings.viteConfig,
       server: {
@@ -250,9 +251,7 @@ async function initializeBrowserAndStartRendering(
     `${outputFileName}-${i}`,
     i,
     numOfWorkers,
-    settings.range,
     hiddenFolderId,
-    settings.dimensions,
   );
 
   return renderVideoOnPage(
@@ -274,11 +273,12 @@ async function collectAudioAndVideoFiles(
   numOfWorkers: number,
   outputFileName: string,
   hiddenFolderId: string,
+  format: FfmpegExporterOptions['format'],
 ) {
   const audioFiles = [];
   const videoFiles = [];
   for (let i = 0; i < numOfWorkers; i++) {
-    const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/visuals.mp4`;
+    const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/visuals.${extensions[format]}`;
     const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}/audio.wav`;
 
     if (!(await doesFileExist(audioFilePath))) {
@@ -300,10 +300,11 @@ async function concatenateAudioAndVideoFiles(
   outputFolder: string,
   audioFiles: string[],
   videoFiles: string[],
+  format: FfmpegExporterOptions['format'],
 ) {
   await concatenateMedia(
     videoFiles,
-    path.join(outputFolder, `${outputFileName}-visuals.mp4`),
+    path.join(outputFolder, `${outputFileName}-visuals.${extensions[format]}`),
   );
   await concatenateMedia(
     audioFiles,
@@ -311,8 +312,9 @@ async function concatenateAudioAndVideoFiles(
   );
   await mergeAudioWithVideo(
     path.join(outputFolder, `${outputFileName}-audio.wav`),
-    path.join(outputFolder, `${outputFileName}-visuals.mp4`),
-    path.join(outputFolder, `${outputFileName}.mp4`),
+    path.join(outputFolder, `${outputFileName}-visuals.${extensions[format]}`),
+    path.join(outputFolder, `${outputFileName}.${extensions[format]}`),
+    audioCodecs[format],
   );
 }
 
@@ -324,6 +326,7 @@ async function cleanup(
   outputFolderName: string,
   numOfWorkers: number,
   hiddenFolderId: string,
+  format: FfmpegExporterOptions['format'],
 ) {
   const cleanupFolders = [];
   const cleanupFiles = [];
@@ -332,7 +335,11 @@ async function cleanup(
       `${os.tmpdir()}/revideo-${outputFileName}-${i}-${hiddenFolderId}`,
     );
     cleanupFiles.push(
-      path.join(process.cwd(), outputFolderName, `${outputFileName}-${i}.mp4`),
+      path.join(
+        process.cwd(),
+        outputFolderName,
+        `${outputFileName}-${i}.${extensions[format]}`,
+      ),
     );
   }
 
@@ -340,7 +347,11 @@ async function cleanup(
     path.join(process.cwd(), outputFolderName, `${outputFileName}-audio.wav`),
   );
   cleanupFiles.push(
-    path.join(process.cwd(), outputFolderName, `${outputFileName}-visuals.mp4`),
+    path.join(
+      process.cwd(),
+      outputFolderName,
+      `${outputFileName}-visuals.${extensions[format]}`,
+    ),
   );
 
   const folderCleanupPromises = cleanupFolders.map(folder =>
@@ -354,22 +365,15 @@ async function cleanup(
   await Promise.all([...folderCleanupPromises, ...fileCleanupPromises]);
 }
 
-function getPropDefaults(settings: RenderSettings) {
-  if (settings.outFile && !settings.outFile.endsWith('.mp4')) {
-    throw new Error('outFile must end with ".mp4"');
-  }
+const defaultSettings: RenderSettings = {
+  projectSettings: {
+    exporter: {
+      name: '@revideo/core/wasm',
+    },
+  },
+};
 
-  const outFile = settings.outFile?.slice(0, -4) ?? 'video';
-
-  return {
-    outputFileName: outFile,
-    outputFolderName: settings.outDir ?? './output',
-    numOfWorkers: settings.workers ?? 1,
-    hiddenFolderId: uuidv4(),
-  };
-}
-
-interface RenderVideoProps {
+interface RenderVideoParams {
   projectFile: string;
   variables?: Record<string, unknown>;
   settings?: RenderSettings;
@@ -383,13 +387,18 @@ interface RenderVideoProps {
  * @param settings - Settings for the rendering process.
  * @returns - Path to the rendered video file.
  */
-export const renderVideo = async ({
+export async function renderVideo({
   projectFile,
   variables,
-  settings = {},
-}: RenderVideoProps) => {
-  const {outputFileName, outputFolderName, numOfWorkers, hiddenFolderId} =
-    getPropDefaults(settings);
+  settings = defaultSettings,
+}: RenderVideoParams): Promise<string> {
+  const {
+    outputFileName,
+    outputFolderName,
+    numOfWorkers,
+    hiddenFolderId,
+    format,
+  } = getParamDefaultsAndCheckValidity(settings);
 
   // Start rendering
   const renderPromises = [];
@@ -417,19 +426,27 @@ export const renderVideo = async ({
     numOfWorkers,
     outputFileName,
     hiddenFolderId,
+    format,
   );
   await concatenateAudioAndVideoFiles(
     outputFileName,
     outputFolderName,
     audioFiles,
     videoFiles,
+    format,
   );
-  await cleanup(outputFileName, outputFolderName, numOfWorkers, hiddenFolderId);
+  await cleanup(
+    outputFileName,
+    outputFolderName,
+    numOfWorkers,
+    hiddenFolderId,
+    format,
+  );
 
-  return path.join(outputFolderName, `${outputFileName}.mp4`);
-};
+  return path.join(outputFolderName, `${outputFileName}.${extensions[format]}`);
+}
 
-interface RenderPartialVideoProps extends RenderVideoProps {
+interface RenderPartialVideoProps extends RenderVideoParams {
   workerId: number;
   numWorkers: number;
   settings?: Omit<RenderSettings, 'workers'>;
@@ -438,12 +455,12 @@ interface RenderPartialVideoProps extends RenderVideoProps {
 export const renderPartialVideo = async ({
   projectFile,
   variables,
-  settings = {},
+  settings = defaultSettings,
   numWorkers,
   workerId,
 }: RenderPartialVideoProps) => {
-  const {outputFileName, outputFolderName, hiddenFolderId} =
-    getPropDefaults(settings);
+  const {outputFileName, outputFolderName, hiddenFolderId, format} =
+    getParamDefaultsAndCheckValidity(settings);
 
   await initializeBrowserAndStartRendering(
     projectFile,
@@ -457,7 +474,7 @@ export const renderPartialVideo = async ({
     settings.progressCallback,
   );
 
-  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.mp4`;
+  const videoFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/visuals.${extensions[format]}`;
   const audioFilePath = `${os.tmpdir()}/revideo-${outputFileName}-${workerId}-${hiddenFolderId}/audio.wav`;
 
   if (!(await doesFileExist(audioFilePath))) {

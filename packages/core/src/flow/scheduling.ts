@@ -1,33 +1,6 @@
 import {decorate, threadable} from '../decorators';
 import {ThreadGenerator} from '../threading';
-import {useDuration, usePlayback, useThread} from '../utils';
-
-decorate(waitUntil, threadable());
-/**
- * Wait until the given time event.
- *
- * @remarks
- * Time events are displayed on the timeline and can be edited to adjust the
- * delay. By default, an event happens immediately - without any delay.
- *
- * @example
- * ```ts
- * yield waitUntil('event');
- * ```
- *
- * @param event - The name of the time event.
- * @param after - An optional task to be run after the function completes.
- */
-export function* waitUntil(
-  event: string,
-  after?: ThreadGenerator,
-): ThreadGenerator {
-  yield* waitFor(useDuration(event));
-
-  if (after) {
-    yield* after;
-  }
-}
+import {usePlayback, useThread} from '../utils';
 
 decorate(waitFor, threadable());
 /**

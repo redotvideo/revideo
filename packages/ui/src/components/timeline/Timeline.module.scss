@@ -328,23 +328,3 @@
   flex-grow: 1;
   flex-shrink: 1;
 }
-
-.audioTrack {
-  position: relative;
-  width: 100%;
-  margin: 24px 0;
-  opacity: 0;
-  transition: opacity var(--duration-normal);
-  pointer-events: none;
-  filter: brightness(0.27);
-
-  &.show {
-    opacity: 1;
-  }
-
-  &.active {
-    pointer-events: auto;
-    cursor: move;
-    filter: brightness(0.32);
-  }
-}

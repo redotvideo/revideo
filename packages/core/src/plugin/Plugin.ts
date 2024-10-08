@@ -1,10 +1,4 @@
-import type {
-  Player,
-  Presenter,
-  Project,
-  ProjectSettings,
-  Renderer,
-} from '../app';
+import type {Player, Project, Renderer, UserProject} from '../app';
 import type {ExporterClass} from '../exporter';
 
 /**
@@ -32,7 +26,7 @@ export interface Plugin {
    *
    * @param settings - The project settings.
    */
-  settings?(settings: ProjectSettings): ProjectSettings | void;
+  settings?(settings: UserProject): UserProject | void;
 
   /**
    * Receive the project instance right after it is initialized.
@@ -47,13 +41,6 @@ export interface Plugin {
    * @param player - The player instance.
    */
   player?(player: Player): void;
-
-  /**
-   * Receive the presenter instance right after it is initialized.
-   *
-   * @param presenter - The presenter instance.
-   */
-  presenter?(presenter: Presenter): void;
 
   /**
    * Receive the renderer instance right after it is initialized.

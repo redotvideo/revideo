@@ -2,7 +2,7 @@ import styles from './Timeline.module.scss';
 
 import type {Scene} from '@revideo/core';
 import {useMemo} from 'preact/hooks';
-import {useApplication, useTimelineContext} from '../../contexts';
+import {useTimelineContext} from '../../contexts';
 import {useScenes, useSubscribableValue} from '../../hooks';
 import {findAndOpenFirstUserFile} from '../../utils';
 import {SlideTrack} from './SlideTrack';
@@ -24,7 +24,7 @@ interface SceneClipProps {
 }
 
 function SceneClip({scene}: SceneClipProps) {
-  const {player, meta} = useApplication();
+  // const {player} = useApplication();
   const {framesToPercents, framesToPixels, offset} = useTimelineContext();
   const cachedData = useSubscribableValue(scene.onCacheChanged);
 
@@ -46,7 +46,8 @@ function SceneClip({scene}: SceneClipProps) {
           event.preventDefault();
         }
       }}
-      onMouseUp={event => {
+      // TODO(refactor): check how much of this can be removed
+      /*onMouseUp={event => {
         if (event.button === 1) {
           event.stopPropagation();
           meta.shared.range.set([
@@ -54,7 +55,7 @@ function SceneClip({scene}: SceneClipProps) {
             player.status.framesToSeconds(cachedData.lastFrame),
           ]);
         }
-      }}
+      }}*/
     >
       {cachedData.transitionDuration > 0 && (
         <div

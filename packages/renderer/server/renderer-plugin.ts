@@ -1,3 +1,4 @@
+import {RenderVideoUserProjectSettings} from '@revideo/core';
 import {FfmpegSettings, ffmpegSettings} from '@revideo/ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -30,6 +31,7 @@ function escapeSpecialChars(_: string, value: string) {
 }
 
 export function rendererPlugin(
+  projectSettings?: RenderVideoUserProjectSettings,
   variables?: Record<string, unknown>,
   customFfmpegSettings?: FfmpegSettings,
   projectFile?: string,
@@ -44,6 +46,10 @@ export function rendererPlugin(
     ffmpegSettings.setLogLevel(customFfmpegSettings.ffmpegLogLevel);
   }
 
+  const projectSettingsString = projectSettings
+    ? JSON.stringify(projectSettings)
+    : JSON.stringify({});
+
   return {
     name: 'revideo-renderer-plugin',
 
@@ -51,7 +57,8 @@ export function rendererPlugin(
       if (id.startsWith('\x00virtual:renderer')) {
         return `\
             import {render} from '@revideo/renderer/lib/client/render';
-            import project from '${projectFile}?project';
+            import {Vector2} from '@revideo/core';
+            import project from '${projectFile}';
 
             // Read video variables
             project.variables = ${variables ? `JSON.parse(\`${JSON.stringify(variables, escapeSpecialChars)}\`)` : 'project.variables'};
@@ -62,11 +69,7 @@ export function rendererPlugin(
             const fileNameEscaped = url.searchParams.get('fileName');
             const workerId = parseInt(url.searchParams.get('workerId'));
             const totalNumOfWorkers = parseInt(url.searchParams.get('totalNumOfWorkers'));
-            const startInSeconds = parseFloat(url.searchParams.get('startInSeconds'));
-            const endInSeconds = parseFloat(url.searchParams.get('endInSeconds'));
             const hiddenFolderIdEscaped = url.searchParams.get('hiddenFolderId');
-            const videoWidth = parseInt(url.searchParams.get('videoWidth'));
-            const videoHeight = parseInt(url.searchParams.get('videoHeight'));
 
             const fileName = decodeURIComponent(fileNameEscaped);
             const hiddenFolderId = decodeURIComponent(hiddenFolderIdEscaped);
@@ -74,7 +77,7 @@ export function rendererPlugin(
             // Overwrite project name so that the rendered videos don't overwrite each other
             project.name = fileName;
 
-            render(project, workerId, totalNumOfWorkers, startInSeconds, endInSeconds, hiddenFolderId, videoWidth, videoHeight);
+            render(project, workerId, totalNumOfWorkers, hiddenFolderId, JSON.parse(\`${projectSettingsString}\`));
             `;
       }
     },

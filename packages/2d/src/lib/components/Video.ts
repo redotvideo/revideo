@@ -5,7 +5,6 @@ import {
   SerializedVector2,
   SignalValue,
   SimpleSignal,
-  viaProxy,
 } from '@revideo/core';
 import Hls from 'hls.js';
 import {computed, initial, nodeName, signal} from '../decorators';
@@ -112,7 +111,7 @@ export class Video extends Media {
 
   @computed()
   private video(): HTMLVideoElement {
-    const src = viaProxy(this.fullSource());
+    const src = this.src();
     const key = `${this.key}/${src}`;
     let video = Video.pool[key];
     if (!video) {
@@ -336,7 +335,7 @@ export class Video extends Media {
   private detectFileType() {
     return DependencyContext.collectPromise(
       (async () => {
-        const src = this.fullSource();
+        const src = this.src();
         const extension = src.split('?')[0].split('.').pop()?.toLowerCase();
 
         if (

@@ -9,14 +9,31 @@ import {
   SimpleSignal,
   Vector2,
   useLogger,
-  viaProxy,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
-import {Asset} from './Asset';
-import {RectProps} from './Rect';
-import imageWithoutSource from './__logs__/image-without-source.md';
+import {Rect, RectProps} from './Rect';
+
+const imageWithoutSource = `
+The image won't be visible unless you specify a source:
+
+\`\`\`tsx
+import myImage from './example.png';
+// ...
+<Img src={myImage} />;
+\`\`\`
+
+If you did this intentionally, and don't want to see this warning, set the \`src\`
+property to \`null\`:
+
+\`\`\`tsx
+<Img src={null} />
+\`\`\`
+
+[Learn more](https://motioncanvas.io/docs/media#images) about working with
+images.
+`;
 
 export interface ImgProps extends RectProps {
   /**
@@ -67,7 +84,7 @@ export interface ImgProps extends RectProps {
  * ```
  */
 @nodeName('Img')
-export class Img extends Asset {
+export class Img extends Rect {
   private static pool: Record<string, HTMLImageElement> = {};
 
   static {
@@ -81,6 +98,24 @@ export class Img extends Asset {
       });
     }
   }
+
+  /**
+   * The source of this image.
+   *
+   * @example
+   * Using a local image:
+   * ```tsx
+   * import image from './example.png';
+   * // ...
+   * view.add(<Img src={image} />)
+   * ```
+   * Loading an image from the internet:
+   * ```tsx
+   * view.add(<Img src="https://example.com/image.png" />)
+   * ```
+   */
+  @signal()
+  public declare readonly src: SimpleSignal<string, this>;
 
   /**
    * The alpha value of this image.
@@ -132,25 +167,19 @@ export class Img extends Asset {
 
   @computed()
   protected image(): HTMLImageElement {
-    const rawSrc = this.fullSource();
-    let src = '';
-    let key = '';
-    if (rawSrc) {
-      key = viaProxy(rawSrc);
-      const url = new URL(key, window.location.origin);
-      if (url.origin === window.location.origin) {
-        const hash = this.view().assetHash();
-        url.searchParams.set('asset-hash', hash);
-      }
-      src = url.toString();
+    const src = this.src();
+    const url = new URL(src, window.location.origin);
+    if (url.origin === window.location.origin) {
+      const hash = this.view().assetHash();
+      url.searchParams.set('asset-hash', hash);
     }
 
-    let image = Img.pool[key];
+    let image = Img.pool[src];
     if (!image) {
       image = document.createElement('img');
       image.crossOrigin = 'anonymous';
       image.src = src;
-      Img.pool[key] = image;
+      Img.pool[src] = image;
     }
 
     if (!image.complete) {
@@ -158,13 +187,12 @@ export class Img extends Asset {
         new Promise((resolve, reject) => {
           image.addEventListener('load', resolve);
           image.addEventListener('error', () =>
+            // TODO: example for error handling inside DependencyContext (this shouldn't be UI specific)
             reject(
               new DetailedError({
                 message: `Failed to load an image`,
                 remarks: `\
 The <code>src</code> property was set to:
-<pre><code>${rawSrc}</code></pre>
-...which resolved to the following url:
 <pre><code>${src}</code></pre>
 Make sure that source is correct and that the image exists.<br/>
 <a target='_blank' href='https://motioncanvas.io/docs/media#images'>Learn more</a>

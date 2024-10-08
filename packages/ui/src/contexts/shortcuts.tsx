@@ -37,11 +37,7 @@ const InitialShortcuts: ShortcutsByModule = {
       available: () => typeof EyeDropper === 'function',
     },
   ],
-  timeline: [
-    {key: 'F', action: 'Focus playhead'},
-    {key: 'B', action: 'Move range start to playhead'},
-    {key: 'N', action: 'Move range end to playhead'},
-  ],
+  timeline: [{key: 'F', action: 'Focus playhead'}],
   none: [],
 };
 

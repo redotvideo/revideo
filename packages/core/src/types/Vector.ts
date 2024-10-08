@@ -4,8 +4,7 @@ import {
   Signal,
   SignalValue,
 } from '../signals';
-import {InterpolationFunction, arcLerp} from '../tweening';
-import {clamp, map} from '../tweening/interpolationFunctions';
+import {InterpolationFunction, arcLerp, clamp, map} from '../tweening';
 import {DEG2RAD, RAD2DEG} from '../utils';
 import {Matrix2D, PossibleMatrix2D} from './Matrix2D';
 import {Direction, Origin} from './Origin';

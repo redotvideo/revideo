@@ -1,11 +1,7 @@
 import {run, waitFor} from '../flow';
 import {ThreadGenerator} from '../threading';
-import {
-  InterpolationFunction,
-  TimingFunction,
-  easeInOutCubic,
-  tween,
-} from '../tweening';
+import type {InterpolationFunction, TimingFunction} from '../tweening';
+import {easeInOutCubic, tween} from '../tweening';
 import {errorToLog, useLogger} from '../utils';
 import {DependencyContext} from './DependencyContext';
 import {DEFAULT} from './symbols';

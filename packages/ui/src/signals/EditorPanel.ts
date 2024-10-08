@@ -1,8 +1,8 @@
 export enum EditorPanel {
-  VideoSettings = 'video-settings-panel',
+  // TODO: technically, this is a plugin so it's not entirely safe to assume it's always available
+  SceneGraph = '@revideo/2d-scene-graph',
   Threads = 'threads-panel',
   Console = 'console-panel',
-  Settings = 'settings-panel',
   Timeline = 'timeline-panel',
 }
 

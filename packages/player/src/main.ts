@@ -1,5 +1,5 @@
-import type {PlayerSettings, Project, StageSettings} from '@revideo/core';
-import {Player, Stage} from '@revideo/core';
+import type {Project} from '@revideo/core';
+import {Player, Stage, getFullPreviewSettings} from '@revideo/core';
 
 import {Vector2} from '@revideo/core';
 import styles from './styles.scss?inline';
@@ -62,7 +62,9 @@ class MotionCanvasPlayer extends HTMLElement {
   private state = State.Initial;
   private project: Project | null = null;
   private player: Player | null = null;
-  private defaultSettings: PlayerSettings & StageSettings;
+  private defaultSettings:
+    | ReturnType<typeof getFullPreviewSettings>
+    | undefined;
   private abortController: AbortController | null = null;
   private mouseMoveId: number | null = null;
   private finished = false;
@@ -212,7 +214,7 @@ class MotionCanvasPlayer extends HTMLElement {
       return;
     }
 
-    this.defaultSettings = project.meta.getFullRenderingSettings();
+    this.defaultSettings = getFullPreviewSettings(project);
     const player = new Player(project);
     player.setVariables(this.variables);
 

@@ -7,7 +7,7 @@ import {
   waitFor,
 } from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('transitions-second', function* (view) {
   const rect = createRef<Rect>();
   const text = createRef<Txt>();
 

@@ -1,13 +1,18 @@
 import {EventDispatcher, ValueDispatcher} from '../events';
-import type {Exporter} from '../exporter';
+import {
+  ExporterClass,
+  FFmpegExporterClient,
+  ImageExporter,
+  WasmExporter,
+  type Exporter,
+} from '../exporter';
 import type {Scene} from '../scenes';
-import {ReadOnlyTimeEvents} from '../scenes/timeEvents';
 import {clampRemap} from '../tweening';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import type {Project} from './Project';
+import type {ExporterSettings, Project} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 import {Stage, StageSettings} from './Stage';
 import {TimeEstimator} from './TimeEstimator';
@@ -16,10 +21,7 @@ export interface RendererSettings extends StageSettings {
   name: string;
   range: [number, number];
   fps: number;
-  exporter: {
-    name: string;
-    options: unknown;
-  };
+  exporter: ExporterSettings;
   hiddenFolderId?: string;
 }
 
@@ -91,12 +93,10 @@ export class Renderer {
     for (const description of project.scenes) {
       const scene = new description.klass({
         ...description,
-        meta: description.meta.clone(),
-        logger: this.project.logger,
         playback: this.status,
+        logger: this.project.logger,
         size: new Vector2(1920, 1080),
         resolutionScale: 1,
-        timeEventsClass: ReadOnlyTimeEvents,
         sharedWebGLContext: this.sharedWebGLContext,
         experimentalFeatures: project.experimentalFeatures,
       });
@@ -224,9 +224,17 @@ export class Renderer {
     signal: AbortSignal,
   ): Promise<RendererResult> {
     // Select exporter
-    const exporterClass = this.project.meta.rendering.exporter.exporters.find(
+    // TODO(refactor): check if i want to keep it this way
+    const exporters: ExporterClass[] = [
+      FFmpegExporterClient,
+      ImageExporter,
+      WasmExporter,
+    ];
+
+    const exporterClass = exporters.find(
       exporter => exporter.id === settings.exporter.name,
     );
+
     if (!exporterClass) {
       this.project.logger.error(
         `Could not find the "${settings.exporter.name}" exporter.`,
@@ -343,14 +351,11 @@ export class Renderer {
 
   private async reloadScenes(settings: RendererSettings) {
     for (let i = 0; i < this.project.scenes.length; i++) {
-      const description = this.project.scenes[i];
       const scene = this.playback.onScenesRecalculated.current[i];
       scene.reload({
-        config: description.onReplaced.current.config,
         size: settings.size,
         resolutionScale: settings.resolutionScale,
       });
-      scene.meta.set(description.meta.get());
       scene.variables.updateSignals(this.project.variables ?? {});
     }
   }

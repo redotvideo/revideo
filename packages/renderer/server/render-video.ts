@@ -18,9 +18,9 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
-import {getParamDefaultsAndCheckValidity} from 'validate-settings';
 import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
+import {getParamDefaultsAndCheckValidity} from './validate-settings';
 
 export interface RenderSettings {
   // Name of the video file (default is 'video.mp4')

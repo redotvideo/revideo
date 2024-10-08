@@ -28,7 +28,7 @@ export function Versions() {
     <div className={styles.root}>
       {isOld && (
         <a
-          href="https://github.com/revideo/revideo/releases"
+          href="https://github.com/redotvideo/revideo/releases"
           target="_blank"
           title="See what's new"
           className={clsx(styles.link, styles.main)}

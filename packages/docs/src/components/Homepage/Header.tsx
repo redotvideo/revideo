@@ -33,7 +33,7 @@ export default function HomepageHeader() {
           </Link>
           <a
             className="button button--outline button--lg"
-            href="https://github.com/revideo/revideo/blob/main/CONTRIBUTING.md"
+            href="https://github.com/redotvideo/revideo/blob/main/CONTRIBUTING.md"
             target="_blank"
           >
             Contribute

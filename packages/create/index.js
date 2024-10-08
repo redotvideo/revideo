@@ -21,7 +21,7 @@ const templates = [
     title: 'Revideo with Next.js',
     description: 'A minimal web app built with Revideo and Next.js.',
     recommended: true,
-    startCommands: 'next',
+    startcommands: 'readme',
   },
   {
     value: 'avatar-with-background',
@@ -36,12 +36,6 @@ const templates = [
     startcommands: 'default',
   },
   {
-    value: 'google-cloud-run-parallelized',
-    title: 'Google Cloud Run Parallelized',
-    description: 'Example of parallelized rendering using Google Cloud Run.',
-    startcommands: 'readme',
-  },
-  {
     value: 'marketing-templates',
     title: 'Marketing Templates',
     description: 'A collection of templates for marketing videos.',
@@ -52,19 +46,13 @@ const templates = [
     title: 'Drag and Drop Example',
     description:
       'A minimal example of an editor with drag-and-drop editing functionality.',
-    startcommands: 'next',
+    startcommands: 'readme',
   },
   {
     value: 'parallelized-aws-lambda',
     title: 'Parallelized AWS Lambda',
     description: 'Example of parallelized rendering using AWS Lambda.',
     startcommands: 'readme',
-  },
-  {
-    value: 'reddit-post-video',
-    title: 'Reddit Post Video',
-    description: 'Generate a video from a Reddit post.',
-    startcommands: 'default',
   },
   {
     value: 'rive-explanation-video',
@@ -226,18 +214,6 @@ async function run() {
   if (selectedTemplate.startcommands === 'default') {
     console.log(installCommand);
     console.log(`  ${boldManager} start`);
-  } else if (selectedTemplate.startcommands === 'next') {
-    console.log(kleur.blue('\n√ Start the NextJS server:'));
-    console.log(`  ${kleur.bold('cd')} next`);
-    console.log(installCommand);
-    console.log(`  ${boldManager} run dev`);
-
-    console.log(
-      kleur.blue('\nIn another terminal, serve your revideo project:'),
-    );
-    console.log(`  ${kleur.bold('cd')} revideo`);
-    console.log(installCommand);
-    console.log(`  ${kleur.bold('npx')} revideo serve`);
   } else {
     console.log(kleur.blue('\nNow find the setup instructions in README.md'));
   }

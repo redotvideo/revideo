@@ -53,7 +53,7 @@ below.
 import {Audio, Img, Video, makeScene2D} from '@revideo/2d';
 import {all, chain, createRef, waitFor} from '@revideo/core';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D('scene', function* (view) {
   const logoRef = createRef<Img>();
 
   yield view.add(

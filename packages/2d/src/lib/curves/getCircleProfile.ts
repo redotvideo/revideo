@@ -1,8 +1,8 @@
 import {Vector2} from '@revideo/core';
 import {ArcSegment} from './ArcSegment';
-import {CurveProfile} from './CurveProfile';
+import type {CurveProfile} from './CurveProfile';
 import {LineSegment} from './LineSegment';
-import {Segment} from './Segment';
+import type {Segment} from './Segment';
 
 export function getCircleProfile(
   size: Vector2,

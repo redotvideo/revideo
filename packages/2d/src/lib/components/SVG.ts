@@ -1,12 +1,14 @@
-import {
-  BBox,
-  Matrix2D,
+import type {
   PossibleSpacing,
   SerializedVector2,
   SignalValue,
   SimpleSignal,
   ThreadGenerator,
   TimingFunction,
+} from '@revideo/core';
+import {
+  BBox,
+  Matrix2D,
   Vector2,
   all,
   clampRemap,
@@ -19,16 +21,23 @@ import {
   useLogger,
 } from '@revideo/core';
 import {computed, signal} from '../decorators';
-import {DesiredLength, PossibleCanvasStyle} from '../partials';
+import type {DesiredLength, PossibleCanvasStyle} from '../partials';
 import {applyTransformDiff, getTransformDiff} from '../utils/diff';
-import {Circle, CircleProps} from './Circle';
-import {Img, ImgProps} from './Img';
+import type {CircleProps} from './Circle';
+import {Circle} from './Circle';
+import type {ImgProps} from './Img';
+import {Img} from './Img';
 import {Layout} from './Layout';
-import {Line, LineProps} from './Line';
-import {Node, NodeProps} from './Node';
-import {Path, PathProps} from './Path';
-import {Rect, RectProps} from './Rect';
-import {Shape, ShapeProps} from './Shape';
+import type {LineProps} from './Line';
+import {Line} from './Line';
+import type {NodeProps} from './Node';
+import {Node} from './Node';
+import type {PathProps} from './Path';
+import {Path} from './Path';
+import type {RectProps} from './Rect';
+import {Rect} from './Rect';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 import {View2D} from './View2D';
 
 /**

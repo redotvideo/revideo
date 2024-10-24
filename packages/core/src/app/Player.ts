@@ -3,14 +3,14 @@ import {
   EventDispatcher,
   ValueDispatcher,
 } from '../events';
-import {Scene} from '../scenes';
+import type {Scene} from '../scenes';
 import {clamp} from '../tweening';
 import {Vector2} from '../types';
 import {Semaphore} from '../utils';
-import {Logger} from './Logger';
+import type {Logger} from './Logger';
 import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
-import {Project} from './Project';
+import type {Project} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
 
 export interface PlayerState extends Record<string, unknown> {

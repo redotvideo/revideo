@@ -1,10 +1,5 @@
-import {
-  createSignal,
-  map,
-  SignalValue,
-  SimpleSignal,
-  transformScalar,
-} from '@revideo/core';
+import type {SignalValue, SimpleSignal} from '@revideo/core';
+import {createSignal, map, transformScalar} from '@revideo/core';
 
 /**
  * All possible CSS filter names.

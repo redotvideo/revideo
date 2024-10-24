@@ -1,9 +1,11 @@
-import {Signal, useSignal} from '@preact/signals';
+import type {Signal} from '@preact/signals';
+import {useSignal} from '@preact/signals';
 import type {Player, Project, Renderer} from '@revideo/core';
-import {ComponentChildren, createContext} from 'preact';
+import type {ComponentChildren} from 'preact';
+import {createContext} from 'preact';
 import {useContext, useRef} from 'preact/hooks';
 import {useSubscribable} from '../hooks';
-import {EditorPlugin} from '../plugin';
+import type {EditorPlugin} from '../plugin';
 import {LoggerManager} from '../utils';
 
 export interface Inspection {

@@ -1,6 +1,6 @@
 import {EventDispatcher, ValueDispatcher} from '../events';
+import type {ExporterClass} from '../exporter';
 import {
-  ExporterClass,
   FFmpegExporterClient,
   ImageExporter,
   WasmExporter,
@@ -14,7 +14,8 @@ import {PlaybackManager, PlaybackState} from './PlaybackManager';
 import {PlaybackStatus} from './PlaybackStatus';
 import type {ExporterSettings, Project} from './Project';
 import {SharedWebGLContext} from './SharedWebGLContext';
-import {Stage, StageSettings} from './Stage';
+import type {StageSettings} from './Stage';
+import {Stage} from './Stage';
 import {TimeEstimator} from './TimeEstimator';
 
 export interface RendererSettings extends StageSettings {

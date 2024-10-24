@@ -1,8 +1,8 @@
 import styles from './ResizeableLayout.module.scss';
 
-import {Signal} from '@preact/signals';
+import type {Signal} from '@preact/signals';
 import clsx from 'clsx';
-import {ComponentChild} from 'preact';
+import type {ComponentChild} from 'preact';
 import {useRef} from 'preact/hooks';
 import {useStorage} from '../../hooks';
 import {clamp} from '../../utils';

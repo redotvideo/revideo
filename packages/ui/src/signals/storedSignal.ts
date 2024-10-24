@@ -1,4 +1,5 @@
-import {Signal, useSignal, useSignalEffect} from '@preact/signals';
+import type {Signal} from '@preact/signals';
+import {useSignal, useSignalEffect} from '@preact/signals';
 import {projectNameSignal} from './projectName';
 
 export function storedSignal<T>(

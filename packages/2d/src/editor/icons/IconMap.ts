@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import {FunctionComponent} from 'preact';
+import type {FunctionComponent} from 'preact';
 import {CircleIcon} from './CircleIcon';
 import {CodeBlockIcon} from './CodeBlockIcon';
 import {CurveIcon} from './CurveIcon';

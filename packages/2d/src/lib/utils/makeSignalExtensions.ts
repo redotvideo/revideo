@@ -1,5 +1,6 @@
-import {SignalExtensions, capitalize} from '@revideo/core';
-import {PropertyMetadata} from '../decorators';
+import type {SignalExtensions} from '@revideo/core';
+import {capitalize} from '@revideo/core';
+import type {PropertyMetadata} from '../decorators';
 
 export function makeSignalExtensions<TSetterValue, TValue extends TSetterValue>(
   meta: Partial<PropertyMetadata<TValue>> = {},

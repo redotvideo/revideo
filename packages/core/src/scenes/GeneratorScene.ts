@@ -1,18 +1,14 @@
-import {AssetInfo, Logger, PlaybackStatus} from '../app';
+import type {AssetInfo, Logger, PlaybackStatus} from '../app';
 import {decorate, threadable} from '../decorators';
 import {EventDispatcher, ValueDispatcher} from '../events';
-import {DependencyContext, SignalValue} from '../signals';
-import {
-  Thread,
-  ThreadGenerator,
-  isPromisable,
-  isPromise,
-  threads,
-} from '../threading';
-import {Vector2} from '../types';
+import type {SignalValue} from '../signals';
+import {DependencyContext} from '../signals';
+import type {Thread, ThreadGenerator} from '../threading';
+import {isPromisable, isPromise, threads} from '../threading';
+import type {Vector2} from '../types';
 import {endPlayback, endScene, startPlayback, startScene} from '../utils';
 import {LifecycleEvents} from './LifecycleEvents';
-import {
+import type {
   CachedSceneData,
   FullSceneDescription,
   Scene,
@@ -22,7 +18,7 @@ import {
 import {SceneState} from './SceneState';
 import {Shaders} from './Shaders';
 import {Slides} from './Slides';
-import {Threadable} from './Threadable';
+import type {Threadable} from './Threadable';
 import {Variables} from './Variables';
 
 export interface ThreadGeneratorFactory<T> {

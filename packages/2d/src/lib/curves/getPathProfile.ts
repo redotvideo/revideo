@@ -1,11 +1,12 @@
 import {Vector2, clamp} from '@revideo/core';
-import parse, {PathCommand} from 'parse-svg-path';
+import type {PathCommand} from 'parse-svg-path';
+import parse from 'parse-svg-path';
 import {ArcSegment} from './ArcSegment';
 import {CubicBezierSegment} from './CubicBezierSegment';
-import {CurveProfile} from './CurveProfile';
+import type {CurveProfile} from './CurveProfile';
 import {LineSegment} from './LineSegment';
 import {QuadBezierSegment} from './QuadBezierSegment';
-import {Segment} from './Segment';
+import type {Segment} from './Segment';
 
 function addSegmentToProfile(profile: CurveProfile, segment: Segment) {
   profile.segments.push(segment);

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import {Plugin} from 'vite';
-import {Projects} from '../utils';
+import type {Plugin} from 'vite';
+import type {Projects} from '../utils';
 
 interface EditorPluginConfig {
   editor: string;

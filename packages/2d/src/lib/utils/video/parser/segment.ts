@@ -1,5 +1,5 @@
 import {MP4FileSink} from './sink';
-import {Edit} from './utils';
+import type {Edit} from './utils';
 
 const MAX_DECODE_QUEUE_SIZE = 30;
 

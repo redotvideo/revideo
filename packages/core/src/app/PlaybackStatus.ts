@@ -1,4 +1,4 @@
-import {PlaybackManager, PlaybackState} from './PlaybackManager';
+import type {PlaybackManager, PlaybackState} from './PlaybackManager';
 
 /**
  * A read-only representation of the playback.

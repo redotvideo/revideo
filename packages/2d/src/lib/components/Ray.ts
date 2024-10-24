@@ -1,8 +1,11 @@
-import {BBox, PossibleVector2, SignalValue, Vector2Signal} from '@revideo/core';
-import {CurveProfile, LineSegment} from '../curves';
+import type {PossibleVector2, SignalValue, Vector2Signal} from '@revideo/core';
+import {BBox} from '@revideo/core';
+import type {CurveProfile} from '../curves';
+import {LineSegment} from '../curves';
 import {nodeName, vector2Signal} from '../decorators';
 import {arc, drawLine, drawPivot} from '../utils';
-import {Curve, CurveProps} from './Curve';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 
 export interface RayProps extends CurveProps {
   /**

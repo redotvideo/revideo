@@ -1,6 +1,6 @@
 import type {ThreadGenerator} from '../threading';
 import type {InterpolationFunction, TimingFunction} from '../tweening';
-import {DEFAULT} from './symbols';
+import type {DEFAULT} from './symbols';
 
 export type SignalValue<TValue> = TValue | (() => TValue);
 export type SignalGenerator<

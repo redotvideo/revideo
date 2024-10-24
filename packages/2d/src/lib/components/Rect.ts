@@ -1,17 +1,18 @@
-import {
-  BBox,
+import type {
   PossibleSpacing,
   SerializedVector2,
   SignalValue,
   SimpleSignal,
   SpacingSignal,
 } from '@revideo/core';
+import {BBox} from '@revideo/core';
 import {getRectProfile} from '../curves/getRectProfile';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {spacingSignal} from '../decorators/spacingSignal';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {drawRoundRect} from '../utils';
-import {Curve, CurveProps} from './Curve';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 
 export interface RectProps extends CurveProps {
   /**

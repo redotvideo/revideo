@@ -1,12 +1,13 @@
-import {
+import type {
   PossibleVector2,
   SignalValue,
   SimpleSignal,
   Vector2Signal,
-  map,
 } from '@revideo/core';
+import {map} from '@revideo/core';
 import {initial, nodeName, signal, vector2Signal} from '../decorators';
-import {Shape, ShapeProps} from './Shape';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 
 export interface GridProps extends ShapeProps {
   /**

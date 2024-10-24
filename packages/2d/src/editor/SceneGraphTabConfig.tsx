@@ -1,9 +1,8 @@
+import type {PluginTabConfig, PluginTabProps} from '@revideo/ui';
 import {
   AccountTree,
   emphasize,
   Pane,
-  PluginTabConfig,
-  PluginTabProps,
   Tab,
   useApplication,
   usePanels,

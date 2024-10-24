@@ -1,17 +1,20 @@
-import {
+import type {
   AssetInfo,
   FullSceneDescription,
-  GeneratorScene,
   Inspectable,
   InspectedAttributes,
   InspectedElement,
   Scene,
-  SceneRenderEvent,
   ThreadGeneratorFactory,
+} from '@revideo/core';
+import {
+  GeneratorScene,
+  SceneRenderEvent,
   Vector2,
   useLogger,
 } from '@revideo/core';
-import {Audio, Media, Node, Video, View2D} from '../components';
+import type {Node} from '../components';
+import {Audio, Media, Video, View2D} from '../components';
 
 export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
   private view: View2D | null = null;

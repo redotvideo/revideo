@@ -1,9 +1,5 @@
-import {
-  Computed,
-  ComputedContext,
-  createSignal,
-  PromiseHandle,
-} from '../signals';
+import type {Computed, PromiseHandle} from '../signals';
+import {ComputedContext, createSignal} from '../signals';
 import {createComputed} from './createComputed';
 
 export function createComputedAsync<T>(

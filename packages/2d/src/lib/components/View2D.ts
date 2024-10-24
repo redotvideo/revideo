@@ -1,9 +1,11 @@
-import {PlaybackState, SimpleSignal, lazy} from '@revideo/core';
+import type {SimpleSignal} from '@revideo/core';
+import {PlaybackState, lazy} from '@revideo/core';
 import {initial, signal} from '../decorators';
 import {nodeName} from '../decorators/nodeName';
 import {useScene2D} from '../scenes/useScene2D';
 import type {Node} from './Node';
-import {Rect, RectProps} from './Rect';
+import type {RectProps} from './Rect';
+import {Rect} from './Rect';
 
 export interface View2DProps extends RectProps {
   assetHash: string;

@@ -1,12 +1,9 @@
-import {
-  capitalize,
-  deepLerp,
+import type {
   InterpolationFunction,
-  SignalContext,
   SignalValue,
   TimingFunction,
-  useLogger,
 } from '@revideo/core';
+import {capitalize, deepLerp, SignalContext, useLogger} from '@revideo/core';
 import {makeSignalExtensions} from '../utils/makeSignalExtensions';
 import {addInitializer, initialize} from './initializers';
 

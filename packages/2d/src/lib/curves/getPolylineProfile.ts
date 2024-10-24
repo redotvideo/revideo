@@ -1,6 +1,7 @@
-import {Vector2, clamp} from '@revideo/core';
+import type {Vector2} from '@revideo/core';
+import {clamp} from '@revideo/core';
 import {CircleSegment} from './CircleSegment';
-import {CurveProfile} from './CurveProfile';
+import type {CurveProfile} from './CurveProfile';
 import {LineSegment} from './LineSegment';
 
 export function getPolylineProfile(

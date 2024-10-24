@@ -1,4 +1,4 @@
-import {Plugin as VitePlugin} from 'vite';
+import type {Plugin as VitePlugin} from 'vite';
 
 /**
  * Represents a Revideo project configured in the Vite plugin.

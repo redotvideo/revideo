@@ -1,9 +1,10 @@
-import formidable, {IncomingForm} from 'formidable';
+import type formidable from 'formidable';
+import {IncomingForm} from 'formidable';
 import * as fs from 'fs';
 import * as os from 'os';
 import path from 'path';
 import {Readable} from 'stream';
-import {Plugin} from 'vite';
+import type {Plugin} from 'vite';
 
 export function wasmExporterPlugin(): Plugin {
   return {

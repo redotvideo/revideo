@@ -1,4 +1,5 @@
-import {ShortcutModules, useShortcuts} from '../contexts/shortcuts';
+import type {ShortcutModules} from '../contexts/shortcuts';
+import {useShortcuts} from '../contexts/shortcuts';
 import {useHover} from './useHover';
 
 type UseHoverType<T extends HTMLElement> = [React.RefObject<T>, boolean];

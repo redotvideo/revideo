@@ -1,10 +1,12 @@
-import {
+import type {
   SerializedVector2,
   Signal,
   SignalValue,
   SimpleSignal,
   ThreadGenerator,
   TimingFunction,
+} from '@revideo/core';
+import {
   Vector2,
   clampRemap,
   createComputedAsync,
@@ -17,19 +19,12 @@ import {
   useLogger,
   waitFor,
 } from '@revideo/core';
-import {
-  Code,
-  CodeStyle,
-  CodeTree,
-  MorphToken,
-  Token,
-  diff,
-  parse,
-  ready,
-} from 'code-fns';
+import type {Code, CodeStyle, CodeTree, MorphToken, Token} from 'code-fns';
+import {diff, parse, ready} from 'code-fns';
 import {computed, initial, nodeName, parser, signal} from '../decorators';
-import {DesiredLength} from '../partials';
-import {Shape, ShapeProps} from './Shape';
+import type {DesiredLength} from '../partials';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 
 type CodePoint = [number, number];
 type CodeRange = [CodePoint, CodePoint];

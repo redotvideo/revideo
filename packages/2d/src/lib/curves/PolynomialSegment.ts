@@ -1,7 +1,7 @@
-import {BBox, Vector2} from '@revideo/core';
+import type {BBox, Vector2} from '@revideo/core';
 import {moveTo} from '../utils';
-import {CurvePoint} from './CurvePoint';
-import {Polynomial2D} from './Polynomial2D';
+import type {CurvePoint} from './CurvePoint';
+import type {Polynomial2D} from './Polynomial2D';
 import {Segment} from './Segment';
 import {UniformPolynomialCurveSampler} from './UniformPolynomialCurveSampler';
 

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import path from 'path';
 import {Readable} from 'stream';
-import {Plugin} from 'vite';
+import type {Plugin} from 'vite';
 
 async function getRiveWasmPath() {
   try {

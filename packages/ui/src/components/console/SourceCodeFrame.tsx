@@ -1,11 +1,8 @@
 import styles from './Console.module.scss';
 
 import {useMemo} from 'preact/hooks';
-import {
-  getSourceCodeFrame,
-  openFileInEditor,
-  StackTraceEntry,
-} from '../../utils';
+import type {StackTraceEntry} from '../../utils';
+import {getSourceCodeFrame, openFileInEditor} from '../../utils';
 
 import {IconButton} from '../controls';
 import {OpenInNew} from '../icons';

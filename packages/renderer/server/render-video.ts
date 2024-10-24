@@ -1,9 +1,9 @@
-import {
+import type {
   FfmpegExporterOptions,
   RenderVideoUserProjectSettings,
 } from '@revideo/core';
+import type {FfmpegSettings} from '@revideo/ffmpeg';
 import {
-  FfmpegSettings,
   audioCodecs,
   concatenateMedia,
   createSilentAudioFile,
@@ -17,8 +17,10 @@ import motionCanvas from '@revideo/vite-plugin';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import puppeteer, {Browser, PuppeteerLaunchOptions} from 'puppeteer';
-import {InlineConfig, ServerOptions, ViteDevServer, createServer} from 'vite';
+import type {Browser, PuppeteerLaunchOptions} from 'puppeteer';
+import puppeteer from 'puppeteer';
+import type {InlineConfig, ServerOptions, ViteDevServer} from 'vite';
+import {createServer} from 'vite';
 import {rendererPlugin} from './renderer-plugin';
 import {getParamDefaultsAndCheckValidity} from './validate-settings';
 

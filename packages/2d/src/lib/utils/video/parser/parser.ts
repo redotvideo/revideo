@@ -2,7 +2,8 @@ import {createFile} from 'mp4box';
 import {FrameSampler} from './sampler';
 import {Segment} from './segment';
 import {MP4FileSink} from './sink';
-import {Edit, description, mp4BoxEditToEdit} from './utils';
+import type {Edit} from './utils';
+import {description, mp4BoxEditToEdit} from './utils';
 
 /**
  * Loads the file at the given URI until it finds the moov box.

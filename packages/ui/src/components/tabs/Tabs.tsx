@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import {ComponentChildren, Ref, createContext, type JSX} from 'preact';
+import type {ComponentChildren, Ref} from 'preact';
+import {createContext, type JSX} from 'preact';
 import {useContext} from 'preact/hooks';
 import styles from './Tabs.module.scss';
 

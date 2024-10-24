@@ -1,4 +1,4 @@
-import {Segment} from './segment';
+import type {Segment} from './segment';
 
 export class FrameSampler {
   private framesRequested = 0;

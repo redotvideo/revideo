@@ -1,14 +1,13 @@
-import {
-  CompoundSignal,
-  CompoundSignalContext,
-  Signal,
-  SignalValue,
-} from '../signals';
-import {InterpolationFunction, arcLerp, clamp, map} from '../tweening';
+import type {CompoundSignal, Signal, SignalValue} from '../signals';
+import {CompoundSignalContext} from '../signals';
+import type {InterpolationFunction} from '../tweening';
+import {arcLerp, clamp, map} from '../tweening';
 import {DEG2RAD, RAD2DEG} from '../utils';
-import {Matrix2D, PossibleMatrix2D} from './Matrix2D';
+import type {PossibleMatrix2D} from './Matrix2D';
+import {Matrix2D} from './Matrix2D';
 import {Direction, Origin} from './Origin';
-import {EPSILON, Type, WebGLConvertible} from './Type';
+import type {Type, WebGLConvertible} from './Type';
+import {EPSILON} from './Type';
 
 export type SerializedVector2<T = number> = {
   x: T;

@@ -1,28 +1,23 @@
+import type {
+  Signal,
+  SignalValue,
+  ThreadGenerator,
+  TimingFunction,
+} from '@revideo/core';
 import {
   createSignal,
   deepLerp,
   DependencyContext,
-  Signal,
   SignalContext,
-  SignalValue,
-  ThreadGenerator,
-  TimingFunction,
   unwrap,
 } from '@revideo/core';
-import {Code} from '../components';
 import {addInitializer, getPropertyMetaOrCreate} from '../decorators';
 import {defaultDiffer} from './CodeDiffer';
 import {insert, replace} from './CodeFragment';
-import {CodeHighlighter} from './CodeHighlighter';
-import {CodePoint, CodeRange} from './CodeRange';
-import {
-  CODE,
-  CodeScope,
-  CodeTag,
-  parseCodeScope,
-  PossibleCodeScope,
-  resolveCodeTag,
-} from './CodeScope';
+import type {CodeHighlighter} from './CodeHighlighter';
+import type {CodePoint, CodeRange} from './CodeRange';
+import type {CodeScope, CodeTag, PossibleCodeScope} from './CodeScope';
+import {CODE, parseCodeScope, resolveCodeTag} from './CodeScope';
 import {defaultTokenize} from './CodeTokenizer';
 import {extractRange} from './extractRange';
 
@@ -81,9 +76,6 @@ export class CodeSignalContext<TOwner>
     private readonly highlighter?: SignalValue<CodeHighlighter | null>,
   ) {
     super(initial, deepLerp, owner);
-    if (owner instanceof Code) {
-      this.highlighter ??= owner.highlighter;
-    }
     Object.defineProperty(this.invokable, 'edit', {
       value: this.edit.bind(this),
     });

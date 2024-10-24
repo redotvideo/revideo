@@ -1,40 +1,45 @@
-import {
-  BBox,
-  createSignal,
-  experimentalLog,
-  map,
+import type {
   SerializedVector2,
   Signal,
   SignalValue,
   SimpleSignal,
   ThreadGenerator,
   TimingFunction,
-  unwrap,
-  useLogger,
-  useScene,
   Vector2,
 } from '@revideo/core';
 import {
-  CodeCursor,
+  BBox,
+  createSignal,
+  experimentalLog,
+  map,
+  unwrap,
+  useLogger,
+  useScene,
+} from '@revideo/core';
+import type {
   CodeFragmentDrawingInfo,
   CodeHighlighter,
   CodePoint,
   CodeRange,
   CodeSelection,
   CodeSignal,
+  PossibleCodeScope,
+  PossibleCodeSelection,
+} from '../code';
+import {
+  CodeCursor,
   codeSignal,
   CodeSignalContext,
   findAllCodeRanges,
   isPointInCodeSelection,
   lines,
   parseCodeSelection,
-  PossibleCodeScope,
-  PossibleCodeSelection,
   resolveScope,
 } from '../code';
 import {computed, initial, nodeName, parser, signal} from '../decorators';
-import {DesiredLength} from '../partials';
-import {Shape, ShapeProps} from './Shape';
+import type {DesiredLength} from '../partials';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 
 export interface DrawTokenHook {
   (

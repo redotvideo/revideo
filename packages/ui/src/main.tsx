@@ -7,9 +7,11 @@ import {
   getFullPreviewSettings,
   type Project,
 } from '@revideo/core';
-import {ComponentChild, render} from 'preact';
+import type {ComponentChild} from 'preact';
+import {render} from 'preact';
 import {Editor} from './Editor';
-import {ProjectData, ProjectSelection} from './ProjectSelection';
+import type {ProjectData} from './ProjectSelection';
+import {ProjectSelection} from './ProjectSelection';
 import {ApplicationProvider, PanelsProvider} from './contexts';
 import {ShortcutsProvider} from './contexts/shortcuts';
 import GridPlugin from './plugin/GridPlugin';

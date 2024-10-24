@@ -1,8 +1,11 @@
-import {CompoundSignal, CompoundSignalContext, SignalValue} from '../signals';
-import {InterpolationFunction, arcLerp, map} from '../tweening';
-import {PossibleMatrix2D} from './Matrix2D';
-import {PossibleSpacing, Spacing} from './Spacing';
-import {Type, WebGLConvertible} from './Type';
+import type {CompoundSignal, SignalValue} from '../signals';
+import {CompoundSignalContext} from '../signals';
+import type {InterpolationFunction} from '../tweening';
+import {arcLerp, map} from '../tweening';
+import type {PossibleMatrix2D} from './Matrix2D';
+import type {PossibleSpacing} from './Spacing';
+import {Spacing} from './Spacing';
+import type {Type, WebGLConvertible} from './Type';
 import {Vector2} from './Vector';
 
 export type SerializedBBox = {

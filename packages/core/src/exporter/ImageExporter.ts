@@ -3,7 +3,7 @@ import type {Project} from '../app/Project';
 import type {AssetInfo, RendererSettings} from '../app/Renderer';
 import {EventDispatcher} from '../events';
 import {clamp} from '../tweening';
-import {CanvasOutputMimeType} from '../types';
+import type {CanvasOutputMimeType} from '../types';
 import type {Exporter} from './Exporter';
 import {download} from './download-videos';
 

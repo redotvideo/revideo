@@ -1,6 +1,7 @@
-import {Vector2, clamp, remap} from '@revideo/core';
-import {CurvePoint} from './CurvePoint';
-import {PolynomialSegment} from './PolynomialSegment';
+import type {Vector2} from '@revideo/core';
+import {clamp, remap} from '@revideo/core';
+import type {CurvePoint} from './CurvePoint';
+import type {PolynomialSegment} from './PolynomialSegment';
 
 /**
  * Class to uniformly sample points on a given polynomial curve.

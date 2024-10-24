@@ -1,7 +1,5 @@
-import {
-  BBox,
+import type {
   ColorSignal,
-  DependencyContext,
   PossibleColor,
   PossibleSpacing,
   PossibleVector2,
@@ -14,11 +12,15 @@ import {
   SpacingSignal,
   ThreadGenerator,
   TimingFunction,
+  Vector2Signal,
+} from '@revideo/core';
+import {
+  BBox,
+  DependencyContext,
   UNIFORM_DESTINATION_MATRIX,
   UNIFORM_SOURCE_MATRIX,
   UNIFORM_TIME,
   Vector2,
-  Vector2Signal,
   all,
   clamp,
   createSignal,
@@ -46,14 +48,15 @@ import {
   vector2Signal,
   wrapper,
 } from '../decorators';
-import {FiltersSignal, filtersSignal} from '../decorators/filtersSignal';
+import type {FiltersSignal} from '../decorators/filtersSignal';
+import {filtersSignal} from '../decorators/filtersSignal';
 import {spacingSignal} from '../decorators/spacingSignal';
-import {Filter} from '../partials';
-import {
+import type {Filter} from '../partials';
+import type {
   PossibleShaderConfig,
   ShaderConfig,
-  parseShader,
 } from '../partials/ShaderConfig';
+import {parseShader} from '../partials/ShaderConfig';
 import {useScene2D} from '../scenes/useScene2D';
 import {drawLine} from '../utils';
 import type {View2D} from './View2D';

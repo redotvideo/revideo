@@ -1,4 +1,4 @@
-import {Logger} from './Logger';
+import type {Logger} from './Logger';
 
 const SOURCE_URL_REGEX = /^\/\/# sourceURL=(.*)$/gm;
 const INFO_LOG_REGEX = /ERROR: \d+:(\d+): (.*)/g;

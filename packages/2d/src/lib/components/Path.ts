@@ -1,20 +1,17 @@
-import {
-  BBox,
-  createSignal,
-  isReactive,
+import type {
   SignalValue,
   SimpleSignal,
-  threadable,
   TimingFunction,
-  tween,
   Vector2,
 } from '@revideo/core';
-import {CurveProfile} from '../curves';
+import {BBox, createSignal, isReactive, threadable, tween} from '@revideo/core';
+import type {CurveProfile} from '../curves';
 import {createCurveProfileLerp} from '../curves/createCurveProfileLerp';
 import {getPathProfile} from '../curves/getPathProfile';
 import {computed, signal} from '../decorators';
 import {drawLine, drawPivot} from '../utils';
-import {Curve, CurveProps} from './Curve';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 
 export interface PathProps extends CurveProps {
   data: SignalValue<string>;

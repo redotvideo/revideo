@@ -1,11 +1,11 @@
-import {Project} from '../app/Project';
+import type {Project} from '../app/Project';
 import type {
   AssetInfo,
   RendererResult,
   RendererSettings,
 } from '../app/Renderer';
 import {EventDispatcher} from '../events';
-import {Exporter} from './Exporter';
+import type {Exporter} from './Exporter';
 import {download} from './download-videos';
 
 type ServerResponse =

@@ -1,4 +1,4 @@
-import {SimpleSignal} from '@revideo/core';
+import type {SimpleSignal} from '@revideo/core';
 import {computed} from '../decorators/computed';
 import {initial, initializeSignals, signal} from '../decorators/signal';
 

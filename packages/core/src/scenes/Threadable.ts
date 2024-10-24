@@ -1,5 +1,5 @@
-import {SubscribableValueEvent} from '../events';
-import {Thread} from '../threading';
+import type {SubscribableValueEvent} from '../events';
+import type {Thread} from '../threading';
 
 /**
  * Scenes can implement this interface to display their thread hierarchy in the

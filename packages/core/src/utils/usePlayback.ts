@@ -1,4 +1,4 @@
-import {PlaybackStatus} from '../app';
+import type {PlaybackStatus} from '../app';
 
 const PlaybackStack: PlaybackStatus[] = [];
 

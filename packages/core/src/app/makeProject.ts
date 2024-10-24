@@ -1,12 +1,8 @@
 import DefaultPlugin from '../plugin/DefaultPlugin';
 import {Color, Vector2} from '../types';
 import {Logger} from './Logger';
-import {
-  Project,
-  UserProject,
-  UserProjectSettings,
-  createVersionObject,
-} from './Project';
+import type {Project, UserProject, UserProjectSettings} from './Project';
+import {createVersionObject} from './Project';
 
 export const defaultUserProjectSettings: UserProjectSettings = {
   shared: {

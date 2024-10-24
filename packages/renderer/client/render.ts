@@ -1,7 +1,6 @@
+import type {Project, RenderVideoUserProjectSettings} from '@revideo/core';
 import {
   Color,
-  Project,
-  RenderVideoUserProjectSettings,
   Renderer,
   Vector2,
   getFullRenderingSettings,

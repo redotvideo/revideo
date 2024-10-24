@@ -1,8 +1,9 @@
 import {all} from '../flow';
 import {createSignal} from '../signals';
-import {ThreadGenerator} from '../threading';
+import type {ThreadGenerator} from '../threading';
 import {clampRemap, easeInOutCubic, linear} from '../tweening';
-import {BBox, Vector2} from '../types';
+import type {BBox} from '../types';
+import {Vector2} from '../types';
 import {useScene} from '../utils';
 import {useTransition} from './useTransition';
 

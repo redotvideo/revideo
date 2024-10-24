@@ -1,4 +1,4 @@
-import {FfmpegExporterOptions} from '@revideo/core';
+import type {FfmpegExporterOptions} from '@revideo/core';
 import type {RenderSettings} from 'render-video';
 import {v4 as uuidv4} from 'uuid';
 

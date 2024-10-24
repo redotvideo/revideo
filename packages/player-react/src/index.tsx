@@ -1,6 +1,7 @@
 'use client';
-import {Player as CorePlayer, Project} from '@revideo/core';
-import {ComponentProps, useCallback, useEffect, useRef, useState} from 'react';
+import type {Player as CorePlayer, Project} from '@revideo/core';
+import type {ComponentProps} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {Controls} from './controls';
 import './index.css';
 import {shouldShowControls} from './utils';

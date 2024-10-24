@@ -1,7 +1,8 @@
 import {decorate, threadable} from '../decorators';
 import {usePlayback} from '../utils';
 import {Thread} from './Thread';
-import {ThreadGenerator, isThreadGenerator} from './ThreadGenerator';
+import type {ThreadGenerator} from './ThreadGenerator';
+import {isThreadGenerator} from './ThreadGenerator';
 import {setTaskName} from './names';
 
 /**

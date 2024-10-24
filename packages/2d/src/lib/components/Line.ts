@@ -1,18 +1,21 @@
-import {
-  BBox,
-  createSignal,
+import type {
   PossibleVector2,
   SignalValue,
   SimpleSignal,
-  threadable,
   ThreadGenerator,
   TimingFunction,
+} from '@revideo/core';
+import {
+  BBox,
+  createSignal,
+  threadable,
   tween,
   unwrap,
   useLogger,
   Vector2,
 } from '@revideo/core';
-import {CurveProfile, getPolylineProfile} from '../curves';
+import type {CurveProfile} from '../curves';
+import {getPolylineProfile} from '../curves';
 import {
   calculateLerpDistance,
   polygonLength,
@@ -20,7 +23,8 @@ import {
 } from '../curves/createCurveProfileLerp';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {arc, drawLine, drawPivot, lineTo, moveTo} from '../utils';
-import {Curve, CurveProps} from './Curve';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 import {Layout} from './Layout';
 
 const lineWithoutPoints = `

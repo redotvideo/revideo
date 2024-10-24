@@ -1,8 +1,8 @@
 import {Vector2, clamp} from '@revideo/core';
 import {CubicBezierSegment} from './CubicBezierSegment';
-import {CurveProfile} from './CurveProfile';
-import {KnotInfo} from './KnotInfo';
-import {PolynomialSegment} from './PolynomialSegment';
+import type {CurveProfile} from './CurveProfile';
+import type {KnotInfo} from './KnotInfo';
+import type {PolynomialSegment} from './PolynomialSegment';
 import {QuadBezierSegment} from './QuadBezierSegment';
 
 function isCubicSegment(

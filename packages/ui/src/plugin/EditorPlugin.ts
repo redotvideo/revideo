@@ -1,5 +1,5 @@
-import {Plugin} from '@revideo/core';
-import {FunctionComponent} from 'preact';
+import type {Plugin} from '@revideo/core';
+import type {FunctionComponent} from 'preact';
 
 /**
  * Properties passed to the {@link PluginTabConfig.tabComponent} and

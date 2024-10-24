@@ -1,8 +1,9 @@
-import {RenderVideoUserProjectSettings} from '@revideo/core';
-import {FfmpegSettings, ffmpegSettings} from '@revideo/ffmpeg';
+import type {RenderVideoUserProjectSettings} from '@revideo/core';
+import type {FfmpegSettings} from '@revideo/ffmpeg';
+import {ffmpegSettings} from '@revideo/ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
-import {Plugin} from 'vite';
+import type {Plugin} from 'vite';
 
 const RendererPath = path.resolve(__dirname, '../renderer.html');
 const Content = fs.readFileSync(RendererPath, 'utf-8');

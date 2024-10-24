@@ -1,17 +1,13 @@
-import {
-  clampRemap,
-  Color,
-  map,
-  SerializedVector2,
-  unwrap,
-  Vector2,
-} from '@revideo/core';
-import {Code} from '../components';
-import {CodeFragment, parseCodeFragment} from './CodeFragment';
-import {CodeHighlighter} from './CodeHighlighter';
-import {CodeMetrics} from './CodeMetrics';
-import {CodePoint, CodeRange} from './CodeRange';
-import {CodeScope, isCodeScope} from './CodeScope';
+import type {SerializedVector2} from '@revideo/core';
+import {clampRemap, Color, map, unwrap, Vector2} from '@revideo/core';
+import type {Code} from '../components';
+import type {CodeFragment} from './CodeFragment';
+import {parseCodeFragment} from './CodeFragment';
+import type {CodeHighlighter} from './CodeHighlighter';
+import type {CodeMetrics} from './CodeMetrics';
+import type {CodePoint, CodeRange} from './CodeRange';
+import type {CodeScope} from './CodeScope';
+import {isCodeScope} from './CodeScope';
 import {isPointInCodeSelection} from './CodeSelection';
 
 export interface CodeFragmentDrawingInfo {

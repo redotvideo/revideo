@@ -1,7 +1,7 @@
 import fg from 'fast-glob';
 import fs from 'fs';
 import path from 'path';
-import {ProjectData} from './plugins';
+import type {ProjectData} from './plugins';
 
 export interface Projects {
   list: ProjectData[];

@@ -1,8 +1,5 @@
-import {
-  BBox,
-  DependencyContext,
+import type {
   InterpolationFunction,
-  Origin,
   PossibleSpacing,
   PossibleVector2,
   SerializedVector2,
@@ -13,16 +10,21 @@ import {
   SpacingSignal,
   ThreadGenerator,
   TimingFunction,
-  Vector2,
   Vector2Signal,
+} from '@revideo/core';
+import {
+  BBox,
+  DependencyContext,
+  Origin,
+  Vector2,
   boolLerp,
   modify,
   originToOffset,
   threadable,
   tween,
 } from '@revideo/core';
+import type {Vector2LengthSignal} from '../decorators';
 import {
-  Vector2LengthSignal,
   addInitializer,
   cloneable,
   computed,
@@ -35,7 +37,7 @@ import {
   vector2Signal,
 } from '../decorators';
 import {spacingSignal} from '../decorators/spacingSignal';
-import {
+import type {
   DesiredLength,
   FlexBasis,
   FlexContent,
@@ -48,7 +50,8 @@ import {
   TextWrap,
 } from '../partials';
 import {drawLine, drawPivot, is} from '../utils';
-import {Node, NodeProps} from './Node';
+import type {NodeProps} from './Node';
+import {Node} from './Node';
 
 export interface LayoutProps extends NodeProps {
   layout?: LayoutMode;

@@ -1,5 +1,5 @@
 import {Vector2, clamp} from '@revideo/core';
-import {CurvePoint} from './CurvePoint';
+import type {CurvePoint} from './CurvePoint';
 import {Segment} from './Segment';
 
 export class CircleSegment extends Segment {

@@ -1,12 +1,13 @@
-import {
+import type {
   ColorSignal,
   PossibleColor,
   SignalValue,
   SimpleSignal,
-  useLogger,
 } from '@revideo/core';
+import {useLogger} from '@revideo/core';
 import {colorSignal, computed, initial, signal} from '../decorators';
-import {Img, ImgProps} from './Img';
+import type {ImgProps} from './Img';
+import {Img} from './Img';
 
 export interface IconProps extends ImgProps {
   /**

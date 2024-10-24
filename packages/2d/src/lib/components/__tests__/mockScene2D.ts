@@ -1,8 +1,7 @@
+import type {FullSceneDescription, ThreadGeneratorFactory} from '@revideo/core';
 import {
-  FullSceneDescription,
   PlaybackManager,
   PlaybackStatus,
-  ThreadGeneratorFactory,
   Vector2,
   endPlayback,
   endScene,
@@ -11,7 +10,7 @@ import {
 } from '@revideo/core';
 import {afterAll, beforeAll, beforeEach} from 'vitest';
 import {Scene2D, makeScene2D} from '../../scenes';
-import {View2D} from '../View2D';
+import type {View2D} from '../View2D';
 
 /**
  * Set up the test environment to support creating nodes.

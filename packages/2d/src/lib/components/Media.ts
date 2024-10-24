@@ -1,15 +1,15 @@
+import type {SignalValue, SimpleSignal} from '@revideo/core';
 import {
   DependencyContext,
   PlaybackState,
-  SignalValue,
-  SimpleSignal,
   clamp,
   isReactive,
   useLogger,
   useThread,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {Rect, RectProps} from './Rect';
+import type {RectProps} from './Rect';
+import {Rect} from './Rect';
 
 export interface MediaProps extends RectProps {
   src?: SignalValue<string>;

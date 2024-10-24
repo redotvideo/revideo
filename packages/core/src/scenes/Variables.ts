@@ -1,4 +1,5 @@
-import {createSignal, SimpleSignal} from '../signals';
+import type {SimpleSignal} from '../signals';
+import {createSignal} from '../signals';
 import type {Scene} from './Scene';
 
 export class Variables {

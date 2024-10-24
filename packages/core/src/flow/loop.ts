@@ -1,5 +1,5 @@
 import {decorate, threadable} from '../decorators';
-import {ThreadGenerator} from '../threading';
+import type {ThreadGenerator} from '../threading';
 import {useLogger, useThread} from '../utils';
 
 const infiniteLoop = `

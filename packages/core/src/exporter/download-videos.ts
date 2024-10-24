@@ -1,4 +1,4 @@
-import {AssetInfo} from '../app';
+import type {AssetInfo} from '../app';
 
 export async function download(assets: AssetInfo[][]): Promise<void> {
   const videoRanges: Map<string, {start: number; end: number}> = new Map();

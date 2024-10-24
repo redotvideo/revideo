@@ -1,11 +1,11 @@
 import {useComputed} from '@preact/signals';
+import type {PluginInspectorConfig} from '@revideo/ui';
 import {
   AutoField,
   Button,
   Group,
   Label,
   Pane,
-  PluginInspectorConfig,
   Separator,
   UnknownField,
   findAndOpenFirstUserFile,

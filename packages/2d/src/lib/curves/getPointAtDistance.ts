@@ -1,6 +1,6 @@
 import {Vector2, clamp} from '@revideo/core';
-import {CurvePoint} from './CurvePoint';
-import {CurveProfile} from './CurveProfile';
+import type {CurvePoint} from './CurvePoint';
+import type {CurveProfile} from './CurveProfile';
 
 export function getPointAtDistance(
   profile: CurveProfile,

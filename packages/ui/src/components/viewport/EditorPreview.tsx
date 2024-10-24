@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import {ComponentChildren} from 'preact';
+import type {ComponentChildren} from 'preact';
 import {useCallback, useMemo, useRef} from 'preact/hooks';
-import {ViewportProvider, ViewportState, useApplication} from '../../contexts';
+import type {ViewportState} from '../../contexts';
+import {ViewportProvider, useApplication} from '../../contexts';
 import {
   useDocumentEvent,
   useDrag,

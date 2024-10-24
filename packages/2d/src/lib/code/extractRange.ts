@@ -1,5 +1,6 @@
-import {CodeRange} from './CodeRange';
-import {CodeTag, resolveCodeTag} from './CodeScope';
+import type {CodeRange} from './CodeRange';
+import type {CodeTag} from './CodeScope';
+import {resolveCodeTag} from './CodeScope';
 
 /**
  * Transform the fragments to isolate the given range into its own fragment.

@@ -1,7 +1,8 @@
 import styles from './Console.module.scss';
 
 import clsx from 'clsx';
-import {openFileInEditor, StackTraceEntry} from '../../utils';
+import type {StackTraceEntry} from '../../utils';
+import {openFileInEditor} from '../../utils';
 
 export interface StackTraceProps {
   entries: StackTraceEntry[];

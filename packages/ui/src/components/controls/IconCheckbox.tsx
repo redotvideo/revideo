@@ -1,7 +1,7 @@
 import styles from './Controls.module.scss';
 
 import clsx from 'clsx';
-import {ComponentChildren} from 'preact';
+import type {ComponentChildren} from 'preact';
 import {IconButton} from './IconButton';
 
 interface IconCheckboxProps {

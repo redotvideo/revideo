@@ -1,6 +1,6 @@
 import styles from './Timeline.module.scss';
 
-import {RefObject} from 'preact';
+import type {RefObject} from 'preact';
 import {useApplication, useTimelineContext} from '../../contexts';
 import {useDuration, useSharedSettings} from '../../hooks';
 

@@ -1,5 +1,7 @@
-import {BBox, Color, Spacing, Vector2} from '@revideo/core';
-import {CanvasStyle, Gradient, Pattern, PossibleCanvasStyle} from '../partials';
+import type {BBox, Spacing} from '@revideo/core';
+import {Color, Vector2} from '@revideo/core';
+import type {CanvasStyle, PossibleCanvasStyle} from '../partials';
+import {Gradient, Pattern} from '../partials';
 
 export function canvasStyleParser(style: PossibleCanvasStyle) {
   if (style === null) {

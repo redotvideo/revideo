@@ -1,5 +1,5 @@
 import {Stage} from '@revideo/core';
-import {JSX} from 'preact';
+import type {JSX} from 'preact';
 import {useEffect, useState} from 'preact/hooks';
 import {useApplication} from '../../contexts';
 import {

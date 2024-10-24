@@ -1,6 +1,6 @@
+import type {FFmpegExporterSettings} from '@revideo/ffmpeg';
 import {
   FFmpegExporterServer,
-  FFmpegExporterSettings,
   VideoFrameExtractor,
   generateAudio,
   mergeMedia,

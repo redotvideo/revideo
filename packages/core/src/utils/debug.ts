@@ -1,4 +1,4 @@
-import {LogPayload} from '../app';
+import type {LogPayload} from '../app';
 import {useLogger} from './useScene';
 
 function stringify(value: any): string {

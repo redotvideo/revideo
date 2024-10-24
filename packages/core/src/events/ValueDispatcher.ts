@@ -1,8 +1,5 @@
-import {
-  EventDispatcherBase,
-  EventHandler,
-  Subscribable,
-} from './EventDispatcherBase';
+import type {EventHandler} from './EventDispatcherBase';
+import {EventDispatcherBase, Subscribable} from './EventDispatcherBase';
 
 /**
  * Dispatches a {@link SubscribableValueEvent}

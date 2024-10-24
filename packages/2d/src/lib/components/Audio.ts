@@ -1,6 +1,7 @@
 import {DependencyContext, PlaybackState} from '@revideo/core';
 import {computed, nodeName} from '../decorators';
-import {Media, MediaProps} from './Media';
+import type {MediaProps} from './Media';
+import {Media} from './Media';
 
 @nodeName('Audio')
 export class Audio extends Media {

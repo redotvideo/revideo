@@ -1,19 +1,19 @@
-import {
+import type {
   BBox,
   SerializedVector2,
   SignalValue,
   SimpleSignal,
-  Vector2,
-  clamp,
 } from '@revideo/core';
-import {CurveDrawingInfo} from '../curves/CurveDrawingInfo';
-import {CurvePoint} from '../curves/CurvePoint';
-import {CurveProfile} from '../curves/CurveProfile';
+import {Vector2, clamp} from '@revideo/core';
+import type {CurveDrawingInfo} from '../curves/CurveDrawingInfo';
+import type {CurvePoint} from '../curves/CurvePoint';
+import type {CurveProfile} from '../curves/CurveProfile';
 import {getPointAtDistance} from '../curves/getPointAtDistance';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {lineTo, moveTo, resolveCanvasStyle} from '../utils';
-import {Shape, ShapeProps} from './Shape';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 
 export interface CurveProps extends ShapeProps {
   /**

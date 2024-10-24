@@ -1,5 +1,5 @@
 import {createSignal} from '../signals';
-import {ThreadGenerator} from '../threading';
+import type {ThreadGenerator} from '../threading';
 import {useTransition} from './useTransition';
 
 /**

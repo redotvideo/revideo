@@ -3,11 +3,8 @@ import styles from './Timeline.module.scss';
 import {useSignal, useSignalEffect} from '@preact/signals';
 import clsx from 'clsx';
 import {useLayoutEffect, useMemo, useRef} from 'preact/hooks';
-import {
-  TimelineContextProvider,
-  TimelineState,
-  useApplication,
-} from '../../contexts';
+import type {TimelineState} from '../../contexts';
+import {TimelineContextProvider, useApplication} from '../../contexts';
 import {
   useDocumentEvent,
   useDuration,

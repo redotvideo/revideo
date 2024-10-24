@@ -1,8 +1,8 @@
-import {Signal} from '@preact/signals';
+import type {Signal} from '@preact/signals';
 import {Collapse, Toggle} from '@revideo/ui';
 import {clsx} from 'clsx';
-import {ComponentChildren, JSX} from 'preact';
-import {Ref} from 'preact/hooks';
+import type {ComponentChildren, JSX} from 'preact';
+import type {Ref} from 'preact/hooks';
 import styles from './index.module.scss';
 
 const DEPTH_VAR = '--depth';

@@ -1,5 +1,6 @@
-import {SignalValue, unwrap} from '@revideo/core';
-import {PossibleCodeFragment} from './CodeFragment';
+import type {SignalValue} from '@revideo/core';
+import {unwrap} from '@revideo/core';
+import type {PossibleCodeFragment} from './CodeFragment';
 import {isCodeMetrics} from './CodeMetrics';
 
 export interface CodeScope {

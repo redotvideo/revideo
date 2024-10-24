@@ -1,5 +1,5 @@
-import {Vector2} from '@revideo/core';
-import {CurvePoint} from './CurvePoint';
+import type {Vector2} from '@revideo/core';
+import type {CurvePoint} from './CurvePoint';
 
 export abstract class Segment {
   public abstract readonly points: Vector2[];

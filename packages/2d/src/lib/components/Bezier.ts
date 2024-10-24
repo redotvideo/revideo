@@ -1,8 +1,9 @@
-import {BBox, SerializedVector2, Vector2} from '@revideo/core';
-import {CurveProfile} from '../curves';
-import {PolynomialSegment} from '../curves/PolynomialSegment';
+import type {SerializedVector2, Vector2} from '@revideo/core';
+import {BBox} from '@revideo/core';
+import type {CurveProfile} from '../curves';
+import type {PolynomialSegment} from '../curves/PolynomialSegment';
 import {computed} from '../decorators';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {arc, drawLine, drawPivot, moveTo} from '../utils';
 import {Curve} from './Curve';
 

@@ -1,7 +1,7 @@
-import {Scene} from '../scenes';
+import type {Scene} from '../scenes';
 import {unwrap} from '../signals';
-import type {Color} from '../types';
-import {CanvasColorSpace, Vector2} from '../types';
+import type {CanvasColorSpace, Color} from '../types';
+import {Vector2} from '../types';
 import {getContext} from '../utils';
 
 export interface StageSettings {

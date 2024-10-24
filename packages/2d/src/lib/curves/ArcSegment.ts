@@ -1,6 +1,6 @@
 import {BBox, DEG2RAD, Matrix2D, Vector2, lazy} from '@revideo/core';
 import {View2D} from '../components/View2D';
-import {CurvePoint} from './CurvePoint';
+import type {CurvePoint} from './CurvePoint';
 import {Segment} from './Segment';
 
 export class ArcSegment extends Segment {

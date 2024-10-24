@@ -1,6 +1,6 @@
-import {Plugin} from 'vite';
-import {PluginOptions} from '../plugins';
-import {Projects} from '../utils';
+import type {Plugin} from 'vite';
+import type {PluginOptions} from '../plugins';
+import type {Projects} from '../utils';
 // import {getVersions} from '../versions';
 
 interface ProjectPluginConfig {

@@ -1,6 +1,6 @@
 import {useSignal, useSignalEffect} from '@preact/signals';
 import clsx from 'clsx';
-import {FunctionComponent} from 'preact';
+import type {FunctionComponent} from 'preact';
 import {useEffect, useMemo, useRef} from 'preact/hooks';
 import {useApplication, usePanels} from '../../contexts';
 import {useReducedMotion} from '../../hooks';

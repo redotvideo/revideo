@@ -1,4 +1,4 @@
-import {JSX} from 'preact';
+import type {JSX} from 'preact';
 import {useApplication} from '../../contexts';
 import {usePlayerState} from '../../hooks';
 import {formatDuration} from '../../utils';

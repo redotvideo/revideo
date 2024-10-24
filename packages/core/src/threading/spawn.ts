@@ -1,5 +1,5 @@
 import {useThread} from '../utils';
-import {ThreadGenerator} from './ThreadGenerator';
+import type {ThreadGenerator} from './ThreadGenerator';
 
 /**
  * Run the given task concurrently.

@@ -1,18 +1,13 @@
-import {
-  BBox,
-  DependencyContext,
-  PlaybackState,
-  SerializedVector2,
-  SignalValue,
-  SimpleSignal,
-} from '@revideo/core';
+import type {SerializedVector2, SignalValue, SimpleSignal} from '@revideo/core';
+import {BBox, DependencyContext, PlaybackState} from '@revideo/core';
 import Hls from 'hls.js';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
 import {ImageCommunication} from '../utils/video/ffmpeg-client';
 import {dropExtractor, getFrame} from '../utils/video/mp4-parser-manager';
-import {Media, MediaProps} from './Media';
+import type {MediaProps} from './Media';
+import {Media} from './Media';
 
 export interface VideoProps extends MediaProps {
   /**

@@ -1,6 +1,7 @@
 import {describe, expect, test} from 'vitest';
 import {createSignal} from '../signals';
-import {PossibleVector2, Vector2} from '../types';
+import type {PossibleVector2} from '../types';
+import {Vector2} from '../types';
 
 describe('Vector2', () => {
   test('Correctly parses values', () => {

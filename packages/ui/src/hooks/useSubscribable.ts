@@ -3,7 +3,8 @@ import type {
   Subscribable,
   SubscribableValueEvent,
 } from '@revideo/core';
-import {Inputs, useEffect, useState} from 'preact/hooks';
+import type {Inputs} from 'preact/hooks';
+import {useEffect, useState} from 'preact/hooks';
 
 export function useSubscribable<TValue, THandler extends EventHandler<TValue>>(
   event: Subscribable<TValue, THandler>,

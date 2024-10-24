@@ -1,4 +1,5 @@
-import {setTaskName, ThreadGenerator} from '../threading';
+import type {ThreadGenerator} from '../threading';
+import {setTaskName} from '../threading';
 /**
  * Turn the given generator function into a task.
  *

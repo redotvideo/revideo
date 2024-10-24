@@ -1,5 +1,5 @@
 import {decorate, threadable} from '../decorators';
-import {ThreadGenerator} from '../threading';
+import type {ThreadGenerator} from '../threading';
 import {usePlayback, useThread} from '../utils';
 
 decorate(waitFor, threadable());

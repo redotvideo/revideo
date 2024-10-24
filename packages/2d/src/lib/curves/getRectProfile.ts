@@ -1,10 +1,11 @@
-import {BBox, Spacing, Vector2} from '@revideo/core';
+import type {BBox, Spacing} from '@revideo/core';
+import {Vector2} from '@revideo/core';
 import {adjustRectRadius} from '../utils';
 import {CircleSegment} from './CircleSegment';
 import {CubicBezierSegment} from './CubicBezierSegment';
-import {CurveProfile} from './CurveProfile';
+import type {CurveProfile} from './CurveProfile';
 import {LineSegment} from './LineSegment';
-import {Segment} from './Segment';
+import type {Segment} from './Segment';
 
 export function getRectProfile(
   rect: BBox,

@@ -1,5 +1,7 @@
-import {SignalContext, SignalValue, SimpleSignal} from '../signals';
-import {InterpolationFunction, deepLerp} from '../tweening';
+import type {SignalValue, SimpleSignal} from '../signals';
+import {SignalContext} from '../signals';
+import type {InterpolationFunction} from '../tweening';
+import {deepLerp} from '../tweening';
 
 export function createSignal<TValue, TOwner = void>(
   initial?: SignalValue<TValue>,

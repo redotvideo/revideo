@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {ComponentChildren, JSX} from 'preact';
+import type {ComponentChildren, JSX} from 'preact';
 import {useEffect, useLayoutEffect, useRef, useState} from 'preact/hooks';
 import {useReducedMotion} from '../../hooks';
 import styles from './Collapse.module.scss';

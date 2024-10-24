@@ -1,11 +1,6 @@
-import {
-  experimentalLog,
-  SignalValue,
-  useLogger,
-  useScene,
-  WebGLConvertible,
-} from '@revideo/core';
-import {Node} from '../components';
+import type {SignalValue, WebGLConvertible} from '@revideo/core';
+import {experimentalLog, useLogger, useScene} from '@revideo/core';
+import type {Node} from '../components';
 
 /**
  * Describes a shader program used to apply effects to nodes.

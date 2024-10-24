@@ -1,13 +1,16 @@
-import {BBox, SignalValue, SimpleSignal, useThread} from '@revideo/core';
-import RiveInitializer, {
+import type {SignalValue, SimpleSignal} from '@revideo/core';
+import {BBox, useThread} from '@revideo/core';
+import type {
   Artboard,
   File,
   LinearAnimationInstance,
   Renderer,
   RiveCanvas,
 } from '@rive-app/canvas-advanced';
+import RiveInitializer from '@rive-app/canvas-advanced';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {Rect, RectProps} from './Rect';
+import type {RectProps} from './Rect';
+import {Rect} from './Rect';
 
 export interface RiveProps extends RectProps {
   src?: SignalValue<string>;

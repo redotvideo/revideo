@@ -1,11 +1,5 @@
-import {
-  BBox,
-  SignalValue,
-  SimpleSignal,
-  capitalize,
-  lazy,
-  textLerp,
-} from '@revideo/core';
+import type {SignalValue, SimpleSignal} from '@revideo/core';
+import {BBox, capitalize, lazy, textLerp} from '@revideo/core';
 import {
   computed,
   initial,
@@ -13,7 +7,8 @@ import {
   nodeName,
   signal,
 } from '../decorators';
-import {Shape, ShapeProps} from './Shape';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 import {Txt} from './Txt';
 
 export interface TxtLeafProps extends ShapeProps {

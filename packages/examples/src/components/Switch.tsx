@@ -1,18 +1,13 @@
-import {
-  Circle,
-  Node,
-  NodeProps,
-  Rect,
-  colorSignal,
-  initial,
-  signal,
-} from '@revideo/2d';
-import {
-  Color,
+import type {NodeProps} from '@revideo/2d';
+import {Circle, Node, Rect, colorSignal, initial, signal} from '@revideo/2d';
+import type {
   ColorSignal,
   PossibleColor,
   SignalValue,
   SimpleSignal,
+} from '@revideo/core';
+import {
+  Color,
   all,
   createRef,
   createSignal,

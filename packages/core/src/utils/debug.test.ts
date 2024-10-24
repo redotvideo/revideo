@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {LogLevel, Logger} from '../app';
-import {Scene} from '../scenes';
+import type {Scene} from '../scenes';
 import {BBox, Vector2} from '../types';
 import {debug, startScene, useLogger} from '../utils';
 

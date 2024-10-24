@@ -1,5 +1,5 @@
 import {Spacing, Vector2, isType} from '@revideo/core';
-import {FunctionComponent} from 'preact';
+import type {FunctionComponent} from 'preact';
 import {ArrayField} from './ArrayField';
 import {NumberField} from './NumberField';
 import {SpacingField} from './SpacingField';

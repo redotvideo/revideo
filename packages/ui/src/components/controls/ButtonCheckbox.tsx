@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import {Button, ButtonProps} from './Button';
+import type {ButtonProps} from './Button';
+import {Button} from './Button';
 import styles from './Controls.module.scss';
 
 export interface ButtonCheckboxProps extends ButtonProps {

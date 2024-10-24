@@ -1,16 +1,19 @@
-import {
+import type {
   Signal,
-  SignalContext,
   SignalValue,
   SimpleSignal,
   ThreadGenerator,
   TimingFunction,
+} from '@revideo/core';
+import {
+  SignalContext,
   all,
   deepLerp,
   easeInOutCubic,
   unwrap,
 } from '@revideo/core';
-import {FILTERS, Filter, FilterName} from '../partials';
+import type {FilterName} from '../partials';
+import {FILTERS, Filter} from '../partials';
 import {addInitializer} from './initializers';
 import {getPropertyMetaOrCreate} from './signal';
 

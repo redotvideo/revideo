@@ -1,5 +1,5 @@
 import {capitalize} from '@revideo/core';
-import {Layout} from '../components';
+import type {Layout} from '../components';
 
 export function defaultStyle<T>(
   styleName: string,

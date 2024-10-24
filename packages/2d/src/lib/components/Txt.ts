@@ -1,20 +1,18 @@
-import {
-  DEFAULT,
+import type {
   InterpolationFunction,
   SignalValue,
   SimpleSignal,
   ThreadGenerator,
   TimingFunction,
-  all,
-  capitalize,
-  threadable,
 } from '@revideo/core';
+import {DEFAULT, all, capitalize, threadable} from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
 import {is} from '../utils';
-import {Node} from './Node';
-import {Shape, ShapeProps} from './Shape';
+import type {Node} from './Node';
+import type {ShapeProps} from './Shape';
+import {Shape} from './Shape';
 import {TxtLeaf} from './TxtLeaf';
-import {ComponentChildren} from './types';
+import type {ComponentChildren} from './types';
 
 type TxtChildren = string | Node | (string | Node)[];
 type AnyTxt = Txt | TxtLeaf;

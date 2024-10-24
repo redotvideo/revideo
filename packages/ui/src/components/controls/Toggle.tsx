@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {JSX} from 'preact';
+import type {JSX} from 'preact';
 import {ChevronRight} from '../icons/ChevronRight';
 import styles from './Controls.module.scss';
 

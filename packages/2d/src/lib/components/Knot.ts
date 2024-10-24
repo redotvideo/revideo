@@ -1,11 +1,11 @@
-import {
+import type {
   PossibleVector2,
   Signal,
   SignalValue,
-  Vector2,
   Vector2Signal,
 } from '@revideo/core';
-import {KnotInfo} from '../curves';
+import {Vector2} from '@revideo/core';
+import type {KnotInfo} from '../curves';
 import {
   cloneable,
   compound,
@@ -15,7 +15,8 @@ import {
   signal,
   wrapper,
 } from '../decorators';
-import {Node, NodeProps} from './Node';
+import type {NodeProps} from './Node';
+import {Node} from './Node';
 
 export interface KnotProps extends NodeProps {
   /**

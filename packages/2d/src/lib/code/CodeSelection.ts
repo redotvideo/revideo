@@ -1,9 +1,5 @@
-import {
-  CodePoint,
-  CodeRange,
-  isCodeRange,
-  isPointInCodeRange,
-} from './CodeRange';
+import type {CodePoint, CodeRange} from './CodeRange';
+import {isCodeRange, isPointInCodeRange} from './CodeRange';
 
 export type CodeSelection = CodeRange[];
 export type PossibleCodeSelection = CodeRange | CodeRange[];

@@ -1,8 +1,8 @@
-import {FfmpegExporterOptions, ImageExporterOptions} from '../exporter';
+import type {FfmpegExporterOptions, ImageExporterOptions} from '../exporter';
 import type {Plugin} from '../plugin';
-import {SceneDescription} from '../scenes';
-import {CanvasColorSpace, Color, Vector2} from '../types';
-import {Logger} from './Logger';
+import type {SceneDescription} from '../scenes';
+import type {CanvasColorSpace, Color, Vector2} from '../types';
+import type {Logger} from './Logger';
 
 // TODO(refactor): check if we can get rid of this
 export interface Versions {

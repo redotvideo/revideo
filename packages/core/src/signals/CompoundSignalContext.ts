@@ -1,6 +1,8 @@
-import {InterpolationFunction, map} from '../tweening';
-import {Signal, SignalContext} from './SignalContext';
-import {SignalExtensions, SignalValue} from './types';
+import type {InterpolationFunction} from '../tweening';
+import {map} from '../tweening/helpers';
+import type {Signal} from './SignalContext';
+import {SignalContext} from './SignalContext';
+import type {SignalExtensions, SignalValue} from './types';
 import {isReactive, modify} from './utils';
 
 export type CompoundSignal<

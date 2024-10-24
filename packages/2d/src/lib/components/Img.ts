@@ -1,19 +1,22 @@
+import type {
+  PossibleVector2,
+  SerializedVector2,
+  SignalValue,
+  SimpleSignal,
+} from '@revideo/core';
 import {
   BBox,
   Color,
   DependencyContext,
   DetailedError,
-  PossibleVector2,
-  SerializedVector2,
-  SignalValue,
-  SimpleSignal,
   Vector2,
   useLogger,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {drawImage} from '../utils';
-import {Rect, RectProps} from './Rect';
+import type {RectProps} from './Rect';
+import {Rect} from './Rect';
 
 const imageWithoutSource = `
 The image won't be visible unless you specify a source:

@@ -13,7 +13,8 @@ import {
   wasmExporterPlugin,
   webglPlugin,
 } from './partials';
-import {PLUGIN_OPTIONS, PluginOptions, isPlugin} from './plugins';
+import type {PluginOptions} from './plugins';
+import {PLUGIN_OPTIONS, isPlugin} from './plugins';
 import {getProjects} from './utils';
 
 export interface MotionCanvasPluginConfig {

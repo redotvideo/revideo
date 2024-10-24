@@ -1,6 +1,6 @@
 import {renderVideo} from '@revideo/renderer';
 import axios from 'axios';
-import {Request, Response} from 'express';
+import type {Request, Response} from 'express';
 import path from 'path';
 import {v4 as uuidv4} from 'uuid';
 import {scheduleCleanup} from '../utils';

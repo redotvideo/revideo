@@ -1,5 +1,6 @@
-import {CodeScope, CodeTag, resolveScope} from './CodeScope';
-import {CodeTokenizer} from './CodeTokenizer';
+import type {CodeScope, CodeTag} from './CodeScope';
+import {resolveScope} from './CodeScope';
+import type {CodeTokenizer} from './CodeTokenizer';
 import {patienceDiff} from './diff';
 
 /**

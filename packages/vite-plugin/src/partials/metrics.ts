@@ -1,5 +1,5 @@
 import {EventName, sendEvent} from '@revideo/telemetry';
-import {Plugin} from 'vite';
+import type {Plugin} from 'vite';
 
 export function metricsPlugin(): Plugin {
   return {

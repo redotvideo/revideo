@@ -1,10 +1,11 @@
-import {PossibleVector2, SignalValue, Vector2Signal} from '@revideo/core';
+import type {PossibleVector2, SignalValue, Vector2Signal} from '@revideo/core';
 import {QuadBezierSegment} from '../curves';
-import {PolynomialSegment} from '../curves/PolynomialSegment';
+import type {PolynomialSegment} from '../curves/PolynomialSegment';
 import {computed, vector2Signal} from '../decorators';
 import {lineTo, moveTo, quadraticCurveTo} from '../utils';
-import {Bezier, BezierOverlayInfo} from './Bezier';
-import {CurveProps} from './Curve';
+import type {BezierOverlayInfo} from './Bezier';
+import {Bezier} from './Bezier';
+import type {CurveProps} from './Curve';
 
 export interface QuadBezierProps extends CurveProps {
   p0?: SignalValue<PossibleVector2>;

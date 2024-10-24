@@ -1,5 +1,6 @@
 import * as path from 'path';
-import puppeteer, {Page} from 'puppeteer';
+import type {Page} from 'puppeteer';
+import puppeteer from 'puppeteer';
 import {fileURLToPath} from 'url';
 import {createServer} from 'vite';
 

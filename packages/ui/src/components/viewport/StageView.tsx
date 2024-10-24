@@ -1,7 +1,8 @@
 import type {Stage} from '@revideo/core';
 import clsx from 'clsx';
-import {JSX} from 'preact';
-import {MutableRef, useLayoutEffect, useRef} from 'preact/hooks';
+import type {JSX} from 'preact';
+import type {MutableRef} from 'preact/hooks';
+import {useLayoutEffect, useRef} from 'preact/hooks';
 import {useSharedSettings} from '../../hooks';
 import styles from './Viewport.module.scss';
 

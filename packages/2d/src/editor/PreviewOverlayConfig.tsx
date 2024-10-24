@@ -1,12 +1,12 @@
 import {Vector2} from '@revideo/core';
+import type {PluginOverlayConfig} from '@revideo/ui';
 import {
   MouseButton,
   OverlayWrapper,
-  PluginOverlayConfig,
   useViewportContext,
   useViewportMatrix,
 } from '@revideo/ui';
-import {ComponentChildren} from 'preact';
+import type {ComponentChildren} from 'preact';
 import {usePluginState} from './Provider';
 
 function Component({children}: {children?: ComponentChildren}) {

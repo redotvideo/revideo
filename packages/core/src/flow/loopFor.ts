@@ -1,7 +1,7 @@
 import {decorate, threadable} from '../decorators';
-import {ThreadGenerator} from '../threading';
+import type {ThreadGenerator} from '../threading';
 import {usePlayback, useThread} from '../utils';
-import {LoopCallback} from './loop';
+import type {LoopCallback} from './loop';
 
 decorate(loopFor, threadable());
 /**

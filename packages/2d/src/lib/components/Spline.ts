@@ -1,22 +1,15 @@
-import {
-  BBox,
+import type {
   PossibleVector2,
   SerializedVector2,
   SignalValue,
   SimpleSignal,
-  Vector2,
-  unwrap,
-  useLogger,
 } from '@revideo/core';
-import {
-  CubicBezierSegment,
-  CurveProfile,
-  KnotInfo,
-  getBezierSplineProfile,
-} from '../curves';
-import {PolynomialSegment} from '../curves/PolynomialSegment';
+import {BBox, Vector2, unwrap, useLogger} from '@revideo/core';
+import type {CurveProfile, KnotInfo} from '../curves';
+import {CubicBezierSegment, getBezierSplineProfile} from '../curves';
+import type {PolynomialSegment} from '../curves/PolynomialSegment';
 import {computed, initial, signal} from '../decorators';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {
   arc,
   bezierCurveTo,
@@ -26,9 +19,10 @@ import {
   moveTo,
   quadraticCurveTo,
 } from '../utils';
-import {Curve, CurveProps} from './Curve';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 import {Knot} from './Knot';
-import {Node} from './Node';
+import type {Node} from './Node';
 
 const splineWithInsufficientKnots = `
 The spline won't be visible unless you specify at least two knots:

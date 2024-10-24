@@ -1,14 +1,11 @@
-import {
-  BBox,
-  DEG2RAD,
-  SerializedVector2,
-  SignalValue,
-  SimpleSignal,
-} from '@revideo/core';
-import {CurveProfile, getCircleProfile} from '../curves';
+import type {SerializedVector2, SignalValue, SimpleSignal} from '@revideo/core';
+import {BBox, DEG2RAD} from '@revideo/core';
+import type {CurveProfile} from '../curves';
+import {getCircleProfile} from '../curves';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {DesiredLength} from '../partials';
-import {Curve, CurveProps} from './Curve';
+import type {DesiredLength} from '../partials';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 
 export interface CircleProps extends CurveProps {
   /**

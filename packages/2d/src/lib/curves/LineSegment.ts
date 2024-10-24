@@ -1,6 +1,6 @@
-import {Vector2} from '@revideo/core';
+import type {Vector2} from '@revideo/core';
 import {lineTo, moveTo} from '../utils';
-import {CurvePoint} from './CurvePoint';
+import type {CurvePoint} from './CurvePoint';
 import {Segment} from './Segment';
 
 export class LineSegment extends Segment {

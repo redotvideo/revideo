@@ -1,6 +1,8 @@
 import {DEG2RAD} from '../utils';
-import {EPSILON, Type, WebGLConvertible} from './Type';
-import {PossibleVector2, Vector2} from './Vector';
+import type {Type, WebGLConvertible} from './Type';
+import {EPSILON} from './Type';
+import type {PossibleVector2} from './Vector';
+import {Vector2} from './Vector';
 
 export type PossibleMatrix2D =
   | Matrix2D

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import mime from 'mime-types';
 import path from 'path';
-import {Plugin} from 'vite';
+import type {Plugin} from 'vite';
 import {openInExplorer} from '../openInExplorer';
 
 interface ExporterPluginConfig {

@@ -1,4 +1,4 @@
-import {Vector2} from '@revideo/core';
+import type {Vector2} from '@revideo/core';
 
 export type KnotAutoHandles = {start: number; end: number};
 

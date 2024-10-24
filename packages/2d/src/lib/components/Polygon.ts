@@ -1,15 +1,12 @@
-import {
-  BBox,
-  SerializedVector2,
-  SignalValue,
-  SimpleSignal,
-  Vector2,
-} from '@revideo/core';
-import {CurveProfile, getPolylineProfile} from '../curves';
+import type {SerializedVector2, SignalValue, SimpleSignal} from '@revideo/core';
+import {BBox, Vector2} from '@revideo/core';
+import type {CurveProfile} from '../curves';
+import {getPolylineProfile} from '../curves';
 import {computed, initial, signal} from '../decorators';
-import {DesiredLength} from '../partials';
+import type {DesiredLength} from '../partials';
 import {drawPolygon} from '../utils';
-import {Curve, CurveProps} from './Curve';
+import type {CurveProps} from './Curve';
+import {Curve} from './Curve';
 
 export interface PolygonProps extends CurveProps {
   /**

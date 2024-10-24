@@ -1,7 +1,5 @@
+import type {BBox, SignalValue, SimpleSignal} from '@revideo/core';
 import {
-  BBox,
-  SignalValue,
-  SimpleSignal,
   createSignal,
   easeOutExpo,
   linear,
@@ -9,13 +7,12 @@ import {
   threadable,
 } from '@revideo/core';
 import {computed, initial, nodeName, signal} from '../decorators';
-import {
-  CanvasStyleSignal,
-  canvasStyleSignal,
-} from '../decorators/canvasStyleSignal';
-import {PossibleCanvasStyle} from '../partials';
+import type {CanvasStyleSignal} from '../decorators/canvasStyleSignal';
+import {canvasStyleSignal} from '../decorators/canvasStyleSignal';
+import type {PossibleCanvasStyle} from '../partials';
 import {resolveCanvasStyle} from '../utils';
-import {Layout, LayoutProps} from './Layout';
+import type {LayoutProps} from './Layout';
+import {Layout} from './Layout';
 
 export interface ShapeProps extends LayoutProps {
   fill?: SignalValue<PossibleCanvasStyle>;

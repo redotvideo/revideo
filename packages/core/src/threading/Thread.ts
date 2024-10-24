@@ -1,7 +1,8 @@
 import {noop} from '../flow';
 import {createSignal} from '../signals';
 import {endThread, startThread, useLogger} from '../utils';
-import {ThreadGenerator, isThreadGenerator} from './ThreadGenerator';
+import type {ThreadGenerator} from './ThreadGenerator';
+import {isThreadGenerator} from './ThreadGenerator';
 import {getTaskName, setTaskName} from './names';
 
 const reusedGenerator = `

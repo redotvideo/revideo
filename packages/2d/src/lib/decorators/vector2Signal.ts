@@ -1,4 +1,5 @@
-import {PossibleVector2, Signal, Vector2} from '@revideo/core';
+import type {PossibleVector2, Signal} from '@revideo/core';
+import {Vector2} from '@revideo/core';
 import type {Length} from '../partials';
 import {compound} from './compound';
 import {wrapper} from './signal';

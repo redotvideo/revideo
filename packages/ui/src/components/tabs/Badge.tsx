@@ -1,6 +1,6 @@
 import {LogLevel} from '@revideo/core';
 import clsx from 'clsx';
-import {ComponentChildren, Ref} from 'preact';
+import type {ComponentChildren, Ref} from 'preact';
 import styles from './Tabs.module.scss';
 
 export interface BadgeInterface {

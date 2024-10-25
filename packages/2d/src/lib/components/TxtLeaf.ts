@@ -9,7 +9,6 @@ import {
 } from '../decorators';
 import type {ShapeProps} from './Shape';
 import {Shape} from './Shape';
-import {Txt} from './Txt';
 
 export interface TxtLeafProps extends ShapeProps {
   children?: string;
@@ -44,7 +43,7 @@ export class TxtLeaf extends Shape {
   @computed()
   protected parentTxt() {
     const parent = this.parent();
-    return parent instanceof Txt ? parent : null;
+    return parent?.constructor.name === 'Txt' ? parent : null;
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {
@@ -166,6 +165,15 @@ export class TxtLeaf extends Shape {
   }
 }
 
+/**
+ * Overwrite all getters for signal values to return the parent value if it
+ * exists.
+ *
+ * The getters on the TxtLeaf class are used by the `@signal` decorators and
+ * are not used by the class or its consumers directly.
+ *
+ * Check out 2d/src/lib/utils/makeSignalExtensions.ts if this is confusing.
+ */
 [
   'fill',
   'stroke',

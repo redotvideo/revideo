@@ -4,7 +4,14 @@ import type {
   TimingFunction,
   Vector2,
 } from '@revideo/core';
-import {BBox, createSignal, isReactive, threadable, tween} from '@revideo/core';
+import {
+  BBox,
+  createSignal,
+  isReactive,
+  threadable,
+  transformVectorAsPoint,
+  tween,
+} from '@revideo/core';
 import type {CurveProfile} from '../curves';
 import {createCurveProfileLerp} from '../curves/createCurveProfileLerp';
 import {getPathProfile} from '../curves/getPathProfile';
@@ -93,7 +100,8 @@ export class Path extends Curve {
   ): void {
     const box = this.childrenBBox().transformCorners(matrix);
     const size = this.computedSize();
-    const offset = size.mul(this.offset()).scale(0.5).transformAsPoint(matrix);
+    const offsetVector = size.mul(this.offset()).scale(0.5);
+    const offset = transformVectorAsPoint(offsetVector, matrix);
     const segments = this.profile().segments;
 
     context.lineWidth = 1;

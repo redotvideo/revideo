@@ -1,5 +1,5 @@
 import type {SerializedVector2, Vector2} from '@revideo/core';
-import {BBox} from '@revideo/core';
+import {BBox, transformVectorAsPoint} from '@revideo/core';
 import type {CurveProfile} from '../curves';
 import type {PolynomialSegment} from '../curves/PolynomialSegment';
 import {computed} from '../decorators';
@@ -49,7 +49,8 @@ export abstract class Bezier extends Curve {
   ) {
     const size = this.computedSize();
     const box = this.childrenBBox().transformCorners(matrix);
-    const offset = size.mul(this.offset()).scale(0.5).transformAsPoint(matrix);
+    const offsetBeforeTransform = size.mul(this.offset()).scale(0.5);
+    const offset = transformVectorAsPoint(offsetBeforeTransform, matrix);
     const overlayInfo = this.overlayInfo(matrix);
 
     context.lineWidth = 1;

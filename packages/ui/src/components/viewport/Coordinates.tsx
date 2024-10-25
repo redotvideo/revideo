@@ -1,4 +1,4 @@
-import {isInspectable, Vector2} from '@revideo/core';
+import {isInspectable, transformVectorAsPoint, Vector2} from '@revideo/core';
 import {useCallback} from 'preact/hooks';
 import {useEffect, useState} from 'react';
 import {useViewportContext} from '../../contexts';
@@ -20,10 +20,8 @@ export function Coordinates() {
     const handleMouseMove = (event: {x: number; y: number}) => {
       if (!isInspectable(scene)) return;
 
-      let point = new Vector2(
-        event.x - state.rect.x,
-        event.y - state.rect.y,
-      ).transformAsPoint(matrix.inverse());
+      let point = new Vector2(event.x - state.rect.x, event.y - state.rect.y);
+      point = transformVectorAsPoint(point, matrix.inverse());
       point = scene.transformMousePosition(point.x, point.y);
 
       setMousePos({

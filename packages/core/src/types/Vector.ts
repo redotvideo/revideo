@@ -3,9 +3,7 @@ import {CompoundSignalContext} from '../signals';
 import type {InterpolationFunction} from '../tweening';
 import {arcLerp, clamp, map} from '../tweening';
 import {DEG2RAD, RAD2DEG} from '../utils';
-import type {PossibleMatrix2D} from './Matrix2D';
-import {Matrix2D} from './Matrix2D';
-import {Direction, Origin} from './Origin';
+import {Direction, Origin} from './alignment-enums';
 import type {Type, WebGLConvertible} from './Type';
 import {EPSILON} from './Type';
 
@@ -389,24 +387,6 @@ export class Vector2 implements Type, WebGLConvertible {
     return new Vector2(this.x * value, this.y * value);
   }
 
-  public transformAsPoint(matrix: PossibleMatrix2D) {
-    const m = new Matrix2D(matrix);
-
-    return new Vector2(
-      this.x * m.scaleX + this.y * m.skewY + m.translateX,
-      this.x * m.skewX + this.y * m.scaleY + m.translateY,
-    );
-  }
-
-  public transform(matrix: PossibleMatrix2D) {
-    const m = new Matrix2D(matrix);
-
-    return new Vector2(
-      this.x * m.scaleX + this.y * m.skewY,
-      this.x * m.skewX + this.y * m.scaleY,
-    );
-  }
-
   public mul(possibleVector: PossibleVector2) {
     const vector = new Vector2(possibleVector);
     return new Vector2(this.x * vector.x, this.y * vector.y);
@@ -440,25 +420,6 @@ export class Vector2 implements Type, WebGLConvertible {
   public mod(possibleVector: PossibleVector2): Vector2 {
     const vector = new Vector2(possibleVector);
     return new Vector2(this.x % vector.x, this.y % vector.y);
-  }
-
-  /**
-   * Rotates the vector around a point by the provided angle.
-   *
-   * @param angle - The angle by which to rotate in degrees.
-   * @param center - The center of rotation. Defaults to the origin.
-   */
-  public rotate(
-    angle: number,
-    center: PossibleVector2 = Vector2.zero,
-  ): Vector2 {
-    const originVector = new Vector2(center);
-
-    const matrix = Matrix2D.fromTranslation(originVector)
-      .rotate(angle)
-      .translate(originVector.flipped);
-
-    return this.transformAsPoint(matrix);
   }
 
   public addX(value: number) {

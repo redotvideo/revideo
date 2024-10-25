@@ -9,6 +9,7 @@ import {
   BBox,
   createSignal,
   threadable,
+  transformVectorAsPoint,
   tween,
   unwrap,
   useLogger,
@@ -383,15 +384,17 @@ export class Line extends Curve {
   ) {
     const box = this.childrenBBox().transformCorners(matrix);
     const size = this.computedSize();
-    const offset = size.mul(this.offset()).scale(0.5).transformAsPoint(matrix);
+    const offsetVector = size.mul(this.offset()).scale(0.5);
+    const offset = transformVectorAsPoint(offsetVector, matrix);
 
     context.fillStyle = 'white';
     context.strokeStyle = 'black';
     context.lineWidth = 1;
 
     const path = new Path2D();
-    const points = (this.tweenedPoints() ?? this.parsedPoints()).map(point =>
-      point.transformAsPoint(matrix),
+    const pointsPreTransformation = this.tweenedPoints() ?? this.parsedPoints();
+    const points = pointsPreTransformation.map(p =>
+      transformVectorAsPoint(p, matrix),
     );
     if (points.length > 0) {
       moveTo(path, points[0]);

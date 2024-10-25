@@ -30,6 +30,8 @@ import {
   threadable,
   transformAngle,
   transformScalar,
+  transformVector,
+  transformVectorAsPoint,
   unwrap,
   useLogger,
 } from '@revideo/core';
@@ -201,7 +203,7 @@ export class Node implements Promisable<Node> {
   protected setAbsolutePosition(value: SignalValue<PossibleVector2>) {
     this.position(
       modify(value, unwrapped =>
-        new Vector2(unwrapped).transformAsPoint(this.worldToParent()),
+        transformVectorAsPoint(new Vector2(unwrapped), this.worldToParent()),
       ),
     );
   }
@@ -560,7 +562,7 @@ export class Node implements Promisable<Node> {
    * of the node:
    * ```ts
    * const local = new Vector2(0, 200);
-   * const world = local.transformAsPoint(node.localToWorld());
+   * const world = transformVectorAsPoint(local, node.localToWorld());
    * ```
    */
   @computed()
@@ -583,7 +585,7 @@ export class Node implements Promisable<Node> {
    * top-left corner of the screen:
    * ```ts
    * const world = new Vector2(0, 0);
-   * const local = world.transformAsPoint(node.worldToLocal());
+   * const local = transformVectorAsPoint(world, node.worldToLocal());
    * ```
    */
   @computed()
@@ -1407,7 +1409,7 @@ export class Node implements Promisable<Node> {
       const childCache = child.fullCacheBBox();
       const childMatrix = child.localToParent();
       points.push(
-        ...childCache.corners.map(r => r.transformAsPoint(childMatrix)),
+        ...childCache.corners.map(r => transformVectorAsPoint(r, childMatrix)),
       );
     }
 
@@ -1425,7 +1427,7 @@ export class Node implements Promisable<Node> {
   @computed()
   protected fullCacheBBox(): BBox {
     const matrix = this.compositeToLocal();
-    const shadowOffset = this.shadowOffset().transform(matrix);
+    const shadowOffset = transformVector(this.shadowOffset(), matrix);
     const shadowBlur = transformScalar(this.shadowBlur(), matrix);
 
     const result = this.cacheBBox().expand(
@@ -1499,7 +1501,7 @@ export class Node implements Promisable<Node> {
     }
     if (this.hasShadow()) {
       const matrix = this.compositeToWorld();
-      const offset = this.shadowOffset().transform(matrix);
+      const offset = transformVector(this.shadowOffset(), matrix);
       const blur = transformScalar(this.shadowBlur(), matrix);
 
       context.shadowColor = this.shadowColor().serialize();
@@ -1734,7 +1736,10 @@ export class Node implements Promisable<Node> {
    */
   public hit(position: Vector2): Node | null {
     let hit: Node | null = null;
-    const local = position.transformAsPoint(this.localToParent().inverse());
+    const local = transformVectorAsPoint(
+      position,
+      this.localToParent().inverse(),
+    );
     const children = this.children();
     for (let i = children.length - 1; i >= 0; i--) {
       hit = children[i].hit(local);

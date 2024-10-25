@@ -2,6 +2,7 @@ import {describe, expect, test} from 'vitest';
 import {createSignal} from '../signals';
 import type {PossibleVector2} from '../types';
 import {Vector2} from '../types';
+import {rotateVector} from './vector-transformations';
 
 describe('Vector2', () => {
   test('Correctly parses values', () => {
@@ -149,7 +150,7 @@ describe('Vector2', () => {
     [-270, [-10, 5]],
   ])('Rotates a vector around the origin: (%s°)', (angle, expected) => {
     const vector = new Vector2(5, 10);
-    const result = vector.rotate(angle);
+    const result = rotateVector(vector, angle);
     expect(result.equals(new Vector2(expected as PossibleVector2))).toBe(true);
   });
 
@@ -166,7 +167,7 @@ describe('Vector2', () => {
     'Rotates a vector around an arbitrary point: (%s, %s°)',
     (center, angle, expected) => {
       const vector = Vector2.zero;
-      const result = vector.rotate(angle, center as PossibleVector2);
+      const result = rotateVector(vector, angle, center as PossibleVector2);
       expect(result).toEqual(new Vector2(expected as PossibleVector2));
     },
   );

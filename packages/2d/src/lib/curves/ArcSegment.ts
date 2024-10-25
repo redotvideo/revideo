@@ -1,4 +1,11 @@
-import {BBox, DEG2RAD, Matrix2D, Vector2, lazy} from '@revideo/core';
+import {
+  BBox,
+  DEG2RAD,
+  Matrix2D,
+  Vector2,
+  lazy,
+  transformVector,
+} from '@revideo/core';
 import {View2D} from '../components/View2D';
 import type {CurvePoint} from './CurvePoint';
 import {Segment} from './Segment';
@@ -34,10 +41,12 @@ export class ArcSegment extends Segment {
     this.xAxisRotation = this.xAxisRotationDegree * DEG2RAD;
     this.radius = new Vector2(Math.abs(radius.x), Math.abs(radius.y));
 
-    const pAccent = startPoint
-      .sub(endPoint)
-      .div(2)
-      .transform(Matrix2D.fromRotation(-xAxisRotationDegree).domMatrix);
+    const rotationMatrix =
+      Matrix2D.fromRotation(-xAxisRotationDegree).domMatrix;
+    const pAccent = transformVector(
+      startPoint.sub(endPoint).div(2),
+      rotationMatrix,
+    );
 
     const L =
       (pAccent.x * pAccent.x) / (radius.x * radius.x) +
@@ -63,9 +72,8 @@ export class ArcSegment extends Segment {
 
     this.xAxisRotationMatrix =
       Matrix2D.fromRotation(xAxisRotationDegree).domMatrix;
-    this.center = cAccent
-      .transform(this.xAxisRotationMatrix)
-      .add(startPoint.add(endPoint).div(2));
+    const rotatedCAccent = transformVector(cAccent, this.xAxisRotationMatrix);
+    this.center = rotatedCAccent.add(startPoint.add(endPoint).div(2));
 
     const q = pAccent.sub(cAccent).div(radius);
     const s = pAccent.scale(-1).sub(cAccent).div(radius);
@@ -89,17 +97,19 @@ export class ArcSegment extends Segment {
   }
 
   public getAnglePosition(angle: number) {
-    return this.radius
-      .mul(Vector2.fromRadians(angle))
-      .transform(this.xAxisRotationMatrix)
-      .add(this.center);
+    const rotatedVector = transformVector(
+      this.radius.mul(Vector2.fromRadians(angle)),
+      this.xAxisRotationMatrix,
+    );
+    return rotatedVector.add(this.center);
   }
 
   public getAngleDerivative(angle: number) {
-    return new Vector2(
+    const derivative = new Vector2(
       -this.radius.x * Math.sin(angle),
       this.radius.y * Math.cos(angle),
-    ).transform(this.xAxisRotationMatrix);
+    );
+    return transformVector(derivative, this.xAxisRotationMatrix);
   }
 
   public draw(

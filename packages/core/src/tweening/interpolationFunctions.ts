@@ -1,4 +1,3 @@
-import {Vector2} from '../types';
 import {useLogger} from '../utils';
 import {clamp, map} from './helpers';
 
@@ -144,11 +143,7 @@ export function boolLerp<T>(from: T, to: T, value: number): T {
   return value < 0.5 ? from : to;
 }
 
-export function arcLerp(
-  value: number,
-  reverse: boolean,
-  ratio: number,
-): Vector2 {
+export function arcLerp(value: number, reverse: boolean, ratio: number) {
   let flip = reverse;
   if (ratio > 1) {
     ratio = 1 / ratio;
@@ -167,5 +162,5 @@ export function arcLerp(
     [xValue, yValue] = [yValue, xValue];
   }
 
-  return new Vector2(xValue, yValue);
+  return {x: xValue, y: yValue};
 }

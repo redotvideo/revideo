@@ -1,5 +1,5 @@
 import type {PossibleVector2, SignalValue, Vector2Signal} from '@revideo/core';
-import {BBox} from '@revideo/core';
+import {BBox, transformVectorAsPoint} from '@revideo/core';
 import type {CurveProfile} from '../curves';
 import {LineSegment} from '../curves';
 import {nodeName, vector2Signal} from '../decorators';
@@ -89,9 +89,10 @@ export class Ray extends Curve {
   ) {
     const box = this.childrenBBox().transformCorners(matrix);
     const size = this.computedSize();
-    const offset = size.mul(this.offset()).scale(0.5).transformAsPoint(matrix);
-    const from = this.from().transformAsPoint(matrix);
-    const to = this.to().transformAsPoint(matrix);
+    const offsetVector = size.mul(this.offset()).scale(0.5);
+    const offset = transformVectorAsPoint(offsetVector, matrix);
+    const from = transformVectorAsPoint(this.from(), matrix);
+    const to = transformVectorAsPoint(this.to(), matrix);
 
     context.fillStyle = 'white';
     context.strokeStyle = 'black';

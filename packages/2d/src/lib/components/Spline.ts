@@ -4,7 +4,13 @@ import type {
   SignalValue,
   SimpleSignal,
 } from '@revideo/core';
-import {BBox, Vector2, unwrap, useLogger} from '@revideo/core';
+import {
+  BBox,
+  Vector2,
+  transformVectorAsPoint,
+  unwrap,
+  useLogger,
+} from '@revideo/core';
 import type {CurveProfile, KnotInfo} from '../curves';
 import {CubicBezierSegment, getBezierSplineProfile} from '../curves';
 import type {PolynomialSegment} from '../curves/PolynomialSegment';
@@ -231,7 +237,8 @@ export class Spline extends Curve {
   ) {
     const size = this.computedSize();
     const box = this.childrenBBox().transformCorners(matrix);
-    const offset = size.mul(this.offset()).scale(0.5).transformAsPoint(matrix);
+    const offsetVector = size.mul(this.offset()).scale(0.5);
+    const offset = transformVectorAsPoint(offsetVector, matrix);
     const segments = this.profile().segments as PolynomialSegment[];
 
     context.lineWidth = 1;

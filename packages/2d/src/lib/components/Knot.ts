@@ -4,7 +4,7 @@ import type {
   SignalValue,
   Vector2Signal,
 } from '@revideo/core';
-import {Vector2} from '@revideo/core';
+import {transformVectorAsPoint, Vector2} from '@revideo/core';
 import type {KnotInfo} from '../curves';
 import {
   cloneable,
@@ -141,8 +141,8 @@ export class Knot extends Node {
 
     return {
       position: this.position(),
-      startHandle: startHandle.transformAsPoint(this.localToParent()),
-      endHandle: endHandle.transformAsPoint(this.localToParent()),
+      startHandle: transformVectorAsPoint(startHandle, this.localToParent()),
+      endHandle: transformVectorAsPoint(endHandle, this.localToParent()),
       auto: {start: this.startHandleAuto(), end: this.endHandleAuto()},
     };
   }

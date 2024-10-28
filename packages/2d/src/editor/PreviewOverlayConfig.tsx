@@ -1,4 +1,4 @@
-import {Vector2} from '@revideo/core';
+import {transformVectorAsPoint, Vector2} from '@revideo/core';
 import type {PluginOverlayConfig} from '@revideo/ui';
 import {
   MouseButton,
@@ -21,10 +21,11 @@ function Component({children}: {children?: ComponentChildren}) {
         if (!scene.value) return;
         event.stopPropagation();
 
-        const position = new Vector2(
+        const diff = new Vector2(
           event.x - state.rect.x,
           event.y - state.rect.y,
-        ).transformAsPoint(matrix.inverse());
+        );
+        const position = transformVectorAsPoint(diff, matrix.inverse());
 
         selectedKey.value = scene.value.inspectPosition(
           position.x,

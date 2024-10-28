@@ -1,9 +1,9 @@
-import {noop} from '../flow';
+import {decorate, threadable} from '../decorators';
+import {getTaskName, setTaskName} from '../flow';
 import {createSignal} from '../signals';
 import {endThread, startThread, useLogger} from '../utils';
 import type {ThreadGenerator} from './ThreadGenerator';
 import {isThreadGenerator} from './ThreadGenerator';
-import {getTaskName, setTaskName} from './names';
 
 const reusedGenerator = `
 This usually happens when you mistakenly reuse a generator that is already
@@ -48,6 +48,11 @@ yield* all(
 );
 \`\`\`
 `;
+
+decorate(noop, threadable());
+export function* noop(): ThreadGenerator {
+  // do nothing
+}
 
 /**
  * A class representing an individual thread.

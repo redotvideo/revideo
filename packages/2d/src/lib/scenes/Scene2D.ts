@@ -11,6 +11,7 @@ import {
   GeneratorScene,
   SceneRenderEvent,
   Vector2,
+  transformVectorAsPoint,
   useLogger,
 } from '@revideo/core';
 import type {Node} from '../components';
@@ -125,7 +126,8 @@ export class Scene2D extends GeneratorScene<View2D> implements Inspectable {
   }
 
   public transformMousePosition(x: number, y: number): Vector2 | null {
-    return new Vector2(x, y).transformAsPoint(
+    return transformVectorAsPoint(
+      new Vector2(x, y),
       this.getView().localToParent().inverse(),
     );
   }

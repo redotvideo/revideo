@@ -1,6 +1,5 @@
 import {decorate, threadable} from '../decorators';
 import type {ThreadGenerator} from '../threading';
-import {isThreadGenerator} from '../threading';
 import {waitFor} from './scheduling';
 
 decorate(delay, threadable());
@@ -35,7 +34,7 @@ export function* delay(
   task: ThreadGenerator | Callback,
 ): ThreadGenerator {
   yield* waitFor(time);
-  if (isThreadGenerator(task)) {
+  if ('next' in task) {
     yield* task;
   } else {
     task();

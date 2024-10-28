@@ -21,6 +21,8 @@ import {
   modify,
   originToOffset,
   threadable,
+  transformVector,
+  transformVectorAsPoint,
   tween,
 } from '@revideo/core';
 import type {Vector2LengthSignal} from '../decorators';
@@ -846,7 +848,8 @@ export class Layout extends Node {
     matrix: DOMMatrix,
   ) {
     const size = this.computedSize();
-    const offset = size.mul(this.offset()).scale(0.5).transformAsPoint(matrix);
+    const offsetVector = size.mul(this.offset()).scale(0.5);
+    const offset = transformVectorAsPoint(offsetVector, matrix);
     const box = BBox.fromSizeCentered(size);
     const layout = box.transformCorners(matrix);
     const padding = box
@@ -1041,7 +1044,10 @@ export class Layout extends Node {
   }
 
   public override hit(position: Vector2): Node | null {
-    const local = position.transformAsPoint(this.localToParent().inverse());
+    const local = transformVectorAsPoint(
+      position,
+      this.localToParent().inverse(),
+    );
     if (this.cacheBBox().includes(local)) {
       return super.hit(position) ?? this;
     }
@@ -1057,20 +1063,21 @@ function originSignal(origin: Origin): PropertyDecorator {
     const meta = getPropertyMeta<any>(target, key);
     meta!.parser = value => new Vector2(value);
     meta!.getter = function (this: Layout) {
-      return this.computedSize()
-        .getOriginOffset(origin)
-        .transformAsPoint(this.localToParent());
+      const originOffset = this.computedSize().getOriginOffset(origin);
+      return transformVectorAsPoint(originOffset, this.localToParent());
     };
     meta!.setter = function (
       this: Layout,
       value: SignalValue<PossibleVector2>,
     ) {
       this.position(
-        modify(value, unwrapped =>
-          this.getOriginDelta(origin)
-            .transform(this.scalingRotationMatrix())
-            .flipped.add(unwrapped),
-        ),
+        modify(value, unwrapped => {
+          const originDelta = this.getOriginDelta(origin);
+          return transformVector(
+            originDelta,
+            this.scalingRotationMatrix(),
+          ).flipped.add(unwrapped);
+        }),
       );
       return this;
     };

@@ -1,4 +1,4 @@
-import type {BBox, Vector2} from '@revideo/core';
+import {transformVectorAsPoint, type BBox, type Vector2} from '@revideo/core';
 import {moveTo} from '../utils';
 import type {CurvePoint} from './CurvePoint';
 import type {Polynomial2D} from './Polynomial2D';
@@ -61,7 +61,7 @@ export abstract class PolynomialSegment extends Segment {
   }
 
   public transformPoints(matrix: DOMMatrix): Vector2[] {
-    return this.points.map(point => point.transformAsPoint(matrix));
+    return this.points.map(point => transformVectorAsPoint(point, matrix));
   }
 
   /**

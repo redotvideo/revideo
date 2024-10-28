@@ -7,6 +7,10 @@ import type {PossibleSpacing} from './Spacing';
 import {Spacing} from './Spacing';
 import type {Type, WebGLConvertible} from './Type';
 import {Vector2} from './Vector';
+import {
+  transformVector,
+  transformVectorAsPoint,
+} from './vector-transformations';
 
 export type SerializedBBox = {
   x: number;
@@ -87,7 +91,7 @@ export class BBox implements Type, WebGLConvertible {
     ratio ??=
       (from.position.sub(to.position).ctg + from.size.sub(to.size).ctg) / 2;
 
-    return BBox.lerp(from, to, arcLerp(value, reverse, ratio));
+    return BBox.lerp(from, to, new Vector2(arcLerp(value, reverse, ratio)));
   }
 
   public static fromSizeCentered(size: Vector2): BBox {
@@ -278,13 +282,13 @@ export class BBox implements Type, WebGLConvertible {
 
   public transform(matrix: PossibleMatrix2D): BBox {
     return new BBox(
-      this.position.transformAsPoint(matrix),
-      this.size.transform(matrix),
+      transformVectorAsPoint(this.position, matrix),
+      transformVector(this.size, matrix),
     );
   }
 
   public transformCorners(matrix: PossibleMatrix2D) {
-    return this.corners.map(corner => corner.transformAsPoint(matrix));
+    return this.corners.map(corner => transformVectorAsPoint(corner, matrix));
   }
 
   /**

@@ -2,10 +2,9 @@
 
 import {afterAll, beforeAll, describe, expect, test} from 'vitest';
 import {PlaybackManager, PlaybackStatus} from '../app';
-import {waitFor} from '../flow';
+import {join, waitFor} from '../flow';
 import {endPlayback, startPlayback, useTime} from '../utils';
 import {cancel} from './cancel';
-import {join} from './join';
 import {threads} from './threads';
 
 describe('cancel()', () => {

@@ -1,7 +1,7 @@
 import {decorate, threadable} from '../decorators';
+import type {Thread} from '../threading/Thread';
+import type {ThreadGenerator} from '../threading/ThreadGenerator';
 import {useThread} from '../utils';
-import type {Thread} from './Thread';
-import type {ThreadGenerator} from './ThreadGenerator';
 
 decorate(join, threadable());
 /**

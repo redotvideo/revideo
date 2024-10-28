@@ -1,9 +1,9 @@
 import {decorate, threadable} from '../decorators';
+import {setTaskName} from '../flow';
 import {usePlayback} from '../utils';
 import {Thread} from './Thread';
 import type {ThreadGenerator} from './ThreadGenerator';
 import {isThreadGenerator} from './ThreadGenerator';
-import {setTaskName} from './names';
 
 /**
  * Check if the given value is a [Promise][promise].

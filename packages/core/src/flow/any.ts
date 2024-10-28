@@ -1,6 +1,6 @@
 import {decorate, threadable} from '../decorators';
 import type {ThreadGenerator} from '../threading';
-import {join} from '../threading';
+import {join} from './join';
 
 decorate(any, threadable());
 /**

@@ -91,7 +91,7 @@ export class BBox implements Type, WebGLConvertible {
     ratio ??=
       (from.position.sub(to.position).ctg + from.size.sub(to.size).ctg) / 2;
 
-    return BBox.lerp(from, to, arcLerp(value, reverse, ratio));
+    return BBox.lerp(from, to, new Vector2(arcLerp(value, reverse, ratio)));
   }
 
   public static fromSizeCentered(size: Vector2): BBox {

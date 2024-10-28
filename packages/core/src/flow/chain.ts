@@ -1,6 +1,5 @@
 import {decorate, threadable} from '../decorators';
 import type {ThreadGenerator} from '../threading';
-import {isThreadGenerator} from '../threading';
 
 decorate(chain, threadable());
 /**
@@ -40,7 +39,7 @@ export function* chain(
   ...tasks: (ThreadGenerator | Callback)[]
 ): ThreadGenerator {
   for (const generator of tasks) {
-    if (isThreadGenerator(generator)) {
+    if ('next' in generator) {
       yield* generator;
     } else {
       generator();

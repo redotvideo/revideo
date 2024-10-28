@@ -105,7 +105,7 @@ export class Vector2 implements Type, WebGLConvertible {
     ratio?: number,
   ) {
     ratio ??= from.sub(to).ctg;
-    return Vector2.lerp(from, to, arcLerp(value, reverse, ratio));
+    return Vector2.lerp(from, to, new Vector2(arcLerp(value, reverse, ratio)));
   }
 
   public static createArcLerp(reverse?: boolean, ratio?: number) {

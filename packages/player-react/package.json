@@ -3,15 +3,18 @@
   "version": "0.10.0",
   "description": "",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
   "files": [
-    "dist"
+    "dist/**"
   ],
   "scripts": {
-    "build": "tsc && postcss src/**/*.css --dir dist"
+	"build": "tsup src/index.tsx --format esm,cjs --dts --external react"
   },
-  "keywords": [],
-  "author": "revideo",
-  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
   "devDependencies": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -19,12 +22,11 @@
     "cssnano": "^7.0.6",
     "postcss": "^8.4.47",
     "postcss-cli": "^11.0.0",
-    "tailwindcss": "^3.4.12"
+    "react": "^18.3.1",
+    "tailwindcss": "^3.4.12",
+    "tsup": "^8.0.0"
   },
   "dependencies": {
-    "@revideo/core": "0.10.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "uuid": "^10.0.0"
+    "@revideo/core": "0.10.0"
   }
 }

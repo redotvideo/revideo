@@ -1,3 +1,4 @@
+import React from 'react';
 export function PlayButton() {
   return (
     <svg

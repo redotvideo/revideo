@@ -24,7 +24,7 @@ export interface TxtProps extends ShapeProps {
 
 @nodeName('Txt')
 export class Txt extends Shape {
-  readonly [TXT_TYPE] = true;
+  public readonly [TXT_TYPE] = true;
 
   /**
    * Create a bold text node.

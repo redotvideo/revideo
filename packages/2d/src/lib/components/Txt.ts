@@ -11,7 +11,7 @@ import {is} from '../utils';
 import type {Node} from './Node';
 import type {ShapeProps} from './Shape';
 import {Shape} from './Shape';
-import {TxtLeaf} from './TxtLeaf';
+import {TXT_TYPE, TxtLeaf} from './TxtLeaf';
 import type {ComponentChildren} from './types';
 
 type TxtChildren = string | Node | (string | Node)[];
@@ -24,6 +24,8 @@ export interface TxtProps extends ShapeProps {
 
 @nodeName('Txt')
 export class Txt extends Shape {
+  public readonly [TXT_TYPE] = true;
+
   /**
    * Create a bold text node.
    *

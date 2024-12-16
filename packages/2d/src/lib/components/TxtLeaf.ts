@@ -15,6 +15,8 @@ export interface TxtLeafProps extends ShapeProps {
   text?: SignalValue<string>;
 }
 
+export const TXT_TYPE = Symbol('Txt');
+
 @nodeName('TxtLeaf')
 export class TxtLeaf extends Shape {
   @lazy(() => {
@@ -43,7 +45,15 @@ export class TxtLeaf extends Shape {
   @computed()
   protected parentTxt() {
     const parent = this.parent();
-    return parent?.constructor.name === 'Txt' ? parent : null;
+    if (!parent) {
+      return null;
+    }
+
+    if (!(TXT_TYPE in parent)) {
+      return null;
+    }
+
+    return parent;
   }
 
   protected override async draw(context: CanvasRenderingContext2D) {

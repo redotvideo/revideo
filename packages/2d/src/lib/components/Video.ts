@@ -113,7 +113,7 @@ export class Video extends Media {
       video = document.createElement('video');
       video.crossOrigin = 'anonymous';
 
-      const parsedSrc = new URL(src);
+      const parsedSrc = new URL(src, window.location.origin);
       if (parsedSrc.pathname.endsWith('.m3u8')) {
         const hls = new Hls();
         hls.loadSource(src);

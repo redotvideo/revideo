@@ -338,7 +338,6 @@ async function cleanup(
     );
     cleanupFiles.push(
       path.join(
-        process.cwd(),
         outputFolderName,
         `${outputFileName}-${i}.${extensions[format]}`,
       ),
@@ -346,11 +345,10 @@ async function cleanup(
   }
 
   cleanupFiles.push(
-    path.join(process.cwd(), outputFolderName, `${outputFileName}-audio.wav`),
+    path.join(outputFolderName, `${outputFileName}-audio.wav`),
   );
   cleanupFiles.push(
     path.join(
-      process.cwd(),
       outputFolderName,
       `${outputFileName}-visuals.${extensions[format]}`,
     ),

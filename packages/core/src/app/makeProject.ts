@@ -62,7 +62,7 @@ export function makeProject(project: UserProject): Project {
     settings: convertedSettings,
     plugins: [],
     logger: new Logger(),
-    versions: createVersionObject('0.5.9'),
+    versions: createVersionObject('0.10.4'),
   };
 }
 

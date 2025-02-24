@@ -14,7 +14,8 @@ export interface App {
 export async function start(): Promise<App> {
   const [browser, server] = await Promise.all([
     puppeteer.launch({
-      headless: 'new',
+      headless: true,
+      args: ['--no-sandbox'],
     }),
     createServer({
       root: Root,

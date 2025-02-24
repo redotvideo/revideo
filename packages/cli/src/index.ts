@@ -7,7 +7,7 @@ import {createServer} from './server/index';
 
 const program = new Command();
 
-const VERSION = '0.10.3';
+const VERSION = '0.10.4';
 
 program
   .name('revideo')

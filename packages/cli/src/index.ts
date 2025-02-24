@@ -7,10 +7,12 @@ import {createServer} from './server/index';
 
 const program = new Command();
 
+const VERSION = '0.10.3';
+
 program
   .name('revideo')
   .description('CLI to interact with the revideo service')
-  .version('0.10.3');
+  .version(VERSION);
 
 program
   .command('serve')

@@ -39,16 +39,16 @@ export interface LatexProps extends ImgProps {
 export class Latex extends Img {
   private static svgContentsPool: Record<string, string> = {};
   private static mathJaxInitialized = false;
-  private static Adaptor: LiteAdaptor;
-  private static JaxDocument: MathDocument<unknown, unknown, unknown>;
+  private static adaptor: LiteAdaptor;
+  private static jaxDocument: MathDocument<unknown, unknown, unknown>;
 
   private static initializeMathJax() {
     if (this.mathJaxInitialized) {
       return;
     }
-    this.Adaptor = liteAdaptor();
-    RegisterHTMLHandler(this.Adaptor);
-    this.JaxDocument = mathjax.document('', {
+    this.adaptor = liteAdaptor();
+    RegisterHTMLHandler(this.adaptor);
+    this.jaxDocument = mathjax.document('', {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       InputJax: new TeX({packages: AllPackages}),
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -90,8 +90,8 @@ export class Latex extends Img {
 
     // Convert to TeX, look for any errors
     const tex = this.tex();
-    const svg = Latex.Adaptor.innerHTML(
-      Latex.JaxDocument.convert(tex, this.options()) as any,
+    const svg = Latex.adaptor.innerHTML(
+      Latex.jaxDocument.convert(tex, this.options()) as any,
     );
     if (svg.includes('data-mjx-error')) {
       const errors = svg.match(/data-mjx-error="(.*?)"/);

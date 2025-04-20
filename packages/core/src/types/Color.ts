@@ -37,7 +37,7 @@ export class Color implements Type, WebGLConvertible {
   public readonly b: number;
   public readonly a: number;
 
-  constructor(value?: PossibleColor) {
+  public constructor(value?: PossibleColor) {
     // Handle undefined/null case
     if (value === undefined || value === null) {
       this.r = 0;
@@ -107,7 +107,7 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Interpolates between two colors using LCH color space.
    */
-  static lerp(
+  public static lerp(
     from: PossibleColor | null,
     to: PossibleColor | null,
     value: number,
@@ -163,14 +163,14 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Creates an interpolation function for colors (uses LCH space via culori).
    */
-  static createLerp(): InterpolationFunction<Color> {
+  public static createLerp(): InterpolationFunction<Color> {
     return Color.lerp;
   }
 
   /**
    * Creates a signal for the Color type.
    */
-  static createSignal(
+  public static createSignal(
     initial?: SignalValue<PossibleColor>,
     interpolation: InterpolationFunction<Color> = Color.lerp,
   ): ColorSignal<void> {
@@ -182,25 +182,28 @@ export class Color implements Type, WebGLConvertible {
     ).toSignal();
   }
 
-  toSymbol(): symbol {
+  public toSymbol(): symbol {
     return this.symbol;
   }
 
   /**
    * Returns the color components as a [r, g, b, a] array (0-1 range).
    */
-  gl(): [number, number, number, number] {
+  private gl(): [number, number, number, number] {
     return [this.r, this.g, this.b, this.a];
   }
 
-  toUniform(gl: WebGL2RenderingContext, location: WebGLUniformLocation): void {
+  public toUniform(
+    gl: WebGL2RenderingContext,
+    location: WebGLUniformLocation,
+  ): void {
     gl.uniform4fv(location, this.gl());
   }
 
   /**
    * Serializes the color to an `rgba()` CSS string.
    */
-  serialize(): SerializedColor {
+  public serialize(): SerializedColor {
     const r = Math.round(this.r * 255);
     const g = Math.round(this.g * 255);
     const b = Math.round(this.b * 255);
@@ -212,7 +215,7 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Serializes the color to an `rgb()` CSS string (omitting alpha).
    */
-  css(): SerializedColor {
+  public css(): SerializedColor {
     const r = Math.round(this.r * 255);
     const g = Math.round(this.g * 255);
     const b = Math.round(this.b * 255);
@@ -222,14 +225,14 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Returns the alpha value of the color (0-1 range).
    */
-  alpha(): number {
+  public alpha(): number {
     return this.a;
   }
 
   /**
    * Serializes the color to an RRGGBBAA hex string using culori.
    */
-  hex(): string {
+  public hex(): string {
     // Use culori's formatter for consistency
     return formatHex8({
       mode: 'rgb',
@@ -243,7 +246,7 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Linearly interpolates from this color to another using LCH space.
    */
-  lerp(to: PossibleColor, value: number): Color {
+  public lerp(to: PossibleColor, value: number): Color {
     return Color.lerp(this, to, value);
   }
 }

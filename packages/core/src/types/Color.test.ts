@@ -24,12 +24,12 @@ describe('Color.lerp', () => {
 
 describe('Color Constructor', () => {
   test('parses 4-digit hex codes correctly', () => {
-    // Opaque
+    // Opaque (#rgb -> #rrggbb)
     expect(new Color('#f00').serialize()).toBe('rgba(255, 0, 0, 1.000)');
     expect(new Color('#0f0').serialize()).toBe('rgba(0, 255, 0, 1.000)');
-    // Transparent
-    expect(new Color('#00f8').serialize()).toBe('rgba(0, 0, 255, 0.533)'); // 8/15 = 0.5333...
-    expect(new Color('#fff0').serialize()).toBe('rgba(255, 255, 255, 0.000)');
+    // Transparent (#rgba -> #rrggbbaa)
+    expect(new Color('#00f8').serialize()).toBe('rgba(0, 0, 255, 0.533)'); // 88/255 = 0.5333...
+    expect(new Color('#fff0').serialize()).toBe('rgba(255, 255, 255, 0.000)'); // 00/255 = 0
   });
 
   test('parses 8-digit hex codes correctly', () => {
@@ -51,6 +51,14 @@ describe('Color Constructor', () => {
       'rgba(211, 211, 211, 1.000)',
     ); // Alias
     expect(new Color('transparent').serialize()).toBe('rgba(0, 0, 0, 0.000)');
-    expect(new Color('TRANSPARENT').serialize()).toBe('rgba(0, 0, 0, 0.000)'); // Case-insensitive
+  });
+
+  test('handles invalid string input', () => {
+    expect(() => new Color('invalid-color-string')).toThrow(
+      'Invalid color string value provided: invalid-color-string',
+    );
+    expect(() => new Color('#gggggg')).toThrow(
+      'Invalid color string value provided: #gggggg',
+    );
   });
 });

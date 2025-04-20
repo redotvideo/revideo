@@ -1,4 +1,4 @@
-import {converter, formatHex8, interpolate} from 'culori';
+import {converter, formatHex8, interpolate, parse} from 'culori';
 import type {Signal, SignalValue} from '../signals';
 import {SignalContext} from '../signals';
 import type {InterpolationFunction} from '../tweening';
@@ -7,80 +7,11 @@ import type {Type, WebGLConvertible} from './Type';
 
 export type SerializedColor = string;
 
-// Basic color parsing regex
-const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i;
-const RGB_REGEX =
-  /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/i;
-const HSL_REGEX =
-  /^hsla?\(\s*([\d.]+)\s*,\s*([\d.]+%?)\s*,\s*([\d.]+%?)\s*(?:,\s*([\d.]+)\s*)?\)$/i;
-
-function parseHex(hex: string): [number, number, number, number] | null {
-  const result = HEX_REGEX.exec(hex);
-  if (!result) return null;
-  const r = parseInt(result[1], 16);
-  const g = parseInt(result[2], 16);
-  const b = parseInt(result[3], 16);
-  const a = result[4] ? parseInt(result[4], 16) / 255 : 1;
-  return [r / 255, g / 255, b / 255, a];
-}
-
-function parseRgb(rgb: string): [number, number, number, number] | null {
-  const result = RGB_REGEX.exec(rgb);
-  if (!result) return null;
-  const r = parseInt(result[1], 10);
-  const g = parseInt(result[2], 10);
-  const b = parseInt(result[3], 10);
-  const a = result[4] ? parseFloat(result[4]) : 1;
-  return [r / 255, g / 255, b / 255, a];
-}
-
 function parseNumber(num: number): [number, number, number, number] {
   const r = (num >> 16) & 255;
   const g = (num >> 8) & 255;
   const b = num & 255;
   return [r / 255, g / 255, b / 255, 1];
-}
-
-// Simple HSL to RGB conversion (doesn't handle all edge cases perfectly)
-function hslToRgb(h: number, s: number, l: number): [number, number, number] {
-  h /= 360;
-  s /= 100;
-  l /= 100;
-  let r, g, b;
-
-  if (s === 0) {
-    r = g = b = l; // achromatic
-  } else {
-    const hue2rgb = (p: number, q: number, t: number) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    };
-
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1 / 3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1 / 3);
-  }
-
-  return [r, g, b];
-}
-
-function parseHsl(hsl: string): [number, number, number, number] | null {
-  const result = HSL_REGEX.exec(hsl);
-  if (!result) return null;
-
-  const h = parseFloat(result[1]);
-  const s = parseFloat(result[2].replace('%', ''));
-  const l = parseFloat(result[3].replace('%', ''));
-  const a = result[4] ? parseFloat(result[4]) : 1;
-
-  const [r, g, b] = hslToRgb(h, s, l);
-  return [r, g, b, a];
 }
 
 export interface ColorObject {
@@ -125,29 +56,26 @@ export class Color implements Type, WebGLConvertible {
       return;
     }
 
-    // Handle string parsing
+    // Handle string parsing using culori
     if (typeof value === 'string') {
-      let parsed: [number, number, number, number] | null = null;
-
-      parsed = parseHex(value);
-
-      if (!parsed) {
-        parsed = parseRgb(value);
-      }
-      if (!parsed) {
-        parsed = parseHsl(value);
+      const parsedColor = parse(value);
+      if (!parsedColor) {
+        throw new Error(`Invalid color string value provided: ${value}`);
       }
 
-      if (parsed) {
-        const [r, g, b, a] = parsed;
-        this.r = clamp(0, 1, r);
-        this.g = clamp(0, 1, g);
-        this.b = clamp(0, 1, b);
-        this.a = clamp(0, 1, a);
+      // Convert parsed color to RGB if it's not already
+      const rgbColor =
+        parsedColor.mode === 'rgb'
+          ? parsedColor
+          : converter('rgb')(parsedColor);
+
+      if (rgbColor) {
+        this.r = clamp(0, 1, rgbColor.r);
+        this.g = clamp(0, 1, rgbColor.g);
+        this.b = clamp(0, 1, rgbColor.b);
+        this.a = clamp(0, 1, rgbColor.alpha ?? 1);
         return;
       }
-
-      throw new Error(`Invalid color string value provided: ${value}`);
     }
 
     // Handle number parsing

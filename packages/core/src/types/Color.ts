@@ -196,8 +196,10 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Creates an interpolation function for colors (uses LCH space via culori).
    */
-  public static createLerp(mode: CuloriInterpolatorMode = 'lch') {
-    return (from: PossibleColor, to: PossibleColor, value: number) =>
+  public static createLerp(
+    mode: CuloriInterpolatorMode = 'lch',
+  ): InterpolationFunction<Color, any[]> {
+    return (from: PossibleColor, to: PossibleColor, value) =>
       Color.lerp(from, to, value, mode);
   }
 

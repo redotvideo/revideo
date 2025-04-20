@@ -1,3 +1,4 @@
+import {converter, formatHex8, interpolate} from 'culori';
 import type {Signal, SignalValue} from '../signals';
 import {SignalContext} from '../signals';
 import type {InterpolationFunction} from '../tweening';
@@ -127,7 +128,9 @@ export class Color implements Type, WebGLConvertible {
     // Handle string parsing
     if (typeof value === 'string') {
       let parsed: [number, number, number, number] | null = null;
+
       parsed = parseHex(value);
+
       if (!parsed) {
         parsed = parseRgb(value);
       }
@@ -174,7 +177,7 @@ export class Color implements Type, WebGLConvertible {
   }
 
   /**
-   * Linearly interpolates between two colors in RGB space.
+   * Interpolates between two colors using LCH color space.
    */
   static lerp(
     from: PossibleColor | null,
@@ -185,16 +188,52 @@ export class Color implements Type, WebGLConvertible {
       from instanceof Color ? from : new Color(from ?? undefined);
     const toColor = to instanceof Color ? to : new Color(to ?? undefined);
 
-    const r = fromColor.r + (toColor.r - fromColor.r) * value;
-    const g = fromColor.g + (toColor.g - fromColor.g) * value;
-    const b = fromColor.b + (toColor.b - fromColor.b) * value;
+    // Define culori colors in {r, g, b} format (0-1 range)
+    const startColorCulori = {
+      mode: 'rgb',
+      r: fromColor.r,
+      g: fromColor.g,
+      b: fromColor.b,
+    } as const;
+    const endColorCulori = {
+      mode: 'rgb',
+      r: toColor.r,
+      g: toColor.g,
+      b: toColor.b,
+    } as const;
+
+    // Create LCH interpolator using culori
+    const interpolator = interpolate(
+      [startColorCulori, endColorCulori],
+      'lch', // Interpolation space (culori might handle hue automatically)
+    );
+
+    // Get the interpolated color in LCH mode from culori
+    const interpolatedLch = interpolator(value);
+
+    // Convert the interpolated LCH color back to RGB
+    const rgbConverter = converter('rgb');
+    const interpolatedRgb = rgbConverter(interpolatedLch);
+
+    // Interpolate alpha linearly
     const a = fromColor.a + (toColor.a - fromColor.a) * value;
 
-    return new Color({r: r * 255, g: g * 255, b: b * 255, a});
+    // Create a new Color instance, clamping RGB values from culori
+    // Check if interpolatedRgb is valid before accessing properties
+    const finalR = interpolatedRgb ? clamp(0, 1, interpolatedRgb.r) : 0;
+    const finalG = interpolatedRgb ? clamp(0, 1, interpolatedRgb.g) : 0;
+    const finalB = interpolatedRgb ? clamp(0, 1, interpolatedRgb.b) : 0;
+
+    return new Color({
+      r: finalR * 255,
+      g: finalG * 255,
+      b: finalB * 255,
+      a: clamp(0, 1, a), // Also clamp alpha just in case
+    });
   }
 
   /**
-   * Creates an interpolation function for colors (always uses linear RGB).
+   * Creates an interpolation function for colors (uses LCH space via culori).
    */
   static createLerp(): InterpolationFunction<Color> {
     return Color.lerp;
@@ -237,7 +276,9 @@ export class Color implements Type, WebGLConvertible {
     const r = Math.round(this.r * 255);
     const g = Math.round(this.g * 255);
     const b = Math.round(this.b * 255);
-    return `rgba(${r}, ${g}, ${b}, ${this.a.toFixed(3)})`;
+    // Use toFixed(3) for alpha like before, clamp to avoid -0
+    const alphaStr = clamp(0, 1, this.a).toFixed(3);
+    return `rgba(${r}, ${g}, ${b}, ${alphaStr})`;
   }
 
   /**
@@ -258,26 +299,21 @@ export class Color implements Type, WebGLConvertible {
   }
 
   /**
-   * Serializes the color to an RRGGBBAA hex string.
+   * Serializes the color to an RRGGBBAA hex string using culori.
    */
   hex(): string {
-    const r = Math.round(this.r * 255)
-      .toString(16)
-      .padStart(2, '0');
-    const g = Math.round(this.g * 255)
-      .toString(16)
-      .padStart(2, '0');
-    const b = Math.round(this.b * 255)
-      .toString(16)
-      .padStart(2, '0');
-    const a = Math.round(this.a * 255)
-      .toString(16)
-      .padStart(2, '0');
-    return `#${r}${g}${b}${a}`;
+    // Use culori's formatter for consistency
+    return formatHex8({
+      mode: 'rgb',
+      r: this.r,
+      g: this.g,
+      b: this.b,
+      alpha: this.a,
+    });
   }
 
   /**
-   * Linearly interpolates from this color to another in RGB space.
+   * Linearly interpolates from this color to another using LCH space.
    */
   lerp(to: PossibleColor, value: number): Color {
     return Color.lerp(this, to, value);

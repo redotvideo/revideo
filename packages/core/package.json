@@ -25,9 +25,11 @@
     "shaders"
   ],
   "dependencies": {
+    "culori": "^4.0.1",
     "mp4-wasm": "^1.0.6"
   },
   "devDependencies": {
+    "@types/culori": "^2.1.1",
     "jsdom": "^22.1.0"
   }
 }

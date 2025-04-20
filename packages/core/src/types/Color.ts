@@ -23,6 +23,37 @@ export interface ColorObject {
 
 export type PossibleColor = SerializedColor | number | Color | ColorObject;
 
+type CuloriInterpolatorMode =
+  | 'a98'
+  | 'cubehelix'
+  | 'dlab'
+  | 'dlch'
+  | 'hsi'
+  | 'hsl'
+  | 'hsv'
+  | 'hwb'
+  | 'jab'
+  | 'jch'
+  | 'lab'
+  | 'lab65'
+  | 'lch'
+  | 'lch65'
+  | 'lchuv'
+  | 'lrgb'
+  | 'luv'
+  | 'okhsl'
+  | 'okhsv'
+  | 'oklab'
+  | 'oklch'
+  | 'p3'
+  | 'prophoto'
+  | 'rec2020'
+  | 'rgb'
+  | 'xyz'
+  | 'xyz50'
+  | 'xyz65'
+  | 'yiq';
+
 export type ColorSignal<T> = Signal<PossibleColor, Color, T>;
 
 /**
@@ -111,6 +142,7 @@ export class Color implements Type, WebGLConvertible {
     from: PossibleColor | null,
     to: PossibleColor | null,
     value: number,
+    mode: CuloriInterpolatorMode = 'lch', // Default to LCH
   ): Color {
     const fromColor =
       from instanceof Color ? from : new Color(from ?? undefined);
@@ -131,9 +163,10 @@ export class Color implements Type, WebGLConvertible {
     } as const;
 
     // Create LCH interpolator using culori
+    const interpolationMode = mode ?? 'lch'; // Ensure mode is not undefined
     const interpolator = interpolate(
       [startColorCulori, endColorCulori],
-      'lch', // Interpolation space (culori might handle hue automatically)
+      interpolationMode as any, // Use specified interpolation space (casting to bypass TS error)
     );
 
     // Get the interpolated color in LCH mode from culori
@@ -163,8 +196,9 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Creates an interpolation function for colors (uses LCH space via culori).
    */
-  public static createLerp(): InterpolationFunction<Color> {
-    return Color.lerp;
+  public static createLerp(mode: CuloriInterpolatorMode = 'lch') {
+    return (from: PossibleColor, to: PossibleColor, value: number) =>
+      Color.lerp(from, to, value, mode);
   }
 
   /**
@@ -246,7 +280,11 @@ export class Color implements Type, WebGLConvertible {
   /**
    * Linearly interpolates from this color to another using LCH space.
    */
-  public lerp(to: PossibleColor, value: number): Color {
-    return Color.lerp(this, to, value);
+  public lerp(
+    to: PossibleColor,
+    value: number,
+    mode: CuloriInterpolatorMode = 'lch',
+  ): Color {
+    return Color.lerp(this, to, value, mode);
   }
 }

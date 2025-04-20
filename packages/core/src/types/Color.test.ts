@@ -22,6 +22,43 @@ describe('Color.lerp', () => {
   });
 });
 
+describe('Color.createLerp', () => {
+  test('creates an interpolation function with default LCH mode', () => {
+    const lerpFn = Color.createLerp();
+    expect(
+      lerpFn(
+        new Color('rgb(0, 0, 0)'),
+        new Color('rgb(255, 255, 255)'),
+        0.5,
+      ).css(),
+    ).toEqual('rgb(119,119,119)');
+  });
+
+  test('creates an interpolation function with a specified mode (e.g., lab)', () => {
+    const lerpFn = Color.createLerp('lab');
+    const expected = Color.lerp(
+      'rgb(0, 0, 0)',
+      'rgb(255, 255, 255)',
+      0.5,
+      'lab',
+    );
+
+    expect(
+      lerpFn(
+        new Color('rgb(0, 0, 0)'),
+        new Color('rgb(255, 255, 255)'),
+        0.5,
+      ).css(),
+    ).toEqual(expected.css());
+
+    // Example with a different color pair to ensure mode is used
+    const blueToYellowLerp = Color.createLerp('lab');
+    expect(
+      blueToYellowLerp(new Color('blue'), new Color('yellow'), 0.5).css(),
+    ).toMatchInlineSnapshot(`"rgb(193,137,172)"`);
+  });
+});
+
 describe('Color Constructor', () => {
   test('parses 4-digit hex codes correctly', () => {
     // Opaque (#rgb -> #rrggbb)

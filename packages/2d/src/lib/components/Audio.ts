@@ -32,19 +32,41 @@ export class Audio extends Media {
       audio = document.createElement('audio');
       audio.crossOrigin = 'anonymous';
       audio.src = src;
+      // Add iOS compatibility attributes
+      if (this.isIOS()) {
+        audio.muted = true; // Initially mute for autoplay on iOS
+
+      // CRITICAL: Add these for iOS duration fix
+      audio.preload = 'metadata';
+      
+      audio.setAttribute('preload', 'metadata');
+      audio.addEventListener('play', () => {
+        audio.muted = false;
+      });
+      }
+     
       Audio.pool[key] = audio;
     }
+    
 
     const weNeedToWait = this.waitForCanPlayNecessary(audio);
     if (!weNeedToWait) {
       return audio;
     }
 
-    DependencyContext.collectPromise(
-      new Promise<void>(resolve => {
-        this.waitForCanPlay(audio, resolve);
-      }),
-    );
+    if (!this.isIOS()) {
+      DependencyContext.collectPromise(
+        new Promise<void>(resolve => {
+          this.waitForCanPlay(audio, resolve);
+        }),
+      );
+   }
+
+    // DependencyContext.collectPromise(
+    //   new Promise<void>(resolve => {
+    //     this.waitForCanPlay(audio, resolve);
+    //   }),
+    // );
 
     return audio;
   }

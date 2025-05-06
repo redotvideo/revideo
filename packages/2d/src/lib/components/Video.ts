@@ -109,9 +109,23 @@ export class Video extends Media {
     const src = this.src();
     const key = `${this.key}/${src}`;
     let video = Video.pool[key];
+
     if (!video) {
       video = document.createElement('video');
       video.crossOrigin = 'anonymous';
+
+      // Add iOS compatibility attributes
+      if (this.isIOS()) {
+        video.playsInline = true;
+        video.muted = true; // Initially mute for autoplay on iOS
+        video.setAttribute('webkit-playsinline', 'true');
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('x5-playsinline', 'true');
+
+      // CRITICAL: Add these for iOS duration fix
+      video.preload = 'metadata';
+      video.setAttribute('preload', 'metadata');
+      }
 
       const parsedSrc = new URL(src, window.location.origin);
       if (parsedSrc.pathname.endsWith('.m3u8')) {
@@ -120,23 +134,26 @@ export class Video extends Media {
         hls.attachMedia(video);
       } else {
         video.src = src;
+        video.currentTime = 0;
       }
-
-      Video.pool[key] = video;
+        Video.pool[key] = video;
     }
 
+    //New code starts
     const weNeedToWait = this.waitForCanPlayNecessary(video);
     if (!weNeedToWait) {
       return video;
     }
 
-    DependencyContext.collectPromise(
-      new Promise<void>(resolve => {
-        this.waitForCanPlay(video, resolve);
-      }),
-    );
-
-    return video;
+    if (!this.isIOS()) {
+      DependencyContext.collectPromise(
+        new Promise<void>(resolve => {
+          this.waitForCanPlay(video, resolve);
+        }),
+      );
+   }
+  //New code ends
+  return video;
   }
 
   @computed()

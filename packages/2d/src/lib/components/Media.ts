@@ -112,7 +112,12 @@ export abstract class Media extends Rect {
   }
 
   public getDuration(): number {
-    return this.mediaElement().duration;
+    const mElement = this.mediaElement();
+    const isVideo = (mElement instanceof HTMLVideoElement);
+    const isAudio = (mElement instanceof HTMLVideoElement);
+    return (this.isIOS() || (isVideo || isAudio)) ? 2 :  this.mediaElement().duration;    
+    //return 10;
+    // return this.mediaElement().duration;
   }
 
   public getVolume(): number {
@@ -293,6 +298,7 @@ export abstract class Media extends Rect {
   }
 
   public play() {
+    // return;
     const time = useThread().time;
     const start = time();
     const offset = this.time();
@@ -342,5 +348,14 @@ export abstract class Media extends Rect {
     }
 
     return reason;
+  }
+
+  // Helper method to check if running on iOS
+  protected isIOS(): boolean {
+    if (typeof navigator === 'undefined') return false;
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    return isIos;
   }
 }

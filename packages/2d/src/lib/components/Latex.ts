@@ -1,6 +1,8 @@
 import type {SignalValue, SimpleSignal} from '@revideo/core';
 import {DependencyContext, useLogger} from '@revideo/core';
+import type {LiteAdaptor} from 'mathjax-full/js/adaptors/liteAdaptor';
 import {liteAdaptor} from 'mathjax-full/js/adaptors/liteAdaptor';
+import type {MathDocument} from 'mathjax-full/js/core/MathDocument';
 import {RegisterHTMLHandler} from 'mathjax-full/js/handlers/html';
 import {TeX} from 'mathjax-full/js/input/tex';
 import {AllPackages} from 'mathjax-full/js/input/tex/AllPackages';
@@ -10,16 +12,6 @@ import type {OptionList} from 'mathjax-full/js/util/Options';
 import {initial, signal} from '../decorators';
 import type {ImgProps} from './Img';
 import {Img} from './Img';
-
-const Adaptor = liteAdaptor();
-RegisterHTMLHandler(Adaptor);
-
-const JaxDocument = mathjax.document('', {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  InputJax: new TeX({packages: AllPackages}),
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  OutputJax: new SVG({fontCache: 'local'}),
-});
 
 export interface LatexProps extends ImgProps {
   tex?: SignalValue<string>;
@@ -46,6 +38,24 @@ export interface LatexProps extends ImgProps {
  */
 export class Latex extends Img {
   private static svgContentsPool: Record<string, string> = {};
+  private static mathJaxInitialized = false;
+  private static adaptor: LiteAdaptor;
+  private static jaxDocument: MathDocument<unknown, unknown, unknown>;
+
+  private static initializeMathJax() {
+    if (this.mathJaxInitialized) {
+      return;
+    }
+    this.adaptor = liteAdaptor();
+    RegisterHTMLHandler(this.adaptor);
+    this.jaxDocument = mathjax.document('', {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      InputJax: new TeX({packages: AllPackages}),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      OutputJax: new SVG({fontCache: 'local'}),
+    });
+    this.mathJaxInitialized = true;
+  }
 
   private readonly imageElement = document.createElement('img');
 
@@ -58,6 +68,7 @@ export class Latex extends Img {
 
   public constructor(props: LatexProps) {
     super({...props, src: null});
+    Latex.initializeMathJax();
   }
 
   protected override image(): HTMLImageElement {
@@ -79,7 +90,9 @@ export class Latex extends Img {
 
     // Convert to TeX, look for any errors
     const tex = this.tex();
-    const svg = Adaptor.innerHTML(JaxDocument.convert(tex, this.options()));
+    const svg = Latex.adaptor.innerHTML(
+      Latex.jaxDocument.convert(tex, this.options()) as any,
+    );
     if (svg.includes('data-mjx-error')) {
       const errors = svg.match(/data-mjx-error="(.*?)"/);
       if (errors && errors.length > 0) {
